@@ -1,5 +1,6 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import { SignedIn, SignedOut, SignInButton } from "@clerk/nextjs"
 
 export default function HomePage() {
   return (
@@ -13,11 +14,20 @@ export default function HomePage() {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-8">
-            <Link href="/admin">
-              <Button size="lg" className="w-full sm:w-auto">
-                Admin Dashboard
-              </Button>
-            </Link>
+            <SignedIn>
+              <Link href="/admin">
+                <Button size="lg" className="w-full sm:w-auto">
+                  Admin Dashboard
+                </Button>
+              </Link>
+            </SignedIn>
+            <SignedOut>
+              <SignInButton mode="modal">
+                <Button size="lg" className="w-full sm:w-auto">
+                  Sign In
+                </Button>
+              </SignInButton>
+            </SignedOut>
             <Link href="/track">
               <Button size="lg" variant="outline" className="w-full sm:w-auto bg-transparent">
                 Track Order
