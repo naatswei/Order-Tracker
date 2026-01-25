@@ -15,9 +15,9 @@ export default function HomePage() {
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-8">
             <SignedIn>
-              <Link href="/admin">
+              <Link href="/backoffice">
                 <Button size="lg" className="w-full sm:w-auto">
-                  Admin Dashboard
+                  Backoffice
                 </Button>
               </Link>
             </SignedIn>

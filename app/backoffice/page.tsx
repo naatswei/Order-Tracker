@@ -11,8 +11,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { getAllOrders, saveOrder, deleteOrder, generateTrackingId, type Order } from "@/lib/storage"
 import Link from "next/link"
+import { UserButton, OrganizationSwitcher } from "@clerk/nextjs"
 
-export default function AdminPage() {
+export default function BackofficePage() {
   const [orders, setOrders] = useState<Order[]>([])
   const [showForm, setShowForm] = useState(false)
   const [copiedId, setCopiedId] = useState<string | null>(null)
@@ -106,13 +107,16 @@ export default function AdminPage() {
       <div className="border-b bg-card">
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold">Admin Dashboard</h1>
-              <p className="text-muted-foreground mt-1">Manage tailoring orders and tracking</p>
+            <div className="flex items-center gap-4">
+              <div>
+                <h1 className="text-3xl font-bold">Backoffice</h1>
+                <p className="text-muted-foreground mt-1">Manage tailoring orders and tracking</p>
+              </div>
             </div>
-            <Link href="/">
-              <Button variant="outline">Home</Button>
-            </Link>
+            <div className="flex items-center gap-4">
+              <OrganizationSwitcher afterCreateOrganizationUrl="/backoffice" />
+              <UserButton />
+            </div>
           </div>
         </div>
       </div>
@@ -255,7 +259,7 @@ export default function AdminPage() {
                       </div>
 
                       <div className="flex flex-col sm:flex-row gap-2 lg:flex-col">
-                        <Link href={`/admin/order/${order.id}`} className="w-full">
+                        <Link href={`/backoffice/order/${order.id}`} className="w-full">
                           <Button variant="default" className="w-full">
                             Update Status
                           </Button>

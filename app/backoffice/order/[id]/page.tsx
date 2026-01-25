@@ -64,7 +64,7 @@ export default function OrderUpdatePage() {
     const updated = addStatusUpdate(orderId, status, location, message)
     if (updated) {
       alert("Status updated successfully!")
-      router.push("/admin")
+      router.push("/backoffice")
     } else {
       alert("Failed to update status")
     }
@@ -94,7 +94,7 @@ export default function OrderUpdatePage() {
           <Card className="max-w-md mx-auto mt-20">
             <CardContent className="py-12 text-center space-y-4">
               <h2 className="text-2xl font-bold">Order Not Found</h2>
-              <Link href="/admin">
+              <Link href="/backoffice">
                 <Button>Back to Dashboard</Button>
               </Link>
             </CardContent>
@@ -123,7 +123,7 @@ export default function OrderUpdatePage() {
               <h1 className="text-3xl font-bold">Update Order Status</h1>
               <p className="text-muted-foreground mt-1">Add a new status update for this order</p>
             </div>
-            <Link href="/admin">
+            <Link href="/backoffice">
               <Button variant="outline">Back to Dashboard</Button>
             </Link>
           </div>
