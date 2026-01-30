@@ -325,61 +325,71 @@ export default function BackofficePage() {
                     exit={{ opacity: 0, scale: 0.95 }}
                     transition={{ duration: 0.2 }}
                   >
-                    <Card className="group overflow-hidden border-white/50 bg-white/60 hover:bg-white/80 backdrop-blur-sm transition-all shadow-sm hover:shadow-md rounded-2xl">
-                      <CardContent className="p-0">
-                        <div className="flex flex-col lg:flex-row lg:items-stretch">
+                    <Card className="group overflow-hidden border-white/50 bg-white/60 hover:bg-white/80 backdrop-blur-sm transition-all shadow-sm hover:shadow-md rounded-xl">
+                      <CardContent className="p-6">
+                        <div className="flex flex-col md:flex-row justify-between gap-6">
                           {/* Main Info */}
-                          <div className="p-5 flex-1 flex flex-col justify-center space-y-4">
-                            <div className="flex items-start justify-between gap-4">
-                              <div>
-                                <div className="flex items-center gap-2 mb-1">
-                                  <h3 className="text-lg font-bold tracking-tight">{order.orderNumber}</h3>
-                                  <Badge variant="outline" className={`rounded-full px-2.5 font-medium border ${getStatusColor(order.currentStatus)} bg-opacity-50`}>
-                                    {order.currentStatus}
-                                  </Badge>
-                                </div>
-                                <p className="text-sm font-medium text-foreground">{order.customerName}</p>
-                                <p className="text-xs text-muted-foreground">{order.garmentType}</p>
+                          <div className="flex-1 space-y-4">
+                            <div className="flex items-center gap-4">
+                              <h3 className="text-xl font-bold tracking-tight text-slate-900">{order.orderNumber}</h3>
+                              <Badge variant="outline" className={`rounded-full px-3 py-0.5 font-normal text-sm border ${getStatusColor(order.currentStatus)} bg-opacity-50`}>
+                                {order.currentStatus}
+                              </Badge>
+                            </div>
+
+                            <div className="space-y-2 text-[15px]">
+                              <div className="flex gap-2">
+                                <span className="text-muted-foreground w-24 shrink-0">Customer:</span>
+                                <span className="font-medium text-slate-700">{order.customerName}</span>
                               </div>
-                              <div className="text-right shrink-0">
-                                <div className="text-xs font-mono text-muted-foreground/60 mb-1">{order.id}</div>
-                                <div className="text-xs text-muted-foreground">{new Date(order.createdAt).toLocaleDateString()}</div>
+                              <div className="flex gap-2">
+                                <span className="text-muted-foreground w-24 shrink-0">Contact:</span>
+                                <span className="font-medium text-slate-700">{order.customerPhone}</span>
                               </div>
+                              <div className="flex gap-2">
+                                <span className="text-muted-foreground w-24 shrink-0">Item Ordered:</span>
+                                <span className="font-medium text-slate-700">{order.garmentType}</span>
+                              </div>
+                              <div className="flex gap-2">
+                                <span className="text-muted-foreground w-24 shrink-0">Pick Up Date:</span>
+                                <span className="font-medium text-red-400">{order.pickupDate}</span>
+                              </div>
+                            </div>
+
+                            <div className="pt-2">
+                              <div className="text-sm text-muted-foreground/60">Created: {new Date(order.createdAt).toLocaleString()}</div>
                             </div>
                           </div>
 
                           {/* Actions */}
-                          <div className="bg-white/30 border-t lg:border-t-0 lg:border-l border-white/40 p-3 lg:w-48 flex flex-row lg:flex-col gap-2 justify-center">
-                            <Link href={`/backoffice/order/${order.id}`} className="flex-1">
-                              <Button className="w-full h-9 rounded-lg bg-white hover:bg-white/80 text-foreground border border-zinc-200 shadow-sm" variant="ghost">
-                                Manage
-                                <ArrowRight className="w-4 h-4 ml-2 opacity-50" />
+                          <div className="flex flex-col gap-3 w-full md:w-48 shrink-0">
+                            <Link href={`/backoffice/order/${order.id}`}>
+                              <Button className="w-full bg-slate-700 hover:bg-slate-800 text-white rounded-lg h-9 shadow-sm font-medium">
+                                Update Status
                               </Button>
                             </Link>
 
-                            <div className="flex gap-2 flex-1">
-                              <Button
-                                variant="outline"
-                                onClick={() => copyTrackingLink(order.id)}
-                                className="flex-1 h-9 bg-transparent border-zinc-200 rounded-lg hover:bg-white/50"
-                                title="Copy Link"
-                              >
-                                {copiedId === order.id ? <span className="text-green-600 font-bold">✓</span> : <Copy className="w-4 h-4 text-muted-foreground" />}
+                            <Button
+                              variant="outline"
+                              onClick={() => copyTrackingLink(order.id)}
+                              className={`w-full bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100 rounded-lg h-9 font-medium ${copiedId === order.id ? "text-green-600 border-green-200 bg-green-50" : ""}`}
+                            >
+                              {copiedId === order.id ? "Copied!" : "Copy Link"}
+                            </Button>
+
+                            <Link href={`/track/${order.id}`} target="_blank">
+                              <Button variant="outline" className="w-full bg-white border-slate-200 text-slate-700 hover:bg-slate-50 rounded-lg h-9 font-medium">
+                                View Tracking
                               </Button>
-                              <Link href={`/track/${order.id}`} target="_blank" className="flex-1">
-                                <Button variant="outline" className="w-full h-9 bg-transparent border-zinc-200 rounded-lg hover:bg-white/50" title="Orbit View">
-                                  <ExternalLink className="w-4 h-4 text-muted-foreground" />
-                                </Button>
-                              </Link>
-                              <Button
-                                variant="ghost"
-                                onClick={() => handleDelete(order.id)}
-                                className="flex-1 h-9 rounded-lg hover:bg-red-50 hover:text-red-500 text-muted-foreground px-0"
-                                title="Delete"
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </Button>
-                            </div>
+                            </Link>
+
+                            <Button
+                              variant="destructive"
+                              onClick={() => handleDelete(order.id)}
+                              className="w-full bg-red-500 hover:bg-red-600 text-white rounded-lg h-9 font-medium mt-1"
+                            >
+                              Delete
+                            </Button>
                           </div>
                         </div>
                       </CardContent>
