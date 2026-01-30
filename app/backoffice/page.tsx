@@ -29,6 +29,7 @@ export default function BackofficePage() {
   const [customerEmail, setCustomerEmail] = useState("")
   const [customerPhone, setCustomerPhone] = useState("")
   const [garmentType, setGarmentType] = useState("")
+  const [pickupDate, setPickupDate] = useState("")
   const [measurements, setMeasurements] = useState("")
 
   useEffect(() => {
@@ -53,6 +54,7 @@ export default function BackofficePage() {
       customerEmail,
       customerPhone,
       garmentType,
+      pickupDate,
       measurements,
       currentStatus: "Order Received",
       createdAt: now,
@@ -80,6 +82,7 @@ export default function BackofficePage() {
     setCustomerEmail("")
     setCustomerPhone("")
     setGarmentType("")
+    setPickupDate("")
     setMeasurements("")
   }
 
@@ -193,62 +196,74 @@ export default function BackofficePage() {
                   <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="grid md:grid-cols-2 gap-6">
                       <div className="space-y-2">
-                        <Label htmlFor="orderNumber" className="ml-1 text-xs font-semibold uppercase text-muted-foreground tracking-wider">Order Number</Label>
-                        <Input
-                          id="orderNumber"
-                          value={orderNumber}
-                          onChange={(e) => setOrderNumber(e.target.value)}
-                          placeholder="#1001"
-                          required
-                          className="h-12 rounded-xl bg-white/50 border-zinc-200 focus-visible:ring-primary/20"
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="customerName" className="ml-1 text-xs font-semibold uppercase text-muted-foreground tracking-wider">Customer Name</Label>
+                        <Label htmlFor="customerName" className="ml-1 text-xs font-semibold uppercase text-muted-foreground tracking-wider">Customer Name <span className="text-red-500">*</span></Label>
                         <Input
                           id="customerName"
                           value={customerName}
                           onChange={(e) => setCustomerName(e.target.value)}
-                          placeholder="Jane Doe"
+                          placeholder="Naa"
                           required
                           className="h-12 rounded-xl bg-white/50 border-zinc-200 focus-visible:ring-primary/20"
                         />
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="customerEmail" className="ml-1 text-xs font-semibold uppercase text-muted-foreground tracking-wider">Email</Label>
-                        <Input
-                          id="customerEmail"
-                          type="email"
-                          value={customerEmail}
-                          onChange={(e) => setCustomerEmail(e.target.value)}
-                          placeholder="jane@example.com"
-                          required
-                          className="h-12 rounded-xl bg-white/50 border-zinc-200 focus-visible:ring-primary/20"
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="customerPhone" className="ml-1 text-xs font-semibold uppercase text-muted-foreground tracking-wider">Phone</Label>
+                        <Label htmlFor="customerPhone" className="ml-1 text-xs font-semibold uppercase text-muted-foreground tracking-wider">Customer Contact <span className="text-red-500">*</span></Label>
                         <Input
                           id="customerPhone"
                           type="tel"
                           value={customerPhone}
                           onChange={(e) => setCustomerPhone(e.target.value)}
-                          placeholder="+1 (555) 000-0000"
+                          placeholder="0577064301"
+                          required
                           className="h-12 rounded-xl bg-white/50 border-zinc-200 focus-visible:ring-primary/20"
                         />
                       </div>
 
-                      <div className="space-y-2 md:col-span-2">
-                        <Label htmlFor="garmentType" className="ml-1 text-xs font-semibold uppercase text-muted-foreground tracking-wider">Garment Type</Label>
+                      <div className="space-y-2">
+                        <Label htmlFor="garmentType" className="ml-1 text-xs font-semibold uppercase text-muted-foreground tracking-wider">Order Item <span className="text-red-500">*</span></Label>
                         <Input
                           id="garmentType"
                           value={garmentType}
                           onChange={(e) => setGarmentType(e.target.value)}
-                          placeholder="e.g., Wedding Suit, Evening Gown"
+                          placeholder="Dress"
                           required
+                          className="h-12 rounded-xl bg-white/50 border-zinc-200 focus-visible:ring-primary/20"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="orderNumber" className="ml-1 text-xs font-semibold uppercase text-muted-foreground tracking-wider">Order Number <span className="text-red-500">*</span></Label>
+                        <Input
+                          id="orderNumber"
+                          value={orderNumber}
+                          onChange={(e) => setOrderNumber(e.target.value)}
+                          placeholder="eg., KT350001"
+                          required
+                          className="h-12 rounded-xl bg-white/50 border-zinc-200 focus-visible:ring-primary/20"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="pickupDate" className="ml-1 text-xs font-semibold uppercase text-muted-foreground tracking-wider">Pick Up Date <span className="text-red-500">*</span></Label>
+                        <Input
+                          id="pickupDate"
+                          value={pickupDate}
+                          onChange={(e) => setPickupDate(e.target.value)}
+                          placeholder="7/20/2025"
+                          required
+                          className="h-12 rounded-xl bg-white/50 border-zinc-200 focus-visible:ring-primary/20"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="customerEmail" className="ml-1 text-xs font-semibold uppercase text-muted-foreground tracking-wider">Customer Email</Label>
+                        <Input
+                          id="customerEmail"
+                          type="email"
+                          value={customerEmail}
+                          onChange={(e) => setCustomerEmail(e.target.value)}
+                          placeholder="naa@gmail.com"
                           className="h-12 rounded-xl bg-white/50 border-zinc-200 focus-visible:ring-primary/20"
                         />
                       </div>
@@ -260,7 +275,7 @@ export default function BackofficePage() {
                         id="measurements"
                         value={measurements}
                         onChange={(e) => setMeasurements(e.target.value)}
-                        placeholder="Detailed measurements or special instructions..."
+                        placeholder="Details, measurements or special instructions..."
                         rows={4}
                         className="rounded-xl bg-white/50 border-zinc-200 focus-visible:ring-primary/20 resize-none p-4"
                       />

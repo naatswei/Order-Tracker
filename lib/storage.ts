@@ -14,6 +14,7 @@ export interface Order {
   customerPhone: string
   garmentType: string
   measurements: string
+  pickupDate?: string
   currentStatus: string
   createdAt: Date
   updatedAt: Date
