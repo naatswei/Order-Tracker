@@ -360,7 +360,7 @@ export default function BackofficePage() {
                                 </div>
                                 <div className="flex gap-2">
                                   <span className="text-muted-foreground w-24 shrink-0">Item Ordered:</span>
-                                  <span className="font-medium text-slate-700">{order.garmentType}</span>
+                                  <span className="font-medium text-slate-700 capitalize">{order.garmentType}</span>
                                 </div>
                                 <div className="flex gap-2">
                                   <span className="text-muted-foreground w-24 shrink-0">Pick Up Date:</span>
