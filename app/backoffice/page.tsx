@@ -376,7 +376,7 @@ export default function BackofficePage() {
                             {/* Actions */}
                             <div className="flex flex-col gap-3 w-full md:w-48 shrink-0">
                               <Link href={`/backoffice/order/${order.id}`}>
-                                <Button className="w-full bg-slate-700 hover:bg-slate-800 text-white rounded-lg h-9 shadow-sm font-medium">
+                                <Button className="w-full bg-[#191A43] hover:bg-[#191A43]/90 text-white rounded-lg h-9 shadow-sm font-medium">
                                   Update Status
                                 </Button>
                               </Link>
