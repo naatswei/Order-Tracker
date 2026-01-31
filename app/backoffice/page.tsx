@@ -12,7 +12,7 @@ import { Badge } from "@/components/ui/badge"
 import { getAllOrders, saveOrder, deleteOrder, generateTrackingId, type Order } from "@/lib/storage"
 import Link from "next/link"
 import { UserButton, OrganizationSwitcher } from "@clerk/nextjs"
-import { Package, Plus, Trash2, ExternalLink, Copy, Search, ArrowRight, X } from "lucide-react"
+import { Package, Plus, Trash2, ExternalLink, Copy, Search, ArrowRight, X, Filter } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 
 export default function BackofficePage() {
@@ -155,28 +155,39 @@ export default function BackofficePage() {
 
       <div className="container mx-auto px-4 py-8 max-w-[1400px] space-y-8">
         {/* Actions Bar */}
-        <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
-          <div className="flex w-full sm:w-auto flex-1 max-w-lg items-center gap-2">
-            <div className="relative flex-1">
+        {/* Track Order Section */}
+        <div className="space-y-4">
+          <h2 className="text-lg font-bold text-slate-900">Track order</h2>
+          <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
+            {/* Search Input */}
+            <div className="relative w-full md:flex-1 md:max-w-xl">
+              {/* Search icon hidden or inside? Image shows just input text. Standard is usually an icon but strict adherence to image might generally mean clean input. I'll keep the icon for UX but make it subtle, matching the previous style but with new placeholder. */}
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input
-                placeholder="Search orders..."
-                className="pl-9 h-11 rounded-full bg-white/50 border-white/50 focus-visible:ring-primary/20 transition-all font-medium placeholder:font-normal w-full"
+                placeholder="Search by order number, name"
+                className="pl-9 h-11 rounded-lg bg-white/50 border-slate-200 focus-visible:ring-primary/20 transition-all font-medium placeholder:font-normal w-full"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
-            <Button className="rounded-full h-11 px-6 shadow-sm shadow-primary/20 shrink-0">
-              Search
-            </Button>
+
+            {/* Action Buttons */}
+            <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
+              <Button variant="outline" className="h-11 rounded-lg border-slate-200 text-slate-700 hover:bg-slate-50 gap-2 px-4 shadow-sm flex-1 md:flex-none">
+                <Filter className="w-4 h-4" />
+                Filter
+              </Button>
+              <Button className="h-11 rounded-lg bg-blue-500 hover:bg-blue-600 text-white gap-2 px-4 shadow-sm flex-1 md:flex-none font-medium">
+                Bulk Update
+              </Button>
+              <Button
+                onClick={() => setShowForm(!showForm)}
+                className={`h-11 rounded-lg shadow-sm gap-2 px-6 flex-1 md:flex-none font-medium transition-all ${showForm ? "bg-muted text-foreground hover:bg-muted/80" : "bg-slate-900 hover:bg-slate-800 text-white"}`}
+              >
+                {showForm ? <><X className="w-4 h-4" /> Cancel</> : <><Plus className="w-4 h-4" /> Create New Order</>}
+              </Button>
+            </div>
           </div>
-          <Button
-            onClick={() => setShowForm(!showForm)}
-            size="lg"
-            className={`rounded-full h-11 shadow-lg shadow-primary/20 transition-all w-full sm:w-auto sm:w-auto ${showForm ? "bg-muted text-foreground hover:bg-muted/80" : ""}`}
-          >
-            {showForm ? <><X className="w-4 h-4 mr-2" /> Cancel</> : <><Plus className="w-4 h-4 mr-2" /> New Order</>}
-          </Button>
         </div>
 
         <AnimatePresence>
