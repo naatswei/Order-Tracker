@@ -115,18 +115,30 @@ export default function OrderUpdatePage() {
   return (
     <div className="min-h-screen bg-[#F9FCFF] font-sans selection:bg-blue-100 pb-20">
       {/* Header */}
-      <div className="bg-white border-b border-slate-100 sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4 max-w-6xl">
+      <div className="sticky top-0 z-50 bg-white/60 backdrop-blur-xl border-b border-white/20 shadow-sm">
+        <div className="container mx-auto px-4 py-4">
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="text-xl font-bold text-slate-900">Update Order Status</h1>
+              <h1 className="text-xl font-bold text-slate-900 tracking-tight">Track Order</h1>
               <p className="text-sm text-slate-500">Add a new status update to this order</p>
             </div>
             <div className="flex items-center gap-3">
-              <UserButton />
-              <div className="text-right hidden sm:block">
-                <div className="text-xs font-bold text-slate-900">KT</div>
-              </div>
+              <OrganizationSwitcher
+                afterCreateOrganizationUrl="/backoffice"
+                appearance={{
+                  elements: {
+                    rootBox: "flex items-center",
+                    organizationSwitcherTrigger: "h-9 px-3 rounded-full border border-input bg-transparent hover:bg-accent hover:text-accent-foreground"
+                  }
+                }}
+              />
+              <UserButton
+                appearance={{
+                  elements: {
+                    userButtonAvatarBox: "w-9 h-9"
+                  }
+                }}
+              />
             </div>
           </div>
         </div>
@@ -134,16 +146,17 @@ export default function OrderUpdatePage() {
 
 
       <div className="container mx-auto px-4 py-8 max-w-6xl space-y-6">
-        {/* Back Button */}
-        <div>
-          <Link href="/backoffice">
-            <Button variant="outline" className="bg-white border-slate-200 text-slate-700 hover:bg-slate-50 shadow-sm rounded-lg px-6">
-              <ArrowLeft className="w-4 h-4 mr-2" /> Back
-            </Button>
-          </Link>
-        </div>
+
 
         <div className="grid lg:grid-cols-12 gap-8">
+          {/* Back Button */}
+          <div className="lg:col-span-12 mb-2">
+            <Link href="/backoffice">
+              <Button variant="outline" className="bg-white border-slate-200 text-slate-700 hover:bg-slate-50 shadow-sm rounded-lg px-6">
+                <ArrowLeft className="w-4 h-4 mr-2" /> Back
+              </Button>
+            </Link>
+          </div>
           {/* Left Column - Order Info */}
           <div className="lg:col-span-4 space-y-6">
             {/* Order Summary Card */}
