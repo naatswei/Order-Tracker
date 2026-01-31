@@ -117,7 +117,7 @@ export default function BackofficePage() {
   )
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-accent/5 font-sans selection:bg-primary/20">
+    <div className="min-h-screen bg-background font-sans selection:bg-primary/20">
       {/* Header */}
       <div className="sticky top-0 z-50 bg-white/60 backdrop-blur-xl border-b border-white/20 shadow-sm">
         <div className="container mx-auto px-4 py-4">

@@ -35,7 +35,7 @@ export default function TrackingDetailsPage() {
 
   if (!order) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-background via-destructive/5 to-destructive/10">
+      <div className="min-h-screen bg-background">
         <div className="container mx-auto px-4 py-8">
           <Card className="max-w-md mx-auto mt-20">
             <CardContent className="py-12 text-center space-y-4">
@@ -80,7 +80,7 @@ export default function TrackingDetailsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-accent/5">
+    <div className="min-h-screen bg-background">
       {/* Header */}
       <div className="bg-card border-b">
         <div className="container mx-auto px-4 py-6">
@@ -130,9 +130,8 @@ export default function TrackingDetailsPage() {
                     <div className="flex flex-col items-center">
                       {/* Circle */}
                       <div
-                        className={`w-5 h-5 rounded-full flex-shrink-0 ${
-                          isCompleted(index) ? "bg-primary ring-4 ring-primary/20" : "bg-muted ring-4 ring-muted/20"
-                        }`}
+                        className={`w-5 h-5 rounded-full flex-shrink-0 ${isCompleted(index) ? "bg-primary ring-4 ring-primary/20" : "bg-muted ring-4 ring-muted/20"
+                          }`}
                       />
                       {/* Vertical Line */}
                       {index < order.statusHistory.length - 1 && (
