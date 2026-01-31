@@ -118,9 +118,14 @@ export default function OrderUpdatePage() {
       <div className="sticky top-0 z-50 bg-white/60 backdrop-blur-xl border-b border-white/20 shadow-sm">
         <div className="container mx-auto px-4 py-4">
           <div className="flex justify-between items-center">
-            <div>
-              <h1 className="text-xl font-bold text-slate-900 tracking-tight">Track Order</h1>
-              <p className="text-sm text-slate-500">Add a new status update to this order</p>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-blue-50/50 rounded-xl flex items-center justify-center shrink-0 border border-blue-100">
+                <Package className="text-blue-600 w-5 h-5" />
+              </div>
+              <div>
+                <h1 className="text-xl font-bold text-slate-900 tracking-tight">Track Order</h1>
+                <p className="text-sm text-slate-500">Add a new status update to this order</p>
+              </div>
             </div>
             <div className="flex items-center gap-3">
               <OrganizationSwitcher
