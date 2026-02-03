@@ -153,7 +153,7 @@ export default function BackofficePage() {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-8 max-w-[1400px] space-y-8">
+      <div className="container mx-auto px-4 py-8 max-w-[1400px] space-y-[70px]">
         {/* Actions Bar */}
         {/* Track Order Section */}
         <div className="space-y-4">
@@ -306,7 +306,7 @@ export default function BackofficePage() {
 
         <div className="space-y-4">
           <div className="flex items-center justify-between px-1">
-            <h2 className="text-lg font-semibold tracking-tight text-foreground/80">Active Orders</h2>
+            <h2 className="text-[16px] font-semibold tracking-tight text-foreground/80">Active Orders</h2>
             <Badge variant="outline" className="rounded-full px-3 bg-white/50">{filteredOrders.length}</Badge>
           </div>
 
