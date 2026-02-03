@@ -177,9 +177,11 @@ export default function BackofficePage() {
                 <Filter className="w-4 h-4" />
                 Filter
               </Button>
-              <Button className="h-11 rounded-lg bg-blue-500 hover:bg-blue-600 text-white gap-2 px-4 shadow-sm flex-1 md:flex-none font-medium">
-                Bulk Update
-              </Button>
+              <Link href="/backoffice/bulk" className="flex-1 md:flex-none">
+                <Button className="w-full h-11 rounded-lg bg-blue-500 hover:bg-blue-600 text-white gap-2 px-4 shadow-sm font-medium">
+                  Bulk Update
+                </Button>
+              </Link>
               <Button
                 onClick={() => setShowForm(!showForm)}
                 className={`h-11 rounded-lg shadow-sm gap-2 px-6 flex-1 md:flex-none font-medium transition-all ${showForm ? "bg-muted text-foreground hover:bg-muted/80" : "bg-slate-900 hover:bg-slate-800 text-white"}`}
