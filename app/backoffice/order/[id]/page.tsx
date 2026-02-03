@@ -237,7 +237,7 @@ export default function OrderUpdatePage() {
 
           {/* Right Column - Update Form */}
           <div className="lg:col-span-8">
-            <Card className="bg-white border-slate-100 shadow-sm rounded-2xl h-full">
+            <Card className="bg-white border-slate-100 shadow-sm rounded-2xl">
               <CardHeader>
                 <CardTitle className="text-lg font-bold text-slate-900">Add New Status Update</CardTitle>
                 <CardDescription>Enter custom status details or use quick options below</CardDescription>
@@ -293,7 +293,7 @@ export default function OrderUpdatePage() {
                   </div>
 
                   <div className="flex gap-4 pt-4">
-                    <Button type="submit" size="lg" className="flex-1 bg-blue-600 hover:bg-blue-700 text-white h-12 text-base font-semibold shadow-lg shadow-blue-600/20 rounded-lg">
+                    <Button type="submit" size="lg" className="bg-blue-600 hover:bg-blue-700 text-white h-12 text-base font-semibold shadow-lg shadow-blue-600/20 rounded-lg">
                       Add Status Update
                     </Button>
                     <Button type="button" onClick={handleClear} variant="outline" size="lg" className="px-8 h-12 text-base font-medium rounded-lg border-slate-200 hover:bg-slate-50 text-slate-700">
