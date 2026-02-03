@@ -120,7 +120,7 @@ export default function BackofficePage() {
     <div className="min-h-screen bg-background font-sans selection:bg-primary/20">
       {/* Header */}
       <div className="sticky top-0 z-50 bg-white/60 backdrop-blur-xl border-b border-white/20 shadow-sm">
-        <div className="container mx-auto px-4 py-4">
+        <div className="w-full px-[30px] py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center shrink-0">

@@ -116,7 +116,7 @@ export default function OrderUpdatePage() {
     <div className="min-h-screen bg-[#F9FCFF] font-sans selection:bg-blue-100 pb-20">
       {/* Header */}
       <div className="sticky top-0 z-50 bg-white/60 backdrop-blur-xl border-b border-white/20 shadow-sm">
-        <div className="container mx-auto px-4 py-4">
+        <div className="w-full px-[30px] py-4">
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-blue-50/50 rounded-xl flex items-center justify-center shrink-0 border border-blue-100">
