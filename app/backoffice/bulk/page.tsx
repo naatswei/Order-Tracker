@@ -304,13 +304,13 @@ export default function BulkUpdatePage() {
                                                 </Button>
                                             </Link>
 
-                                            <Button
-                                                variant="destructive"
-                                                className="w-full text-xs h-8 rounded-lg bg-red-500 hover:bg-red-600 text-white mt-1"
-                                                onClick={() => handleDelete(order.id)}
-                                            >
-                                                Delete
-                                            </Button>
+                                            <Link href={`/backoffice?edit=${order.id}`}>
+                                                <Button
+                                                    className="w-full text-xs h-8 rounded-lg bg-blue-500 hover:bg-blue-600 text-white mt-1"
+                                                >
+                                                    Edit Order
+                                                </Button>
+                                            </Link>
                                         </div>
 
                                     </div>

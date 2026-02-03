@@ -12,13 +12,18 @@ import { Badge } from "@/components/ui/badge"
 import { getAllOrders, saveOrder, deleteOrder, generateTrackingId, type Order } from "@/lib/storage"
 import Link from "next/link"
 import { UserButton, OrganizationSwitcher } from "@clerk/nextjs"
-import { Package, Plus, Trash2, ExternalLink, Copy, Search, ArrowRight, X, Filter } from "lucide-react"
+import { Package, Plus, Trash2, ExternalLink, Copy, Search, ArrowRight, X, Filter, Pencil } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
+import { toast } from "sonner"
+import { useSearchParams, useRouter } from "next/navigation" // For linking from bulk page
 
 export default function BackofficePage() {
   const [orders, setOrders] = useState<Order[]>([])
   const [showForm, setShowForm] = useState(false)
+  const [editingId, setEditingId] = useState<string | null>(null)
   const [copiedId, setCopiedId] = useState<string | null>(null)
+  const searchParams = useSearchParams()
+  const router = useRouter()
 
   // Search state
   const [searchQuery, setSearchQuery] = useState("")
@@ -34,7 +39,21 @@ export default function BackofficePage() {
 
   useEffect(() => {
     loadOrders()
-  }, [])
+
+    // Check for edit param from other pages
+    const editId = searchParams.get("edit")
+    if (editId) {
+      // Need to wait for orders to load, or just set it and let a 2nd effect handle populating
+      // Since loadOrders is sync (localStorage), we can do it here immediately after
+      const allOrders = getAllOrders() // call again or rely on state? State might not be set yet.
+      const orderToEdit = allOrders.find(o => o.id === editId)
+      if (orderToEdit) {
+        handleEdit(orderToEdit)
+      }
+      // Clear param
+      router.replace("/backoffice")
+    }
+  }, [searchParams])
 
   const loadOrders = () => {
     const allOrders = getAllOrders()
@@ -44,39 +63,62 @@ export default function BackofficePage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
 
-    const trackingId = generateTrackingId()
     const now = new Date()
 
-    const newOrder: Order = {
-      id: trackingId,
-      orderNumber,
-      customerName,
-      customerEmail,
-      customerPhone,
-      garmentType,
-      pickupDate,
-      measurements,
-      currentStatus: "Order Received",
-      createdAt: now,
-      updatedAt: now,
-      statusHistory: [
-        {
-          id: generateTrackingId(),
-          timestamp: now,
-          status: "Order Received",
-          location: "Factory",
-          message: "Your order has been received and is being processed",
-        },
-      ],
+    if (editingId) {
+      // Update existing order
+      const existingOrder = orders.find(o => o.id === editingId)
+      if (existingOrder) {
+        const updatedOrder: Order = {
+          ...existingOrder,
+          orderNumber,
+          customerName,
+          customerEmail,
+          customerPhone,
+          garmentType,
+          pickupDate,
+          measurements,
+          updatedAt: now,
+        }
+        saveOrder(updatedOrder)
+        toast.success("Order details updated")
+      }
+    } else {
+      // Create new order
+      const trackingId = generateTrackingId()
+      const newOrder: Order = {
+        id: trackingId,
+        orderNumber,
+        customerName,
+        customerEmail,
+        customerPhone,
+        garmentType,
+        pickupDate,
+        measurements,
+        currentStatus: "Order Received",
+        createdAt: now,
+        updatedAt: now,
+        statusHistory: [
+          {
+            id: generateTrackingId(),
+            timestamp: now,
+            status: "Order Received",
+            location: "Factory",
+            message: "Your order has been received and is being processed",
+          },
+        ],
+      }
+      saveOrder(newOrder)
+      toast.success("New order created")
     }
 
-    saveOrder(newOrder)
     loadOrders()
     resetForm()
     setShowForm(false)
   }
 
   const resetForm = () => {
+    setEditingId(null)
     setOrderNumber("")
     setCustomerName("")
     setCustomerEmail("")
@@ -86,12 +128,20 @@ export default function BackofficePage() {
     setMeasurements("")
   }
 
-  const handleDelete = (id: string) => {
-    if (confirm("Are you sure you want to delete this order?")) {
-      deleteOrder(id)
-      loadOrders()
-    }
+  const handleEdit = (order: Order) => {
+    setEditingId(order.id)
+    setOrderNumber(order.orderNumber)
+    setCustomerName(order.customerName)
+    setCustomerEmail(order.customerEmail)
+    setCustomerPhone(order.customerPhone)
+    setGarmentType(order.garmentType)
+    setPickupDate(order.pickupDate || "")
+    setMeasurements(order.measurements)
+    setShowForm(true)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
+
+
 
   const copyTrackingLink = (id: string) => {
     const link = `${window.location.origin}/track/${id}`
@@ -186,7 +236,7 @@ export default function BackofficePage() {
                 onClick={() => setShowForm(!showForm)}
                 className={`h-11 rounded-lg shadow-sm gap-2 px-6 flex-1 md:flex-none font-medium transition-all ${showForm ? "bg-muted text-foreground hover:bg-muted/80" : "bg-slate-900 hover:bg-slate-800 text-white"}`}
               >
-                {showForm ? <><X className="w-4 h-4" /> Cancel</> : <><Plus className="w-4 h-4" /> Create New Order</>}
+                {showForm ? <><X className="w-4 h-4" /> Cancel</> : <><Plus className="w-4 h-4" /> {editingId ? "Edit Order" : "Create New Order"}</>}
               </Button>
             </div>
           </div>
@@ -202,7 +252,7 @@ export default function BackofficePage() {
             >
               <Card className="border-white/50 bg-white/60 backdrop-blur-md shadow-xl rounded-3xl overflow-hidden mb-4">
                 <CardHeader className="bg-primary/5 pb-8 pt-6">
-                  <CardTitle className="text-xl">New Order Entry</CardTitle>
+                  <CardTitle className="text-xl">{editingId ? "Edit Order Details" : "New Order Entry"}</CardTitle>
                   <CardDescription>Enter order details to verify and generate a tracking link.</CardDescription>
                 </CardHeader>
                 <CardContent className="pt-8">
@@ -296,7 +346,7 @@ export default function BackofficePage() {
 
                     <div className="pt-2">
                       <Button type="submit" size="lg" className="w-full h-12 rounded-xl text-base shadow-lg shadow-primary/20 font-semibold bg-[#191A43] hover:bg-[#191A43]/90 text-white">
-                        Create Order
+                        {editingId ? "Update Order" : "Create Order"}
                       </Button>
                     </div>
                   </form>
@@ -398,11 +448,10 @@ export default function BackofficePage() {
                               </Link>
 
                               <Button
-                                variant="destructive"
-                                onClick={() => handleDelete(order.id)}
-                                className="w-full bg-red-500 hover:bg-red-600 text-white rounded-lg h-9 font-medium mt-1"
+                                className="w-full bg-blue-500 hover:bg-blue-600 text-white rounded-lg h-9 shadow-sm font-medium mt-1"
+                                onClick={() => handleEdit(order)}
                               >
-                                Delete
+                                {editingId === order.id ? "Editing..." : "Edit Order"}
                               </Button>
                             </div>
                           </div>
@@ -415,7 +464,7 @@ export default function BackofficePage() {
             )}
           </AnimatePresence>
         </div>
-      </div>
-    </div>
+      </div >
+    </div >
   )
 }
