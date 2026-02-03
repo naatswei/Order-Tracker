@@ -285,7 +285,7 @@ export default function BulkUpdatePage() {
                                         {/* Actions */}
                                         <div className="flex flex-col gap-2 w-full md:w-auto md:min-w-[140px] pt-4 md:pt-0 border-t md:border-t-0 mt-2 md:mt-0 border-slate-100">
                                             <Link href={`/backoffice/order/${order.id}`}>
-                                                <Button className="w-full bg-[#191A43] hover:bg-[#191A43]/90 text-white text-xs h-8 rounded-lg">
+                                                <Button className="w-full bg-[#CE0003] hover:bg-[#CE0003]/90 text-white text-xs h-8 rounded-lg">
                                                     Update Status
                                                 </Button>
                                             </Link>
@@ -306,7 +306,7 @@ export default function BulkUpdatePage() {
 
                                             <Link href={`/backoffice?edit=${order.id}`}>
                                                 <Button
-                                                    className="w-full text-xs h-8 rounded-lg bg-blue-500 hover:bg-blue-600 text-white mt-1"
+                                                    className="w-full text-xs h-8 rounded-lg bg-[#191A43] hover:bg-[#191A43]/90 text-white mt-1"
                                                 >
                                                     Edit Order
                                                 </Button>
