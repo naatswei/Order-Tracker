@@ -293,7 +293,7 @@ export default function BackofficePage() {
                     </div>
 
                     <div className="pt-2">
-                      <Button type="submit" size="lg" className="w-full h-12 rounded-xl text-base shadow-lg shadow-primary/20 font-semibold">
+                      <Button type="submit" size="lg" className="w-full h-12 rounded-xl text-base shadow-lg shadow-primary/20 font-semibold bg-[#191A43] hover:bg-[#191A43]/90 text-white">
                         Create Order
                       </Button>
                     </div>
