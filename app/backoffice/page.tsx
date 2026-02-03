@@ -233,7 +233,14 @@ export default function BackofficePage() {
                 </Button>
               </Link>
               <Button
-                onClick={() => setShowForm(!showForm)}
+                onClick={() => {
+                  if (showForm) {
+                    resetForm()
+                    setShowForm(false)
+                  } else {
+                    setShowForm(true)
+                  }
+                }}
                 className={`h-11 rounded-lg shadow-sm gap-2 px-6 flex-1 md:flex-none font-medium transition-all ${showForm ? "bg-muted text-foreground hover:bg-muted/80" : "bg-slate-900 hover:bg-slate-800 text-white"}`}
               >
                 {showForm ? <><X className="w-4 h-4" /> Cancel</> : <><Plus className="w-4 h-4" /> {editingId ? "Edit Order" : "Create New Order"}</>}
