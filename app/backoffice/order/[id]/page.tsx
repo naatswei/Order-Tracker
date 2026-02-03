@@ -293,7 +293,15 @@ export default function OrderUpdatePage() {
                   </div>
 
                   <div className="flex gap-4 pt-4">
-                    <Button type="submit" size="lg" className="bg-blue-600 hover:bg-blue-700 text-white h-12 text-base font-semibold shadow-lg shadow-blue-600/20 rounded-lg">
+                    <Button
+                      type="submit"
+                      size="lg"
+                      disabled={!status}
+                      className={`flex-1 h-12 text-base font-semibold rounded-lg transition-all ${status
+                          ? "bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-600/20"
+                          : "bg-slate-100 text-slate-400 hover:bg-slate-200 shadow-none cursor-not-allowed"
+                        }`}
+                    >
                       Add Status Update
                     </Button>
                     <Button type="button" onClick={handleClear} variant="outline" size="lg" className="px-8 h-12 text-base font-medium rounded-lg border-slate-200 hover:bg-slate-50 text-slate-700">
