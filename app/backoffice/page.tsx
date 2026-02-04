@@ -12,6 +12,14 @@ import { UserButton, OrganizationSwitcher } from "@clerk/nextjs"
 import { Package, Plus, Search, Filter } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Card, CardContent } from "@/components/ui/card"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 export default function BackofficePage() {
   const [orders, setOrders] = useState<Order[]>([])
@@ -19,6 +27,15 @@ export default function BackofficePage() {
 
   // Search state
   const [searchQuery, setSearchQuery] = useState("")
+  // Filter state
+  const [statusFilter, setStatusFilter] = useState("All")
+
+  const statusOptions = [
+    "Order Received", "Measurement Taken", "Production", "Quality Checks",
+    "First Fitting", "Second Fitting", "Third Fitting", "Completed",
+    "Out for Delivery", "Delivered", "Pending", "Refunded",
+    "Order Cancelled", "Apologies: Order Delayed"
+  ]
 
   // Load orders on mount
   useEffect(() => {
@@ -47,11 +64,16 @@ export default function BackofficePage() {
     return "bg-zinc-100 text-zinc-700 hover:bg-zinc-100/80 border-zinc-200"
   }
 
-  const filteredOrders = orders.filter(order =>
-    order.customerName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    order.orderNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    order.id.toLowerCase().includes(searchQuery.toLowerCase())
-  )
+  const filteredOrders = orders.filter(order => {
+    const matchesSearch =
+      order.customerName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      order.orderNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      order.id.toLowerCase().includes(searchQuery.toLowerCase())
+
+    const matchesStatus = statusFilter === "All" || order.currentStatus === statusFilter
+
+    return matchesSearch && matchesStatus
+  })
 
   return (
     <div className="min-h-screen bg-background font-sans selection:bg-primary/20">
@@ -109,10 +131,26 @@ export default function BackofficePage() {
 
             {/* Action Buttons */}
             <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
-              <Button variant="outline" className="h-11 rounded-lg border-slate-200 text-slate-700 hover:bg-slate-50 gap-2 px-4 shadow-sm flex-1 md:flex-none">
-                <Filter className="w-4 h-4" />
-                Filter
-              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" className="h-11 rounded-lg border-slate-200 text-slate-700 hover:bg-slate-50 gap-2 px-4 shadow-sm flex-1 md:flex-none">
+                    <Filter className="w-4 h-4" />
+                    {statusFilter === "All" ? "Filter" : statusFilter}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-[200px] max-h-[300px] overflow-y-auto">
+                  <DropdownMenuLabel>Filter by Status</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => setStatusFilter("All")} className="focus:bg-[#F4FAFF]">
+                    All Orders
+                  </DropdownMenuItem>
+                  {statusOptions.map((status) => (
+                    <DropdownMenuItem key={status} onClick={() => setStatusFilter(status)} className="focus:bg-[#F4FAFF]">
+                      {status}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
               <Link href="/backoffice/bulk" className="flex-1 md:flex-none">
                 <Button className="w-full h-11 rounded-lg bg-blue-500 hover:bg-blue-600 text-white gap-2 px-4 shadow-sm font-medium">
                   Bulk Update
@@ -241,4 +279,3 @@ export default function BackofficePage() {
     </div>
   )
 }
-
