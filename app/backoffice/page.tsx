@@ -370,7 +370,114 @@ export default function BackofficePage() {
           )}
         </AnimatePresence>
 
+        <div className="space-y-4">
+          <div className="flex items-center justify-between px-1">
+            <h2 className="text-[16px] font-semibold tracking-tight text-foreground/80">Active Orders</h2>
+            <Badge variant="outline" className="rounded-full px-3 bg-white/50">{filteredOrders.length}</Badge>
+          </div>
 
+          <AnimatePresence mode="popLayout">
+            {filteredOrders.length === 0 ? (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                layout
+              >
+                <Card className="bg-white/40 border-dashed border-2 border-white/60 shadow-none">
+                  <CardContent className="py-20 text-center text-muted-foreground">
+                    <Package className="w-12 h-12 mx-auto mb-4 opacity-20" />
+                    <p className="font-medium">No orders found</p>
+                    {searchQuery && <Button variant="link" onClick={() => setSearchQuery("")} className="mt-2">Clear search</Button>}
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ) : (
+              <div className="grid gap-4">
+                {filteredOrders.map((order) => (
+                  <motion.div
+                    key={order.id}
+                    layout
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <div className="flex justify-center w-full">
+                      <Card className="group overflow-hidden border-white/50 bg-white/60 hover:bg-white/80 backdrop-blur-sm transition-all shadow-sm hover:shadow-md rounded-xl w-full max-w-[1370px] h-auto md:min-h-[300px] flex flex-col justify-center">
+                        <CardContent className="p-6">
+                          <div className="flex flex-col md:flex-row justify-between gap-6">
+                            {/* Main Info */}
+                            <div className="flex-1 space-y-4">
+                              <div className="flex items-center gap-4">
+                                <h3 className="text-xl font-bold tracking-tight text-slate-900">{order.orderNumber}</h3>
+                                <Badge variant="outline" className={`rounded-full px-3 py-0.5 font-normal text-sm border ${getStatusColor(order.currentStatus)} bg-opacity-50`}>
+                                  {order.currentStatus}
+                                </Badge>
+                              </div>
+
+                              <div className="space-y-2 text-[15px]">
+                                <div className="flex gap-2">
+                                  <span className="text-muted-foreground w-24 shrink-0">Customer:</span>
+                                  <span className="font-medium text-slate-700">{order.customerName}</span>
+                                </div>
+                                <div className="flex gap-2">
+                                  <span className="text-muted-foreground w-24 shrink-0">Contact:</span>
+                                  <span className="font-medium text-slate-700">{order.customerPhone}</span>
+                                </div>
+                                <div className="flex gap-2">
+                                  <span className="text-muted-foreground w-24 shrink-0">Item Ordered:</span>
+                                  <span className="font-medium text-slate-700 capitalize">{order.garmentType}</span>
+                                </div>
+                                <div className="flex gap-2">
+                                  <span className="text-muted-foreground w-24 shrink-0">Pick Up Date:</span>
+                                  <span className="font-medium text-red-400">{order.pickupDate}</span>
+                                </div>
+                              </div>
+
+                              <div className="pt-2">
+                                <div className="text-sm text-muted-foreground/60">Created: {new Date(order.createdAt).toLocaleString()}</div>
+                              </div>
+                            </div>
+
+                            {/* Actions */}
+                            <div className="flex flex-col gap-3 w-full md:w-48 shrink-0">
+                              <Link href={`/backoffice/order/${order.id}`}>
+                                <Button className="w-full bg-[#CE0003] hover:bg-[#CE0003]/90 text-white rounded-lg h-9 shadow-sm font-medium">
+                                  Update Status
+                                </Button>
+                              </Link>
+
+                              <Button
+                                variant="outline"
+                                onClick={() => copyTrackingLink(order.id)}
+                                className={`w-full bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100 rounded-lg h-9 font-medium ${copiedId === order.id ? "text-green-600 border-green-200 bg-green-50" : ""}`}
+                              >
+                                {copiedId === order.id ? "Copied!" : "Copy Link"}
+                              </Button>
+
+                              <Link href={`/track/${order.id}`} target="_blank">
+                                <Button variant="outline" className="w-full bg-white border-slate-200 text-slate-700 hover:bg-slate-50 rounded-lg h-9 font-medium">
+                                  View Tracking
+                                </Button>
+                              </Link>
+
+                              <Button
+                                className="w-full bg-[#191A43] hover:bg-[#191A43]/90 text-white rounded-lg h-9 shadow-sm font-medium mt-1"
+                                onClick={() => handleEdit(order)}
+                              >
+                                {editingId === order.id ? "Editing..." : "Edit Order"}
+                              </Button>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            )}
+          </AnimatePresence>
+        </div>
       </div >
     </div >
   )
