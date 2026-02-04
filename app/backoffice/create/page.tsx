@@ -103,6 +103,13 @@ export default function CreateOrderPage() {
         router.push("/backoffice")
     }
 
+    const hasRequiredFields =
+        customerName.trim() !== "" &&
+        customerPhone.trim() !== "" &&
+        garmentType.trim() !== "" &&
+        orderNumber.trim() !== "" &&
+        pickupDate.trim() !== ""
+
     return (
         <div className="min-h-screen bg-background font-sans selection:bg-primary/20">
             {/* Header */}
@@ -143,7 +150,7 @@ export default function CreateOrderPage() {
             <div className="container mx-auto px-4 py-8 max-w-[1400px] space-y-6">
                 <div>
                     <Link href="/backoffice">
-                        <Button variant="outline" className="gap-2 mb-4">
+                        <Button variant="outline" className="gap-2 mb-4 border-slate-300 hover:border-[#191A43] hover:bg-[#191A43] hover:text-white transition-all shadow-sm bg-white/50">
                             <ArrowLeft className="w-4 h-4" /> Back to Dashboard
                         </Button>
                     </Link>
@@ -243,8 +250,18 @@ export default function CreateOrderPage() {
                                 />
                             </div>
 
-                            <div className="pt-2">
-                                <Button type="submit" size="lg" className="w-full h-12 rounded-xl text-base shadow-lg shadow-primary/20 font-semibold bg-[#191A43] hover:bg-[#191A43]/90 text-white">
+                            <div className="pt-2 flex justify-end">
+                                <Button
+                                    type="submit"
+                                    size="lg"
+                                    disabled={!editingId && !hasRequiredFields}
+                                    className={`w-full md:w-auto min-w-[200px] h-12 rounded-xl text-base font-semibold transition-all ${!editingId
+                                            ? hasRequiredFields
+                                                ? "bg-[#CE0003] hover:bg-[#CE0003]/90 text-white shadow-lg shadow-primary/20"
+                                                : "bg-white/50 border-2 border-slate-200 text-[#191A43] shadow-md hover:shadow-lg"
+                                            : "bg-[#191A43] hover:bg-[#191A43]/90 text-white shadow-lg shadow-primary/20"
+                                        }`}
+                                >
                                     {editingId ? "Update Order" : "Create Order"}
                                 </Button>
                             </div>
