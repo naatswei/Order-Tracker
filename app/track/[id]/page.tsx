@@ -121,41 +121,44 @@ export default function TrackingDetailsPage() {
         <Card className="border-none shadow-sm rounded-2xl overflow-hidden">
           <CardContent className="p-6">
             <h3 className="text-lg font-bold text-slate-900 mb-6">Tracking History</h3>
-            <div className="relative pl-2 space-y-12 before:absolute before:left-[7px] before:top-3 before:bottom-4 before:w-[2px] before:bg-slate-200">
+            <div className="space-y-6">
               {order.statusHistory.map((statusItem, index) => {
                 const isFirst = index === 0;
+                const isLast = index === order.statusHistory.length - 1;
                 return (
-                  <div key={index} className="relative flex gap-6 pl-2">
-                    {/* Timeline Dot */}
-                    <div className={`
-                      absolute left-[-4px] top-4 w-6 h-6 rounded-full border-4 shrink-0 z-10 
-                      ${isFirst
-                        ? "bg-[#00BFA5] border-[#E0F2F1]"  // Teal dot with light teal border matching "teal" description
-                        : "bg-slate-200 border-white"
-                      }
-                    `} />
-
-                    {/* Content */}
-                    <div className={`flex-1 ${isFirst ? "" : "opacity-70"}`}>
-                      {/* Date */}
-                      <div className="text-sm font-medium text-slate-500 mb-1">
+                  <div key={index} className="flex items-start gap-4">
+                    {/* Date & Time Column */}
+                    <div className="w-20 text-left shrink-0">
+                      <div className="text-xs text-slate-400 font-medium">
                         {statusItem.timestamp.toLocaleDateString(undefined, { month: 'numeric', day: 'numeric', year: 'numeric' })}
                       </div>
-
-                      {/* Time */}
-                      <div className="text-3xl font-bold text-[#191A43] mb-3 tracking-tight">
+                      <div className="text-base font-bold text-[#191A43]">
                         {statusItem.timestamp.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit', hour12: false })}
                       </div>
+                    </div>
 
-                      {/* Message */}
-                      <h4 className="text-lg font-bold text-[#191A43] leading-snug mb-2">
+                    {/* Timeline Column with Dot and Line */}
+                    <div className="relative flex flex-col items-center">
+                      {/* Dot */}
+                      {isFirst ? (
+                        <div className="w-3 h-3 rounded-full bg-[#8B5CF6] shadow-[0_0_8px_rgba(139,92,246,0.6)] shrink-0" />
+                      ) : (
+                        <div className="w-2.5 h-2.5 rounded-full bg-slate-300 shrink-0" />
+                      )}
+                      {/* Dashed Line */}
+                      {!isLast && (
+                        <div className="w-px h-16 border-l-2 border-dashed border-slate-200 mt-1" />
+                      )}
+                    </div>
+
+                    {/* Content Column */}
+                    <div className={`flex-1 pb-2 ${isFirst ? "" : "opacity-60"}`}>
+                      <h4 className="text-base font-semibold text-slate-800 leading-tight">
                         {statusItem.message}
                       </h4>
-
-                      {/* Location */}
-                      <div className="text-sm text-slate-400 font-normal">
+                      <p className="text-sm text-slate-400 mt-1 leading-relaxed">
                         {statusItem.location || "Processing Center"}
-                      </div>
+                      </p>
                     </div>
                   </div>
                 );
