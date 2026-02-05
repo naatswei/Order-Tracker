@@ -169,24 +169,24 @@ export default function TrackingDetailsPage() {
 
         {/* Customer Details Card */}
         <Card className="border-none shadow-sm rounded-2xl max-w-2xl">
-          <CardContent className="p-6 space-y-4">
-            <h3 className="font-bold text-slate-900 text-lg mb-4">Customer Details</h3>
+          <CardContent className="p-4 space-y-3">
+            <h3 className="font-bold text-slate-900 text-base mb-2">Customer Details</h3>
 
-            <div className="grid grid-cols-1 gap-4">
-              <div className="p-4 rounded-xl bg-slate-50 border border-slate-100">
-                <div className="text-xs text-slate-400 uppercase font-bold tracking-wider mb-1">Name</div>
-                <div className="font-semibold text-slate-900">{order.customerName}</div>
+            <div className="grid grid-cols-1 gap-2">
+              <div className="p-3 rounded-lg bg-slate-50 border border-slate-100">
+                <div className="text-xs text-slate-400 uppercase font-bold tracking-wider mb-0.5">Name</div>
+                <div className="font-semibold text-slate-900 text-sm">{order.customerName}</div>
               </div>
 
-              <div className="p-4 rounded-xl bg-slate-50 border border-slate-100">
-                <div className="text-xs text-slate-400 uppercase font-bold tracking-wider mb-1">Email</div>
-                <div className="font-semibold text-slate-900 break-all">{order.customerEmail}</div>
+              <div className="p-3 rounded-lg bg-slate-50 border border-slate-100">
+                <div className="text-xs text-slate-400 uppercase font-bold tracking-wider mb-0.5">Email</div>
+                <div className="font-semibold text-slate-900 text-sm break-all">{order.customerEmail}</div>
               </div>
 
               {order.customerPhone && (
-                <div className="p-4 rounded-xl bg-slate-50 border border-slate-100">
-                  <div className="text-xs text-slate-400 uppercase font-bold tracking-wider mb-1">Phone</div>
-                  <div className="font-semibold text-slate-900">{order.customerPhone}</div>
+                <div className="p-3 rounded-lg bg-slate-50 border border-slate-100">
+                  <div className="text-xs text-slate-400 uppercase font-bold tracking-wider mb-0.5">Phone</div>
+                  <div className="font-semibold text-slate-900 text-sm">{order.customerPhone}</div>
                 </div>
               )}
             </div>
