@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
+import { Checkbox } from "../../../components/ui/checkbox"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -195,9 +195,9 @@ export default function BulkUpdatePage() {
                 {!isUpdating && (
                     <div className="flex items-center justify-between">
                         <Link href="/backoffice">
-                            <Button variant="outline" className="gap-2 rounded-xl h-10 px-4 border-slate-200 shadow-sm">
+                            <Button variant="outline" className="gap-2 rounded-xl h-10 px-4 border-slate-200 shadow-sm hover:bg-[#191A43] hover:text-[#ffffff] transition-colors">
                                 <ArrowLeft className="w-4 h-4" />
-                                Back
+                                Back to Dashboard
                             </Button>
                         </Link>
                     </div>

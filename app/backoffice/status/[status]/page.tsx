@@ -92,7 +92,7 @@ export default function StatusFilterPage() {
                 {/* Back Button and Title */}
                 <div className="flex justify-between items-start">
                     <Link href="/backoffice">
-                        <Button variant="outline" className="gap-2 text-slate-600 hover:text-slate-900">
+                        <Button variant="outline" className="gap-2 text-slate-600 hover:bg-[#191A43] hover:text-[#ffffff] transition-colors">
                             <ArrowLeft className="w-4 h-4" /> Back to Dashboard
                         </Button>
                     </Link>
