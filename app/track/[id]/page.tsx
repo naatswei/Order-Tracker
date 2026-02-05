@@ -141,7 +141,7 @@ export default function TrackingDetailsPage() {
                     <div className="relative flex flex-col items-center">
                       {/* Dot */}
                       {isFirst ? (
-                        <div className="w-3 h-3 rounded-full bg-[#8B5CF6] shadow-[0_0_8px_rgba(139,92,246,0.6)] shrink-0" />
+                        <div className="w-3 h-3 rounded-full bg-[#CE0003] shadow-[0_0_8px_rgba(206,0,3,0.6)] shrink-0" />
                       ) : (
                         <div className="w-2.5 h-2.5 rounded-full bg-slate-300 shrink-0" />
                       )}
