@@ -7,7 +7,18 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { getOrderById, type Order } from "@/lib/storage"
 import Link from "next/link"
-import { ArrowLeft, Package, MapPin, Clock, CheckCircle2, Headphones, MessageSquare } from "lucide-react"
+import { ArrowLeft, Package, MapPin, Clock, CheckCircle2, Headphones, MessageSquare, Send } from "lucide-react"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
 
 export default function TrackingDetailsPage() {
   const params = useParams()
@@ -193,12 +204,47 @@ export default function TrackingDetailsPage() {
         {/* Help Section */}
         <div className="pt-6 pb-8 text-center">
           <p className="text-sm text-slate-400 mb-3">Questions about your order?</p>
-          <Button
-            className="w-full bg-white border border-slate-200 text-blue-600 hover:bg-[#191A43] hover:text-white hover:border-[#191A43] transition-all duration-300 shadow-sm h-12 rounded-xl font-semibold gap-2"
-          >
-            <MessageSquare className="w-4 h-4" />
-            Send a Message
-          </Button>
+
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button
+                className="w-full bg-white border border-slate-200 text-blue-600 hover:bg-[#191A43] hover:text-white hover:border-[#191A43] transition-all duration-300 shadow-sm h-12 rounded-xl font-semibold gap-2"
+              >
+                <MessageSquare className="w-4 h-4" />
+                Send a Message
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-md rounded-2xl">
+              <DialogHeader>
+                <DialogTitle className="text-[#191A43]">Send a Message</DialogTitle>
+                <DialogDescription>
+                  We'll respond to your email {order?.customerEmail ? `(${order.customerEmail})` : ""} within 2min.
+                </DialogDescription>
+              </DialogHeader>
+
+              <div className="space-y-4 py-4">
+                <div className="space-y-2">
+                  <Label htmlFor="subject" className="text-[#191A43]">Subject</Label>
+                  <Input id="subject" placeholder="e.g. Change pickup time" className="rounded-lg border-slate-200" />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="message" className="text-[#191A43]">Message</Label>
+                  <Textarea
+                    id="message"
+                    placeholder="How can we help you?"
+                    className="min-h-[120px] rounded-lg border-slate-200 resize-none"
+                  />
+                </div>
+              </div>
+
+              <div className="flex justify-end">
+                <Button className="w-full bg-[#191A43] hover:bg-[#191A43]/90 text-white rounded-xl h-11 font-semibold gap-2 shadow-sm">
+                  <Send className="w-4 h-4" />
+                  Send Message
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
     </div>
