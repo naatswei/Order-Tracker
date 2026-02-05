@@ -87,7 +87,7 @@ export default function TrackingDetailsPage() {
         {/* Order Status Card */}
         <Card className="border-none shadow-sm rounded-2xl overflow-hidden">
           <div className="bg-white p-6">
-            <div className="flex justify-between items-start mb-4">
+            <div className="flex justify-between items-start mb-6">
               <div>
                 <p className="text-sm text-slate-500 font-medium mb-1">Order Number</p>
                 <h1 className="text-3xl font-bold text-[#191A43] tracking-tight">{order.orderNumber}</h1>
@@ -166,7 +166,7 @@ export default function TrackingDetailsPage() {
         {/* Customer Details Card */}
         <Card className="border-none shadow-sm rounded-2xl max-w-2xl">
           <CardContent className="p-4 space-y-3">
-            <h3 className="font-bold text-[#191A43] text-base mb-2">Customer Details</h3>
+            <h3 className="font-bold text-[#191A43] text-base mb-6">Customer Details</h3>
 
             <div className="grid grid-cols-1 gap-2">
               <div className="p-3 rounded-lg bg-slate-50 border border-slate-100">
