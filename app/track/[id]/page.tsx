@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { getOrderById, type Order } from "@/lib/storage"
 import Link from "next/link"
+import { ArrowLeft, Package, MapPin, Clock, CheckCircle2 } from "lucide-react"
 
 export default function TrackingDetailsPage() {
   const params = useParams()
@@ -24,10 +25,10 @@ export default function TrackingDetailsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading order details...</p>
+          <div className="w-10 h-10 border-4 border-[#191A43] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-slate-500 font-medium">Loading status...</p>
         </div>
       </div>
     )
@@ -35,180 +36,164 @@ export default function TrackingDetailsPage() {
 
   if (!order) {
     return (
-      <div className="min-h-screen bg-background">
-        <div className="container mx-auto px-4 py-8">
-          <Card className="max-w-md mx-auto mt-20">
-            <CardContent className="py-12 text-center space-y-4">
-              <div className="w-16 h-16 rounded-full bg-destructive/10 flex items-center justify-center mx-auto">
-                <svg className="w-8 h-8 text-destructive" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-              </div>
-              <h2 className="text-2xl font-bold">Order Not Found</h2>
-              <p className="text-muted-foreground">
-                We couldn't find an order with tracking ID:{" "}
-                <span className="font-mono font-semibold">{trackingId}</span>
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
+        <Card className="max-w-md w-full border-none shadow-xl rounded-2xl overflow-hidden">
+          <CardContent className="py-12 text-center space-y-6">
+            <div className="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center mx-auto">
+              <Package className="w-10 h-10 text-red-500" />
+            </div>
+            <div>
+              <h2 className="text-2xl font-bold text-slate-900">Order Not Found</h2>
+              <p className="text-slate-500 mt-2">
+                We couldn't find an order with ID <span className="font-mono font-bold text-slate-900">{trackingId}</span>
               </p>
-              <Link href="/track">
-                <Button>Try Another ID</Button>
-              </Link>
-            </CardContent>
-          </Card>
-        </div>
+            </div>
+            <Link href="/track">
+              <Button size="lg" className="rounded-xl bg-[#191A43] text-white hover:bg-[#191A43]/90 w-full h-12 text-base">
+                Try Another ID
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
       </div>
     )
   }
 
   const getStatusColor = (status: string) => {
     if (status.toLowerCase().includes("delivered") || status.toLowerCase().includes("completed")) {
-      return "bg-primary text-primary-foreground"
+      return "bg-green-100 text-green-700 border-green-200"
     }
     if (status.toLowerCase().includes("ready") || status.toLowerCase().includes("picked")) {
-      return "bg-accent text-accent-foreground"
+      return "bg-blue-100 text-blue-700 border-blue-200"
     }
-    return "bg-secondary text-secondary-foreground"
-  }
-
-  const isCompleted = (index: number) => {
-    // First item (most recent) is always active/completed
-    return index === 0
+    return "bg-slate-100 text-slate-700 border-slate-200"
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <div className="bg-card border-b">
-        <div className="container mx-auto px-4 py-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Link href="/">
-                <Button variant="ghost" size="icon">
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                  </svg>
-                </Button>
-              </Link>
-            </div>
-            <div className="text-right">
-              <div className="text-sm text-muted-foreground">Tracking ID</div>
-              <div className="font-mono font-semibold">{order.id}</div>
-            </div>
-          </div>
+    <div className="min-h-screen bg-slate-50 font-sans pb-20">
+      {/* Mobile-First Sticky Header */}
+      <div className="sticky top-0 z-50 bg-[#191A43] text-white shadow-lg shadow-blue-900/10">
+        <div className="container mx-auto px-4 h-16 flex items-center justify-between max-w-2xl">
+          <Link href="/">
+            <Button variant="ghost" size="icon" className="text-white hover:bg-white/10 rounded-full -ml-2">
+              <ArrowLeft className="w-6 h-6" />
+            </Button>
+          </Link>
+          <div className="font-bold text-lg tracking-tight">Tracking Details</div>
+          <div className="w-10" /> {/* Spacer for balance */}
         </div>
       </div>
 
-      {/* Order Header */}
-      <div className="bg-card border-b">
-        <div className="container mx-auto px-4 py-8">
-          <div className="max-w-2xl mx-auto text-center space-y-4">
-            <h1 className="text-3xl md:text-4xl font-bold text-balance">Order {order.orderNumber}</h1>
-            <Badge className={`${getStatusColor(order.currentStatus)} text-base px-4 py-1`}>
-              {order.currentStatus}
-            </Badge>
-            <div className="text-muted-foreground">
-              <p className="text-lg">{order.garmentType}</p>
-              <p className="text-sm mt-2">Order placed on {order.createdAt.toLocaleDateString()}</p>
+      <div className="container mx-auto px-4 max-w-2xl pt-6 space-y-6">
+
+        {/* Order Status Card */}
+        <Card className="border-none shadow-sm rounded-2xl overflow-hidden">
+          <div className="bg-white p-6">
+            <div className="flex justify-between items-start mb-4">
+              <div>
+                <p className="text-sm text-slate-500 font-medium mb-1">Order Number</p>
+                <h1 className="text-3xl font-bold text-slate-900 tracking-tight">{order.orderNumber}</h1>
+              </div>
+              <div className="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600">
+                <Package className="w-6 h-6" />
+              </div>
+            </div>
+
+            <div className="flex flex-wrap gap-3 items-center">
+              <Badge className={`rounded-lg px-3 py-1.5 text-sm font-semibold border ${getStatusColor(order.currentStatus)}`}>
+                {order.currentStatus}
+              </Badge>
+              <span className="text-sm text-slate-400 font-medium">
+                {order.garmentType}
+              </span>
             </div>
           </div>
-        </div>
-      </div>
 
-      {/* Timeline */}
-      <div className="container mx-auto px-4 py-12">
-        <div className="max-w-2xl mx-auto">
-          <Card>
-            <CardContent className="p-8">
-              <div className="space-y-8">
-                {order.statusHistory.map((status, index) => (
-                  <div key={status.id} className="flex gap-6">
-                    {/* Timeline Line */}
-                    <div className="flex flex-col items-center">
-                      {/* Circle */}
-                      <div
-                        className={`w-5 h-5 rounded-full flex-shrink-0 ${isCompleted(index) ? "bg-primary ring-4 ring-primary/20" : "bg-muted ring-4 ring-muted/20"
-                          }`}
-                      />
-                      {/* Vertical Line */}
-                      {index < order.statusHistory.length - 1 && (
-                        <div
-                          className={`w-0.5 flex-1 mt-2 min-h-[60px] ${isCompleted(index) ? "bg-primary/30" : "bg-muted"}`}
-                        />
-                      )}
-                    </div>
+          <div className="bg-slate-50/50 px-6 py-4 border-t border-slate-100 flex justify-between items-center">
+            <div className="text-xs text-slate-400 font-medium">Placed on</div>
+            <div className="text-sm font-semibold text-slate-700">
+              {order.createdAt.toLocaleDateString(undefined, { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' })}
+            </div>
+          </div>
+        </Card>
+
+        {/* Timeline */}
+        <Card className="border-none shadow-sm rounded-2xl overflow-hidden">
+          <CardContent className="p-6">
+            <h3 className="text-lg font-bold text-slate-900 mb-6">Tracking History</h3>
+            <div className="relative pl-2 space-y-12 before:absolute before:left-[7px] before:top-3 before:bottom-4 before:w-[2px] before:bg-slate-200">
+              {order.statusHistory.map((statusItem, index) => {
+                const isFirst = index === 0;
+                return (
+                  <div key={index} className="relative flex gap-6 pl-2">
+                    {/* Timeline Dot */}
+                    <div className={`
+                      absolute left-[-4px] top-4 w-6 h-6 rounded-full border-4 shrink-0 z-10 
+                      ${isFirst
+                        ? "bg-[#00BFA5] border-[#E0F2F1]"  // Teal dot with light teal border matching "teal" description
+                        : "bg-slate-200 border-white"
+                      }
+                    `} />
 
                     {/* Content */}
-                    <div className="flex-1 pb-8">
-                      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 mb-2">
-                        <div>
-                          <div className="text-xs text-muted-foreground mb-1">
-                            {status.timestamp.toLocaleDateString("en-US", {
-                              day: "2-digit",
-                              month: "2-digit",
-                              year: "numeric",
-                            })}
-                          </div>
-                          <div className="text-2xl font-bold">
-                            {status.timestamp.toLocaleTimeString("en-US", {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                              hour12: false,
-                            })}
-                          </div>
-                        </div>
+                    <div className={`flex-1 ${isFirst ? "" : "opacity-70"}`}>
+                      {/* Date */}
+                      <div className="text-sm font-medium text-slate-500 mb-1">
+                        {statusItem.timestamp.toLocaleDateString(undefined, { month: 'numeric', day: 'numeric', year: 'numeric' })}
                       </div>
-                      <div>
-                        <h3 className="font-semibold text-lg leading-relaxed">{status.message}</h3>
-                        <p className="text-muted-foreground text-sm mt-1">{status.location}</p>
+
+                      {/* Time */}
+                      <div className="text-3xl font-bold text-[#191A43] mb-3 tracking-tight">
+                        {statusItem.timestamp.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit', hour12: false })}
+                      </div>
+
+                      {/* Message */}
+                      <h4 className="text-lg font-bold text-[#191A43] leading-snug mb-2">
+                        {statusItem.message}
+                      </h4>
+
+                      {/* Location */}
+                      <div className="text-sm text-slate-400 font-normal">
+                        {statusItem.location || "Processing Center"}
                       </div>
                     </div>
                   </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
 
-          {/* Customer Info */}
-          <Card className="mt-6">
-            <CardContent className="p-6">
-              <h3 className="font-semibold mb-4">Order Details</h3>
-              <div className="grid sm:grid-cols-2 gap-4 text-sm">
-                <div>
-                  <span className="text-muted-foreground">Customer Name:</span>
-                  <p className="font-medium mt-1">{order.customerName}</p>
-                </div>
-                <div>
-                  <span className="text-muted-foreground">Garment Type:</span>
-                  <p className="font-medium mt-1">{order.garmentType}</p>
-                </div>
-                <div>
-                  <span className="text-muted-foreground">Email:</span>
-                  <p className="font-medium mt-1">{order.customerEmail}</p>
-                </div>
-                {order.customerPhone && (
-                  <div>
-                    <span className="text-muted-foreground">Phone:</span>
-                    <p className="font-medium mt-1">{order.customerPhone}</p>
-                  </div>
-                )}
-                {order.measurements && (
-                  <div className="sm:col-span-2">
-                    <span className="text-muted-foreground">Notes:</span>
-                    <p className="font-medium mt-1 whitespace-pre-wrap">{order.measurements}</p>
-                  </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
+        {/* Customer Details Card */}
+        <Card className="border-none shadow-sm rounded-2xl max-w-2xl">
+          <CardContent className="p-6 space-y-4">
+            <h3 className="font-bold text-slate-900 text-lg mb-4">Customer Details</h3>
 
-          <div className="mt-6 text-center text-sm text-muted-foreground">
-            <p>Need help? Contact us at support@tailoring.com or call (555) 123-4567</p>
-          </div>
-        </div>
+            <div className="grid grid-cols-1 gap-4">
+              <div className="p-4 rounded-xl bg-slate-50 border border-slate-100">
+                <div className="text-xs text-slate-400 uppercase font-bold tracking-wider mb-1">Name</div>
+                <div className="font-semibold text-slate-900">{order.customerName}</div>
+              </div>
+
+              <div className="p-4 rounded-xl bg-slate-50 border border-slate-100">
+                <div className="text-xs text-slate-400 uppercase font-bold tracking-wider mb-1">Email</div>
+                <div className="font-semibold text-slate-900 break-all">{order.customerEmail}</div>
+              </div>
+
+              {order.customerPhone && (
+                <div className="p-4 rounded-xl bg-slate-50 border border-slate-100">
+                  <div className="text-xs text-slate-400 uppercase font-bold tracking-wider mb-1">Phone</div>
+                  <div className="font-semibold text-slate-900">{order.customerPhone}</div>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Help text */}
+        <p className="text-center text-sm text-slate-400 pt-8 pb-4">
+          Need help? <a href="#" className="text-blue-600 font-semibold underline">Contact Support</a>
+        </p>
       </div>
     </div>
   )
