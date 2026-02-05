@@ -73,7 +73,8 @@ export default function TrackingDetailsPage() {
     <div className="min-h-screen bg-slate-50 font-sans pb-20">
       {/* Mobile-First Sticky Header */}
       <div className="sticky top-0 z-50 bg-[#191A43] text-white shadow-lg shadow-blue-900/10">
-        <div className="px-4 h-20 flex items-center">
+        <div className="px-4 h-20 flex items-center gap-2">
+          <Package className="w-6 h-6 text-white" />
           <div className="font-bold text-2xl tracking-tight">OTracker</div>
         </div>
       </div>
