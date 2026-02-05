@@ -79,7 +79,7 @@ export default function TrackingDetailsPage() {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 max-w-2xl pt-6 space-y-6">
+      <div className="container mx-auto px-4 max-w-2xl pt-14 space-y-6">
 
         {/* Page Title */}
         <h2 className="text-lg font-bold text-slate-800">Tracking Details</h2>
@@ -92,9 +92,7 @@ export default function TrackingDetailsPage() {
                 <p className="text-sm text-slate-500 font-medium mb-1">Order Number</p>
                 <h1 className="text-3xl font-bold text-slate-900 tracking-tight">{order.orderNumber}</h1>
               </div>
-              <div className="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600">
-                <Package className="w-6 h-6" />
-              </div>
+              <Package className="w-6 h-6 text-[#191A43]" />
             </div>
 
             <div className="flex flex-wrap gap-3 items-center">
