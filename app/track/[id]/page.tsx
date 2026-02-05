@@ -73,14 +73,8 @@ export default function TrackingDetailsPage() {
     <div className="min-h-screen bg-slate-50 font-sans pb-20">
       {/* Mobile-First Sticky Header */}
       <div className="sticky top-0 z-50 bg-[#191A43] text-white shadow-lg shadow-blue-900/10">
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between max-w-2xl">
-          <Link href="/">
-            <Button variant="ghost" size="icon" className="text-white hover:bg-white/10 rounded-full -ml-2">
-              <ArrowLeft className="w-6 h-6" />
-            </Button>
-          </Link>
+        <div className="container mx-auto px-4 h-16 flex items-center justify-center max-w-2xl">
           <div className="font-bold text-lg tracking-tight">Tracking Details</div>
-          <div className="w-10" /> {/* Spacer for balance */}
         </div>
       </div>
 
