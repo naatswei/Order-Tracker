@@ -73,8 +73,8 @@ export default function TrackingDetailsPage() {
     <div className="min-h-screen bg-slate-50 font-sans pb-20">
       {/* Mobile-First Sticky Header */}
       <div className="sticky top-0 z-50 bg-[#191A43] text-white shadow-lg shadow-blue-900/10">
-        <div className="px-4 h-16 flex items-center">
-          <div className="font-bold text-lg tracking-tight">OTracker</div>
+        <div className="px-4 h-20 flex items-center">
+          <div className="font-bold text-2xl tracking-tight">OTracker</div>
         </div>
       </div>
 
@@ -151,10 +151,10 @@ export default function TrackingDetailsPage() {
                     {/* Content Column */}
                     <div className={`flex-1 pb-2 ${isFirst ? "" : "opacity-60"}`}>
                       <h4 className="text-base font-semibold text-slate-800 leading-tight">
-                        {statusItem.message}
+                        {statusItem.status}
                       </h4>
                       <p className="text-sm text-slate-400 mt-1 leading-relaxed">
-                        {statusItem.location || "Processing Center"}
+                        {statusItem.message}
                       </p>
                     </div>
                   </div>
