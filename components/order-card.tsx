@@ -70,9 +70,9 @@ export function OrderCard({ order, copiedId, onCopy }: OrderCardProps) {
                             </div>
 
                             {/* Actions */}
-                            <div className="flex flex-col gap-3 w-full md:w-48 shrink-0">
+                            <div className="flex flex-col gap-10 w-full md:w-48 shrink-0">
                                 <Link href={`/backoffice/order/${order.id}`}>
-                                    <Button className="w-full bg-[#CE0003] hover:bg-[#CE0003]/90 text-white rounded-lg h-9 shadow-sm font-medium">
+                                    <Button className="w-full bg-[#CE0003] hover:bg-[#CE0003]/90 text-white rounded-lg h-11 shadow-sm font-medium">
                                         Update Status
                                     </Button>
                                 </Link>
@@ -80,14 +80,14 @@ export function OrderCard({ order, copiedId, onCopy }: OrderCardProps) {
                                 <Button
                                     variant="outline"
                                     onClick={() => onCopy(order.id)}
-                                    className={`w-full bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100 rounded-lg h-9 font-medium ${copiedId === order.id ? "text-green-600 border-green-200 bg-green-50" : ""}`}
+                                    className={`w-full bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100 rounded-lg h-11 font-medium ${copiedId === order.id ? "text-green-600 border-green-200 bg-green-50" : ""}`}
                                 >
                                     {copiedId === order.id ? "Copied!" : "Copy Link"}
                                 </Button>
 
                                 <Link href={`/backoffice/create?edit=${order.id}`}>
                                     <Button
-                                        className="w-full bg-[#191A43] hover:bg-[#191A43]/90 text-white rounded-lg h-9 shadow-sm font-medium mt-1"
+                                        className="w-full bg-[#191A43] hover:bg-[#191A43]/90 text-white rounded-lg h-11 shadow-sm font-medium mt-1"
                                     >
                                         Edit Order
                                     </Button>
