@@ -73,12 +73,15 @@ export default function TrackingDetailsPage() {
     <div className="min-h-screen bg-slate-50 font-sans pb-20">
       {/* Mobile-First Sticky Header */}
       <div className="sticky top-0 z-50 bg-[#191A43] text-white shadow-lg shadow-blue-900/10">
-        <div className="container mx-auto px-4 h-16 flex items-center justify-center max-w-2xl">
-          <div className="font-bold text-lg tracking-tight">Tracking Details</div>
+        <div className="px-4 h-16 flex items-center">
+          <div className="font-bold text-lg tracking-tight">OTracker</div>
         </div>
       </div>
 
       <div className="container mx-auto px-4 max-w-2xl pt-6 space-y-6">
+
+        {/* Page Title */}
+        <h2 className="text-lg font-bold text-slate-800">Tracking Details</h2>
 
         {/* Order Status Card */}
         <Card className="border-none shadow-sm rounded-2xl overflow-hidden">
