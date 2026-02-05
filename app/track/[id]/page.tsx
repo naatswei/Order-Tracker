@@ -82,7 +82,7 @@ export default function TrackingDetailsPage() {
       <div className="container mx-auto px-4 max-w-2xl pt-14 space-y-6">
 
         {/* Page Title */}
-        <h2 className="text-lg font-bold text-slate-800">Tracking Details</h2>
+        <h2 className="text-lg font-bold text-[#191A43]">Tracking Details</h2>
 
         {/* Order Status Card */}
         <Card className="border-none shadow-sm rounded-2xl overflow-hidden">
@@ -90,7 +90,7 @@ export default function TrackingDetailsPage() {
             <div className="flex justify-between items-start mb-4">
               <div>
                 <p className="text-sm text-slate-500 font-medium mb-1">Order Number</p>
-                <h1 className="text-3xl font-bold text-slate-900 tracking-tight">{order.orderNumber}</h1>
+                <h1 className="text-3xl font-bold text-[#191A43] tracking-tight">{order.orderNumber}</h1>
               </div>
               <Package className="w-6 h-6 text-[#191A43]" />
             </div>
@@ -116,7 +116,7 @@ export default function TrackingDetailsPage() {
         {/* Timeline */}
         <Card className="border-none shadow-sm rounded-2xl overflow-hidden">
           <CardContent className="p-6">
-            <h3 className="text-lg font-bold text-slate-900 mb-6">Tracking History</h3>
+            <h3 className="text-lg font-bold text-[#191A43] mb-6">Tracking History</h3>
             <div className="space-y-6">
               {order.statusHistory.map((statusItem, index) => {
                 const isFirst = index === 0;
@@ -149,7 +149,7 @@ export default function TrackingDetailsPage() {
 
                     {/* Content Column */}
                     <div className={`flex-1 pb-2 ${isFirst ? "" : "opacity-60"}`}>
-                      <h4 className="text-base font-semibold text-slate-800 leading-tight">
+                      <h4 className="text-base font-semibold text-[#191A43] leading-tight">
                         {statusItem.status}
                       </h4>
                       <p className="text-sm text-slate-400 mt-1 leading-relaxed">
@@ -166,23 +166,23 @@ export default function TrackingDetailsPage() {
         {/* Customer Details Card */}
         <Card className="border-none shadow-sm rounded-2xl max-w-2xl">
           <CardContent className="p-4 space-y-3">
-            <h3 className="font-bold text-slate-900 text-base mb-2">Customer Details</h3>
+            <h3 className="font-bold text-[#191A43] text-base mb-2">Customer Details</h3>
 
             <div className="grid grid-cols-1 gap-2">
               <div className="p-3 rounded-lg bg-slate-50 border border-slate-100">
                 <div className="text-xs text-slate-400 uppercase font-bold tracking-wider mb-0.5">Name</div>
-                <div className="font-semibold text-slate-900 text-sm">{order.customerName}</div>
+                <div className="font-semibold text-[#191A43] text-sm">{order.customerName}</div>
               </div>
 
               <div className="p-3 rounded-lg bg-slate-50 border border-slate-100">
                 <div className="text-xs text-slate-400 uppercase font-bold tracking-wider mb-0.5">Email</div>
-                <div className="font-semibold text-slate-900 text-sm break-all">{order.customerEmail}</div>
+                <div className="font-semibold text-[#191A43] text-sm break-all">{order.customerEmail}</div>
               </div>
 
               {order.customerPhone && (
                 <div className="p-3 rounded-lg bg-slate-50 border border-slate-100">
                   <div className="text-xs text-slate-400 uppercase font-bold tracking-wider mb-0.5">Phone</div>
-                  <div className="font-semibold text-slate-900 text-sm">{order.customerPhone}</div>
+                  <div className="font-semibold text-[#191A43] text-sm">{order.customerPhone}</div>
                 </div>
               )}
             </div>
