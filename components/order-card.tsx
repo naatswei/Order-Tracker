@@ -33,7 +33,7 @@ export function OrderCard({ order, copiedId, onCopy }: OrderCardProps) {
             transition={{ duration: 0.2 }}
         >
             <div className="flex justify-center w-full">
-                <Card className="group overflow-hidden border-white/50 bg-white/60 hover:bg-white/80 backdrop-blur-sm transition-all shadow-sm hover:shadow-md rounded-xl w-full max-w-[1370px] h-auto md:min-h-[300px] flex flex-col justify-center">
+                <Card className="group overflow-hidden border-white/50 bg-white/60 hover:bg-white/80 backdrop-blur-sm transition-all shadow-sm hover:shadow-md rounded-xl w-full max-w-[1370px] h-auto flex flex-col justify-center">
                     <CardContent className="p-6">
                         <div className="flex flex-col md:flex-row justify-between gap-6">
                             {/* Main Info */}
@@ -84,12 +84,6 @@ export function OrderCard({ order, copiedId, onCopy }: OrderCardProps) {
                                 >
                                     {copiedId === order.id ? "Copied!" : "Copy Link"}
                                 </Button>
-
-                                <Link href={`/track/${order.id}`} target="_blank">
-                                    <Button variant="outline" className="w-full bg-white border-slate-200 text-slate-700 hover:bg-slate-50 rounded-lg h-9 font-medium">
-                                        View Tracking
-                                    </Button>
-                                </Link>
 
                                 <Link href={`/backoffice/create?edit=${order.id}`}>
                                     <Button
