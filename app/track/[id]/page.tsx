@@ -7,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { getOrderById, type Order } from "@/lib/storage"
 import Link from "next/link"
-import { ArrowLeft, Package, MapPin, Clock, CheckCircle2 } from "lucide-react"
+import { ArrowLeft, Package, MapPin, Clock, CheckCircle2, Headphones, MessageSquare } from "lucide-react"
 
 export default function TrackingDetailsPage() {
   const params = useParams()
@@ -190,9 +190,16 @@ export default function TrackingDetailsPage() {
         </Card>
 
         {/* Help text */}
-        <p className="text-center text-sm text-slate-400 pt-8 pb-4">
-          Need help? <a href="#" className="text-blue-600 font-semibold underline">Contact Support</a>
-        </p>
+        {/* Help Section */}
+        <div className="pt-6 pb-8 text-center">
+          <p className="text-sm text-slate-400 mb-3">Questions about your order?</p>
+          <Button
+            className="w-full bg-white border border-slate-200 text-blue-600 hover:bg-[#191A43] hover:text-white hover:border-[#191A43] transition-all duration-300 shadow-sm h-12 rounded-xl font-semibold gap-2"
+          >
+            <MessageSquare className="w-4 h-4" />
+            Send a Message
+          </Button>
+        </div>
       </div>
     </div>
   )
