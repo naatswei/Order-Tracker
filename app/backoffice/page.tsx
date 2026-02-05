@@ -141,11 +141,11 @@ export default function BackofficePage() {
                 <DropdownMenuContent align="end" className="w-[200px] max-h-[300px] overflow-y-auto">
                   <DropdownMenuLabel>Filter by Status</DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => setStatusFilter("All")} className="focus:bg-[#F4FAFF]">
+                  <DropdownMenuItem onClick={() => setStatusFilter("All")} className="text-[#191A43] focus:text-[#CE0003] focus:bg-[#F4FAFF]">
                     All Orders
                   </DropdownMenuItem>
                   {statusOptions.map((status) => (
-                    <DropdownMenuItem key={status} onClick={() => setStatusFilter(status)} className="focus:bg-[#F4FAFF]">
+                    <DropdownMenuItem key={status} onClick={() => setStatusFilter(status)} className="text-[#191A43] focus:text-[#CE0003] focus:bg-[#F4FAFF]">
                       {status}
                     </DropdownMenuItem>
                   ))}
