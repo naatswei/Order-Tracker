@@ -55,7 +55,7 @@ export default function StatusFilterPage() {
         <div className="min-h-screen bg-background font-sans selection:bg-primary/20">
             {/* Header */}
             <div className="sticky top-0 z-50 bg-white/60 backdrop-blur-xl border-b border-white/20 shadow-sm">
-                <div className="w-full px-[30px] py-4">
+                <div className="w-full px-4 sm:px-[30px] py-4">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                             <Package className="text-[#191A43] w-6 h-6" />
@@ -89,25 +89,25 @@ export default function StatusFilterPage() {
             <div className="container mx-auto px-4 py-8 max-w-[1400px] space-y-8">
                 {/* Back Button and Title */}
                 {/* Back Button and Title */}
-                <div className="flex justify-between items-start">
+                <div className="flex flex-col-reverse gap-4 sm:flex-row sm:justify-between sm:items-start">
                     <Link href="/backoffice">
-                        <Button variant="outline" className="gap-2 text-slate-600 hover:bg-[#191A43] hover:text-[#ffffff] transition-colors">
+                        <Button variant="outline" className="gap-2 text-slate-600 hover:bg-[#191A43] hover:text-[#ffffff] transition-colors w-full sm:w-auto">
                             <ArrowLeft className="w-4 h-4" /> Back to Dashboard
                         </Button>
                     </Link>
 
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center text-blue-600">
+                        <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center text-blue-600 shrink-0">
                             <Filter className="w-5 h-5" />
                         </div>
                         <div className="text-left">
-                            <h2 className="text-2xl font-bold tracking-tight text-slate-900">Filtered Orders</h2>
-                            <div className="flex items-center gap-2 mt-1">
-                                <span className="text-muted-foreground">Status:</span>
+                            <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">Filtered Orders</h2>
+                            <div className="flex flex-wrap items-center gap-2 mt-1">
+                                <span className="text-muted-foreground text-sm">Status:</span>
                                 <Badge variant="outline" className="px-3 py-1 bg-blue-50 text-blue-700 border-blue-200 text-sm font-medium rounded-full">
                                     {statusFilter}
                                 </Badge>
-                                <span className="text-muted-foreground ml-2">({filteredOrders.length} found)</span>
+                                <span className="text-muted-foreground text-sm">({filteredOrders.length} found)</span>
                             </div>
                         </div>
                     </div>
