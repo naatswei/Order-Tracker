@@ -118,7 +118,7 @@ export default function CreateOrderPage() {
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
                             <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0">
-                                <Package className="text-[#191A43] w-5 h-5" />
+                                <Package className="text-[#191A43] w-6 h-6" />
                             </div>
                             <div className="hidden sm:block">
                                 <h1 className="text-xl font-bold tracking-tight">OTracker</h1>
