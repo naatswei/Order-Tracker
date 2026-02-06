@@ -96,18 +96,18 @@ export default function StatusFilterPage() {
                         </Button>
                     </Link>
 
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-start gap-3">
                         <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center text-blue-600 shrink-0">
                             <Filter className="w-5 h-5" />
                         </div>
-                        <div className="text-left">
+                        <div>
                             <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">Filtered Orders</h2>
-                            <div className="flex flex-wrap items-center gap-2 mt-1">
-                                <span className="text-muted-foreground text-sm">Status:</span>
+                            <div className="flex items-center gap-2 mt-2">
                                 <Badge variant="outline" className="px-3 py-1 bg-blue-50 text-blue-700 border-blue-200 text-sm font-medium rounded-full">
                                     {statusFilter}
                                 </Badge>
-                                <span className="text-muted-foreground text-sm">({filteredOrders.length} found)</span>
+                                <span className="text-muted-foreground text-sm">•</span>
+                                <span className="text-muted-foreground text-sm">{filteredOrders.length} orders</span>
                             </div>
                         </div>
                     </div>
