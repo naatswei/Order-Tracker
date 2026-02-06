@@ -117,8 +117,8 @@ export default function CreateOrderPage() {
                 <div className="w-full px-[30px] py-4">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center shrink-0">
-                                <Package className="text-primary w-5 h-5" />
+                            <div className="w-10 h-10 bg-[#191A43]/10 rounded-xl flex items-center justify-center shrink-0">
+                                <Package className="text-[#191A43] w-5 h-5" />
                             </div>
                             <div className="hidden sm:block">
                                 <h1 className="text-xl font-bold tracking-tight">OTracker</h1>
@@ -256,10 +256,10 @@ export default function CreateOrderPage() {
                                     size="lg"
                                     disabled={!editingId && !hasRequiredFields}
                                     className={`w-full md:w-auto min-w-[200px] h-12 rounded-xl text-base font-semibold transition-all ${!editingId
-                                            ? hasRequiredFields
-                                                ? "bg-[#CE0003] hover:bg-[#CE0003]/90 text-white shadow-lg shadow-primary/20"
-                                                : "bg-white/50 border-2 border-slate-200 text-[#191A43] shadow-md hover:shadow-lg"
-                                            : "bg-[#191A43] hover:bg-[#191A43]/90 text-white shadow-lg shadow-primary/20"
+                                        ? hasRequiredFields
+                                            ? "bg-[#CE0003] hover:bg-[#CE0003]/90 text-white shadow-lg shadow-primary/20"
+                                            : "bg-white/50 border-2 border-slate-200 text-[#191A43] shadow-md hover:shadow-lg"
+                                        : "bg-[#191A43] hover:bg-[#191A43]/90 text-white shadow-lg shadow-primary/20"
                                         }`}
                                 >
                                     {editingId ? "Update Order" : "Create Order"}
