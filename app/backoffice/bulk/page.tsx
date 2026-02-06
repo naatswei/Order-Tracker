@@ -159,10 +159,8 @@ export default function BulkUpdatePage() {
             <div className="sticky top-0 z-50 bg-white/60 backdrop-blur-xl border-b border-white/20 shadow-sm">
                 <div className="w-full px-[30px] py-4">
                     <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0">
-                                <Package className="text-[#191A43] w-6 h-6" />
-                            </div>
+                        <div className="flex items-center gap-2">
+                            <Package className="text-[#191A43] w-6 h-6" />
                             <div className="hidden sm:block">
                                 <h1 className="text-xl font-bold tracking-tight">OTracker</h1>
                                 <p className="text-xs text-muted-foreground">Backoffice Dashboard</p>
