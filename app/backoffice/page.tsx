@@ -45,7 +45,7 @@ export default function BackofficePage() {
 
   const loadOrders = () => {
     const allOrders = getAllOrders()
-    setOrders(allOrders)
+    setOrders(allOrders.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()))
   }
 
   const copyTrackingLink = (id: string) => {
