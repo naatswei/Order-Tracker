@@ -89,9 +89,9 @@ export default function StatusFilterPage() {
             <div className="container mx-auto px-4 py-8 max-w-[1400px] space-y-8">
                 {/* Back Button and Title */}
                 {/* Back Button and Title */}
-                <div className="flex flex-col-reverse gap-4 sm:flex-row sm:justify-between sm:items-start">
+                <div className="flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-start">
                     <Link href="/backoffice">
-                        <Button variant="outline" className="gap-2 text-slate-600 hover:bg-[#191A43] hover:text-[#ffffff] transition-colors w-full sm:w-auto">
+                        <Button variant="outline" className="gap-2 text-slate-600 hover:bg-[#191A43] hover:text-[#ffffff] transition-colors">
                             <ArrowLeft className="w-4 h-4" /> Back to Dashboard
                         </Button>
                     </Link>
