@@ -87,19 +87,19 @@ export default function StatusFilterPage() {
             </div>
 
             <div className="container mx-auto px-4 py-8 max-w-[1400px] space-y-8">
-                {/* Back Button and Title */}
-                {/* Back Button and Title */}
-                <div className="flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-start">
-                    <Link href="/backoffice">
-                        <Button variant="outline" className="gap-2 text-slate-600 hover:bg-[#191A43] hover:text-[#ffffff] transition-colors">
-                            <ArrowLeft className="w-4 h-4" /> Back to Dashboard
-                        </Button>
-                    </Link>
+                {/* Back Button */}
+                <Link href="/backoffice">
+                    <Button variant="outline" className="gap-2 text-slate-600 hover:bg-[#191A43] hover:text-[#ffffff] transition-colors">
+                        <ArrowLeft className="w-4 h-4" /> Back to Dashboard
+                    </Button>
+                </Link>
 
-                    <div>
-                        <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">{statusFilter}</h2>
-                        <p className="text-muted-foreground text-sm mt-1">{filteredOrders.length} orders found</p>
-                    </div>
+                {/* Status Filter Info */}
+                <div className="flex items-center gap-3">
+                    <Button variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100 font-medium rounded-full px-4 h-9 cursor-default">
+                        {statusFilter}
+                    </Button>
+                    <span className="text-muted-foreground text-sm">{filteredOrders.length} orders</span>
                 </div>
 
                 {/* Orders List */}
