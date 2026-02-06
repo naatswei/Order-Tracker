@@ -159,8 +159,8 @@ export default function BulkUpdatePage() {
                 <div className="w-full px-[30px] py-4">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center shrink-0">
-                                <Package className="text-primary w-5 h-5" />
+                            <div className="w-10 h-10 bg-[#191A43]/10 rounded-xl flex items-center justify-center shrink-0">
+                                <Package className="text-[#191A43] w-5 h-5" />
                             </div>
                             <div className="hidden sm:block">
                                 <h1 className="text-xl font-bold tracking-tight">OTracker</h1>
