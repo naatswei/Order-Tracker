@@ -95,7 +95,7 @@ export default function StatusFilterPage() {
                 </Link>
 
                 {/* Status Filter Info */}
-                <div className="flex items-center gap-3">
+                <div className="flex items-center justify-end gap-3">
                     <Button variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100 font-medium rounded-full px-4 h-9 cursor-default">
                         {statusFilter}
                     </Button>
