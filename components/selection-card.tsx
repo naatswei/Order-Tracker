@@ -1,5 +1,6 @@
 "use client"
 
+import Link from "next/link"
 import { cn } from "@/lib/utils"
 import { LucideIcon, Check } from "lucide-react"
 
@@ -10,6 +11,7 @@ interface SelectionCardProps {
     selected?: boolean
     onClick?: () => void
     disabled?: boolean
+    href?: string
 }
 
 export function SelectionCard({
@@ -19,11 +21,16 @@ export function SelectionCard({
     selected,
     onClick,
     disabled,
+    href,
 }: SelectionCardProps) {
+    const Component = href ? Link : "button"
+
     return (
-        <button
+        <Component
+            href={href}
             onClick={onClick}
-            disabled={disabled}
+            disabled={!href && disabled}
+            type="button"
             className={cn(
                 "relative flex w-full flex-col gap-4 rounded-xl border p-6 text-left transition-all hover:border-primary/50 hover:bg-muted/50 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
                 selected
@@ -50,6 +57,6 @@ export function SelectionCard({
                     <Check className="h-5 w-5" />
                 </div>
             )}
-        </button>
+        </Component>
     )
 }
