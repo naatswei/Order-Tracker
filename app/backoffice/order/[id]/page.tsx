@@ -116,15 +116,18 @@ export default function OrderUpdatePage() {
     <div className="min-h-screen bg-[#F9FCFF] font-sans selection:bg-blue-100 pb-20">
       {/* Header */}
       <div className="sticky top-0 z-50 bg-white/60 backdrop-blur-xl border-b border-white/20 shadow-sm">
-        <div className="w-full px-[30px] py-4">
+        <div className="w-full px-4 sm:px-8 py-4">
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-blue-50/50 rounded-xl flex items-center justify-center shrink-0 border border-blue-100">
                 <Package className="text-blue-600 w-5 h-5" />
               </div>
-              <div>
+              <div className="hidden sm:block">
                 <h1 className="text-xl font-bold text-slate-900 tracking-tight">Track Order</h1>
                 <p className="text-sm text-slate-500">Add a new status update to this order</p>
+              </div>
+              <div className="sm:hidden">
+                <h1 className="text-lg font-bold text-slate-900 tracking-tight">Update Status</h1>
               </div>
             </div>
             <div className="flex items-center gap-3">
@@ -150,15 +153,15 @@ export default function OrderUpdatePage() {
       </div>
 
 
-      <div className="container mx-auto px-4 py-8 max-w-6xl space-y-6">
+      <div className="container mx-auto px-4 py-6 sm:py-8 max-w-6xl space-y-6">
 
 
-        <div className="grid lg:grid-cols-12 gap-8">
+        <div className="grid lg:grid-cols-12 gap-6 sm:gap-8">
           {/* Back Button */}
           <div className="lg:col-span-12 mb-2">
-            <Link href="/backoffice">
-              <Button variant="outline" className="bg-white border-slate-200 text-slate-700 hover:bg-slate-50 shadow-sm rounded-lg px-6">
-                <ArrowLeft className="w-4 h-4 mr-2" /> Back
+            <Link href="/backoffice" className="block sm:inline-block">
+              <Button variant="outline" className="w-full sm:w-auto bg-white border-slate-200 text-slate-700 hover:bg-slate-50 shadow-sm rounded-lg px-6 justify-center sm:justify-start">
+                <ArrowLeft className="w-4 h-4 mr-2" /> Back to Dashboard
               </Button>
             </Link>
           </div>
@@ -292,19 +295,19 @@ export default function OrderUpdatePage() {
                     <p className="text-xs text-slate-400">This message will be visible to the customers.</p>
                   </div>
 
-                  <div className="flex gap-4 pt-4">
+                  <div className="flex flex-col sm:flex-row gap-4 pt-4">
                     <Button
                       type="submit"
                       size="lg"
                       disabled={!status}
-                      className={`flex-1 h-12 text-base font-semibold rounded-lg transition-all ${status
-                          ? "bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-600/20"
-                          : "bg-slate-100 text-slate-400 hover:bg-slate-200 shadow-none cursor-not-allowed"
+                      className={`order-1 sm:order-2 flex-1 h-12 text-base font-semibold rounded-lg transition-all ${status
+                        ? "bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-600/20"
+                        : "bg-slate-100 text-slate-400 hover:bg-slate-200 shadow-none cursor-not-allowed"
                         }`}
                     >
                       Add Status Update
                     </Button>
-                    <Button type="button" onClick={handleClear} variant="outline" size="lg" className="px-8 h-12 text-base font-medium rounded-lg border-slate-200 hover:bg-slate-50 text-slate-700">
+                    <Button type="button" onClick={handleClear} variant="outline" size="lg" className="order-2 sm:order-1 w-full sm:w-auto px-8 h-12 text-base font-medium rounded-lg border-slate-200 hover:bg-slate-50 text-slate-700">
                       Clear
                     </Button>
                   </div>

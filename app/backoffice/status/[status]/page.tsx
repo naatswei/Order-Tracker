@@ -55,7 +55,7 @@ export default function StatusFilterPage() {
         <div className="min-h-screen bg-background font-sans selection:bg-primary/20">
             {/* Header */}
             <div className="sticky top-0 z-50 bg-white/60 backdrop-blur-xl border-b border-white/20 shadow-sm">
-                <div className="w-full px-4 sm:px-[30px] py-4">
+                <div className="w-full px-4 sm:px-8 py-4">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                             <Package className="text-[#191A43] w-6 h-6" />
@@ -86,20 +86,25 @@ export default function StatusFilterPage() {
                 </div>
             </div>
 
-            <div className="container mx-auto px-4 py-8 max-w-[1400px] space-y-8">
-                {/* Back Button */}
-                <Link href="/backoffice">
-                    <Button variant="outline" className="gap-2 text-slate-600 hover:bg-[#191A43] hover:text-[#ffffff] transition-colors">
-                        <ArrowLeft className="w-4 h-4" /> Back to Dashboard
-                    </Button>
-                </Link>
+            <div className="container mx-auto px-4 py-6 sm:py-8 max-w-[1400px] space-y-6 sm:space-y-8">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    {/* Back Button */}
+                    <Link href="/backoffice" className="w-full sm:w-auto">
+                        <Button variant="outline" className="w-full sm:w-auto gap-2 text-slate-600 hover:bg-[#191A43] hover:text-[#ffffff] transition-colors justify-center">
+                            <ArrowLeft className="w-4 h-4" /> Back to Dashboard
+                        </Button>
+                    </Link>
 
-                {/* Status Filter Info */}
-                <div className="flex items-center justify-end gap-3">
-                    <Button variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100 font-medium rounded-full px-4 h-9 cursor-default">
-                        {statusFilter}
-                    </Button>
-                    <span className="text-muted-foreground text-sm">{filteredOrders.length} orders</span>
+                    {/* Status Filter Info */}
+                    <div className="flex items-center justify-between sm:justify-end gap-3 bg-slate-50 sm:bg-transparent p-3 sm:p-0 rounded-lg sm:rounded-none">
+                        <span className="sm:hidden text-sm font-medium text-muted-foreground">Status:</span>
+                        <div className="flex items-center gap-3">
+                            <Button variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100 font-medium rounded-full px-4 h-9 cursor-default pointer-events-none">
+                                {statusFilter}
+                            </Button>
+                            <span className="text-muted-foreground text-sm">{filteredOrders.length} orders</span>
+                        </div>
+                    </div>
                 </div>
 
                 {/* Orders List */}

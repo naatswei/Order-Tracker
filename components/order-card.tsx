@@ -70,7 +70,7 @@ export function OrderCard({ order, copiedId, onCopy }: OrderCardProps) {
                             </div>
 
                             {/* Actions */}
-                            <div className="flex flex-col gap-7 w-full md:w-48 shrink-0">
+                            <div className="flex flex-col gap-3 w-full md:w-48 shrink-0">
                                 <Link href={`/backoffice/order/${order.id}`}>
                                     <Button className="w-full bg-[#CE0003] hover:bg-[#CE0003]/90 text-white rounded-lg h-11 shadow-sm font-medium">
                                         Update Status

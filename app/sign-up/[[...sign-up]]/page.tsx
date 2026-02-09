@@ -27,8 +27,8 @@ export default function SignUpPage() {
             <div className="flex-1 flex flex-col justify-center items-center bg-white p-6 sm:p-12">
                 <div className="w-full max-w-md">
                     {/* Mobile Branding (only visible on small screens) */}
-                    <div className="flex lg:hidden justify-center mb-12">
-                        <div className="flex items-center text-4xl font-bold tracking-tighter text-[#191A43]">
+                    <div className="flex lg:hidden justify-center mb-8">
+                        <div className="flex items-center text-3xl sm:text-4xl font-bold tracking-tighter text-[#191A43]">
                             <span className="text-[#CE0003]">O</span>
                             <span>Tracker</span>
                         </div>
