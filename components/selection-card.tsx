@@ -34,7 +34,7 @@ export function SelectionCard({
             className={cn(
                 "relative flex w-full flex-col items-center text-center gap-4 rounded-xl border p-8 transition-all hover:border-primary/50 hover:bg-muted/50 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
                 selected
-                    ? "border-primary bg-primary/5 ring-1 ring-primary"
+                    ? "border-primary/50 bg-primary/5 ring-1 ring-primary/50"
                     : "border-border bg-card",
             )}
         >
@@ -42,7 +42,7 @@ export function SelectionCard({
                 className={cn(
                     "flex h-14 w-14 items-center justify-center rounded-full bg-slate-100 transition-colors mb-2",
                     selected
-                        ? "bg-primary text-primary-foreground"
+                        ? "bg-primary/10 text-primary"
                         : "text-slate-900",
                 )}
             >
