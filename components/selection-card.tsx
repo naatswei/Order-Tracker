@@ -27,12 +27,12 @@ export function SelectionCard({
 
     return (
         <Component
-            href={href}
+            href={href as string}
             onClick={onClick}
             disabled={!href && disabled}
             type="button"
             className={cn(
-                "relative flex w-full flex-col gap-4 rounded-xl border p-6 text-left transition-all hover:border-primary/50 hover:bg-muted/50 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+                "relative flex w-full flex-col items-center text-center gap-4 rounded-xl border p-8 transition-all hover:border-primary/50 hover:bg-muted/50 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
                 selected
                     ? "border-primary bg-primary/5 ring-1 ring-primary"
                     : "border-border bg-card",
@@ -40,10 +40,10 @@ export function SelectionCard({
         >
             <div
                 className={cn(
-                    "flex h-12 w-12 items-center justify-center rounded-lg border transition-colors",
+                    "flex h-14 w-14 items-center justify-center rounded-full bg-slate-100 transition-colors mb-2",
                     selected
-                        ? "border-primary bg-primary text-primary-foreground"
-                        : "border-border bg-background text-muted-foreground",
+                        ? "bg-primary text-primary-foreground"
+                        : "text-slate-900",
                 )}
             >
                 <Icon className="h-6 w-6" />
