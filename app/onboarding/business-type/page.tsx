@@ -159,7 +159,7 @@ export default function BusinessTypePage() {
                         </div>
 
                         {/* Business Type Cards - 2x2 Grid */}
-                        <div className="grid grid-cols-2 gap-6 mb-8">
+                        <div className="grid grid-cols-2 gap-6 mb-4">
                             {businessTypes.map((type) => (
                                 <SelectionCard
                                     key={type.id}
@@ -173,11 +173,11 @@ export default function BusinessTypePage() {
                         </div>
 
                         {/* Next Button */}
-                        <div className="flex justify-end mt-4">
+                        <div className="flex justify-end mt-2">
                             <Button
                                 onClick={handleNext}
                                 disabled={!selectedType}
-                                className="bg-[#191A43] hover:bg-[#191A43]/90 text-white px-8 h-12 rounded-lg font-medium transition-all disabled:opacity-50 text-base"
+                                className="bg-[#191A43] hover:bg-[#191A43]/90 text-white w-48 h-12 rounded-lg font-medium transition-all disabled:opacity-100 disabled:bg-gray-200 disabled:text-gray-400 text-base"
                             >
                                 Next
                                 <ArrowRight className="ml-2 h-5 w-5" />
