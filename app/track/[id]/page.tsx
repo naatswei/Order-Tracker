@@ -84,7 +84,7 @@ export default function TrackingDetailsPage() {
     <div className="min-h-screen bg-slate-50 font-sans pb-20">
       {/* Mobile-First Sticky Header */}
       <div className="sticky top-0 z-50 bg-[#191A43] text-white shadow-lg shadow-blue-900/10">
-        <div className="px-4 h-20 flex items-center justify-end">
+        <div className="px-8 h-20 flex items-center justify-end">
           <div className="flex items-center text-2xl font-bold tracking-tight">
             <span className="text-red-600 font-black">O</span>
             <span className="text-white font-bold uppercase">Tracker</span>
