@@ -143,12 +143,12 @@ export default function BusinessTypePage() {
                     <div className="absolute top-6 right-6 sm:top-8 sm:right-8 lg:right-12">
                         <div className="flex items-center text-xl font-bold tracking-tight">
                             <span className="text-red-600 font-black">O</span>
-                            <span className="text-[#191A43] font-bold uppercase ml-1"> - Tracker</span>
+                            <span className="text-[#191A43] font-bold uppercase">Tracker</span>
                         </div>
                     </div>
 
                     {/* Main Content */}
-                    <div className="flex-1 flex flex-col justify-center max-w-2xl mx-auto w-full pt-20">
+                    <div className="flex-1 flex flex-col justify-center max-w-3xl mx-auto w-full pt-20">
                         <div className="mb-12">
                             <h1 className="text-2xl sm:text-3xl font-bold text-[#191A43] mb-3">
                                 Enter your Business Type
@@ -159,7 +159,7 @@ export default function BusinessTypePage() {
                         </div>
 
                         {/* Business Type Cards - 2x2 Grid */}
-                        <div className="grid grid-cols-2 gap-6 mb-4">
+                        <div className="grid grid-cols-2 gap-8 mb-4">
                             {businessTypes.map((type) => (
                                 <SelectionCard
                                     key={type.id}
