@@ -60,9 +60,9 @@ export default function BusinessTypePage() {
             icon: HairIcon as unknown as LucideIcon, // Cast directly to LucideIcon 
         },
         {
-            id: "warehousing",
-            title: "Warehousing",
-            description: "Pre-orders and Logistics Services",
+            id: "logistics",
+            title: "Logistics",
+            description: "Pre-orders and delivery",
             icon: Warehouse,
         },
         {
@@ -90,7 +90,7 @@ export default function BusinessTypePage() {
                         {/* Image 1: Tailoring */}
                         <div className="relative h-1/4 w-full overflow-hidden">
                             <Image
-                                src="https://images.unsplash.com/photo-1556905055-8f358a7a47b2?w=1600&q=80"
+                                src="/images/tailoring.jpg"
                                 alt="Tailoring shop"
                                 fill
                                 style={{ objectFit: 'cover' }}
@@ -99,22 +99,10 @@ export default function BusinessTypePage() {
                             <div className="absolute inset-0 bg-black/20" />
                         </div>
 
-                        {/* Image 2: Warehouse */}
+                        {/* Image 2: Hair Retail */}
                         <div className="relative h-1/4 w-full overflow-hidden">
                             <Image
-                                src="https://images.unsplash.com/photo-1553413077-190dd305871c?w=1600&q=80"
-                                alt="Warehouse logistics"
-                                fill
-                                style={{ objectFit: 'cover' }}
-                                className="opacity-80"
-                            />
-                            <div className="absolute inset-0 bg-black/20" />
-                        </div>
-
-                        {/* Image 3: Fashion/Wigs */}
-                        <div className="relative h-1/4 w-full overflow-hidden">
-                            <Image
-                                src="https://images.unsplash.com/photo-1595475207225-428b62bda831?w=1600&q=80"
+                                src="/images/hair.jpg"
                                 alt="Hair retail"
                                 fill
                                 style={{ objectFit: 'cover' }}
@@ -123,10 +111,22 @@ export default function BusinessTypePage() {
                             <div className="absolute inset-0 bg-black/20" />
                         </div>
 
-                        {/* Image 4: Delivery */}
+                        {/* Image 3: Logistics */}
                         <div className="relative h-1/4 w-full overflow-hidden">
                             <Image
-                                src="https://images.unsplash.com/photo-1616401784845-180882ba9ba8?w=1600&q=80"
+                                src="/images/logistics.png"
+                                alt="Logistics and Shipping"
+                                fill
+                                style={{ objectFit: 'cover' }}
+                                className="opacity-80"
+                            />
+                            <div className="absolute inset-0 bg-black/20" />
+                        </div>
+
+                        {/* Image 4: Online Business */}
+                        <div className="relative h-1/4 w-full overflow-hidden">
+                            <Image
+                                src="/images/online.jpg"
                                 alt="Delivery"
                                 fill
                                 style={{ objectFit: 'cover' }}
