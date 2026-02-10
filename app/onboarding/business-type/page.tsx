@@ -148,8 +148,8 @@ export default function BusinessTypePage() {
                     </div>
 
                     {/* Main Content */}
-                    <div className="flex-1 flex flex-col justify-center max-w-2xl mx-auto w-full">
-                        <div className="mb-10">
+                    <div className="flex-1 flex flex-col justify-center max-w-xl mx-auto w-full pt-20">
+                        <div className="mb-12">
                             <h1 className="text-2xl sm:text-3xl font-bold text-[#191A43] mb-3">
                                 Enter your Business Type
                             </h1>
@@ -159,7 +159,7 @@ export default function BusinessTypePage() {
                         </div>
 
                         {/* Business Type Cards - 2x2 Grid */}
-                        <div className="grid grid-cols-2 gap-4 mb-8">
+                        <div className="grid grid-cols-2 gap-6 mb-10">
                             {businessTypes.map((type) => (
                                 <SelectionCard
                                     key={type.id}
@@ -173,7 +173,7 @@ export default function BusinessTypePage() {
                         </div>
 
                         {/* Next Button */}
-                        <div className="flex justify-end mt-4">
+                        <div className="flex justify-end mt-8">
                             <Button
                                 onClick={handleNext}
                                 disabled={!selectedType}
