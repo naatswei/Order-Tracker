@@ -52,11 +52,6 @@ export function SelectionCard({
                 <h3 className="font-semibold leading-none tracking-tight">{title}</h3>
                 <p className="text-sm text-muted-foreground">{description}</p>
             </div>
-            {selected && (
-                <div className="absolute right-4 top-4 text-primary">
-                    <Check className="h-5 w-5" />
-                </div>
-            )}
         </Component>
     )
 }
