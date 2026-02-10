@@ -148,7 +148,7 @@ export default function BusinessTypePage() {
                     </div>
 
                     {/* Main Content */}
-                    <div className="flex-1 flex flex-col justify-center max-w-lg mx-auto w-full">
+                    <div className="flex-1 flex flex-col justify-center max-w-2xl mx-auto w-full">
                         <div className="mb-10">
                             <h1 className="text-2xl sm:text-3xl font-bold text-[#191A43] mb-3">
                                 Enter your Business Type
