@@ -13,6 +13,7 @@ import { OrderCard } from "@/components/order-card"
 import { motion, AnimatePresence } from "framer-motion"
 import { UserButton, OrganizationSwitcher, useOrganization } from "@clerk/nextjs"
 import { getBusinessConfig } from "@/lib/business-configs"
+import { Footer } from "@/components/footer"
 
 export default function StatusFilterPage() {
     const params = useParams()
@@ -29,14 +30,17 @@ export default function StatusFilterPage() {
     const config = getBusinessConfig(businessType)
 
     useEffect(() => {
-        // Prioritize organization metadata
+        // 1. Initial load from localStorage for immediate UI consistency
+        const storedType = localStorage.getItem("businessType")
+        if (storedType) {
+            setBusinessType(storedType)
+        }
+
+        // 2. Sync from organization metadata IF AND ONLY IF we don't have a local selection
         const orgBusinessType = organization?.publicMetadata?.businessType as string
-        if (orgBusinessType) {
+        if (orgBusinessType && !storedType) {
             setBusinessType(orgBusinessType)
             localStorage.setItem("businessType", orgBusinessType)
-        } else {
-            const storedType = localStorage.getItem("businessType")
-            setBusinessType(storedType)
         }
     }, [organization])
 
@@ -82,8 +86,8 @@ export default function StatusFilterPage() {
                             <Package className="w-6 h-6" style={{ color: config.theme.primary }} />
                             <div className="hidden sm:block">
                                 <h1 className="text-xl font-bold tracking-tight">
-                                    <span className="text-[#CE0003]">O</span>
-                                    <span className="text-[#191A43]">Tracker</span>
+                                    <span style={{ color: config.theme.secondary }}>O</span>
+                                    <span style={{ color: config.theme.primary }}>Tracker</span>
                                 </h1>
                                 <p className="text-xs text-muted-foreground">Backoffice Dashboard</p>
                             </div>
@@ -191,6 +195,7 @@ export default function StatusFilterPage() {
                     )}
                 </AnimatePresence>
             </div>
+            <Footer />
         </div>
     )
 }

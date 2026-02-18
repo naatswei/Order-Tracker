@@ -9,11 +9,12 @@ import { Badge } from "@/components/ui/badge"
 import { getAllOrders, type Order } from "@/lib/storage"
 import Link from "next/link"
 import { UserButton, OrganizationSwitcher, useOrganization } from "@clerk/nextjs"
-import { Package, Plus, Search, Filter } from "lucide-react"
+import { Package, Plus, Search, Filter, Settings, RefreshCw } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Card, CardContent } from "@/components/ui/card"
 import { OrderCard } from "@/components/order-card"
 import { getBusinessConfig } from "@/lib/business-configs"
+import { Footer } from "@/components/footer"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -37,21 +38,22 @@ export default function BackofficePage() {
   // Filter state
   const [statusFilter, setStatusFilter] = useState("All")
 
-  // Status state
-  const statusOptions = config.statuses
-
   // Load orders and business type on mount/org change
   useEffect(() => {
     loadOrders()
 
-    // Prioritize organization metadata
-    const orgBusinessType = organization?.publicMetadata?.businessType as string
-    if (orgBusinessType) {
-      setBusinessType(orgBusinessType)
-      localStorage.setItem("businessType", orgBusinessType) // Sync back to local storage
-    } else {
-      const storedType = localStorage.getItem("businessType")
+    // 1. Initial load from localStorage for immediate UI consistency
+    const storedType = localStorage.getItem("businessType")
+    if (storedType) {
       setBusinessType(storedType)
+    }
+
+    // 2. Sync from organization metadata IF AND ONLY IF we don't have a local selection
+    // This prevents stale org metadata from overwriting a fresh selection in onboarding
+    const orgBusinessType = organization?.publicMetadata?.businessType as string
+    if (orgBusinessType && !storedType) {
+      setBusinessType(orgBusinessType)
+      localStorage.setItem("businessType", orgBusinessType)
     }
   }, [organization])
 
@@ -102,8 +104,8 @@ export default function BackofficePage() {
               <Package className="w-6 h-6" style={{ color: config.theme.primary }} />
               <div className="hidden sm:block">
                 <h1 className="text-xl font-bold tracking-tight">
-                  <span className="text-[#CE0003]">O</span>
-                  <span className="text-[#191A43]">Tracker</span>
+                  <span style={{ color: config.theme.secondary }}>O</span>
+                  <span style={{ color: config.theme.primary }}>Tracker</span>
                 </h1>
                 <p className="text-xs text-muted-foreground">Backoffice Dashboard</p>
               </div>
@@ -187,6 +189,16 @@ export default function BackofficePage() {
                   Bulk Update
                 </Button>
               </Link>
+              <Link href="/onboarding/business-type" className="flex-1 md:flex-none">
+                <Button
+                  variant="outline"
+                  className="w-full h-11 rounded-lg border-slate-200 text-slate-700 hover:bg-slate-50 gap-2 px-4 shadow-sm"
+                  title="Change Business Type"
+                >
+                  <RefreshCw className="w-4 h-4" />
+                  <span className="md:hidden lg:inline">Switch Type</span>
+                </Button>
+              </Link>
               <Link href="/backoffice/create" className="flex-1 md:flex-none">
                 <Button
                   className="w-full h-11 rounded-lg shadow-sm gap-2 px-6 font-medium text-white border-0 transition-all duration-200 hover:brightness-95 active:scale-[0.98]"
@@ -236,6 +248,7 @@ export default function BackofficePage() {
           </AnimatePresence>
         </div>
       </div>
+      <Footer />
     </div>
   )
 }

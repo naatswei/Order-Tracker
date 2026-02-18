@@ -14,6 +14,7 @@ import { Package, ArrowLeft } from "lucide-react"
 import { toast } from "sonner"
 import { useSearchParams, useRouter } from "next/navigation"
 import { getBusinessConfig } from "@/lib/business-configs"
+import { Footer } from "@/components/footer"
 
 export default function CreateOrderPage() {
     const router = useRouter()
@@ -37,14 +38,17 @@ export default function CreateOrderPage() {
     const config = getBusinessConfig(businessType)
 
     useEffect(() => {
-        // Prioritize organization metadata
+        // 1. Initial load from localStorage for immediate UI consistency
+        const storedType = localStorage.getItem("businessType")
+        if (storedType) {
+            setBusinessType(storedType)
+        }
+
+        // 2. Sync from organization metadata IF AND ONLY IF we don't have a local selection
         const orgBusinessType = organization?.publicMetadata?.businessType as string
-        if (orgBusinessType) {
+        if (orgBusinessType && !storedType) {
             setBusinessType(orgBusinessType)
             localStorage.setItem("businessType", orgBusinessType)
-        } else {
-            const storedType = localStorage.getItem("businessType")
-            setBusinessType(storedType)
         }
 
         const editId = searchParams.get("edit")
@@ -143,8 +147,8 @@ export default function CreateOrderPage() {
                             <Package className="w-6 h-6" style={{ color: config.theme.primary }} />
                             <div className="hidden sm:block">
                                 <h1 className="text-xl font-bold tracking-tight">
-                                    <span className="text-[#CE0003]">O</span>
-                                    <span className="text-[#191A43]">Tracker</span>
+                                    <span style={{ color: config.theme.secondary }}>O</span>
+                                    <span style={{ color: config.theme.primary }}>Tracker</span>
                                 </h1>
                                 <p className="text-xs text-muted-foreground">Backoffice Dashboard</p>
                             </div>
@@ -311,6 +315,7 @@ export default function CreateOrderPage() {
                     </CardContent>
                 </Card>
             </div>
+            <Footer />
         </div>
     )
 }

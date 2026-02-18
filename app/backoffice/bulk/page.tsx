@@ -16,6 +16,7 @@ import { toast } from "sonner"
 import { useRouter, useSearchParams } from "next/navigation"
 import { OrganizationSwitcher, UserButton, useOrganization } from "@clerk/nextjs"
 import { getBusinessConfig } from "@/lib/business-configs"
+import { Footer } from "@/components/footer"
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -62,14 +63,17 @@ function BulkUpdateContent() {
     const [message, setMessage] = useState("")
 
     useEffect(() => {
-        // Prioritize organization metadata
+        // 1. Initial load from localStorage for immediate UI consistency
+        const storedType = localStorage.getItem("businessType")
+        if (storedType) {
+            setBusinessType(storedType)
+        }
+
+        // 2. Sync from organization metadata IF AND ONLY IF we don't have a local selection
         const orgBusinessType = organization?.publicMetadata?.businessType as string
-        if (orgBusinessType) {
+        if (orgBusinessType && !storedType) {
             setBusinessType(orgBusinessType)
             localStorage.setItem("businessType", orgBusinessType)
-        } else {
-            const storedType = localStorage.getItem("businessType")
-            setBusinessType(storedType)
         }
         loadOrders()
     }, [organization])
@@ -212,8 +216,8 @@ function BulkUpdateContent() {
                             <Package className="w-6 h-6" style={{ color: config.theme.primary }} />
                             <div className="hidden sm:block">
                                 <h1 className="text-xl font-bold tracking-tight">
-                                    <span className="text-[#CE0003]">O</span>
-                                    <span className="text-[#191A43]">Tracker</span>
+                                    <span style={{ color: config.theme.secondary }}>O</span>
+                                    <span style={{ color: config.theme.primary }}>Tracker</span>
                                 </h1>
                                 <p className="text-xs text-muted-foreground">Backoffice Dashboard</p>
                             </div>
@@ -472,7 +476,8 @@ function BulkUpdateContent() {
                             {/* Actions */}
                             <div className="flex flex-col md:flex-row gap-4 pt-4">
                                 <Button
-                                    className={`flex-1 h-12 rounded-lg font-semibold text-base transition-all duration-200 border-0 text-white shadow-md ${customStatus ? 'bg-[#2B7FFF] hover:bg-[#2B7FFF]/90' : 'bg-slate-200 cursor-not-allowed'}`}
+                                    className={`flex-1 h-12 rounded-lg font-semibold text-base transition-all duration-200 border-0 text-white shadow-md ${customStatus ? 'hover:brightness-95' : 'bg-slate-200 cursor-not-allowed'}`}
+                                    style={{ backgroundColor: customStatus ? config.theme.accent : undefined }}
                                     onClick={handleSubmitUpdate}
                                     disabled={!customStatus}
                                 >
@@ -488,8 +493,8 @@ function BulkUpdateContent() {
                             </div>
 
                             {/* Footer Note */}
-                            <div className="bg-purple-50 rounded-lg p-4 text-center border border-purple-100">
-                                <p className="text-xs text-[#A855F7] font-medium">
+                            <div className="rounded-lg p-4 text-center border" style={{ backgroundColor: `${config.theme.primary}0D`, borderColor: `${config.theme.primary}1A` }}>
+                                <p className="text-xs font-medium" style={{ color: config.theme.primary }}>
                                     <span className="font-bold">Note:</span> Status update will be automatically sent to customer via Email or SMS notification.
                                 </p>
                             </div>
@@ -498,6 +503,7 @@ function BulkUpdateContent() {
                     </motion.div>
                 )}
             </div>
+            <Footer />
         </div>
     )
 }

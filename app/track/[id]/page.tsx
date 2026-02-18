@@ -7,8 +7,9 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { getOrderById, type Order } from "@/lib/storage"
 import Link from "next/link"
-import { ArrowLeft, Package, MapPin, Clock, CheckCircle2, Headphones, MessageSquare, Send } from "lucide-react"
 import { getBusinessConfig } from "@/lib/business-configs"
+import { Footer } from "@/components/footer"
+import { toast } from "sonner"
 import {
   Dialog,
   DialogContent,
@@ -26,6 +27,10 @@ export default function TrackingDetailsPage() {
   const trackingId = params.id as string
   const [order, setOrder] = useState<Order | null>(null)
   const [loading, setLoading] = useState(true)
+  const [messageSubject, setMessageSubject] = useState("")
+  const [messageBody, setMessageBody] = useState("")
+  const [isSending, setIsSending] = useState(false)
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
 
   useEffect(() => {
     if (trackingId) {
@@ -34,6 +39,23 @@ export default function TrackingDetailsPage() {
       setLoading(false)
     }
   }, [trackingId])
+
+  const handleSendMessage = async () => {
+    if (!messageBody) {
+      toast.error("Please enter a message")
+      return
+    }
+
+    setIsSending(true)
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 1500))
+
+    toast.success("Message sent successfully! We'll get back to you soon.")
+    setIsSending(false)
+    setIsDialogOpen(false)
+    setMessageSubject("")
+    setMessageBody("")
+  }
 
   if (loading) {
     return (
@@ -92,7 +114,7 @@ export default function TrackingDetailsPage() {
       >
         <div className="px-8 h-20 flex items-center justify-end">
           <div className="flex items-center text-2xl font-bold tracking-tight">
-            <span className="text-red-600 font-black">O</span>
+            <span style={{ color: config.theme.secondary }} className="font-black">O</span>
             <span className="text-white font-bold">Tracker</span>
           </div>
         </div>
@@ -213,7 +235,7 @@ export default function TrackingDetailsPage() {
         <div className="pt-6 pb-8 text-center">
           <p className="text-sm text-slate-400 mb-3">Questions about your order?</p>
 
-          <Dialog>
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
               <Button
                 className="w-full bg-white border border-slate-200 transition-all duration-300 shadow-sm h-12 rounded-xl font-semibold gap-2 border-0"
@@ -234,12 +256,20 @@ export default function TrackingDetailsPage() {
               <div className="space-y-4 py-4">
                 <div className="space-y-2">
                   <Label htmlFor="subject" className="text-[#191A43]">Subject</Label>
-                  <Input id="subject" placeholder="e.g. Change pickup time" className="rounded-lg border-slate-200" />
+                  <Input
+                    id="subject"
+                    value={messageSubject}
+                    onChange={(e) => setMessageSubject(e.target.value)}
+                    placeholder="e.g. Change pickup time"
+                    className="rounded-lg border-slate-200"
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="message" className="text-[#191A43]">Message</Label>
                   <Textarea
                     id="message"
+                    value={messageBody}
+                    onChange={(e) => setMessageBody(e.target.value)}
                     placeholder="How can we help you?"
                     className="min-h-[120px] rounded-lg border-slate-200 resize-none"
                   />
@@ -250,15 +280,22 @@ export default function TrackingDetailsPage() {
                 <Button
                   className="w-full text-white rounded-xl h-11 font-semibold gap-2 shadow-sm border-0"
                   style={{ backgroundColor: config.theme.primary }}
+                  onClick={handleSendMessage}
+                  disabled={isSending}
                 >
-                  <Send className="w-4 h-4" />
-                  Send Message
+                  {isSending ? (
+                    <span className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                  ) : (
+                    <Send className="w-4 h-4" />
+                  )}
+                  {isSending ? "Sending..." : "Send Message"}
                 </Button>
               </div>
             </DialogContent>
           </Dialog>
         </div>
       </div>
+      <Footer />
     </div>
   )
 }
