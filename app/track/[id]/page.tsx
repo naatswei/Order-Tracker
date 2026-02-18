@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge"
 import { getOrderById, type Order } from "@/lib/storage"
 import Link from "next/link"
 import { ArrowLeft, Package, MapPin, Clock, CheckCircle2, Headphones, MessageSquare, Send } from "lucide-react"
+import { getBusinessConfig } from "@/lib/business-configs"
 import {
   Dialog,
   DialogContent,
@@ -74,20 +75,25 @@ export default function TrackingDetailsPage() {
     if (status.toLowerCase().includes("delivered") || status.toLowerCase().includes("completed")) {
       return "bg-green-100 text-green-700 border-green-200"
     }
-    if (status.toLowerCase().includes("ready") || status.toLowerCase().includes("picked")) {
+    if (status.toLowerCase().includes("ready") || status.toLowerCase().includes("picked") || status.toLowerCase().includes("dispatched")) {
       return "bg-blue-100 text-blue-700 border-blue-200"
     }
     return "bg-slate-100 text-slate-700 border-slate-200"
   }
 
+  const config = getBusinessConfig(order?.businessType || "tailoring")
+
   return (
     <div className="min-h-screen bg-slate-50 font-sans pb-20">
       {/* Mobile-First Sticky Header */}
-      <div className="sticky top-0 z-50 bg-[#191A43] text-white shadow-lg shadow-blue-900/10">
+      <div
+        className="sticky top-0 z-50 text-white shadow-lg"
+        style={{ backgroundColor: config.theme.primary }}
+      >
         <div className="px-8 h-20 flex items-center justify-end">
           <div className="flex items-center text-2xl font-bold tracking-tight">
             <span className="text-red-600 font-black">O</span>
-            <span className="text-white font-bold uppercase">Tracker</span>
+            <span className="text-white font-bold">Tracker</span>
           </div>
         </div>
       </div>
@@ -102,10 +108,10 @@ export default function TrackingDetailsPage() {
           <div className="bg-white p-6">
             <div className="flex justify-between items-start mb-4">
               <div>
-                <p className="text-sm text-slate-500 font-medium mb-1">Order Number</p>
-                <h1 className="text-3xl font-bold text-[#191A43] tracking-tight">{order.orderNumber}</h1>
+                <p className="text-sm text-slate-500 font-medium mb-1">{config.orderLabel}</p>
+                <h1 className="text-3xl font-bold tracking-tight" style={{ color: config.theme.primary }}>{order.orderNumber}</h1>
               </div>
-              <Package className="w-6 h-6 text-[#191A43]" />
+              <Package className="w-6 h-6" style={{ color: config.theme.primary }} />
             </div>
 
             <div className="flex flex-wrap gap-3 items-center">
@@ -129,7 +135,7 @@ export default function TrackingDetailsPage() {
         {/* Timeline */}
         <Card className="border-none shadow-sm rounded-2xl overflow-hidden">
           <CardContent className="p-6">
-            <h3 className="text-lg font-bold text-[#191A43] mb-6">Tracking History</h3>
+            <h3 className="text-lg font-bold mb-6" style={{ color: config.theme.primary }}>Tracking History</h3>
             <div className="space-y-6">
               {order.statusHistory.map((statusItem, index) => {
                 const isFirst = index === 0;
@@ -141,7 +147,7 @@ export default function TrackingDetailsPage() {
                       <div className="text-xs text-slate-400 font-medium">
                         {statusItem.timestamp.toLocaleDateString(undefined, { month: 'numeric', day: 'numeric', year: 'numeric' })}
                       </div>
-                      <div className="text-base font-bold text-[#191A43]">
+                      <div className="text-base font-bold" style={{ color: config.theme.primary }}>
                         {statusItem.timestamp.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit', hour12: false })}
                       </div>
                     </div>
@@ -150,7 +156,7 @@ export default function TrackingDetailsPage() {
                     <div className="relative flex flex-col items-center">
                       {/* Dot */}
                       {isFirst ? (
-                        <div className="w-3 h-3 rounded-full bg-[#CE0003] shadow-[0_0_8px_rgba(206,0,3,0.6)] shrink-0" />
+                        <div className="w-3 h-3 rounded-full shadow-[0_0_8px_rgba(206,0,3,0.6)] shrink-0" style={{ backgroundColor: config.theme.accent }} />
                       ) : (
                         <div className="w-2.5 h-2.5 rounded-full bg-slate-300 shrink-0" />
                       )}
@@ -162,7 +168,7 @@ export default function TrackingDetailsPage() {
 
                     {/* Content Column */}
                     <div className={`flex-1 pb-2 ${isFirst ? "" : "opacity-60"}`}>
-                      <h4 className="text-base font-semibold text-[#191A43] leading-tight">
+                      <h4 className="text-base font-semibold leading-tight" style={{ color: config.theme.primary }}>
                         {statusItem.status}
                       </h4>
                       <p className="text-sm text-slate-400 mt-1 leading-relaxed">
@@ -210,7 +216,8 @@ export default function TrackingDetailsPage() {
           <Dialog>
             <DialogTrigger asChild>
               <Button
-                className="w-full bg-white border border-slate-200 text-blue-600 hover:bg-[#191A43] hover:text-white hover:border-[#191A43] transition-all duration-300 shadow-sm h-12 rounded-xl font-semibold gap-2"
+                className="w-full bg-white border border-slate-200 transition-all duration-300 shadow-sm h-12 rounded-xl font-semibold gap-2 border-0"
+                style={{ color: config.theme.primary }}
               >
                 <MessageSquare className="w-4 h-4" />
                 Send a Message
@@ -240,7 +247,10 @@ export default function TrackingDetailsPage() {
               </div>
 
               <div className="flex justify-end">
-                <Button className="w-full bg-[#191A43] hover:bg-[#191A43]/90 text-white rounded-xl h-11 font-semibold gap-2 shadow-sm">
+                <Button
+                  className="w-full text-white rounded-xl h-11 font-semibold gap-2 shadow-sm border-0"
+                  style={{ backgroundColor: config.theme.primary }}
+                >
                   <Send className="w-4 h-4" />
                   Send Message
                 </Button>

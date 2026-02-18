@@ -3,7 +3,9 @@
 import { useState } from "react"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
-import { ArrowRight, Shirt, Sparkles, Warehouse, Laptop, LucideIcon } from "lucide-react"
+import { ArrowRight, Shirt, Sparkles, Warehouse, Laptop, LucideIcon, Loader2 } from "lucide-react"
+import { useOrganization } from "@clerk/nextjs"
+import { updateOrgBusinessType } from "@/app/actions/org-metadata"
 
 import { Button } from "@/components/ui/button"
 import { SelectionCard } from "@/components/selection-card"
@@ -44,7 +46,9 @@ const HairIcon = ({ className, ...props }: React.ComponentProps<"svg">) => (
 
 export default function BusinessTypePage() {
     const [selectedType, setSelectedType] = useState<string | null>(null)
+    const [isLoading, setIsLoading] = useState(false)
     const router = useRouter()
+    const { organization } = useOrganization()
 
     const businessTypes: BusinessType[] = [
         {
@@ -73,11 +77,25 @@ export default function BusinessTypePage() {
         },
     ]
 
-    const handleNext = () => {
+    const handleNext = async () => {
         if (selectedType) {
-            // Store the selection and navigate to profile setup
-            localStorage.setItem("businessType", selectedType)
-            router.push("/onboarding/profile")
+            setIsLoading(true)
+            try {
+                // If the user is in an organization, save the business type to its metadata
+                if (organization?.id) {
+                    await updateOrgBusinessType(organization.id, selectedType)
+                }
+
+                // Store in localStorage as fallback/cache
+                localStorage.setItem("businessType", selectedType)
+                router.push("/onboarding/profile")
+            } catch (error) {
+                console.error("Failed to update business type:", error)
+                // Even if metadata sync fails, we proceed with localStorage
+                router.push("/onboarding/profile")
+            } finally {
+                setIsLoading(false)
+            }
         }
     }
 
@@ -143,7 +161,7 @@ export default function BusinessTypePage() {
                     <div className="absolute top-6 right-6 sm:top-8 sm:right-8 lg:right-12">
                         <div className="flex items-center text-xl font-bold tracking-tight">
                             <span className="text-red-600 font-black">O</span>
-                            <span className="text-[#191A43] font-bold uppercase">Tracker</span>
+                            <span className="text-[#191A43] font-bold">Tracker</span>
                         </div>
                     </div>
 
@@ -176,11 +194,17 @@ export default function BusinessTypePage() {
                         <div className="flex justify-end mt-2">
                             <Button
                                 onClick={handleNext}
-                                disabled={!selectedType}
+                                disabled={!selectedType || isLoading}
                                 className="bg-[#191A43] hover:bg-[#191A43]/90 text-white w-48 h-12 rounded-lg font-medium transition-all disabled:opacity-100 disabled:bg-gray-200 disabled:text-gray-400 text-base"
                             >
-                                Next
-                                <ArrowRight className="ml-2 h-5 w-5" />
+                                {isLoading ? (
+                                    <Loader2 className="h-5 w-5 animate-spin" />
+                                ) : (
+                                    <>
+                                        Next
+                                        <ArrowRight className="ml-2 h-5 w-5" />
+                                    </>
+                                )}
                             </Button>
                         </div>
                     </div>

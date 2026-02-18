@@ -6,6 +6,8 @@ import { Card, CardContent } from "@/components/ui/card"
 import Link from "next/link"
 import { motion } from "framer-motion"
 import type { Order } from "@/lib/storage"
+import { useState, useEffect } from "react"
+import { getBusinessConfig } from "@/lib/business-configs"
 
 interface OrderCardProps {
     order: Order
@@ -14,11 +16,17 @@ interface OrderCardProps {
 }
 
 export function OrderCard({ order, copiedId, onCopy }: OrderCardProps) {
+    const [businessType, setBusinessType] = useState<string | null>(null)
+    const config = getBusinessConfig(businessType)
+
+    useEffect(() => {
+        setBusinessType(localStorage.getItem("businessType"))
+    }, [])
     const getStatusColor = (status: string) => {
         if (status.toLowerCase().includes("delivered") || status.toLowerCase().includes("completed")) {
             return "bg-green-100 text-green-700 hover:bg-green-100/80 border-green-200"
         }
-        if (status.toLowerCase().includes("ready") || status.toLowerCase().includes("picked")) {
+        if (status.toLowerCase().includes("ready") || status.toLowerCase().includes("picked") || status.toLowerCase().includes("dispatched")) {
             return "bg-blue-100 text-blue-700 hover:bg-blue-100/80 border-blue-200"
         }
         return "bg-zinc-100 text-zinc-700 hover:bg-zinc-100/80 border-zinc-200"
@@ -39,7 +47,7 @@ export function OrderCard({ order, copiedId, onCopy }: OrderCardProps) {
                             {/* Main Info */}
                             <div className="flex-1 space-y-4">
                                 <div className="flex items-center gap-4">
-                                    <h3 className="text-xl font-bold tracking-tight text-slate-900">{order.orderNumber}</h3>
+                                    <h3 className="text-xl font-bold tracking-tight" style={{ color: config.theme.primary }}>{order.orderNumber}</h3>
                                     <Badge variant="outline" className={`rounded-full px-3 py-0.5 font-normal text-sm border ${getStatusColor(order.currentStatus)} bg-opacity-50`}>
                                         {order.currentStatus}
                                     </Badge>
@@ -55,11 +63,11 @@ export function OrderCard({ order, copiedId, onCopy }: OrderCardProps) {
                                         <span className="font-medium text-slate-700">{order.customerPhone}</span>
                                     </div>
                                     <div className="flex gap-2">
-                                        <span className="text-muted-foreground w-24 shrink-0">Item Ordered:</span>
+                                        <span className="text-muted-foreground w-24 shrink-0">{config.itemLabel}:</span>
                                         <span className="font-medium text-slate-700 capitalize">{order.garmentType}</span>
                                     </div>
                                     <div className="flex gap-2">
-                                        <span className="text-muted-foreground w-24 shrink-0">Pick Up Date:</span>
+                                        <span className="text-muted-foreground w-24 shrink-0">{config.orderLabel === "Tracking Number" ? "Pickup Date" : "Pick Up Date"}:</span>
                                         <span className="font-medium text-red-400">{order.pickupDate}</span>
                                     </div>
                                 </div>
@@ -72,7 +80,10 @@ export function OrderCard({ order, copiedId, onCopy }: OrderCardProps) {
                             {/* Actions */}
                             <div className="flex flex-col gap-3 w-full md:w-48 shrink-0">
                                 <Link href={`/backoffice/order/${order.id}`}>
-                                    <Button className="w-full bg-[#CE0003] hover:bg-[#CE0003]/90 text-white rounded-lg h-11 shadow-sm font-medium">
+                                    <Button
+                                        className="w-full text-white rounded-lg h-11 shadow-sm font-medium border-0"
+                                        style={{ backgroundColor: config.theme.secondary }}
+                                    >
                                         Update Status
                                     </Button>
                                 </Link>
@@ -87,7 +98,8 @@ export function OrderCard({ order, copiedId, onCopy }: OrderCardProps) {
 
                                 <Link href={`/backoffice/create?edit=${order.id}`}>
                                     <Button
-                                        className="w-full bg-[#191A43] hover:bg-[#191A43]/90 text-white rounded-lg h-11 shadow-sm font-medium mt-1"
+                                        className="w-full text-white rounded-lg h-11 shadow-sm font-medium mt-1 border-0"
+                                        style={{ backgroundColor: config.theme.primary }}
                                     >
                                         Edit Order
                                     </Button>

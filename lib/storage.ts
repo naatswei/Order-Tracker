@@ -19,6 +19,8 @@ export interface Order {
   createdAt: Date
   updatedAt: Date
   statusHistory: OrderStatus[]
+  businessType?: string
+  metadata?: Record<string, any>
 }
 
 // Generate unique tracking ID
@@ -29,7 +31,11 @@ export function generateTrackingId(): string {
 // Get all orders from localStorage
 export function getAllOrders(): Order[] {
   if (typeof window === "undefined") return []
-  const ordersJson = localStorage.getItem("tailoring_orders")
+
+  const currentBusinessType = localStorage.getItem("businessType") || "tailoring"
+  const storageKey = currentBusinessType === "tailoring" ? "tailoring_orders" : `orders_${currentBusinessType}`
+
+  const ordersJson = localStorage.getItem(storageKey)
   if (!ordersJson) return []
   const orders = JSON.parse(ordersJson)
   // Convert date strings back to Date objects
@@ -46,29 +52,84 @@ export function getAllOrders(): Order[] {
 
 // Get single order by ID
 export function getOrderById(id: string): Order | null {
+  // First, try to find in current context
   const orders = getAllOrders()
-  return orders.find((order) => order.id === id) || null
+  const found = orders.find((order) => order.id === id)
+  if (found) return found
+
+  // If not found (e.g., customer tracking or mismatched context), search all keys
+  if (typeof window === "undefined") return null
+
+  const allKeys = ["tailoring_orders", "orders_hair-retail", "orders_logistics", "orders_online-business"]
+  for (const key of allKeys) {
+    const ordersJson = localStorage.getItem(key)
+    if (!ordersJson) continue
+
+    const parsedOrders = JSON.parse(ordersJson)
+    const order = parsedOrders.find((o: any) => o.id === id)
+    if (order) {
+      // Return with date conversion
+      return {
+        ...order,
+        createdAt: new Date(order.createdAt),
+        updatedAt: new Date(order.updatedAt),
+        statusHistory: order.statusHistory.map((status: any) => ({
+          ...status,
+          timestamp: new Date(status.timestamp),
+        })),
+      }
+    }
+  }
+
+  return null
 }
 
 // Save order to localStorage
 export function saveOrder(order: Order): void {
-  const orders = getAllOrders()
-  const existingIndex = orders.findIndex((o) => o.id === order.id)
+  // Use the order's tagged business type if available, otherwise fallback to current session
+  const businessType = order.businessType || localStorage.getItem("businessType") || "tailoring"
+  const storageKey = businessType === "tailoring" ? "tailoring_orders" : `orders_${businessType}`
 
+  const ordersJson = localStorage.getItem(storageKey)
+  let orders: Order[] = []
+
+  if (ordersJson) {
+    orders = JSON.parse(ordersJson).map((o: any) => ({
+      ...o,
+      createdAt: new Date(o.createdAt),
+      updatedAt: new Date(o.updatedAt),
+      statusHistory: o.statusHistory.map((s: any) => ({
+        ...s,
+        timestamp: new Date(s.timestamp),
+      })),
+    }))
+  }
+
+  const existingIndex = orders.findIndex((o) => o.id === order.id)
   if (existingIndex >= 0) {
     orders[existingIndex] = order
   } else {
     orders.push(order)
   }
 
-  localStorage.setItem("tailoring_orders", JSON.stringify(orders))
+  localStorage.setItem(storageKey, JSON.stringify(orders))
 }
 
 // Delete order
 export function deleteOrder(id: string): void {
-  const orders = getAllOrders()
-  const filtered = orders.filter((order) => order.id !== id)
-  localStorage.setItem("tailoring_orders", JSON.stringify(filtered))
+  // We need to find which store this order belongs to
+  const order = getOrderById(id)
+  if (!order) return
+
+  const businessType = order.businessType || "tailoring"
+  const storageKey = businessType === "tailoring" ? "tailoring_orders" : `orders_${businessType}`
+
+  const ordersJson = localStorage.getItem(storageKey)
+  if (!ordersJson) return
+
+  const orders = JSON.parse(ordersJson)
+  const filtered = orders.filter((o: any) => o.id !== id)
+  localStorage.setItem(storageKey, JSON.stringify(filtered))
 }
 
 // Add status update to order

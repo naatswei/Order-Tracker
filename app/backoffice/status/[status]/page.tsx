@@ -11,7 +11,8 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { OrderCard } from "@/components/order-card"
 import { motion, AnimatePresence } from "framer-motion"
-import { UserButton, OrganizationSwitcher } from "@clerk/nextjs"
+import { UserButton, OrganizationSwitcher, useOrganization } from "@clerk/nextjs"
+import { getBusinessConfig } from "@/lib/business-configs"
 
 export default function StatusFilterPage() {
     const params = useParams()
@@ -21,6 +22,23 @@ export default function StatusFilterPage() {
     const [orders, setOrders] = useState<Order[]>([])
     const [loading, setLoading] = useState(true)
     const [copiedId, setCopiedId] = useState<string | null>(null)
+
+    // Business Config
+    const { organization } = useOrganization()
+    const [businessType, setBusinessType] = useState<string | null>(null)
+    const config = getBusinessConfig(businessType)
+
+    useEffect(() => {
+        // Prioritize organization metadata
+        const orgBusinessType = organization?.publicMetadata?.businessType as string
+        if (orgBusinessType) {
+            setBusinessType(orgBusinessType)
+            localStorage.setItem("businessType", orgBusinessType)
+        } else {
+            const storedType = localStorage.getItem("businessType")
+            setBusinessType(storedType)
+        }
+    }, [organization])
 
     useEffect(() => {
         loadOrders()
@@ -54,13 +72,19 @@ export default function StatusFilterPage() {
     return (
         <div className="min-h-screen bg-background font-sans selection:bg-primary/20">
             {/* Header */}
-            <div className="sticky top-0 z-50 bg-white/60 backdrop-blur-xl border-b border-white/20 shadow-sm">
+            <div
+                className="sticky top-0 z-50 bg-white/60 backdrop-blur-xl border-b border-white/20 shadow-sm"
+
+            >
                 <div className="w-full px-4 sm:px-8 py-4">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                            <Package className="text-[#191A43] w-6 h-6" />
+                            <Package className="w-6 h-6" style={{ color: config.theme.primary }} />
                             <div className="hidden sm:block">
-                                <h1 className="text-xl font-bold tracking-tight">OTracker</h1>
+                                <h1 className="text-xl font-bold tracking-tight">
+                                    <span className="text-[#CE0003]">O</span>
+                                    <span className="text-[#191A43]">Tracker</span>
+                                </h1>
                                 <p className="text-xs text-muted-foreground">Backoffice Dashboard</p>
                             </div>
                         </div>
@@ -90,19 +114,39 @@ export default function StatusFilterPage() {
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     {/* Back Button */}
                     <Link href="/backoffice" className="w-full sm:w-auto">
-                        <Button variant="outline" className="w-full sm:w-auto gap-2 text-slate-600 hover:bg-[#191A43] hover:text-[#ffffff] transition-colors justify-center">
+                        <Button variant="outline"
+                            className="w-full sm:w-auto gap-2 text-slate-600 transition-colors justify-center"
+                            style={{ '--hover-bg': config.theme.primary } as any}
+                        >
                             <ArrowLeft className="w-4 h-4" /> Back to Dashboard
                         </Button>
                     </Link>
 
                     {/* Status Filter Info */}
-                    <div className="flex items-center justify-between sm:justify-end gap-3 bg-slate-50 sm:bg-transparent p-3 sm:p-0 rounded-lg sm:rounded-none">
+                    <div className="flex flex-wrap items-center justify-between sm:justify-end gap-3 bg-slate-50 sm:bg-transparent p-3 sm:p-0 rounded-lg sm:rounded-none w-full sm:w-auto">
                         <span className="sm:hidden text-sm font-medium text-muted-foreground">Status:</span>
-                        <div className="flex items-center gap-3">
-                            <Button variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100 font-medium rounded-full px-4 h-9 cursor-default pointer-events-none">
-                                {statusFilter}
-                            </Button>
-                            <span className="text-muted-foreground text-sm">{filteredOrders.length} orders</span>
+                        <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
+                            {filteredOrders.length > 0 && (
+                                <Link href={`/backoffice/bulk?status=${encodeURIComponent(statusFilter)}`}>
+                                    <Button
+                                        className="text-white rounded-lg h-9 px-4 shadow-sm font-medium text-sm border-0"
+                                        style={{ backgroundColor: config.theme.primary }}
+                                    >
+                                        Bulk Update
+                                    </Button>
+                                </Link>
+                            )}
+
+                            <div className="flex items-center gap-3">
+                                <Button
+                                    variant="outline"
+                                    className="font-medium rounded-full px-4 h-9 cursor-default pointer-events-none border-0"
+                                    style={{ backgroundColor: `${config.theme.primary}1A`, color: config.theme.primary }}
+                                >
+                                    {statusFilter}
+                                </Button>
+                                <span className="text-muted-foreground text-sm">{filteredOrders.length} orders</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -119,9 +163,17 @@ export default function StatusFilterPage() {
                                 <CardContent className="py-20 text-center text-muted-foreground">
                                     <Package className="w-12 h-12 mx-auto mb-4 opacity-20" />
                                     <p className="font-medium">No orders found with status "{statusFilter}"</p>
-                                    <Link href="/backoffice">
-                                        <Button variant="link" className="mt-2">View All Orders</Button>
-                                    </Link>
+                                    <div className="flex items-center justify-between">
+                                        <Link href="/backoffice">
+                                            <Button
+                                                variant="outline"
+                                                className="gap-2 border-[#191A43] text-[#191A43] hover:bg-[#191A43] hover:text-white transition-all duration-200 rounded-xl shadow-sm"
+                                            >
+                                                <ArrowLeft className="w-4 h-4" />
+                                                Back to Dashboard
+                                            </Button>
+                                        </Link>
+                                    </div>
                                 </CardContent>
                             </Card>
                         </motion.div>

@@ -9,10 +9,11 @@ import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { getAllOrders, saveOrder, generateTrackingId, type Order } from "@/lib/storage"
 import Link from "next/link"
-import { UserButton, OrganizationSwitcher } from "@clerk/nextjs"
+import { UserButton, OrganizationSwitcher, useOrganization } from "@clerk/nextjs"
 import { Package, ArrowLeft } from "lucide-react"
 import { toast } from "sonner"
 import { useSearchParams, useRouter } from "next/navigation"
+import { getBusinessConfig } from "@/lib/business-configs"
 
 export default function CreateOrderPage() {
     const router = useRouter()
@@ -25,11 +26,27 @@ export default function CreateOrderPage() {
     const [customerName, setCustomerName] = useState("")
     const [customerEmail, setCustomerEmail] = useState("")
     const [customerPhone, setCustomerPhone] = useState("")
-    const [garmentType, setGarmentType] = useState("")
+    const [itemType, setItemType] = useState("")
     const [pickupDate, setPickupDate] = useState("")
     const [measurements, setMeasurements] = useState("")
+    const [metadata, setMetadata] = useState<Record<string, any>>({})
+
+    // Business Config
+    const { organization } = useOrganization()
+    const [businessType, setBusinessType] = useState<string | null>(null)
+    const config = getBusinessConfig(businessType)
 
     useEffect(() => {
+        // Prioritize organization metadata
+        const orgBusinessType = organization?.publicMetadata?.businessType as string
+        if (orgBusinessType) {
+            setBusinessType(orgBusinessType)
+            localStorage.setItem("businessType", orgBusinessType)
+        } else {
+            const storedType = localStorage.getItem("businessType")
+            setBusinessType(storedType)
+        }
+
         const editId = searchParams.get("edit")
         if (editId) {
             const allOrders = getAllOrders()
@@ -40,9 +57,10 @@ export default function CreateOrderPage() {
                 setCustomerName(orderToEdit.customerName)
                 setCustomerEmail(orderToEdit.customerEmail)
                 setCustomerPhone(orderToEdit.customerPhone)
-                setGarmentType(orderToEdit.garmentType)
+                setItemType(orderToEdit.garmentType)
                 setPickupDate(orderToEdit.pickupDate || "")
                 setMeasurements(orderToEdit.measurements)
+                setMetadata(orderToEdit.metadata || {})
             }
         }
     }, [searchParams])
@@ -63,10 +81,10 @@ export default function CreateOrderPage() {
                     customerName,
                     customerEmail,
                     customerPhone,
-                    garmentType,
                     pickupDate,
                     measurements,
                     updatedAt: now,
+                    metadata: { ...existingOrder.metadata, ...metadata },
                 }
                 saveOrder(updatedOrder)
                 toast.success("Order details updated")
@@ -80,19 +98,21 @@ export default function CreateOrderPage() {
                 customerName,
                 customerEmail,
                 customerPhone,
-                garmentType,
+                garmentType: itemType,
                 pickupDate,
                 measurements,
-                currentStatus: "Order Received",
+                metadata,
+                businessType: localStorage.getItem("businessType") || "tailoring",
+                currentStatus: config.defaultStatus,
                 createdAt: now,
                 updatedAt: now,
                 statusHistory: [
                     {
                         id: generateTrackingId(),
                         timestamp: now,
-                        status: "Order Received",
-                        location: "Factory",
-                        message: "Your order has been received and is being processed",
+                        status: config.defaultStatus,
+                        location: config.defaultLocation,
+                        message: config.defaultMessage,
                     },
                 ],
             }
@@ -106,20 +126,26 @@ export default function CreateOrderPage() {
     const hasRequiredFields =
         customerName.trim() !== "" &&
         customerPhone.trim() !== "" &&
-        garmentType.trim() !== "" &&
+        itemType.trim() !== "" &&
         orderNumber.trim() !== "" &&
         pickupDate.trim() !== ""
 
     return (
         <div className="min-h-screen bg-background font-sans selection:bg-primary/20">
             {/* Header */}
-            <div className="sticky top-0 z-50 bg-white/60 backdrop-blur-xl border-b border-white/20 shadow-sm">
+            <div
+                className="sticky top-0 z-50 bg-white/60 backdrop-blur-xl border-b border-white/20 shadow-sm"
+
+            >
                 <div className="w-full px-[30px] py-4">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                            <Package className="text-[#191A43] w-6 h-6" />
+                            <Package className="w-6 h-6" style={{ color: config.theme.primary }} />
                             <div className="hidden sm:block">
-                                <h1 className="text-xl font-bold tracking-tight">OTracker</h1>
+                                <h1 className="text-xl font-bold tracking-tight">
+                                    <span className="text-[#CE0003]">O</span>
+                                    <span className="text-[#191A43]">Tracker</span>
+                                </h1>
                                 <p className="text-xs text-muted-foreground">Backoffice Dashboard</p>
                             </div>
                         </div>
@@ -148,8 +174,12 @@ export default function CreateOrderPage() {
             <div className="container mx-auto px-4 py-8 max-w-[1400px] space-y-6">
                 <div>
                     <Link href="/backoffice">
-                        <Button variant="outline" className="gap-2 mb-4 border-slate-300 hover:border-[#191A43] hover:bg-[#191A43] hover:text-white transition-all shadow-sm bg-white/50">
-                            <ArrowLeft className="w-4 h-4" /> Back to Dashboard
+                        <Button
+                            variant="outline"
+                            className="gap-2 mb-4 border-[#191A43] text-[#191A43] hover:bg-[#191A43] hover:text-white transition-all shadow-sm duration-200 rounded-xl"
+                        >
+                            <ArrowLeft className="w-4 h-4" />
+                            Back to Dashboard
                         </Button>
                     </Link>
                 </div>
@@ -163,9 +193,9 @@ export default function CreateOrderPage() {
                         <form onSubmit={handleSubmit} className="space-y-6">
                             <div className="grid md:grid-cols-2 gap-6">
                                 <div className="space-y-2">
-                                    <Label htmlFor="customerName" className="ml-1 text-xs font-semibold uppercase text-muted-foreground tracking-wider">Customer Name <span className="text-red-500">*</span></Label>
+                                    <Label htmlFor={`${businessType}-customerName`} className="ml-1 text-xs font-semibold uppercase text-muted-foreground tracking-wider">Customer Name <span className="text-red-500">*</span></Label>
                                     <Input
-                                        id="customerName"
+                                        id={`${businessType}-customerName`}
                                         value={customerName}
                                         onChange={(e) => setCustomerName(e.target.value)}
                                         placeholder="Naa"
@@ -175,9 +205,9 @@ export default function CreateOrderPage() {
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label htmlFor="customerPhone" className="ml-1 text-xs font-semibold uppercase text-muted-foreground tracking-wider">Customer Contact <span className="text-red-500">*</span></Label>
+                                    <Label htmlFor={`${businessType}-customerPhone`} className="ml-1 text-xs font-semibold uppercase text-muted-foreground tracking-wider">Customer Contact <span className="text-red-500">*</span></Label>
                                     <Input
-                                        id="customerPhone"
+                                        id={`${businessType}-customerPhone`}
                                         type="tel"
                                         value={customerPhone}
                                         onChange={(e) => setCustomerPhone(e.target.value)}
@@ -188,33 +218,33 @@ export default function CreateOrderPage() {
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label htmlFor="garmentType" className="ml-1 text-xs font-semibold uppercase text-muted-foreground tracking-wider">Order Item <span className="text-red-500">*</span></Label>
+                                    <Label htmlFor={`${businessType}-itemType`} className="ml-1 text-xs font-semibold uppercase text-muted-foreground tracking-wider">{config.itemLabel} <span className="text-red-500">*</span></Label>
                                     <Input
-                                        id="garmentType"
-                                        value={garmentType}
-                                        onChange={(e) => setGarmentType(e.target.value)}
-                                        placeholder="Dress"
+                                        id={`${businessType}-itemType`}
+                                        value={itemType}
+                                        onChange={(e) => setItemType(e.target.value)}
+                                        placeholder={config.itemPlaceholder}
                                         required
                                         className="h-12 rounded-xl bg-white/50 border-zinc-200 focus-visible:ring-primary/20"
                                     />
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label htmlFor="orderNumber" className="ml-1 text-xs font-semibold uppercase text-muted-foreground tracking-wider">Order Number <span className="text-red-500">*</span></Label>
+                                    <Label htmlFor={`${businessType}-orderNumber`} className="ml-1 text-xs font-semibold uppercase text-muted-foreground tracking-wider">{config.orderLabel} <span className="text-red-500">*</span></Label>
                                     <Input
-                                        id="orderNumber"
+                                        id={`${businessType}-orderNumber`}
                                         value={orderNumber}
                                         onChange={(e) => setOrderNumber(e.target.value)}
-                                        placeholder="eg., KT350001"
+                                        placeholder={config.orderPlaceholder}
                                         required
                                         className="h-12 rounded-xl bg-white/50 border-zinc-200 focus-visible:ring-primary/20"
                                     />
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label htmlFor="pickupDate" className="ml-1 text-xs font-semibold uppercase text-muted-foreground tracking-wider">Pick Up Date <span className="text-red-500">*</span></Label>
+                                    <Label htmlFor={`${businessType}-pickupDate`} className="ml-1 text-xs font-semibold uppercase text-muted-foreground tracking-wider">{config.orderLabel === "Tracking Number" ? "Date" : "Pick Up Date"} <span className="text-red-500">*</span></Label>
                                     <Input
-                                        id="pickupDate"
+                                        id={`${businessType}-pickupDate`}
                                         value={pickupDate}
                                         onChange={(e) => setPickupDate(e.target.value)}
                                         placeholder="7/20/2025"
@@ -224,9 +254,9 @@ export default function CreateOrderPage() {
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label htmlFor="customerEmail" className="ml-1 text-xs font-semibold uppercase text-muted-foreground tracking-wider">Customer Email</Label>
+                                    <Label htmlFor={`${businessType}-customerEmail`} className="ml-1 text-xs font-semibold uppercase text-muted-foreground tracking-wider">Customer Email</Label>
                                     <Input
-                                        id="customerEmail"
+                                        id={`${businessType}-customerEmail`}
                                         type="email"
                                         value={customerEmail}
                                         onChange={(e) => setCustomerEmail(e.target.value)}
@@ -234,6 +264,20 @@ export default function CreateOrderPage() {
                                         className="h-12 rounded-xl bg-white/50 border-zinc-200 focus-visible:ring-primary/20"
                                     />
                                 </div>
+
+                                {config.extraFields?.map((field) => (
+                                    <div key={field.id} className="space-y-2">
+                                        <Label htmlFor={`${businessType}-${field.id}`} className="ml-1 text-xs font-semibold uppercase text-muted-foreground tracking-wider">{field.label}</Label>
+                                        <Input
+                                            id={`${businessType}-${field.id}`}
+                                            type={field.type === "number" ? "number" : "text"}
+                                            value={metadata[field.id] || ""}
+                                            onChange={(e) => setMetadata({ ...metadata, [field.id]: e.target.value })}
+                                            placeholder={field.placeholder}
+                                            className="h-12 rounded-xl bg-white/50 border-zinc-200 focus-visible:ring-primary/20"
+                                        />
+                                    </div>
+                                ))}
                             </div>
 
                             <div className="space-y-2">
@@ -253,12 +297,12 @@ export default function CreateOrderPage() {
                                     type="submit"
                                     size="lg"
                                     disabled={!editingId && !hasRequiredFields}
-                                    className={`w-full md:w-auto min-w-[200px] h-12 rounded-xl text-base font-semibold transition-all ${!editingId
-                                        ? hasRequiredFields
-                                            ? "bg-[#CE0003] hover:bg-[#CE0003]/90 text-white shadow-lg shadow-primary/20"
-                                            : "bg-white/50 border-2 border-slate-200 text-[#191A43] shadow-md hover:shadow-lg"
-                                        : "bg-[#191A43] hover:bg-[#191A43]/90 text-white shadow-lg shadow-primary/20"
-                                        }`}
+                                    className={`w-full md:w-auto min-w-[200px] h-12 rounded-xl text-base font-semibold transition-all duration-200 border-0 text-white hover:brightness-95 shadow-md`}
+                                    style={{
+                                        backgroundColor: !editingId
+                                            ? (hasRequiredFields ? config.theme.secondary : '#cbd5e1')
+                                            : config.theme.primary
+                                    }}
                                 >
                                     {editingId ? "Update Order" : "Create Order"}
                                 </Button>

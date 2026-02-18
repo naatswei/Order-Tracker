@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "../../../components/ui/checkbox"
 import { Badge } from "@/components/ui/badge"
@@ -13,8 +13,9 @@ import Image from "next/image"
 import { Package, ArrowLeft, MoreHorizontal, ExternalLink, Copy, Trash2, Eye, X, Check } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { toast } from "sonner"
-import { useRouter } from "next/navigation"
-import { OrganizationSwitcher, UserButton } from "@clerk/nextjs"
+import { useRouter, useSearchParams } from "next/navigation"
+import { OrganizationSwitcher, UserButton, useOrganization } from "@clerk/nextjs"
+import { getBusinessConfig } from "@/lib/business-configs"
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -22,14 +23,31 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
-const QUICK_STATUSES = [
-    "Order Received", "Measurement Taken", "Production", "Quality Checks", "First Fitting",
-    "Second Fitting", "Third Fitting", "Completed", "Out for Delivery", "Delivered",
-    "Pending", "Refunded", "Order Cancelled", "Order Delayed"
-]
+// Initial statuses are now handled dynamically via business-configs
+const QUICK_STATUSES: string[] = []
 
 export default function BulkUpdatePage() {
+    return (
+        <Suspense fallback={<div className="min-h-screen bg-background flex items-center justify-center"><p className="text-muted-foreground animate-pulse">Loading...</p></div>}>
+            <BulkUpdateContent />
+        </Suspense>
+    )
+}
+
+function BulkUpdateContent() {
     const router = useRouter()
+    const searchParams = useSearchParams()
+
+    // Get filters from search params
+    const statusFilter = searchParams.get("status")
+    const searchQuery = searchParams.get("search")
+
+    // Business Config
+    const { organization } = useOrganization()
+    const [businessType, setBusinessType] = useState<string | null>(null)
+    const config = getBusinessConfig(businessType)
+    const QUICK_STATUSES = config.statuses
+
     const [orders, setOrders] = useState<Order[]>([])
     const [selectedIds, setSelectedIds] = useState<string[]>([])
     const [copiedId, setCopiedId] = useState<string | null>(null)
@@ -44,12 +62,40 @@ export default function BulkUpdatePage() {
     const [message, setMessage] = useState("")
 
     useEffect(() => {
+        // Prioritize organization metadata
+        const orgBusinessType = organization?.publicMetadata?.businessType as string
+        if (orgBusinessType) {
+            setBusinessType(orgBusinessType)
+            localStorage.setItem("businessType", orgBusinessType)
+        } else {
+            const storedType = localStorage.getItem("businessType")
+            setBusinessType(storedType)
+        }
         loadOrders()
-    }, [])
+    }, [organization])
 
     const loadOrders = () => {
         const allOrders = getAllOrders()
-        setOrders(allOrders.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()))
+        let filteredOrders = allOrders.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+
+        // Apply filters if they exist
+        if (statusFilter) {
+            filteredOrders = filteredOrders.filter(o => o.currentStatus === statusFilter)
+        } else if (searchQuery) {
+            const query = searchQuery.toLowerCase()
+            filteredOrders = filteredOrders.filter(o =>
+                o.customerName.toLowerCase().includes(query) ||
+                o.orderNumber.toLowerCase().includes(query) ||
+                o.id.toLowerCase().includes(query)
+            )
+        }
+
+        setOrders(filteredOrders)
+
+        // Pre-select all if a filter is active
+        if (statusFilter || searchQuery) {
+            setSelectedIds(filteredOrders.map(o => o.id))
+        }
     }
 
     const toggleSelectAll = () => {
@@ -112,7 +158,7 @@ export default function BulkUpdatePage() {
                     id: generateTrackingId(),
                     timestamp: now,
                     status: customStatus,
-                    location: location || "Processing Center", // Default if empty
+                    location: location || config.defaultLocation,
                     message: message || `Order status updated to ${customStatus}`,
                 }]
 
@@ -147,7 +193,7 @@ export default function BulkUpdatePage() {
         if (status.toLowerCase().includes("delivered") || status.toLowerCase().includes("completed")) {
             return "bg-green-100 text-green-700 border-green-200"
         }
-        if (status.toLowerCase().includes("ready") || status.toLowerCase().includes("picked")) {
+        if (status.toLowerCase().includes("ready") || status.toLowerCase().includes("picked") || status.toLowerCase().includes("dispatched")) {
             return "bg-blue-100 text-blue-700 border-blue-200"
         }
         return "bg-zinc-100 text-zinc-700 border-zinc-200"
@@ -156,13 +202,19 @@ export default function BulkUpdatePage() {
     return (
         <div className="min-h-screen bg-background font-sans selection:bg-primary/20">
             {/* Header */}
-            <div className="sticky top-0 z-50 bg-white/60 backdrop-blur-xl border-b border-white/20 shadow-sm">
+            <div
+                className="sticky top-0 z-50 bg-white/60 backdrop-blur-xl border-b border-white/20 shadow-sm"
+
+            >
                 <div className="w-full px-[30px] py-4">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                            <Package className="text-[#191A43] w-6 h-6" />
+                            <Package className="w-6 h-6" style={{ color: config.theme.primary }} />
                             <div className="hidden sm:block">
-                                <h1 className="text-xl font-bold tracking-tight">OTracker</h1>
+                                <h1 className="text-xl font-bold tracking-tight">
+                                    <span className="text-[#CE0003]">O</span>
+                                    <span className="text-[#191A43]">Tracker</span>
+                                </h1>
                                 <p className="text-xs text-muted-foreground">Backoffice Dashboard</p>
                             </div>
                         </div>
@@ -194,7 +246,9 @@ export default function BulkUpdatePage() {
                 {!isUpdating && (
                     <div className="flex items-center justify-between">
                         <Link href="/backoffice">
-                            <Button variant="outline" className="gap-2 rounded-xl h-10 px-4 border-slate-200 shadow-sm hover:bg-[#191A43] hover:text-[#ffffff] transition-colors">
+                            <Button variant="outline"
+                                className="gap-2 rounded-xl h-10 px-4 border-[#191A43] text-[#191A43] hover:bg-[#191A43] hover:text-white shadow-sm transition-all duration-200"
+                            >
                                 <ArrowLeft className="w-4 h-4" />
                                 Back to Dashboard
                             </Button>
@@ -206,7 +260,7 @@ export default function BulkUpdatePage() {
                     <>
                         <div className="flex justify-end">
                             <Button
-                                className="bg-blue-500 hover:bg-blue-600 text-white rounded-xl h-11 px-6 shadow-sm font-medium"
+                                className="text-white rounded-xl h-11 px-6 shadow-sm font-medium border-0 bg-[#2B7FFF] hover:bg-[#2B7FFF]/90 transition-all duration-200"
                                 onClick={handleBulkUpdateClick}
                                 disabled={selectedIds.length === 0}
                             >
@@ -218,11 +272,14 @@ export default function BulkUpdatePage() {
                         <div className="space-y-2">
                             <h3 className="text-sm font-medium text-slate-500 ml-1">Click to select all</h3>
                             <div
-                                className="w-full bg-blue-50/50 border border-blue-100 rounded-xl h-16 flex items-center px-6 cursor-pointer hover:bg-blue-50 transition-colors"
+                                className="w-full bg-slate-50 border border-slate-100 rounded-xl h-16 flex items-center px-6 cursor-pointer hover:bg-slate-100 transition-colors"
                                 onClick={toggleSelectAll}
                             >
                                 <div className="flex items-center gap-4">
-                                    <div className={`w-6 h-6 rounded-md border-2 flex items-center justify-center transition-all ${selectedIds.length === orders.length && orders.length > 0 ? 'bg-blue-500 border-blue-500' : 'border-slate-300 bg-white'}`}>
+                                    <div
+                                        className={`w-6 h-6 rounded-md border-2 flex items-center justify-center transition-all ${selectedIds.length === orders.length && orders.length > 0 ? 'border-transparent' : 'border-slate-300 bg-white'}`}
+                                        style={{ backgroundColor: selectedIds.length === orders.length && orders.length > 0 ? '#2B7FFF' : undefined }}
+                                    >
                                         {selectedIds.length === orders.length && orders.length > 0 && <span className="text-white text-lg leading-none pb-1">✓</span>}
                                     </div>
                                 </div>
@@ -243,7 +300,10 @@ export default function BulkUpdatePage() {
                                             className="mt-1 md:mt-0 cursor-pointer p-2 -ml-2 hover:bg-slate-100 rounded-full"
                                             onClick={() => toggleSelectOne(order.id)}
                                         >
-                                            <div className={`w-6 h-6 rounded-md border-2 flex items-center justify-center transition-all ${selectedIds.includes(order.id) ? 'bg-blue-500 border-blue-500' : 'border-slate-300 bg-white'}`}>
+                                            <div
+                                                className={`w-6 h-6 rounded-md border-2 flex items-center justify-center transition-all ${selectedIds.includes(order.id) ? 'border-transparent' : 'border-slate-300 bg-white'}`}
+                                                style={{ backgroundColor: selectedIds.includes(order.id) ? '#2B7FFF' : undefined, borderColor: selectedIds.includes(order.id) ? '#2B7FFF' : undefined }}
+                                            >
                                                 {selectedIds.includes(order.id) && <span className="text-white text-lg leading-none pb-1">✓</span>}
                                             </div>
                                         </div>
@@ -267,7 +327,7 @@ export default function BulkUpdatePage() {
                                                     <span className="font-medium text-slate-900">{order.customerPhone}</span>
                                                 </div>
                                                 <div className="flex gap-2">
-                                                    <span className="text-slate-400 w-24 shrink-0">Item Ordered:</span>
+                                                    <span className="text-slate-400 w-24 shrink-0">{config.itemLabel}:</span>
                                                     <span className="font-medium text-slate-900 whitespace-nowrap">{order.garmentType}</span>
                                                 </div>
                                                 <div className="flex gap-2">
@@ -284,7 +344,10 @@ export default function BulkUpdatePage() {
                                         {/* Actions */}
                                         <div className="flex flex-col gap-2 w-full md:w-auto md:min-w-[140px] pt-4 md:pt-0 border-t md:border-t-0 mt-2 md:mt-0 border-slate-100">
                                             <Link href={`/backoffice/order/${order.id}`}>
-                                                <Button className="w-full bg-[#CE0003] hover:bg-[#CE0003]/90 text-white text-xs h-8 rounded-lg">
+                                                <Button
+                                                    className="w-full text-white text-xs h-8 rounded-lg border-0"
+                                                    style={{ backgroundColor: config.theme.secondary }}
+                                                >
                                                     Update Status
                                                 </Button>
                                             </Link>
@@ -297,15 +360,10 @@ export default function BulkUpdatePage() {
                                                 Copy Link
                                             </Button>
 
-                                            <Link href={`/track/${order.id}`} target="_blank">
-                                                <Button variant="outline" className="w-full text-xs h-8 rounded-lg bg-white border-slate-200 text-slate-700">
-                                                    View Tracking
-                                                </Button>
-                                            </Link>
-
-                                            <Link href={`/backoffice?edit=${order.id}`}>
+                                            <Link href={`/backoffice/create?edit=${order.id}`}>
                                                 <Button
-                                                    className="w-full text-xs h-8 rounded-lg bg-[#191A43] hover:bg-[#191A43]/90 text-white mt-1"
+                                                    className="w-full text-xs h-8 rounded-lg text-white mt-1 border-0"
+                                                    style={{ backgroundColor: config.theme.primary }}
                                                 >
                                                     Edit Order
                                                 </Button>
@@ -364,8 +422,8 @@ export default function BulkUpdatePage() {
                                             key={status}
                                             variant="outline"
                                             onClick={() => handleQuickStatusClick(status)}
-                                            className={`h-11 px-6 rounded-lg border text-sm font-medium transition-all ${selectedStatus === status
-                                                ? "bg-[#C084FC] text-white border-[#C084FC] hover:bg-[#C084FC]/90 shadow-md shadow-purple-200"
+                                            className={`h-11 px-6 rounded-lg border text-sm font-medium transition-all duration-200 ${selectedStatus === status
+                                                ? "text-white shadow-md border-0 bg-[#2B7FFF] hover:bg-[#2B7FFF]/90"
                                                 : "bg-white border-slate-200 text-slate-600 hover:bg-slate-50 hover:border-slate-300"
                                                 }`}
                                         >
@@ -414,10 +472,7 @@ export default function BulkUpdatePage() {
                             {/* Actions */}
                             <div className="flex flex-col md:flex-row gap-4 pt-4">
                                 <Button
-                                    className={`flex-1 h-12 rounded-lg font-semibold text-base transition-all ${customStatus
-                                        ? "bg-[#C084FC] hover:bg-[#A855F7] text-white shadow-lg shadow-purple-200"
-                                        : "bg-slate-100 text-slate-400 hover:bg-slate-200"
-                                        }`}
+                                    className={`flex-1 h-12 rounded-lg font-semibold text-base transition-all duration-200 border-0 text-white shadow-md ${customStatus ? 'bg-[#2B7FFF] hover:bg-[#2B7FFF]/90' : 'bg-slate-200 cursor-not-allowed'}`}
                                     onClick={handleSubmitUpdate}
                                     disabled={!customStatus}
                                 >

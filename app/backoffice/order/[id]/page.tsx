@@ -14,7 +14,8 @@ import { getOrderById, addStatusUpdate, type Order } from "@/lib/storage"
 import Link from "next/link"
 import { ArrowLeft, MapPin, Clock, User, Phone, Mail, Shirt, Info, Package } from "lucide-react"
 import { motion } from "framer-motion"
-import { UserButton, OrganizationSwitcher } from "@clerk/nextjs"
+import { UserButton, OrganizationSwitcher, useOrganization } from "@clerk/nextjs"
+import { getBusinessConfig } from "@/lib/business-configs"
 
 export default function OrderUpdatePage() {
   const params = useParams()
@@ -29,13 +30,23 @@ export default function OrderUpdatePage() {
   const [location, setLocation] = useState("")
   const [message, setMessage] = useState("")
 
-  // Quick status options (Pills)
-  const quickStatuses = [
-    "Order Received", "Measurement Taken", "Production", "Quality Checks",
-    "First Fitting", "Second Fitting", "Third Fitting", "Completed",
-    "Out for Delivery", "Delivered", "Pending", "Refunded",
-    "Order Cancelled", "Apologies: Order Delayed"
-  ]
+  // Business Config
+  const { organization } = useOrganization()
+  const [businessType, setBusinessType] = useState<string | null>(null)
+  const config = getBusinessConfig(businessType)
+  const quickStatuses = config.statuses
+
+  useEffect(() => {
+    // Prioritize organization metadata
+    const orgBusinessType = organization?.publicMetadata?.businessType as string
+    if (orgBusinessType) {
+      setBusinessType(orgBusinessType)
+      localStorage.setItem("businessType", orgBusinessType)
+    } else {
+      const storedType = localStorage.getItem("businessType")
+      setBusinessType(storedType)
+    }
+  }, [organization])
 
   useEffect(() => {
     if (orderId) {
@@ -106,10 +117,10 @@ export default function OrderUpdatePage() {
     if (statusText.toLowerCase().includes("delivered") || statusText.toLowerCase().includes("completed")) {
       return "text-green-600 bg-green-50 border-green-200"
     }
-    if (statusText.toLowerCase().includes("production") || statusText.toLowerCase().includes("manufacturing")) {
+    if (statusText.toLowerCase().includes("ready") || statusText.toLowerCase().includes("picked") || statusText.toLowerCase().includes("transit") || statusText.toLowerCase().includes("dispatched")) {
       return "text-blue-600 bg-blue-50 border-blue-200"
     }
-    return "text-blue-600 bg-blue-50 border-blue-200"
+    return "text-slate-600 bg-slate-50 border-slate-200"
   }
 
   return (
@@ -119,11 +130,14 @@ export default function OrderUpdatePage() {
         <div className="w-full px-4 sm:px-8 py-4">
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-blue-50/50 rounded-xl flex items-center justify-center shrink-0 border border-blue-100">
-                <Package className="text-blue-600 w-5 h-5" />
+              <div
+                className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border"
+                style={{ backgroundColor: `${config.theme.primary}1A`, borderColor: `${config.theme.primary}33` }}
+              >
+                <Package className="w-5 h-5" style={{ color: config.theme.primary }} />
               </div>
               <div className="hidden sm:block">
-                <h1 className="text-xl font-bold text-slate-900 tracking-tight">Track Order</h1>
+                <h1 className="text-xl font-bold tracking-tight" style={{ color: config.theme.primary }}>Track Order</h1>
                 <p className="text-sm text-slate-500">Add a new status update to this order</p>
               </div>
               <div className="sm:hidden">
@@ -158,10 +172,14 @@ export default function OrderUpdatePage() {
 
         <div className="grid lg:grid-cols-12 gap-6 sm:gap-8">
           {/* Back Button */}
-          <div className="lg:col-span-12 mb-2">
-            <Link href="/backoffice" className="block sm:inline-block">
-              <Button variant="outline" className="w-full sm:w-auto bg-white border-slate-200 text-slate-700 hover:bg-slate-50 shadow-sm rounded-lg px-6 justify-center sm:justify-start">
-                <ArrowLeft className="w-4 h-4 mr-2" /> Back to Dashboard
+          <div className="flex items-center justify-between">
+            <Link href="/backoffice">
+              <Button
+                variant="outline"
+                className="gap-2 border-[#191A43] text-[#191A43] hover:bg-[#191A43] hover:text-white transition-all duration-200 rounded-xl shadow-sm"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                Back to Dashboard
               </Button>
             </Link>
           </div>
@@ -169,10 +187,10 @@ export default function OrderUpdatePage() {
           <div className="lg:col-span-4 space-y-6">
             {/* Order Summary Card */}
             <Card className="bg-white border-slate-100 shadow-sm rounded-2xl overflow-hidden">
-              <div className="p-6 border-l-4 border-blue-500">
+              <div className="p-6 border-l-4" style={{ borderLeftColor: config.theme.accent }}>
                 <div className="flex items-start justify-between mb-6">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center text-blue-600">
+                    <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ backgroundColor: `${config.theme.primary}1A`, color: config.theme.primary }}>
                       <Package className="w-5 h-5" />
                     </div>
                     <div>
@@ -222,7 +240,14 @@ export default function OrderUpdatePage() {
                 <div className="relative pl-4 space-y-8 before:absolute before:left-[21px] before:top-2 before:bottom-2 before:w-px before:bg-slate-200">
                   {order.statusHistory.map((historyItem, index) => (
                     <div key={index} className="relative flex gap-4">
-                      <div className={`w-3.5 h-3.5 mt-1.5 rounded-full border-2 bg-white shrink-0 z-10 ${index === 0 ? "border-blue-500 ring-4 ring-blue-50" : "border-slate-300"}`} />
+                      <div
+                        className={`w-3.5 h-3.5 mt-1.5 rounded-full border-2 bg-white shrink-0 z-10 ${index === 0 ? "ring-4" : "border-slate-300"}`}
+                        style={{
+                          borderColor: index === 0 ? config.theme.primary : undefined,
+                          backgroundColor: index === 0 ? '#fff' : undefined,
+                          boxShadow: index === 0 ? `0 0 0 4px ${config.theme.primary}1A` : undefined
+                        }}
+                      />
                       <div className="space-y-1">
                         <div className="text-sm font-bold text-slate-900">{historyItem.status}</div>
                         <div className="flex items-center gap-1 text-xs text-slate-500">
@@ -250,12 +275,13 @@ export default function OrderUpdatePage() {
                 <div>
                   <div className="text-sm font-medium text-slate-500 mb-4">Quick Status Options</div>
                   <div className="flex flex-wrap gap-3">
-                    {quickStatuses.map((qs) => (
+                    {quickStatuses.map((qs: string) => (
                       <button
                         key={qs}
                         type="button"
                         onClick={() => handleQuickStatus(qs)}
-                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-all shadow-sm border ${status === qs ? "bg-blue-500 text-white border-blue-500 shadow-blue-200" : "bg-white text-slate-700 border-slate-200 hover:bg-slate-50 hover:border-slate-300"}`}
+                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-all shadow-sm border ${status === qs ? "text-white border-0" : "bg-white text-slate-700 border-slate-200 hover:bg-slate-50 hover:border-slate-300"}`}
+                        style={{ backgroundColor: status === qs ? config.theme.accent : undefined }}
                       >
                         {qs}
                       </button>
@@ -300,10 +326,8 @@ export default function OrderUpdatePage() {
                       type="submit"
                       size="lg"
                       disabled={!status}
-                      className={`order-1 sm:order-2 flex-1 h-12 text-base font-semibold rounded-lg transition-all ${status
-                        ? "bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-600/20"
-                        : "bg-slate-100 text-slate-400 hover:bg-slate-200 shadow-none cursor-not-allowed"
-                        }`}
+                      className={`order-1 sm:order-2 flex-1 h-12 text-base font-semibold rounded-lg transition-all text-white border-0`}
+                      style={{ backgroundColor: status ? config.theme.accent : '#f1f5f9' }}
                     >
                       Add Status Update
                     </Button>
