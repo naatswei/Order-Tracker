@@ -11,7 +11,7 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useEffect } from "react"
 import { getBusinessConfig } from "@/lib/business-configs"
-import { Footer } from "@/components/footer"
+
 
 export default function TrackPage() {
   const [trackingId, setTrackingId] = useState("")
@@ -82,7 +82,7 @@ export default function TrackPage() {
           </div>
         </div>
       </div>
-      <Footer />
+
     </div>
   )
 }

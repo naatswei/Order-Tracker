@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -15,7 +15,7 @@ import { toast } from "sonner"
 import { useSearchParams, useRouter } from "next/navigation"
 import { getBusinessConfig } from "@/lib/business-configs"
 
-export default function CreateOrderPage() {
+function CreateOrderContent() {
     const router = useRouter()
     const searchParams = useSearchParams()
 
@@ -315,5 +315,17 @@ export default function CreateOrderPage() {
                 </Card>
             </div>
         </div>
+    )
+}
+
+export default function CreateOrderPage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen bg-background flex items-center justify-center">
+                <p className="text-muted-foreground">Loading form...</p>
+            </div>
+        }>
+            <CreateOrderContent />
+        </Suspense>
     )
 }
