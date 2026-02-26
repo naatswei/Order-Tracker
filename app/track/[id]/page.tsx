@@ -8,7 +8,6 @@ import { Badge } from "@/components/ui/badge"
 import { getOrderById, type Order } from "@/lib/storage"
 import Link from "next/link"
 import { getBusinessConfig } from "@/lib/business-configs"
-import { Footer } from "@/components/footer"
 import { toast } from "sonner"
 import {
   Dialog,
@@ -295,7 +294,6 @@ export default function TrackingDetailsPage() {
           </Dialog>
         </div>
       </div>
-      <Footer />
     </div>
   )
 }

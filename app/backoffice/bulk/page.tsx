@@ -16,7 +16,6 @@ import { toast } from "sonner"
 import { useRouter, useSearchParams } from "next/navigation"
 import { OrganizationSwitcher, UserButton, useOrganization } from "@clerk/nextjs"
 import { getBusinessConfig } from "@/lib/business-configs"
-import { Footer } from "@/components/footer"
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -216,8 +215,8 @@ function BulkUpdateContent() {
                             <Package className="w-6 h-6" style={{ color: config.theme.primary }} />
                             <div className="hidden sm:block">
                                 <h1 className="text-xl font-bold tracking-tight">
-                                    <span style={{ color: config.theme.secondary }}>O</span>
-                                    <span style={{ color: config.theme.primary }}>Tracker</span>
+                                    <span className="text-[#CE0003]">O</span>
+                                    <span className="text-[#191A43]">Tracker</span>
                                 </h1>
                                 <p className="text-xs text-muted-foreground">Backoffice Dashboard</p>
                             </div>
@@ -503,7 +502,6 @@ function BulkUpdateContent() {
                     </motion.div>
                 )}
             </div>
-            <Footer />
         </div>
     )
 }

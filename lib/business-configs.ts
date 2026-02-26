@@ -127,16 +127,16 @@ export const BUSINESS_CONFIGS: Record<string, BusinessConfig> = {
         defaultStatus: "Order Received",
         defaultLocation: "Processing Center",
         defaultMessage: "We've received your order and are getting it ready for shipment.",
-        orderLabel: "Order ID",
+        orderLabel: "Order Number",
         orderPrefix: "OB",
         orderPlaceholder: "eg., OB2044",
-        searchPlaceholder: "Search by order ID, customer",
+        searchPlaceholder: "Search by order number, customer name",
         dashboardTitle: "Active Online Orders",
         theme: {
-            primary: "#2D3748", // Charcoal
-            secondary: "#4FD1C5", // Teal
-            accent: "#4FD1C5", // Teal
-            text: "#2D3748"
+            primary: "#191A43", // Navy
+            secondary: "#CE0003", // Red
+            accent: "#CE0003", // Red
+            text: "#191A43"
         },
         extraFields: [
             { id: "quantity", label: "Quantity", placeholder: "1", type: "number" },

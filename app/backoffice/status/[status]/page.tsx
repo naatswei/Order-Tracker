@@ -13,7 +13,6 @@ import { OrderCard } from "@/components/order-card"
 import { motion, AnimatePresence } from "framer-motion"
 import { UserButton, OrganizationSwitcher, useOrganization } from "@clerk/nextjs"
 import { getBusinessConfig } from "@/lib/business-configs"
-import { Footer } from "@/components/footer"
 
 export default function StatusFilterPage() {
     const params = useParams()
@@ -86,8 +85,8 @@ export default function StatusFilterPage() {
                             <Package className="w-6 h-6" style={{ color: config.theme.primary }} />
                             <div className="hidden sm:block">
                                 <h1 className="text-xl font-bold tracking-tight">
-                                    <span style={{ color: config.theme.secondary }}>O</span>
-                                    <span style={{ color: config.theme.primary }}>Tracker</span>
+                                    <span className="text-[#CE0003]">O</span>
+                                    <span className="text-[#191A43]">Tracker</span>
                                 </h1>
                                 <p className="text-xs text-muted-foreground">Backoffice Dashboard</p>
                             </div>
@@ -195,7 +194,6 @@ export default function StatusFilterPage() {
                     )}
                 </AnimatePresence>
             </div>
-            <Footer />
         </div>
     )
 }

@@ -14,7 +14,6 @@ import { motion, AnimatePresence } from "framer-motion"
 import { Card, CardContent } from "@/components/ui/card"
 import { OrderCard } from "@/components/order-card"
 import { getBusinessConfig } from "@/lib/business-configs"
-import { Footer } from "@/components/footer"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -32,6 +31,7 @@ export default function BackofficePage() {
   const { organization } = useOrganization()
   const [businessType, setBusinessType] = useState<string | null>(null)
   const config = getBusinessConfig(businessType)
+  const statusOptions = config.statuses
 
   // Search state
   const [searchQuery, setSearchQuery] = useState("")
@@ -104,8 +104,8 @@ export default function BackofficePage() {
               <Package className="w-6 h-6" style={{ color: config.theme.primary }} />
               <div className="hidden sm:block">
                 <h1 className="text-xl font-bold tracking-tight">
-                  <span style={{ color: config.theme.secondary }}>O</span>
-                  <span style={{ color: config.theme.primary }}>Tracker</span>
+                  <span className="text-[#CE0003]">O</span>
+                  <span className="text-[#191A43]">Tracker</span>
                 </h1>
                 <p className="text-xs text-muted-foreground">Backoffice Dashboard</p>
               </div>
@@ -248,7 +248,6 @@ export default function BackofficePage() {
           </AnimatePresence>
         </div>
       </div>
-      <Footer />
     </div>
   )
 }

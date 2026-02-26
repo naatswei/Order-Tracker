@@ -137,7 +137,10 @@ export default function OrderUpdatePage() {
                 <Package className="w-5 h-5" style={{ color: config.theme.primary }} />
               </div>
               <div className="hidden sm:block">
-                <h1 className="text-xl font-bold tracking-tight" style={{ color: config.theme.primary }}>Track Order</h1>
+                <h1 className="text-xl font-bold tracking-tight">
+                  <span className="text-[#CE0003]">O</span>
+                  <span className="text-[#191A43]">Tracker</span>
+                </h1>
                 <p className="text-sm text-slate-500">Add a new status update to this order</p>
               </div>
               <div className="sm:hidden">

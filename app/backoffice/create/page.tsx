@@ -14,7 +14,6 @@ import { Package, ArrowLeft } from "lucide-react"
 import { toast } from "sonner"
 import { useSearchParams, useRouter } from "next/navigation"
 import { getBusinessConfig } from "@/lib/business-configs"
-import { Footer } from "@/components/footer"
 
 export default function CreateOrderPage() {
     const router = useRouter()
@@ -147,8 +146,8 @@ export default function CreateOrderPage() {
                             <Package className="w-6 h-6" style={{ color: config.theme.primary }} />
                             <div className="hidden sm:block">
                                 <h1 className="text-xl font-bold tracking-tight">
-                                    <span style={{ color: config.theme.secondary }}>O</span>
-                                    <span style={{ color: config.theme.primary }}>Tracker</span>
+                                    <span className="text-[#CE0003]">O</span>
+                                    <span className="text-[#191A43]">Tracker</span>
                                 </h1>
                                 <p className="text-xs text-muted-foreground">Backoffice Dashboard</p>
                             </div>
@@ -315,7 +314,6 @@ export default function CreateOrderPage() {
                     </CardContent>
                 </Card>
             </div>
-            <Footer />
         </div>
     )
 }
