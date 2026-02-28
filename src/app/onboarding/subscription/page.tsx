@@ -40,7 +40,7 @@ const plans = [
     {
         name: "Yearly",
         description: "Save 65% a year",
-        price: "Gh499",
+        price: "Gh1,500",
         period: "Yearly",
         features: ["Customer notifications", "Customer data Collection", "Real-time order status updates"],
         buttonText: "Start Free Trial",
