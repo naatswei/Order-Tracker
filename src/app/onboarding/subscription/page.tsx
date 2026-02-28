@@ -18,7 +18,7 @@ const plans = [
         glowColor: "bg-pink-400/20",
     },
     {
-        name: "Sales",
+        name: "2 weeks",
         description: "For businesses running sales",
         price: "Gh199",
         period: "2 weeks",
