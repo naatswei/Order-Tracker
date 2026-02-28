@@ -44,29 +44,33 @@ export default function BackofficePage() {
     const config = getBusinessConfig(businessType)
     const statusOptions = config.statuses
 
-    // Search state
-    const [searchQuery, setSearchQuery] = useState("")
-    // Filter state
-    const [statusFilter, setStatusFilter] = useState("All")
+    const searchParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null
+    const typeOverride = searchParams?.get("type")
 
     // Load orders and business type on mount/org change
     useEffect(() => {
         loadOrders()
 
-        // 1. Initial load from localStorage for immediate UI consistency
+        // 1. Priority: URL Override (useful for instant redirect from onboarding)
+        if (typeOverride && BUSINESS_CONFIGS[typeOverride]) {
+            setBusinessType(typeOverride)
+            localStorage.setItem("businessType", typeOverride)
+            return
+        }
+
+        // 2. Initial load from localStorage for immediate UI consistency
         const storedType = localStorage.getItem("businessType")
         if (storedType) {
             setBusinessType(storedType)
         }
 
-        // 2. Sync from organization metadata IF AND ONLY IF we don't have a local selection
-        // This prevents stale org metadata from overwriting a fresh selection in onboarding
+        // 3. Sync from organization metadata IF AND ONLY IF we don't have a local selection
         const orgBusinessType = organization?.publicMetadata?.businessType as string
         if (orgBusinessType && !storedType) {
             setBusinessType(orgBusinessType)
             localStorage.setItem("businessType", orgBusinessType)
         }
-    }, [organization])
+    }, [organization, typeOverride])
 
     const loadOrders = async () => {
         setIsLoading(true)

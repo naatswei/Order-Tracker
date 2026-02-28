@@ -78,7 +78,14 @@ export default function SubscriptionPage() {
                     } else {
                         toast.success(`Success! Your ${planName} is active.`)
                     }
-                    router.push(result.redirect)
+
+                    // Include business type in redirect to ensure correct dashboard loads instantly
+                    const businessType = localStorage.getItem("businessType")
+                    const redirectUrl = businessType
+                        ? `${result.redirect}?type=${businessType}`
+                        : result.redirect
+
+                    router.push(redirectUrl)
                 }
             }
         } catch (error: any) {
