@@ -1,6 +1,7 @@
 "use client"
 
 import { Check } from "lucide-react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
@@ -53,15 +54,29 @@ const plans = [
 export default function SubscriptionPage() {
     const router = useRouter()
     const { organization, isLoaded } = useOrganization()
+    const [isRedirecting, setIsRedirecting] = useState(false)
+
+    useEffect(() => {
+        console.log("Subscription Page State:", { isLoaded, orgId: organization?.id })
+    }, [isLoaded, organization])
 
     const handleSelectPlan = (planName: string) => {
-        if (!isLoaded) return;
+        console.log("Plan selected:", planName)
+
+        if (!isLoaded) {
+            console.warn("Click ignored: Clerk is still loading...")
+            return
+        }
+
+        setIsRedirecting(true)
 
         // Save the selected plan to localStorage for later processing if needed
         localStorage.setItem("selectedPlan", planName)
 
-        // Redirect to backoffice - it will handle organization selection if missing
-        router.push("/backoffice")
+        console.log("Redirecting to /backoffice...")
+
+        // Simple and robust redirect
+        window.location.href = "/backoffice"
     }
 
     return (
@@ -131,14 +146,14 @@ export default function SubscriptionPage() {
                             <CardFooter className="p-0 pt-10">
                                 <Button
                                     onClick={() => handleSelectPlan(plan.name)}
-                                    disabled={!isLoaded}
+                                    disabled={!isLoaded || isRedirecting}
                                     className={cn(
                                         "w-full h-12 text-sm font-bold rounded-xl transition-all duration-200",
                                         plan.name === "Month" ? "bg-white text-[#101323] hover:bg-white/90" : "bg-[#161931] text-white hover:bg-[#161931]/90",
-                                        !isLoaded && "opacity-50 cursor-not-allowed"
+                                        (!isLoaded || isRedirecting) && "opacity-50 cursor-not-allowed"
                                     )}
                                 >
-                                    {isLoaded ? plan.buttonText : "Loading..."}
+                                    {isRedirecting ? "Redirecting..." : (isLoaded ? plan.buttonText : "Loading...")}
                                 </Button>
                             </CardFooter>
                         </Card>
