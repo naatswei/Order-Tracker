@@ -52,6 +52,10 @@ export default function BusinessTypePage() {
 
     useEffect(() => {
         if (!isLoaded) return
+        if (!organization) {
+            router.replace("/onboarding/organization")
+            return
+        }
         if (organization?.publicMetadata?.businessType) {
             router.replace("/onboarding/profile")
         }

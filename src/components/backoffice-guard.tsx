@@ -16,9 +16,7 @@ export function BackofficeGuard({ children }: { children: React.ReactNode }) {
 
         const checkOnboarding = async () => {
             if (!organization) {
-                // If user has no organization selected, they shouldn't be in backoffice
-                // or they need to select one. For this app, they are forced into one during signup.
-                setIsChecking(false)
+                router.push("/onboarding/organization")
                 return
             }
 
