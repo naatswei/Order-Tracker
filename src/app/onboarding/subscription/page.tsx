@@ -26,7 +26,7 @@ const plans = [
         price: "Gh199",
         period: "2 weeks",
         features: ["Customer notifications", "Customer data Collection", "Real-time order status updates"],
-        buttonText: "Start Free Trial",
+        buttonText: "Get Started",
         buttonVariant: "secondary",
         glowColor: "bg-blue-400/20",
     },
@@ -36,7 +36,7 @@ const plans = [
         price: "Gh350",
         period: "Monthly",
         features: ["Customer notifications", "Customer data Collection", "Real-time order status updates"],
-        buttonText: "Start Free Trial",
+        buttonText: "Get Started",
         buttonVariant: "orange",
         glowColor: "bg-[#CE0003]/20",
     },
@@ -46,7 +46,7 @@ const plans = [
         price: "Gh1,500",
         period: "Yearly",
         features: ["Customer notifications", "Customer data Collection", "Real-time order status updates"],
-        buttonText: "Start Free Trial",
+        buttonText: "Get Started",
         buttonVariant: "black",
         glowColor: "bg-purple-400/20",
     },
@@ -65,7 +65,11 @@ export default function SubscriptionPage() {
                 if (result.authorization_url) {
                     window.location.href = result.authorization_url
                 } else if (result.redirect) {
-                    toast.success(`Success! Your ${planName} is active.`)
+                    if (result.message) {
+                        toast.info(result.message)
+                    } else {
+                        toast.success(`Success! Your ${planName} is active.`)
+                    }
                     router.push(result.redirect)
                 }
             }
@@ -147,7 +151,9 @@ export default function SubscriptionPage() {
                                     disabled={!!loadingPlan}
                                     className={cn(
                                         "w-full h-12 text-sm font-bold rounded-xl transition-all duration-200",
-                                        plan.name === "Month" ? "bg-white text-[#101323] hover:bg-white/90" : "bg-[#161931] text-white hover:bg-[#161931]/90"
+                                        plan.name === "Month"
+                                            ? "bg-[#CE0003] text-white hover:bg-[#B00002]" // Brand Orange/Red
+                                            : "bg-[#161931] text-white hover:bg-[#161931]/90"
                                     )}
                                 >
                                     {loadingPlan === plan.name ? "Processing..." : plan.buttonText}
