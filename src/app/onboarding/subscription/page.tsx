@@ -63,7 +63,7 @@ export default function SubscriptionPage() {
             <div className="absolute top-1/2 left-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-blue-50/40 rounded-full blur-[150px] -z-10" />
             <div className="absolute top-1/2 left-3/4 -translate-y-1/2 w-[500px] h-[500px] bg-yellow-50/20 rounded-full blur-[120px] -z-10" />
 
-            <div className="max-w-[1440px] w-full space-y-20 relative z-10 px-4">
+            <div className="max-w-7xl w-full space-y-20 relative z-10">
                 {/* Header Section */}
                 <div className="text-center space-y-6">
                     <h1 className="text-6xl font-black text-slate-900 sm:text-7xl tracking-tighter max-w-4xl mx-auto leading-[0.95]">
@@ -75,43 +75,41 @@ export default function SubscriptionPage() {
                 </div>
 
                 {/* Cards Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-8">
+                <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-4 px-4">
                     {plans.map((plan) => (
                         <Card
                             key={plan.name}
-                            className="relative flex flex-col border border-slate-100 bg-white/90 backdrop-blur-xl rounded-[3rem] p-10 shadow-2xl shadow-slate-200/40 transition-all duration-500 hover:-translate-y-2 hover:shadow-slate-300/50"
+                            className="relative flex flex-col border border-slate-100 bg-white/90 backdrop-blur-xl rounded-[3rem] p-6 shadow-2xl shadow-slate-200/40 transition-all duration-500 hover:-translate-y-2 hover:shadow-slate-300/50"
                         >
-                            <CardHeader className="space-y-6 pt-6 pb-6 text-center">
-                                <span className="text-[11px] font-black text-slate-400 uppercase tracking-[0.3em] block mb-2">{plan.name}</span>
+                            <CardHeader className="space-y-6 pt-10 pb-6 text-center">
+                                <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] block mb-2">{plan.name}</span>
                                 <div className="space-y-2">
                                     <div className="flex flex-col items-center justify-center">
-                                        <span className="text-6xl font-black text-slate-900 tracking-tighter leading-none">{plan.price}</span>
-                                        <span className="text-[12px] font-bold text-slate-400 uppercase tracking-widest mt-4">{plan.period}</span>
+                                        <span className="text-5xl font-black text-slate-900 tracking-tighter leading-none">{plan.price}</span>
+                                        <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mt-3">{plan.period}</span>
                                     </div>
-                                    <p className="text-[14px] font-semibold text-slate-500 pt-8 leading-relaxed px-2">{plan.description}</p>
+                                    <p className="text-[13px] font-semibold text-slate-500 pt-6 leading-relaxed px-2">{plan.description}</p>
                                 </div>
                             </CardHeader>
-                            <CardContent className="flex-1 pt-10 pb-10">
-                                <div className="flex flex-col items-center">
-                                    <ul className="space-y-5 w-fit">
-                                        {plan.features.map((feature, idx) => (
-                                            <li key={idx} className="flex items-center gap-4 text-sm font-bold group">
-                                                <div className="flex items-center justify-center shrink-0 w-6 h-6 rounded-full bg-slate-50 text-slate-400 group-hover:bg-slate-900 group-hover:text-white transition-all duration-300">
-                                                    <Check className="w-3.5 h-3.5" strokeWidth={3} />
-                                                </div>
-                                                <span className="text-slate-500/80 leading-snug tracking-tight group-hover:text-slate-900 transition-colors duration-300">
-                                                    {feature}
-                                                </span>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </div>
+                            <CardContent className="flex-1 pt-8 space-y-6">
+                                <ul className="space-y-5">
+                                    {plan.features.map((feature, idx) => (
+                                        <li key={idx} className="flex items-center gap-4 text-[13px] font-bold group">
+                                            <div className="flex items-center justify-center shrink-0 w-5 h-5 rounded-full bg-slate-50 text-slate-400 group-hover:bg-slate-900 group-hover:text-white transition-all duration-300">
+                                                <Check className="w-3 h-3" strokeWidth={3} />
+                                            </div>
+                                            <span className="text-slate-500/80 leading-snug whitespace-nowrap tracking-tight group-hover:text-slate-900 transition-colors duration-300">
+                                                {feature}
+                                            </span>
+                                        </li>
+                                    ))}
+                                </ul>
                             </CardContent>
-                            <CardFooter className="pb-6 pt-10">
+                            <CardFooter className="pb-10 pt-10">
                                 <Button
                                     onClick={() => handleSelectPlan(plan.name)}
                                     className={cn(
-                                        "w-full h-16 text-[14px] font-black rounded-2xl transition-all duration-300 shadow-xl uppercase tracking-widest",
+                                        "w-full h-14 text-[13px] font-black rounded-2xl transition-all duration-300 shadow-xl uppercase tracking-widest",
                                         plan.buttonVariant === "secondary" && "bg-slate-900 text-white hover:bg-slate-800 shadow-slate-200",
                                         plan.buttonVariant === "blue" && "bg-blue-600 text-white hover:bg-blue-700 shadow-blue-100",
                                         plan.buttonVariant === "orange" && "bg-[#CE0003] text-white hover:bg-[#CE0003]/90 shadow-red-100",
