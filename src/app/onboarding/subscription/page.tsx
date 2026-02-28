@@ -19,7 +19,7 @@ const plans = [
     },
     {
         name: "Sales",
-        description: "Affordable",
+        description: "For businesses running sales",
         price: "Gh199",
         period: "2 weeks",
         features: ["Customer notifications", "Customer data Collection", "Real-time order status updates"],
@@ -29,7 +29,7 @@ const plans = [
     },
     {
         name: "Month",
-        description: "Most Popular",
+        description: "Sweet Spot",
         price: "Gh350",
         period: "Monthly",
         features: ["Customer notifications", "Customer data Collection", "Real-time order status updates"],
@@ -39,7 +39,7 @@ const plans = [
     },
     {
         name: "Yearly",
-        description: "Save 65% a year",
+        description: "The Steal",
         price: "Gh1,500",
         period: "Yearly",
         features: ["Customer notifications", "Customer data Collection", "Real-time order status updates"],
