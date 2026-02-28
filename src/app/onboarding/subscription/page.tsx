@@ -130,7 +130,7 @@ export default function SubscriptionPage() {
 
                 <div className="pt-10 text-center">
                     <p className="text-sm font-medium text-slate-400">
-                        No credit card required. Enjoy 7 days free trial.
+                        Payments secured by <span className="text-slate-600 font-extrabold">Paystack</span>
                     </p>
                 </div>
             </div>
