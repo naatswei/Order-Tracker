@@ -57,7 +57,12 @@ export async function initializeSubscription(planName: string) {
             expiresAt,
         })
 
-        return { success: true, redirect: "/backoffice?simulated=true" }
+        return {
+            success: true,
+            redirect: "/backoffice",
+            isSimulated: true,
+            message: `Paystack Keys Missing: We've simulated a ${planName} activation for testing.`
+        }
     }
 
     const planAmounts: Record<string, number> = {
