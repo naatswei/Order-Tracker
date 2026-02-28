@@ -88,12 +88,19 @@ export default function SubscriptionPage() {
                             </CardHeader>
 
                             <CardContent className="flex-1 p-0 pt-10 space-y-10">
-                                <div className="flex items-baseline gap-2">
-                                    <span className="text-3xl font-bold tracking-tight">{plan.price}</span>
-                                    <span className={cn(
-                                        "text-[13px] font-medium",
-                                        plan.name === "Month" ? "text-slate-400" : "text-slate-400"
-                                    )}>{plan.period}</span>
+                                <div className="flex flex-col space-y-2">
+                                    {plan.name === "Yearly" && (
+                                        <div className="w-fit bg-emerald-50 text-emerald-600 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider mb-1">
+                                            Save 64%
+                                        </div>
+                                    )}
+                                    <div className="flex items-baseline gap-2">
+                                        <span className="text-3xl font-bold tracking-tight">{plan.price}</span>
+                                        <span className={cn(
+                                            "text-[13px] font-medium",
+                                            plan.name === "Month" ? "text-slate-400" : "text-slate-400"
+                                        )}>{plan.period}</span>
+                                    </div>
                                 </div>
 
                                 <ul className="space-y-4">
@@ -128,9 +135,14 @@ export default function SubscriptionPage() {
                     ))}
                 </div>
 
-                <div className="pt-10 text-center">
-                    <p className="text-sm font-medium text-slate-400">
-                        Payments secured by <span className="text-slate-600 font-extrabold">Paystack</span>
+                <div className="pt-10 flex flex-col items-center space-y-4">
+                    <p className="text-sm font-medium text-slate-400 flex items-center gap-2">
+                        Payments secured by
+                        <img
+                            src="https://upload.wikimedia.org/wikipedia/commons/f/f9/Paystack_Logo.svg"
+                            alt="Paystack"
+                            className="h-4 w-auto opacity-80"
+                        />
                     </p>
                 </div>
             </div>
