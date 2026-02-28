@@ -36,6 +36,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
+    // @ts-expect-error - ClerkProvider type incompatibility with React 19 in this version
     <ClerkProvider
       signInUrl="/sign-in"
       signUpUrl="/sign-up"
