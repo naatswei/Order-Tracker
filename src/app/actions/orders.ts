@@ -150,7 +150,7 @@ export async function getOrderWithHistory(id: string) {
             const org = await client.organizations.getOrganization({ organizationId: order.clerkOrgId })
             businessDetails = {
                 name: org.name,
-                imageUrl: org.imageUrl,
+                imageUrl: org.hasImage ? org.imageUrl : null,
                 ...org.publicMetadata
             }
         } catch (e) {
