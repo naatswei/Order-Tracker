@@ -65,7 +65,7 @@ export default function SubscriptionPage() {
                         Choose Your Plan
                     </h1>
                     <p className="text-sm font-medium text-slate-400 max-w-2xl mx-auto">
-                        Simple, Transparent pricing that grows with you. Start free and upgrade anytime.
+                        Simple, Transparent pricing that grows with you. Start free and upgrade later.
                     </p>
                 </div>
 
