@@ -5,6 +5,9 @@ import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
+import { useState } from "react"
+import { toast } from "sonner"
+import { initializeSubscription } from "./actions"
 
 const plans = [
     {
@@ -51,9 +54,27 @@ const plans = [
 
 export default function SubscriptionPage() {
     const router = useRouter()
+    const [loadingPlan, setLoadingPlan] = useState<string | null>(null)
 
-    const handleSelectPlan = (planName: string) => {
-        router.push("/backoffice")
+    const handleSelectPlan = async (planName: string) => {
+        setLoadingPlan(planName)
+        try {
+            const result = await initializeSubscription(planName)
+
+            if (result.success) {
+                if (result.authorization_url) {
+                    window.location.href = result.authorization_url
+                } else if (result.redirect) {
+                    toast.success(`Success! Your ${planName} is active.`)
+                    router.push(result.redirect)
+                }
+            }
+        } catch (error: any) {
+            console.error("Selection Error:", error)
+            toast.error(error.message || "Something went wrong. Please try again.")
+        } finally {
+            setLoadingPlan(null)
+        }
     }
 
     return (
@@ -123,12 +144,13 @@ export default function SubscriptionPage() {
                             <CardFooter className="p-0 pt-10">
                                 <Button
                                     onClick={() => handleSelectPlan(plan.name)}
+                                    disabled={!!loadingPlan}
                                     className={cn(
                                         "w-full h-12 text-sm font-bold rounded-xl transition-all duration-200",
                                         plan.name === "Month" ? "bg-white text-[#101323] hover:bg-white/90" : "bg-[#161931] text-white hover:bg-[#161931]/90"
                                     )}
                                 >
-                                    {plan.buttonText}
+                                    {loadingPlan === plan.name ? "Processing..." : plan.buttonText}
                                 </Button>
                             </CardFooter>
                         </Card>

@@ -40,3 +40,19 @@ export const statusHistoryRelations = relations(statusHistory, ({ one }) => ({
         references: [orders.id],
     }),
 }));
+
+export const subscriptions = pgTable("subscriptions", {
+    id: text("id").primaryKey(),
+    clerkOrgId: text("clerk_org_id").notNull(),
+    clerkUserId: text("clerk_user_id").notNull(),
+    planType: text("plan_type").notNull(), // 'trial', '2weeks', 'monthly', 'yearly'
+    status: text("status").notNull().default("pending"), // 'active', 'expired', 'pending', 'cancelled'
+    amount: text("amount"), // Stored as string to match Gh prefix if needed, or numeric for math
+    expiresAt: timestamp("expires_at"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const subscriptionsRelations = relations(subscriptions, ({ one }) => ({
+    // Add relations if needed, e.g., to orders if business-scoped
+}));
