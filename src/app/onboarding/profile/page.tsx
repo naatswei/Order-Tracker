@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react"
 import { useRouter } from "next/navigation"
-import { ArrowRight, Camera } from "lucide-react"
+import { ArrowRight, Upload, Camera } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -271,4 +271,5 @@ export default function BusinessProfilePage() {
             </div>
         </div>
     )
+
 }
