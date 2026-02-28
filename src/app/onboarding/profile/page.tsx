@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { ArrowRight, Upload, Camera } from "lucide-react"
 import { useOrganization } from "@clerk/nextjs"
@@ -13,8 +13,16 @@ import { cn } from "@/lib/utils"
 
 export default function BusinessProfilePage() {
     const router = useRouter()
-    const { organization } = useOrganization()
+    const { organization, isLoaded } = useOrganization()
     const [isLoading, setIsLoading] = useState(false)
+
+    useEffect(() => {
+        if (!isLoaded) return
+        const metadata = organization?.publicMetadata as any
+        if (metadata?.location && metadata?.contact) {
+            router.replace("/onboarding/subscription")
+        }
+    }, [isLoaded, organization, router])
     const [imagePreview, setImagePreview] = useState<string | null>(null)
     const fileInputRef = useRef<HTMLInputElement>(null)
 

@@ -39,7 +39,7 @@ export default function BackofficePage() {
     const [copiedId, setCopiedId] = useState<string | null>(null)
 
     // Business Config
-    const { organization } = useOrganization()
+    const { organization, isLoaded } = useOrganization()
     const [businessType, setBusinessType] = useState<string | null>(null)
     const config = getBusinessConfig(businessType)
     const statusOptions = config.statuses
@@ -49,24 +49,18 @@ export default function BackofficePage() {
     // Filter state
     const [statusFilter, setStatusFilter] = useState("All")
 
-    // Load orders and business type on mount/org change
+    // Load business type from organization metadata
     useEffect(() => {
+        if (!isLoaded || !organization) return
+
         loadOrders()
-
-        // 1. Initial load from localStorage for immediate UI consistency
-        const storedType = localStorage.getItem("businessType")
-        if (storedType) {
-            setBusinessType(storedType)
-        }
-
-        // 2. Sync from organization metadata IF AND ONLY IF we don't have a local selection
-        // This prevents stale org metadata from overwriting a fresh selection in onboarding
-        const orgBusinessType = organization?.publicMetadata?.businessType as string
-        if (orgBusinessType && !storedType) {
+        const orgBusinessType = organization.publicMetadata?.businessType as string
+        if (orgBusinessType) {
             setBusinessType(orgBusinessType)
+            // Sync to localStorage for components that still rely on it
             localStorage.setItem("businessType", orgBusinessType)
         }
-    }, [organization])
+    }, [isLoaded, organization])
 
     const loadOrders = async () => {
         setIsLoading(true)

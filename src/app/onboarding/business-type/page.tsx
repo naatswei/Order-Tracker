@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { ArrowRight, Shirt, Sparkles, Warehouse, Laptop, LucideIcon, Loader2 } from "lucide-react"
@@ -48,7 +48,14 @@ export default function BusinessTypePage() {
     const [selectedType, setSelectedType] = useState<string | null>(null)
     const [isLoading, setIsLoading] = useState(false)
     const router = useRouter()
-    const { organization } = useOrganization()
+    const { organization, isLoaded } = useOrganization()
+
+    useEffect(() => {
+        if (!isLoaded) return
+        if (organization?.publicMetadata?.businessType) {
+            router.replace("/onboarding/profile")
+        }
+    }, [isLoaded, organization, router])
 
     const businessTypes: BusinessType[] = [
         {

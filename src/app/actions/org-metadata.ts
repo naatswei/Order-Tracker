@@ -35,3 +35,14 @@ export async function updateOrgProfile(orgId: string, data: { companyName: strin
 
     return { success: true }
 }
+
+export async function updateOrgSubscriptionStatus(orgId: string, status: 'active' | 'trialing') {
+    const { userId } = await auth()
+    if (!userId) throw new Error('Unauthorized')
+
+    const client = await clerkClient()
+    await client.organizations.updateOrganizationMetadata(orgId, {
+        publicMetadata: { subscriptionStatus: status }
+    })
+    return { success: true }
+}

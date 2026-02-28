@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { useOrganization } from "@clerk/nextjs"
+import { updateOrgSubscriptionStatus } from "@/app/actions/org-metadata"
 import { cn } from "@/lib/utils"
 
 const plans = [
@@ -57,19 +58,33 @@ export default function SubscriptionPage() {
     const [redirectingPlan, setRedirectingPlan] = useState<string | null>(null)
 
     useEffect(() => {
-        console.log("Subscription Page State:", { isLoaded, orgId: organization?.id })
-    }, [isLoaded, organization])
+        if (!isLoaded) return
 
-    const handleSelectPlan = (planName: string) => {
-        if (!isLoaded || redirectingPlan) return
+        const metadata = organization?.publicMetadata as any
+        if (metadata?.subscriptionStatus === 'active' || metadata?.subscriptionStatus === 'trialing') {
+            router.replace("/backoffice")
+        }
+    }, [isLoaded, organization, router])
+
+    const handleSelectPlan = async (planName: string) => {
+        if (!isLoaded || redirectingPlan || !organization) return
 
         setRedirectingPlan(planName)
 
-        // Save the selected plan to localStorage for later processing if needed
-        localStorage.setItem("selectedPlan", planName)
+        try {
+            // Mark as trialing/active in Clerk metadata
+            await updateOrgSubscriptionStatus(organization.id, 'active')
 
-        // Simple and robust redirect
-        window.location.href = "/backoffice"
+            // Save to localStorage as well for immediate UI consistency
+            localStorage.setItem("selectedPlan", planName)
+
+            // Redirect to backoffice
+            window.location.href = "/backoffice"
+        } catch (error) {
+            console.error("Failed to update subscription status:", error)
+            // Still try to redirect as a fallback
+            window.location.href = "/backoffice"
+        }
     }
 
     return (
