@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { ArrowRight, Shirt, Sparkles, Warehouse, Laptop, LucideIcon, Loader2 } from "lucide-react"
-import { useOrganization } from "@clerk/nextjs"
+import { useOrganization, SignOutButton } from "@clerk/nextjs"
 import { updateOrgBusinessType } from "@/app/actions/org-metadata"
 
 import { Button } from "@/components/ui/button"
@@ -165,7 +165,12 @@ export default function BusinessTypePage() {
                 {/* Right Column - Business Type Selection */}
                 <div className="relative lg:col-span-2 flex flex-col min-h-screen px-6 py-8 sm:px-8 lg:px-12 xl:px-16">
                     {/* Header - Logo */}
-                    <div className="absolute top-6 right-6 sm:top-8 sm:right-8 lg:right-12">
+                    <div className="absolute top-6 right-6 sm:top-8 sm:right-8 lg:right-12 flex items-center gap-6">
+                        <SignOutButton>
+                            <button className="text-sm font-medium text-gray-400 hover:text-gray-600 transition-colors">
+                                Sign Out
+                            </button>
+                        </SignOutButton>
                         <div className="flex items-center text-xl font-bold tracking-tight">
                             <span className="text-red-600 font-black">O</span>
                             <span className="text-[#191A43] font-bold">Tracker</span>
