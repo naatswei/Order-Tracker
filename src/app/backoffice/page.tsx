@@ -131,33 +131,39 @@ export default function BackofficePage() {
             >
                 <div className="w-full px-4 sm:px-8 py-4">
                     <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                            <div className="flex items-center justify-center overflow-hidden rounded-lg bg-slate-100 shadow-sm border border-slate-200" style={{ width: '40px', height: '40px' }}>
-                                {businessProfile?.imagePreview ? (
-                                    <img
-                                        src={businessProfile.imagePreview}
-                                        alt="Business Logo"
-                                        className="w-full h-full object-cover"
-                                    />
-                                ) : (
-                                    <Package className="w-6 h-6" style={{ color: config.theme.primary }} />
-                                )}
-                            </div>
+                        <div className="flex items-center gap-2">
+                            <Package className="w-6 h-6" style={{ color: config.theme.primary }} />
                             <div className="hidden sm:block">
                                 <h1 className="text-xl font-bold tracking-tight">
-                                    {businessProfile?.companyName ? (
-                                        <span className="text-[#191A43]">{businessProfile.companyName}</span>
-                                    ) : (
-                                        <>
-                                            <span className="text-[#CE0003]">O</span>
-                                            <span className="text-[#191A43]">Tracker</span>
-                                        </>
-                                    )}
+                                    <span className="text-[#CE0003]">O</span>
+                                    <span className="text-[#191A43]">Tracker</span>
                                 </h1>
                                 <p className="text-xs text-muted-foreground">Backoffice Dashboard</p>
                             </div>
                         </div>
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-4">
+                            {/* Business Branding (Right) */}
+                            <div className="hidden md:flex items-center gap-3 px-3 py-1 bg-slate-50 rounded-full border border-slate-100">
+                                <div className="flex items-center justify-center overflow-hidden rounded-full bg-white shadow-sm border border-slate-200" style={{ width: '32px', height: '32px' }}>
+                                    {businessProfile?.imagePreview ? (
+                                        <img
+                                            src={businessProfile.imagePreview}
+                                            alt="Business Logo"
+                                            className="w-full h-full object-cover"
+                                        />
+                                    ) : (
+                                        <div className="w-full h-full flex items-center justify-center bg-slate-100 text-slate-400">
+                                            <Package className="w-4 h-4" />
+                                        </div>
+                                    )}
+                                </div>
+                                {businessProfile?.companyName && (
+                                    <span className="text-sm font-semibold text-slate-700 max-w-[150px] truncate">
+                                        {businessProfile.companyName}
+                                    </span>
+                                )}
+                            </div>
+
                             <OrganizationSwitcher
                                 afterCreateOrganizationUrl="/backoffice"
                                 appearance={{

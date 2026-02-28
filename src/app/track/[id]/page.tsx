@@ -153,7 +153,16 @@ export default function TrackingDetailsPage() {
                 style={{ backgroundColor: config.theme.primary }}
             >
                 <div className="px-8 h-20 flex items-center justify-between">
+                    <div className="flex items-center text-2xl font-bold tracking-tight">
+                        <span style={{ color: config.theme.secondary }} className="font-black">O</span>
+                        <span className="text-white font-bold">Tracker</span>
+                    </div>
                     <div className="flex items-center gap-3">
+                        {businessProfile?.companyName && (
+                            <span className="text-white font-bold text-lg hidden sm:block">
+                                {businessProfile.companyName}
+                            </span>
+                        )}
                         <div className="flex items-center justify-center overflow-hidden rounded-lg bg-white/10 backdrop-blur-sm border border-white/20" style={{ width: '40px', height: '40px' }}>
                             {businessProfile?.imagePreview ? (
                                 <img
@@ -165,15 +174,6 @@ export default function TrackingDetailsPage() {
                                 <Package className="w-6 h-6 text-white" />
                             )}
                         </div>
-                        {businessProfile?.companyName && (
-                            <span className="text-white font-bold text-lg hidden sm:block">
-                                {businessProfile.companyName}
-                            </span>
-                        )}
-                    </div>
-                    <div className="flex items-center text-2xl font-bold tracking-tight">
-                        <span style={{ color: config.theme.secondary }} className="font-black">O</span>
-                        <span className="text-white font-bold">Tracker</span>
                     </div>
                 </div>
             </div>
