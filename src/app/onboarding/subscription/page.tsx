@@ -1,6 +1,6 @@
 "use client"
 
-import { Check } from "lucide-react"
+import { Check, Loader2 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
@@ -156,15 +156,23 @@ export default function SubscriptionPage() {
                             <CardFooter className="p-0 pt-10">
                                 <Button
                                     onClick={() => handleSelectPlan(plan.name)}
-                                    disabled={!!loadingPlan}
                                     className={cn(
-                                        "w-full h-12 text-sm font-bold rounded-xl transition-all duration-200",
+                                        "w-full h-12 text-sm font-bold rounded-xl transition-all duration-200 flex items-center justify-center gap-2",
                                         plan.name === "Month"
                                             ? "bg-white text-[#101323] hover:bg-white/90"
-                                            : "bg-[#161931] text-white hover:bg-[#161931]/90"
+                                            : "bg-[#161931] text-white hover:bg-[#161931]/90",
+                                        loadingPlan && loadingPlan !== plan.name && "opacity-80 pointer-events-none",
+                                        loadingPlan === plan.name && "pointer-events-none"
                                     )}
                                 >
-                                    {loadingPlan === plan.name ? "Processing..." : plan.buttonText}
+                                    {loadingPlan === plan.name ? (
+                                        <>
+                                            <Loader2 className="h-4 w-4 animate-spin" />
+                                            Processing...
+                                        </>
+                                    ) : (
+                                        plan.buttonText
+                                    )}
                                 </Button>
                             </CardFooter>
                         </Card>
