@@ -125,17 +125,7 @@ export default function SubscriptionPage() {
                     ))}
                 </div>
 
-                {/* Footer Logistics */}
-                <div className="pt-20 text-center space-y-8">
-                    <div className="flex flex-wrap justify-center items-center gap-12 opacity-40 grayscale filter hover:grayscale-0 transition-all duration-300">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal" className="h-6" />
-                        <span className="text-2xl font-black italic tracking-tighter">afterpay<span className="text-blue-400">◇</span></span>
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa" className="h-5" />
-                        <div className="flex items-center gap-2">
-                            <div className="w-6 h-6 bg-slate-900 rounded-full" />
-                            <span className="font-bold text-slate-900">Mastercard</span>
-                        </div>
-                    </div>
+                <div className="pt-20 text-center">
                     <p className="text-sm font-bold text-slate-400">
                         Payments secured by <span className="text-slate-600 font-extrabold">Hubtel</span>
                     </p>
