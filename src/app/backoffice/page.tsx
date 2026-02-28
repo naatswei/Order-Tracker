@@ -203,16 +203,6 @@ export default function BackofficePage() {
                                     Bulk Update
                                 </Button>
                             </Link>
-                            <Link href="/onboarding/business-type" className="flex-1 md:flex-none">
-                                <Button
-                                    variant="outline"
-                                    className="w-full h-11 rounded-lg border-slate-200 text-slate-700 hover:bg-slate-50 gap-2 px-4 shadow-sm"
-                                    title="Change Business Type"
-                                >
-                                    <RefreshCw className="w-4 h-4" />
-                                    <span className="md:hidden lg:inline">Switch Type</span>
-                                </Button>
-                            </Link>
                             <Link href="/backoffice/create" className="flex-1 md:flex-none">
                                 <Button
                                     className="w-full h-11 rounded-lg shadow-sm gap-2 px-6 font-medium text-white border-0 transition-all duration-200 hover:brightness-95 active:scale-[0.98]"
