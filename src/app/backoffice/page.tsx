@@ -24,10 +24,20 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
+interface BusinessProfile {
+    companyName: string
+    contact: string
+    location: string
+    email: string
+    website: string
+    imagePreview: string | null
+}
+
 export default function BackofficePage() {
     const [orders, setOrders] = useState<Order[]>([])
     const [isLoading, setIsLoading] = useState(true)
     const [copiedId, setCopiedId] = useState<string | null>(null)
+    const [businessProfile, setBusinessProfile] = useState<BusinessProfile | null>(null)
 
     // Business Config
     const { organization } = useOrganization()
@@ -56,6 +66,15 @@ export default function BackofficePage() {
         if (orgBusinessType && !storedType) {
             setBusinessType(orgBusinessType)
             localStorage.setItem("businessType", orgBusinessType)
+        }
+        // 3. Load full profile for branding
+        const storedProfile = localStorage.getItem("businessProfile")
+        if (storedProfile) {
+            try {
+                setBusinessProfile(JSON.parse(storedProfile))
+            } catch (e) {
+                console.error("Failed to parse business profile", e)
+            }
         }
     }, [organization])
 
@@ -112,12 +131,28 @@ export default function BackofficePage() {
             >
                 <div className="w-full px-4 sm:px-8 py-4">
                     <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                            <Package className="w-6 h-6" style={{ color: config.theme.primary }} />
+                        <div className="flex items-center gap-3">
+                            <div className="flex items-center justify-center overflow-hidden rounded-lg bg-slate-100 shadow-sm border border-slate-200" style={{ width: '40px', height: '40px' }}>
+                                {businessProfile?.imagePreview ? (
+                                    <img
+                                        src={businessProfile.imagePreview}
+                                        alt="Business Logo"
+                                        className="w-full h-full object-cover"
+                                    />
+                                ) : (
+                                    <Package className="w-6 h-6" style={{ color: config.theme.primary }} />
+                                )}
+                            </div>
                             <div className="hidden sm:block">
                                 <h1 className="text-xl font-bold tracking-tight">
-                                    <span className="text-[#CE0003]">O</span>
-                                    <span className="text-[#191A43]">Tracker</span>
+                                    {businessProfile?.companyName ? (
+                                        <span className="text-[#191A43]">{businessProfile.companyName}</span>
+                                    ) : (
+                                        <>
+                                            <span className="text-[#CE0003]">O</span>
+                                            <span className="text-[#191A43]">Tracker</span>
+                                        </>
+                                    )}
                                 </h1>
                                 <p className="text-xs text-muted-foreground">Backoffice Dashboard</p>
                             </div>

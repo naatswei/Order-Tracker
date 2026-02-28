@@ -33,6 +33,7 @@ export default function TrackingDetailsPage() {
     const [messageBody, setMessageBody] = useState("")
     const [isSending, setIsSending] = useState(false)
     const [isDialogOpen, setIsDialogOpen] = useState(false)
+    const [businessProfile, setBusinessProfile] = useState<{ companyName?: string, imagePreview?: string | null } | null>(null)
 
     useEffect(() => {
         if (trackingId) {
@@ -66,6 +67,16 @@ export default function TrackingDetailsPage() {
                 console.error("Error fetching order:", err)
                 setLoading(false)
             })
+        }
+
+        // Load business profile for branding
+        const storedProfile = localStorage.getItem("businessProfile")
+        if (storedProfile) {
+            try {
+                setBusinessProfile(JSON.parse(storedProfile))
+            } catch (e) {
+                console.error("Failed to parse business profile", e)
+            }
         }
     }, [trackingId])
 
@@ -141,7 +152,25 @@ export default function TrackingDetailsPage() {
                 className="sticky top-0 z-50 text-white shadow-lg"
                 style={{ backgroundColor: config.theme.primary }}
             >
-                <div className="px-8 h-20 flex items-center justify-end">
+                <div className="px-8 h-20 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                        <div className="flex items-center justify-center overflow-hidden rounded-lg bg-white/10 backdrop-blur-sm border border-white/20" style={{ width: '40px', height: '40px' }}>
+                            {businessProfile?.imagePreview ? (
+                                <img
+                                    src={businessProfile.imagePreview}
+                                    alt="Logo"
+                                    className="w-full h-full object-cover"
+                                />
+                            ) : (
+                                <Package className="w-6 h-6 text-white" />
+                            )}
+                        </div>
+                        {businessProfile?.companyName && (
+                            <span className="text-white font-bold text-lg hidden sm:block">
+                                {businessProfile.companyName}
+                            </span>
+                        )}
+                    </div>
                     <div className="flex items-center text-2xl font-bold tracking-tight">
                         <span style={{ color: config.theme.secondary }} className="font-black">O</span>
                         <span className="text-white font-bold">Tracker</span>
