@@ -92,7 +92,7 @@ export default function SubscriptionPage() {
                                 </div>
                             </CardHeader>
                             <CardContent className="flex-1 pt-8 space-y-6">
-                                <ul className="space-y-5">
+                                <ul className="space-y-5 w-fit mx-auto">
                                     {plan.features.map((feature, idx) => (
                                         <li key={idx} className="flex items-center gap-4 text-[13px] font-bold group">
                                             <div className="flex items-center justify-center shrink-0 w-5 h-5 rounded-full bg-slate-50 text-slate-400 group-hover:bg-slate-900 group-hover:text-white transition-all duration-300">
