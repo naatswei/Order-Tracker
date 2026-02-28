@@ -67,7 +67,7 @@ export default function BusinessProfilePage() {
             // or we can rely on organization.imageUrl once it hits Clerk.
             localStorage.setItem("businessProfile", JSON.stringify({ ...formData, imagePreview }))
 
-            router.push("/backoffice")
+            router.push("/onboarding/subscription")
         } catch (error) {
             console.error("Failed to update org profile", error)
             alert("Failed to save profile. Please try again.")
