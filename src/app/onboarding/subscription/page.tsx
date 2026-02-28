@@ -127,7 +127,7 @@ export default function SubscriptionPage() {
 
                 <div className="pt-20 text-center">
                     <p className="text-sm font-bold text-slate-400">
-                        Payments secured by <span className="text-slate-600 font-extrabold">Hubtel</span>
+                        Payments secured by <span className="text-slate-600 font-extrabold">Paystack</span>
                     </p>
                 </div>
             </div>
