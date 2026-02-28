@@ -52,14 +52,15 @@ const plans = [
 
 export default function SubscriptionPage() {
     const router = useRouter()
-    const { organization } = useOrganization()
+    const { organization, isLoaded } = useOrganization()
 
     const handleSelectPlan = (planName: string) => {
-        if (!organization) {
-            alert("No active organization found. Please complete your profile setup.")
-            router.push("/onboarding/profile")
-            return
-        }
+        if (!isLoaded) return;
+
+        // Save the selected plan to localStorage for later processing if needed
+        localStorage.setItem("selectedPlan", planName)
+
+        // Redirect to backoffice - it will handle organization selection if missing
         router.push("/backoffice")
     }
 
@@ -130,12 +131,14 @@ export default function SubscriptionPage() {
                             <CardFooter className="p-0 pt-10">
                                 <Button
                                     onClick={() => handleSelectPlan(plan.name)}
+                                    disabled={!isLoaded}
                                     className={cn(
                                         "w-full h-12 text-sm font-bold rounded-xl transition-all duration-200",
-                                        plan.name === "Month" ? "bg-white text-[#101323] hover:bg-white/90" : "bg-[#161931] text-white hover:bg-[#161931]/90"
+                                        plan.name === "Month" ? "bg-white text-[#101323] hover:bg-white/90" : "bg-[#161931] text-white hover:bg-[#161931]/90",
+                                        !isLoaded && "opacity-50 cursor-not-allowed"
                                     )}
                                 >
-                                    {plan.buttonText}
+                                    {isLoaded ? plan.buttonText : "Loading..."}
                                 </Button>
                             </CardFooter>
                         </Card>
