@@ -98,7 +98,7 @@ export default function SubscriptionPage() {
                                             <div className="mt-0.5 w-6 h-6 rounded-full bg-blue-50 flex items-center justify-center shrink-0 border border-blue-100 shadow-sm">
                                                 <Check className="w-4 h-4 text-[#191A43]" strokeWidth={3} />
                                             </div>
-                                            <span className="text-[#191A43]/80 leading-snug">
+                                            <span className="text-[#191A43]/80 leading-snug whitespace-nowrap text-[13px] tracking-tight">
                                                 {feature}
                                             </span>
                                         </li>
