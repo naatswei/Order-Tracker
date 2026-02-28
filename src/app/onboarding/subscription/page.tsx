@@ -57,8 +57,8 @@ export default function SubscriptionPage() {
     }
 
     return (
-        <div className="min-h-screen bg-[#F8FAFC] py-20 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-7xl w-full mx-auto space-y-16">
+        <div className="min-h-screen bg-[#F8FAFC] pt-10 pb-20 px-4 sm:px-6 lg:px-8">
+            <div className="max-w-7xl w-full mx-auto space-y-12">
                 {/* Header Section */}
                 <div className="text-center space-y-4">
                     <h1 className="text-4xl font-bold text-[#101323] tracking-tight">
