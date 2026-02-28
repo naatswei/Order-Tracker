@@ -132,28 +132,6 @@ export default function BackofficePage() {
                             </div>
                         </div>
                         <div className="flex items-center gap-4">
-                            {/* Business Branding (Right) */}
-                            {organization && (
-                                <div className="hidden md:flex items-center gap-3 px-3 py-1 bg-slate-50 rounded-full border border-slate-100">
-                                    <div className="flex items-center justify-center overflow-hidden rounded-full bg-white shadow-sm border border-slate-200" style={{ width: '32px', height: '32px' }}>
-                                        {organization.imageUrl ? (
-                                            <img
-                                                src={organization.imageUrl}
-                                                alt="Business Logo"
-                                                className="w-full h-full object-cover"
-                                            />
-                                        ) : (
-                                            <div className="w-full h-full flex items-center justify-center bg-slate-100 text-slate-400">
-                                                <Package className="w-4 h-4" />
-                                            </div>
-                                        )}
-                                    </div>
-                                    <span className="text-sm font-semibold text-slate-700 max-w-[150px] truncate">
-                                        {organization.name}
-                                    </span>
-                                </div>
-                            )}
-
                             <OrganizationSwitcher
                                 afterCreateOrganizationUrl="/backoffice"
                                 appearance={{
