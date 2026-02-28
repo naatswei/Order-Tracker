@@ -57,7 +57,7 @@ export default function BusinessTypePage() {
             return
         }
         if (organization?.publicMetadata?.businessType) {
-            router.replace("/onboarding/profile")
+            router.replace("/backoffice")
         }
     }, [isLoaded, organization, router])
 

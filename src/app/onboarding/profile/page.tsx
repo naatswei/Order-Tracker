@@ -24,7 +24,7 @@ export default function BusinessProfilePage() {
         }
         const metadata = organization?.publicMetadata as any
         if (metadata?.location && metadata?.contact) {
-            router.replace("/onboarding/subscription")
+            router.replace("/backoffice")
         }
     }, [isLoaded, organization, router])
     const [imagePreview, setImagePreview] = useState<string | null>(null)

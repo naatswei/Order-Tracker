@@ -10,8 +10,8 @@ export default function OrganizationSelectionPage() {
 
     useEffect(() => {
         if (isLoaded && organization) {
-            // If they already have an org selected, move them forward
-            router.replace("/onboarding/business-type")
+            // If they already have an org selected, let BackofficeGuard handle routing
+            router.replace("/backoffice")
         }
     }, [isLoaded, organization, router])
 
