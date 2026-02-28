@@ -9,6 +9,14 @@ import { useState } from "react"
 import { toast } from "sonner"
 import { initializeSubscription } from "./actions"
 
+interface SubscriptionResult {
+    success: boolean;
+    redirect?: string;
+    authorization_url?: string;
+    message?: string;
+    isSimulated?: boolean;
+}
+
 const plans = [
     {
         name: "Free Trial",
@@ -59,7 +67,7 @@ export default function SubscriptionPage() {
     const handleSelectPlan = async (planName: string) => {
         setLoadingPlan(planName)
         try {
-            const result = await initializeSubscription(planName)
+            const result = await initializeSubscription(planName) as SubscriptionResult
 
             if (result.success) {
                 if (result.authorization_url) {
