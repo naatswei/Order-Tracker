@@ -14,7 +14,7 @@ import { Package, Plus, Search, Filter, RefreshCw, Loader2 } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Card, CardContent } from "@/components/ui/card"
 import { OrderCard } from "@/components/order-card"
-import { getBusinessConfig } from "@/lib/business-configs"
+import { getBusinessConfig, BUSINESS_CONFIGS } from "@/lib/business-configs"
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -37,6 +37,8 @@ export default function BackofficePage() {
     const [orders, setOrders] = useState<Order[]>([])
     const [isLoading, setIsLoading] = useState(true)
     const [copiedId, setCopiedId] = useState<string | null>(null)
+    const [searchQuery, setSearchQuery] = useState("")
+    const [statusFilter, setStatusFilter] = useState("All")
 
     // Business Config
     const { organization } = useOrganization()
