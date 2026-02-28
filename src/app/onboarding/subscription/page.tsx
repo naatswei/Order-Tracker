@@ -66,10 +66,10 @@ export default function SubscriptionPage() {
             <div className="max-w-7xl w-full space-y-16 relative z-10">
                 {/* Header Section */}
                 <div className="text-center space-y-6">
-                    <h1 className="text-5xl font-bold text-[#191A43] sm:text-6xl tracking-tight max-w-4xl mx-auto leading-[1.1]">
+                    <h1 className="text-5xl font-extrabold text-[#191A43] sm:text-6xl tracking-tight max-w-4xl mx-auto leading-[1.1]">
                         Transparent and flexible pricing plans
                     </h1>
-                    <p className="text-lg text-slate-500 max-w-2xl mx-auto font-medium">
+                    <p className="text-lg text-slate-500 max-w-2xl mx-auto font-medium tracking-tight">
                         All good things starts with a tracker. Get inspired without breaking your wallet.
                     </p>
                 </div>
@@ -82,23 +82,23 @@ export default function SubscriptionPage() {
                             className="relative flex flex-col border border-slate-100 bg-white/80 backdrop-blur-md rounded-[2.5rem] p-4 shadow-2xl shadow-slate-200/40 transition-all duration-300 hover:-translate-y-1"
                         >
                             <CardHeader className="space-y-4 pt-8 pb-4">
-                                <span className="text-2xl font-bold text-[#191A43]">{plan.name}</span>
+                                <span className="text-2xl font-bold text-[#191A43] tracking-tight">{plan.name}</span>
                                 <p className="text-sm font-medium text-slate-400">{plan.description}</p>
                                 <div className="space-y-1 pt-4">
                                     <div className="flex items-baseline gap-2">
-                                        <span className="text-4xl font-black text-[#191A43]">{plan.price}</span>
-                                        <span className="text-sm font-bold text-slate-400">{plan.period}</span>
+                                        <span className="text-4xl font-extrabold text-[#191A43] tracking-tight">{plan.price}</span>
+                                        <span className="text-sm font-semibold text-slate-400">{plan.period}</span>
                                     </div>
                                 </div>
                             </CardHeader>
                             <CardContent className="flex-1 pt-8 space-y-6">
                                 <ul className="space-y-4">
                                     {plan.features.map((feature, idx) => (
-                                        <li key={idx} className="flex items-start gap-4 text-sm font-bold">
+                                        <li key={idx} className="flex items-start gap-4 text-sm font-medium">
                                             <div className="mt-0.5 w-6 h-6 rounded-full bg-blue-50 flex items-center justify-center shrink-0 border border-blue-100 shadow-sm">
-                                                <Check className="w-4 h-4 text-[#191A43]" strokeWidth={3} />
+                                                <Check className="w-4 h-4 text-[#191A43]" strokeWidth={2.5} />
                                             </div>
-                                            <span className="text-[#191A43]/80 leading-snug whitespace-nowrap text-[13px] tracking-tight">
+                                            <span className="text-[#191A43]/80 leading-snug whitespace-nowrap tracking-tight">
                                                 {feature}
                                             </span>
                                         </li>
@@ -109,7 +109,7 @@ export default function SubscriptionPage() {
                                 <Button
                                     onClick={() => handleSelectPlan(plan.name)}
                                     className={cn(
-                                        "w-full h-14 text-sm font-black rounded-2xl transition-all duration-200 shadow-md",
+                                        "w-full h-14 text-sm font-bold rounded-2xl transition-all duration-200 shadow-md tracking-wide",
                                         plan.buttonVariant === "secondary" && "bg-[#191A43] text-white hover:bg-[#191A43]/90 shadow-[#191A43]/20",
                                         plan.buttonVariant === "blue" && "bg-blue-600 text-white hover:bg-blue-700 shadow-blue-200",
                                         plan.buttonVariant === "orange" && "bg-[#CE0003] text-white hover:bg-[#CE0003]/90 shadow-red-200",
