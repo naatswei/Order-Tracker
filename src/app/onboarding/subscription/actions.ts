@@ -3,40 +3,77 @@
 import { auth, currentUser } from "@clerk/nextjs/server"
 import { db } from "@/db"
 import { subscriptions } from "@/db/schema"
-import { nanoid } from "nanoid"
 import { eq } from "drizzle-orm"
 
 const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY
 
 export async function initializeSubscription(planName: string) {
+    console.log(`Starting subscription initialization for ${planName}...`)
+
     const { userId, orgId } = await auth()
     const user = await currentUser()
 
     if (!userId || !orgId || !user) {
+        console.error("Auth failed: No userId, orgId or user")
         throw new Error("Unauthorized")
     }
 
     const email = user.emailAddresses[0]?.emailAddress
     if (!email) {
+        console.error("Auth failed: No email for user")
         throw new Error("User email not found")
     }
 
-    // 1. Handle Free Trial (Instant)
-    if (planName === "Free Trial") {
-        const id = nanoid()
+    console.log(`User auth verified: ${email} (Org: ${orgId})`)
+
+    const planAmounts: Record<string, number> = {
+        "Free Trial": 0,
+        "2 weeks": 199 * 100,
+        "Month": 350 * 100,
+        "Yearly": 1500 * 100,
+    }
+
+    const amount = planAmounts[planName]
+    if (amount === undefined) {
+        console.error(`Invalid plan: ${planName}`)
+        throw new Error("Invalid plan selected")
+    }
+
+    try {
+        // SIMULATION MODE (GLOBAL)
+        const id = `idx_${Math.random().toString(36).substring(2, 11)}`
         const expiresAt = new Date()
-        expiresAt.setDate(expiresAt.getDate() + 7)
+
+        if (planName === "2 weeks") expiresAt.setDate(expiresAt.getDate() + 14)
+        else if (planName === "Month") expiresAt.setMonth(expiresAt.getMonth() + 1)
+        else if (planName === "Yearly") expiresAt.setFullYear(expiresAt.getFullYear() + 1)
+        else expiresAt.setDate(expiresAt.getDate() + 7)
+
+        console.log(`Inserting subscription into DB: ${id} for ${planName}`)
 
         await db.insert(subscriptions).values({
             id,
             clerkOrgId: orgId,
             clerkUserId: userId,
-            planType: "trial",
+            planType: planName.toLowerCase().replace(" ", ""),
             status: "active",
             expiresAt,
         })
 
-        return { success: true, redirect: "/backoffice" }
+        console.log(`Subscription created successfully. Redirecting...`)
+
+        return {
+            success: true,
+            redirect: "/backoffice",
+            isSimulated: true,
+            message: planName === "Free Trial"
+                ? undefined
+                : `Testing Mode: We've simulated your ${planName} activation.`
+        }
+
+    } catch (e: any) {
+        console.error("DB/Simulation Error:", e)
+        throw new Error("Failed to activate subscription. Please try again.")
     }
 
     const planAmounts: Record<string, number> = {
