@@ -1,6 +1,6 @@
 "use client"
 
-import { Check } from "lucide-react"
+import { Check, Loader2 } from "lucide-react"
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
@@ -61,19 +61,12 @@ export default function SubscriptionPage() {
     }, [isLoaded, organization])
 
     const handleSelectPlan = (planName: string) => {
-        console.log("Plan selected:", planName)
-
-        if (!isLoaded) {
-            console.warn("Click ignored: Clerk is still loading...")
-            return
-        }
+        if (!isLoaded || redirectingPlan) return
 
         setRedirectingPlan(planName)
 
         // Save the selected plan to localStorage for later processing if needed
         localStorage.setItem("selectedPlan", planName)
-
-        console.log("Redirecting to /backoffice...")
 
         // Simple and robust redirect
         window.location.href = "/backoffice"
@@ -146,14 +139,22 @@ export default function SubscriptionPage() {
                             <CardFooter className="p-0 pt-10">
                                 <Button
                                     onClick={() => handleSelectPlan(plan.name)}
-                                    disabled={!isLoaded || !!redirectingPlan}
+                                    // We only disable for loading state, not redirect state, 
+                                    // to prevent the "messy" grey-out of other buttons.
+                                    disabled={!isLoaded}
                                     className={cn(
                                         "w-full h-12 text-sm font-bold rounded-xl transition-all duration-200",
                                         plan.name === "Month" ? "bg-white text-[#101323] hover:bg-white/90" : "bg-[#161931] text-white hover:bg-[#161931]/90",
-                                        (!isLoaded || redirectingPlan === plan.name) && "opacity-50 cursor-not-allowed"
+                                        redirectingPlan === plan.name && "opacity-70 scale-[0.98]",
+                                        !isLoaded && "opacity-50 cursor-not-allowed"
                                     )}
                                 >
-                                    {redirectingPlan === plan.name ? "Redirecting..." : (isLoaded ? plan.buttonText : "Loading...")}
+                                    {redirectingPlan === plan.name ? (
+                                        <div className="flex items-center gap-2">
+                                            <Loader2 className="h-4 w-4 animate-spin" />
+                                            <span>Processing...</span>
+                                        </div>
+                                    ) : (isLoaded ? plan.buttonText : "Loading...")}
                                 </Button>
                             </CardFooter>
                         </Card>
