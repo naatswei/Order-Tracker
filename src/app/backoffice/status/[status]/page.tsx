@@ -137,7 +137,7 @@ export default function StatusFilterPage() {
                     {/* Back Button */}
                     <Link href="/backoffice" className="w-full sm:w-auto">
                         <Button variant="outline"
-                            className="w-full sm:w-auto gap-2 text-slate-600 transition-colors justify-center hover:bg-slate-100"
+                            className="w-full sm:w-auto gap-2 border-[#191A43]/15 text-[#191A43] transition-all duration-200 justify-center hover:bg-[#191A43] hover:text-white rounded-xl shadow-sm"
                         >
                             <ArrowLeft className="w-4 h-4" /> Back to Dashboard
                         </Button>
@@ -187,7 +187,8 @@ export default function StatusFilterPage() {
                                     <div className="flex items-center justify-center mt-6">
                                         <Link href="/backoffice">
                                             <Button
-                                                className="gap-2 border-[#191A43] text-[#191A43] hover:bg-[#191A43] hover:text-white transition-all duration-200 rounded-xl shadow-sm"
+                                                className="gap-2 border-[#191A43]/15 text-[#191A43] hover:bg-[#191A43] hover:text-white transition-all duration-200 rounded-xl shadow-sm"
+                                                variant="outline"
                                             >
                                                 <ArrowLeft className="w-4 h-4" />
                                                 Back to Dashboard

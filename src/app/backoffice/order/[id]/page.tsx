@@ -165,12 +165,7 @@ export default function OrderUpdatePage() {
                 <div className="w-full px-4 sm:px-8 py-4">
                     <div className="flex justify-between items-center">
                         <div className="flex items-center gap-3">
-                            <div
-                                className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border"
-                                style={{ backgroundColor: `${config.theme.primary}1A`, borderColor: `${config.theme.primary}33` }}
-                            >
-                                <Package className="w-5 h-5" style={{ color: config.theme.primary }} />
-                            </div>
+                            <Package className="w-5 h-5" style={{ color: config.theme.primary }} />
                             <div className="hidden sm:block">
                                 <h1 className="text-xl font-bold tracking-tight">
                                     <span className="text-[#CE0003]">O</span>
@@ -214,7 +209,7 @@ export default function OrderUpdatePage() {
                         <Link href="/backoffice">
                             <Button
                                 variant="outline"
-                                className="gap-2 border-[#191A43] text-[#191A43] hover:bg-[#191A43] hover:text-white transition-all duration-200 rounded-xl shadow-sm"
+                                className="gap-2 border-[#191A43]/15 text-[#191A43] hover:bg-[#191A43] hover:text-white transition-all duration-200 rounded-xl shadow-sm"
                             >
                                 <ArrowLeft className="w-4 h-4" />
                                 Back to Dashboard
@@ -228,9 +223,7 @@ export default function OrderUpdatePage() {
                             <div className="p-6 border-l-4" style={{ borderLeftColor: config.theme.accent }}>
                                 <div className="flex items-start justify-between mb-6">
                                     <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ backgroundColor: `${config.theme.primary}1A`, color: config.theme.primary }}>
-                                            <Package className="w-5 h-5" />
-                                        </div>
+                                        <Package className="w-5 h-5" style={{ color: config.theme.primary }} />
                                         <div>
                                             <div className="text-xs text-slate-500 font-medium">Order Number</div>
                                             <div className="text-lg font-bold text-slate-900">{order.orderNumber}</div>

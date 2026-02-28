@@ -244,7 +244,7 @@ function BulkUpdateContent() {
                     <div className="flex items-center justify-between">
                         <Link href="/backoffice">
                             <Button variant="outline"
-                                className="gap-2 rounded-xl h-10 px-4 border-[#191A43] text-[#191A43] hover:bg-[#191A43] hover:text-white shadow-sm transition-all duration-200"
+                                className="gap-2 rounded-xl h-10 px-4 border-[#191A43]/15 text-[#191A43] hover:bg-[#191A43] hover:text-white shadow-sm transition-all duration-200"
                             >
                                 <ArrowLeft className="w-4 h-4" />
                                 Back to Dashboard

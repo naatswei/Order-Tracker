@@ -164,7 +164,7 @@ function CreateOrderContent() {
                     <Link href="/backoffice">
                         <Button
                             variant="outline"
-                            className="gap-2 mb-4 border-[#191A43] text-[#191A43] hover:bg-[#191A43] hover:text-white transition-all shadow-sm duration-200 rounded-xl"
+                            className="gap-2 mb-4 border-[#191A43]/15 text-[#191A43] hover:bg-[#191A43] hover:text-white transition-all shadow-sm duration-200 rounded-xl"
                         >
                             <ArrowLeft className="w-4 h-4" />
                             Back to Dashboard

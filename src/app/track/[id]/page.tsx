@@ -153,17 +153,15 @@ export default function TrackingDetailsPage() {
                                 {order.businessDetails.name}
                             </span>
                         )}
-                        <div className="flex items-center justify-center overflow-hidden rounded-lg bg-white/10 backdrop-blur-sm border border-white/20" style={{ width: '40px', height: '40px' }}>
-                            {order.businessDetails?.imageUrl ? (
-                                <img
-                                    src={order.businessDetails.imageUrl}
-                                    alt="Logo"
-                                    className="w-full h-full object-cover"
-                                />
-                            ) : (
-                                <Package className="w-6 h-6 text-white" />
-                            )}
-                        </div>
+                        {order.businessDetails?.imageUrl ? (
+                            <img
+                                src={order.businessDetails.imageUrl}
+                                alt="Logo"
+                                className="w-10 h-10 object-cover rounded-lg"
+                            />
+                        ) : (
+                            <Package className="w-6 h-6 text-white" />
+                        )}
                     </div>
                 </div>
             </div>
