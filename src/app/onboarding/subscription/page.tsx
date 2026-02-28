@@ -160,7 +160,7 @@ export default function SubscriptionPage() {
                                     className={cn(
                                         "w-full h-12 text-sm font-bold rounded-xl transition-all duration-200",
                                         plan.name === "Month"
-                                            ? "bg-[#CE0003] text-white hover:bg-[#B00002]" // Brand Orange/Red
+                                            ? "bg-white text-[#101323] hover:bg-white/90"
                                             : "bg-[#161931] text-white hover:bg-[#161931]/90"
                                     )}
                                 >
