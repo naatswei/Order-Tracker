@@ -65,33 +65,37 @@ export default function SubscriptionPage() {
     const [loadingPlan, setLoadingPlan] = useState<string | null>(null)
 
     const handleSelectPlan = async (planName: string) => {
+        console.log(`[SUBSCRIPTION] Plan selected: ${planName}`);
         setLoadingPlan(planName)
+
         try {
             const result = await initializeSubscription(planName) as SubscriptionResult
+            console.log("[SUBSCRIPTION] Result received:", result);
 
-            if (result.success) {
-                if (result.authorization_url) {
-                    window.location.href = result.authorization_url
-                } else if (result.redirect) {
-                    if (result.message) {
-                        toast.info(result.message)
-                    } else {
-                        toast.success(`Success! Your ${planName} is active.`)
-                    }
-
-                    // Include business type in redirect to ensure correct dashboard loads instantly
-                    const businessType = localStorage.getItem("businessType")
-                    const redirectUrl = businessType
-                        ? `${result.redirect}?type=${businessType}`
-                        : result.redirect
-
-                    window.location.href = redirectUrl
+            if (result.success && result.redirect) {
+                if (result.message) {
+                    toast.info(result.message)
+                } else {
+                    toast.success("Subscription activated!")
                 }
+
+                const businessType = localStorage.getItem("businessType")
+                const redirectUrl = businessType
+                    ? `${result.redirect}?type=${businessType}`
+                    : result.redirect
+
+                console.log("[SUBSCRIPTION] Executing hard redirect to:", redirectUrl);
+                window.location.href = redirectUrl
+                return; // Successfully redirecting
+            } else {
+                console.error("[SUBSCRIPTION] Result indicated failure:", result);
+                toast.error(result.message || "Could not activate subscription. Please try again.")
             }
         } catch (error: any) {
-            console.error("Selection Error:", error)
-            toast.error(error.message || "Something went wrong. Please try again.")
+            console.error("[SUBSCRIPTION] Uncaught catch error:", error)
+            toast.error(error.message || "Network error. Please try again.")
         } finally {
+            console.log("[SUBSCRIPTION] Clearing loading state");
             setLoadingPlan(null)
         }
     }
@@ -121,10 +125,7 @@ export default function SubscriptionPage() {
                         >
                             <CardHeader className="space-y-1 p-0">
                                 <h3 className="text-2xl font-bold tracking-tight">{plan.name}</h3>
-                                <p className={cn(
-                                    "text-[13px] font-medium",
-                                    plan.name === "Month" ? "text-slate-400" : "text-slate-400"
-                                )}>{plan.description}</p>
+                                <p className="text-[13px] font-medium text-slate-400">{plan.description}</p>
                             </CardHeader>
 
                             <CardContent className="flex-1 p-0 pt-10 space-y-10">
@@ -136,10 +137,7 @@ export default function SubscriptionPage() {
                                     )}
                                     <div className="flex items-baseline gap-2">
                                         <span className="text-3xl font-bold tracking-tight">{plan.price}</span>
-                                        <span className={cn(
-                                            "text-[13px] font-medium",
-                                            plan.name === "Month" ? "text-slate-400" : "text-slate-400"
-                                        )}>{plan.period}</span>
+                                        <span className="text-[13px] font-medium text-slate-400">{plan.period}</span>
                                     </div>
                                 </div>
 
