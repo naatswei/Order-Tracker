@@ -62,7 +62,7 @@ export default function SubscriptionPage() {
                 {/* Header Section */}
                 <div className="text-center space-y-4">
                     <h1 className="text-4xl font-bold text-[#101323] tracking-tight">
-                        Choose Your Plan
+                        Simple and transparent pricing
                     </h1>
                     <p className="text-sm font-medium text-slate-400 max-w-2xl mx-auto">
                         Simple, Transparent pricing that grows with you. Start free and upgrade later.
