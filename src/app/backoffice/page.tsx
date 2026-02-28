@@ -14,7 +14,7 @@ import { Package, Plus, Search, Filter, RefreshCw, Loader2 } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Card, CardContent } from "@/components/ui/card"
 import { OrderCard } from "@/components/order-card"
-import { getBusinessConfig, BUSINESS_CONFIGS } from "@/lib/business-configs"
+import { getBusinessConfig } from "@/lib/business-configs"
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -37,8 +37,6 @@ export default function BackofficePage() {
     const [orders, setOrders] = useState<Order[]>([])
     const [isLoading, setIsLoading] = useState(true)
     const [copiedId, setCopiedId] = useState<string | null>(null)
-    const [searchQuery, setSearchQuery] = useState("")
-    const [statusFilter, setStatusFilter] = useState("All")
 
     // Business Config
     const { organization } = useOrganization()
@@ -46,33 +44,29 @@ export default function BackofficePage() {
     const config = getBusinessConfig(businessType)
     const statusOptions = config.statuses
 
-    const searchParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null
-    const typeOverride = searchParams?.get("type")
+    // Search state
+    const [searchQuery, setSearchQuery] = useState("")
+    // Filter state
+    const [statusFilter, setStatusFilter] = useState("All")
 
     // Load orders and business type on mount/org change
     useEffect(() => {
         loadOrders()
 
-        // 1. Priority: URL Override (useful for instant redirect from onboarding)
-        if (typeOverride && BUSINESS_CONFIGS[typeOverride]) {
-            setBusinessType(typeOverride)
-            localStorage.setItem("businessType", typeOverride)
-            return
-        }
-
-        // 2. Initial load from localStorage for immediate UI consistency
+        // 1. Initial load from localStorage for immediate UI consistency
         const storedType = localStorage.getItem("businessType")
         if (storedType) {
             setBusinessType(storedType)
         }
 
-        // 3. Sync from organization metadata IF AND ONLY IF we don't have a local selection
+        // 2. Sync from organization metadata IF AND ONLY IF we don't have a local selection
+        // This prevents stale org metadata from overwriting a fresh selection in onboarding
         const orgBusinessType = organization?.publicMetadata?.businessType as string
         if (orgBusinessType && !storedType) {
             setBusinessType(orgBusinessType)
             localStorage.setItem("businessType", orgBusinessType)
         }
-    }, [organization, typeOverride])
+    }, [organization])
 
     const loadOrders = async () => {
         setIsLoading(true)

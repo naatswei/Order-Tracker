@@ -1,21 +1,11 @@
 "use client"
 
-import { Check, Loader2 } from "lucide-react"
+import { Check } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
+import { useOrganization } from "@clerk/nextjs"
 import { cn } from "@/lib/utils"
-import { useState } from "react"
-import { toast } from "sonner"
-import { initializeSubscription } from "./actions"
-
-interface SubscriptionResult {
-    success: boolean;
-    redirect?: string;
-    authorization_url?: string;
-    message?: string;
-    isSimulated?: boolean;
-}
 
 const plans = [
     {
@@ -34,7 +24,7 @@ const plans = [
         price: "Gh199",
         period: "2 weeks",
         features: ["Customer notifications", "Customer data Collection", "Real-time order status updates"],
-        buttonText: "Get Started",
+        buttonText: "Start Free Trial",
         buttonVariant: "secondary",
         glowColor: "bg-blue-400/20",
     },
@@ -44,7 +34,7 @@ const plans = [
         price: "Gh350",
         period: "Monthly",
         features: ["Customer notifications", "Customer data Collection", "Real-time order status updates"],
-        buttonText: "Get Started",
+        buttonText: "Start Free Trial",
         buttonVariant: "orange",
         glowColor: "bg-[#CE0003]/20",
     },
@@ -54,7 +44,7 @@ const plans = [
         price: "Gh1,500",
         period: "Yearly",
         features: ["Customer notifications", "Customer data Collection", "Real-time order status updates"],
-        buttonText: "Get Started",
+        buttonText: "Start Free Trial",
         buttonVariant: "black",
         glowColor: "bg-purple-400/20",
     },
@@ -62,42 +52,15 @@ const plans = [
 
 export default function SubscriptionPage() {
     const router = useRouter()
-    const [loadingPlan, setLoadingPlan] = useState<string | null>(null)
+    const { organization } = useOrganization()
 
-    const handleSelectPlan = async (planName: string) => {
-        console.log(`[SUBSCRIPTION] Plan selected: ${planName}`);
-        setLoadingPlan(planName)
-
-        try {
-            const result = await initializeSubscription(planName) as SubscriptionResult
-            console.log("[SUBSCRIPTION] Result received:", result);
-
-            if (result.success && result.redirect) {
-                if (result.message) {
-                    toast.info(result.message)
-                } else {
-                    toast.success("Subscription activated!")
-                }
-
-                const businessType = localStorage.getItem("businessType")
-                const redirectUrl = businessType
-                    ? `${result.redirect}?type=${businessType}`
-                    : result.redirect
-
-                console.log("[SUBSCRIPTION] Executing hard redirect to:", redirectUrl);
-                window.location.href = redirectUrl
-                return; // Successfully redirecting
-            } else {
-                console.error("[SUBSCRIPTION] Result indicated failure:", result);
-                toast.error(result.message || "Could not activate subscription. Please try again.")
-            }
-        } catch (error: any) {
-            console.error("[SUBSCRIPTION] Uncaught catch error:", error)
-            toast.error(error.message || "Network error. Please try again.")
-        } finally {
-            console.log("[SUBSCRIPTION] Clearing loading state");
-            setLoadingPlan(null)
+    const handleSelectPlan = (planName: string) => {
+        if (!organization) {
+            alert("No active organization found. Please complete your profile setup.")
+            router.push("/onboarding/profile")
+            return
         }
+        router.push("/backoffice")
     }
 
     return (
@@ -125,7 +88,10 @@ export default function SubscriptionPage() {
                         >
                             <CardHeader className="space-y-1 p-0">
                                 <h3 className="text-2xl font-bold tracking-tight">{plan.name}</h3>
-                                <p className="text-[13px] font-medium text-slate-400">{plan.description}</p>
+                                <p className={cn(
+                                    "text-[13px] font-medium",
+                                    plan.name === "Month" ? "text-slate-400" : "text-slate-400"
+                                )}>{plan.description}</p>
                             </CardHeader>
 
                             <CardContent className="flex-1 p-0 pt-10 space-y-10">
@@ -137,7 +103,10 @@ export default function SubscriptionPage() {
                                     )}
                                     <div className="flex items-baseline gap-2">
                                         <span className="text-3xl font-bold tracking-tight">{plan.price}</span>
-                                        <span className="text-[13px] font-medium text-slate-400">{plan.period}</span>
+                                        <span className={cn(
+                                            "text-[13px] font-medium",
+                                            plan.name === "Month" ? "text-slate-400" : "text-slate-400"
+                                        )}>{plan.period}</span>
                                     </div>
                                 </div>
 
@@ -162,22 +131,11 @@ export default function SubscriptionPage() {
                                 <Button
                                     onClick={() => handleSelectPlan(plan.name)}
                                     className={cn(
-                                        "w-full h-12 text-sm font-bold rounded-xl transition-all duration-200 flex items-center justify-center gap-2",
-                                        plan.name === "Month"
-                                            ? "bg-white text-[#101323] hover:bg-white/90"
-                                            : "bg-[#161931] text-white hover:bg-[#161931]/90",
-                                        loadingPlan && loadingPlan !== plan.name && "opacity-80 pointer-events-none",
-                                        loadingPlan === plan.name && "pointer-events-none"
+                                        "w-full h-12 text-sm font-bold rounded-xl transition-all duration-200",
+                                        plan.name === "Month" ? "bg-white text-[#101323] hover:bg-white/90" : "bg-[#161931] text-white hover:bg-[#161931]/90"
                                     )}
                                 >
-                                    {loadingPlan === plan.name ? (
-                                        <>
-                                            <Loader2 className="h-4 w-4 animate-spin" />
-                                            Processing...
-                                        </>
-                                    ) : (
-                                        plan.buttonText
-                                    )}
+                                    {plan.buttonText}
                                 </Button>
                             </CardFooter>
                         </Card>
