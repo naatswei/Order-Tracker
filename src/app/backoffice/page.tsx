@@ -37,7 +37,6 @@ export default function BackofficePage() {
     const [orders, setOrders] = useState<Order[]>([])
     const [isLoading, setIsLoading] = useState(true)
     const [copiedId, setCopiedId] = useState<string | null>(null)
-    const [businessProfile, setBusinessProfile] = useState<BusinessProfile | null>(null)
 
     // Business Config
     const { organization } = useOrganization()
@@ -66,15 +65,6 @@ export default function BackofficePage() {
         if (orgBusinessType && !storedType) {
             setBusinessType(orgBusinessType)
             localStorage.setItem("businessType", orgBusinessType)
-        }
-        // 3. Load full profile for branding
-        const storedProfile = localStorage.getItem("businessProfile")
-        if (storedProfile) {
-            try {
-                setBusinessProfile(JSON.parse(storedProfile))
-            } catch (e) {
-                console.error("Failed to parse business profile", e)
-            }
         }
     }, [organization])
 
@@ -143,26 +133,26 @@ export default function BackofficePage() {
                         </div>
                         <div className="flex items-center gap-4">
                             {/* Business Branding (Right) */}
-                            <div className="hidden md:flex items-center gap-3 px-3 py-1 bg-slate-50 rounded-full border border-slate-100">
-                                <div className="flex items-center justify-center overflow-hidden rounded-full bg-white shadow-sm border border-slate-200" style={{ width: '32px', height: '32px' }}>
-                                    {businessProfile?.imagePreview ? (
-                                        <img
-                                            src={businessProfile.imagePreview}
-                                            alt="Business Logo"
-                                            className="w-full h-full object-cover"
-                                        />
-                                    ) : (
-                                        <div className="w-full h-full flex items-center justify-center bg-slate-100 text-slate-400">
-                                            <Package className="w-4 h-4" />
-                                        </div>
-                                    )}
-                                </div>
-                                {businessProfile?.companyName && (
+                            {organization && (
+                                <div className="hidden md:flex items-center gap-3 px-3 py-1 bg-slate-50 rounded-full border border-slate-100">
+                                    <div className="flex items-center justify-center overflow-hidden rounded-full bg-white shadow-sm border border-slate-200" style={{ width: '32px', height: '32px' }}>
+                                        {organization.imageUrl ? (
+                                            <img
+                                                src={organization.imageUrl}
+                                                alt="Business Logo"
+                                                className="w-full h-full object-cover"
+                                            />
+                                        ) : (
+                                            <div className="w-full h-full flex items-center justify-center bg-slate-100 text-slate-400">
+                                                <Package className="w-4 h-4" />
+                                            </div>
+                                        )}
+                                    </div>
                                     <span className="text-sm font-semibold text-slate-700 max-w-[150px] truncate">
-                                        {businessProfile.companyName}
+                                        {organization.name}
                                     </span>
-                                )}
-                            </div>
+                                </div>
+                            )}
 
                             <OrganizationSwitcher
                                 afterCreateOrganizationUrl="/backoffice"

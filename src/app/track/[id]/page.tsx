@@ -33,7 +33,6 @@ export default function TrackingDetailsPage() {
     const [messageBody, setMessageBody] = useState("")
     const [isSending, setIsSending] = useState(false)
     const [isDialogOpen, setIsDialogOpen] = useState(false)
-    const [businessProfile, setBusinessProfile] = useState<{ companyName?: string, imagePreview?: string | null } | null>(null)
 
     useEffect(() => {
         if (trackingId) {
@@ -52,6 +51,7 @@ export default function TrackingDetailsPage() {
                         createdAt: foundOrder.createdAt,
                         updatedAt: foundOrder.updatedAt,
                         businessType: foundOrder.businessType,
+                        businessDetails: foundOrder.businessDetails, // Preserve business details from Clerk
                         statusHistory: (foundOrder.statusHistory as Record<string, unknown>[]).map((h) => ({
                             id: h.id as string,
                             status: h.status as string,
@@ -67,16 +67,6 @@ export default function TrackingDetailsPage() {
                 console.error("Error fetching order:", err)
                 setLoading(false)
             })
-        }
-
-        // Load business profile for branding
-        const storedProfile = localStorage.getItem("businessProfile")
-        if (storedProfile) {
-            try {
-                setBusinessProfile(JSON.parse(storedProfile))
-            } catch (e) {
-                console.error("Failed to parse business profile", e)
-            }
         }
     }, [trackingId])
 
@@ -158,15 +148,15 @@ export default function TrackingDetailsPage() {
                         <span className="text-white font-bold">Tracker</span>
                     </div>
                     <div className="flex items-center gap-3">
-                        {businessProfile?.companyName && (
+                        {order.businessDetails?.name && (
                             <span className="text-white font-bold text-lg hidden sm:block">
-                                {businessProfile.companyName}
+                                {order.businessDetails.name}
                             </span>
                         )}
                         <div className="flex items-center justify-center overflow-hidden rounded-lg bg-white/10 backdrop-blur-sm border border-white/20" style={{ width: '40px', height: '40px' }}>
-                            {businessProfile?.imagePreview ? (
+                            {order.businessDetails?.imageUrl ? (
                                 <img
-                                    src={businessProfile.imagePreview}
+                                    src={order.businessDetails.imageUrl}
                                     alt="Logo"
                                     className="w-full h-full object-cover"
                                 />

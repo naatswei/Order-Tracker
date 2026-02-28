@@ -4,7 +4,7 @@ import { db } from "@/db";
 import { orders, statusHistory } from "@/db/schema";
 import { eq, desc, and, or } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-import { auth } from "@clerk/nextjs/server";
+import { auth, clerkClient } from "@clerk/nextjs/server";
 
 interface OrderInput {
     id?: string;
@@ -140,7 +140,28 @@ export async function getOrderWithHistory(id: string) {
         },
     });
 
-    return order;
+    if (!order) return null;
+
+    // Fetch business details from Clerk if available
+    let businessDetails = null;
+    if (order.clerkOrgId) {
+        try {
+            const client = await clerkClient()
+            const org = await client.organizations.getOrganization({ organizationId: order.clerkOrgId })
+            businessDetails = {
+                name: org.name,
+                imageUrl: org.imageUrl,
+                ...org.publicMetadata
+            }
+        } catch (e) {
+            console.error("Failed to fetch org details from Clerk", e)
+        }
+    }
+
+    return {
+        ...order,
+        businessDetails
+    };
 }
 
 export async function bulkUpdateOrderStatus(orderIds: string[], status: string, location: string, message: string) {

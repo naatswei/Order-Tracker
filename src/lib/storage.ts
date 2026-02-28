@@ -22,6 +22,14 @@ export interface Order {
     businessType?: string
     itemType?: string
     metadata?: Record<string, unknown>
+    businessDetails?: {
+        name: string
+        imageUrl: string
+        contact?: string
+        location?: string
+        secondaryEmail?: string
+        website?: string
+    } | null
 }
 
 // Generate unique tracking ID

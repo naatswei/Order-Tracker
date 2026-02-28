@@ -3,6 +3,8 @@
 import { useState, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { ArrowRight, Upload, Camera } from "lucide-react"
+import { useOrganization } from "@clerk/nextjs"
+import { updateOrgProfile } from "@/app/actions/org-metadata"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -11,6 +13,7 @@ import { cn } from "@/lib/utils"
 
 export default function BusinessProfilePage() {
     const router = useRouter()
+    const { organization } = useOrganization()
     const [isLoading, setIsLoading] = useState(false)
     const [imagePreview, setImagePreview] = useState<string | null>(null)
     const fileInputRef = useRef<HTMLInputElement>(null)
@@ -50,16 +53,27 @@ export default function BusinessProfilePage() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
+        if (!organization) {
+            alert("Please select or create an organization first.")
+            return
+        }
+
         setIsLoading(true)
 
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1000))
+        try {
+            await updateOrgProfile(organization.id, formData)
+            // Note: Logo upload to Clerk would typically happen via organization.setLogo()
+            // but for parity with current flow, we'll keep the imagePreview in localStorage for local UI only
+            // or we can rely on organization.imageUrl once it hits Clerk.
+            localStorage.setItem("businessProfile", JSON.stringify({ ...formData, imagePreview }))
 
-        // Save to local storage for now (or submit to API in real app)
-        localStorage.setItem("businessProfile", JSON.stringify({ ...formData, imagePreview }))
-
-        router.push("/backoffice")
-        setIsLoading(false)
+            router.push("/backoffice")
+        } catch (error) {
+            console.error("Failed to update org profile", error)
+            alert("Failed to save profile. Please try again.")
+        } finally {
+            setIsLoading(false)
+        }
     }
 
     const isFormValid = formData.companyName.trim() !== "" &&
