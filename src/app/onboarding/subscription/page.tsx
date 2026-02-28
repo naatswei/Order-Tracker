@@ -94,11 +94,11 @@ export default function SubscriptionPage() {
                             <CardContent className="flex-1 pt-8 space-y-6">
                                 <ul className="space-y-4">
                                     {plan.features.map((feature, idx) => (
-                                        <li key={idx} className="flex items-start gap-4 text-sm font-medium">
-                                            <div className="mt-0.5 w-6 h-6 rounded-full bg-blue-50 flex items-center justify-center shrink-0 border border-blue-100 shadow-sm">
-                                                <Check className="w-4 h-4 text-[#191A43]" strokeWidth={2.5} />
+                                        <li key={idx} className="flex items-center gap-4 text-sm font-medium group">
+                                            <div className="flex items-center justify-center shrink-0 w-5 h-5 rounded-full bg-slate-50 text-slate-400 group-hover:text-[#191A43] transition-colors duration-200">
+                                                <Check className="w-3.5 h-3.5" strokeWidth={2} />
                                             </div>
-                                            <span className="text-[#191A43]/80 leading-snug whitespace-nowrap tracking-tight">
+                                            <span className="text-[#191A43]/70 leading-snug whitespace-nowrap tracking-tight group-hover:text-[#191A43] transition-colors duration-200">
                                                 {feature}
                                             </span>
                                         </li>
