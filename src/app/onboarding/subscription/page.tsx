@@ -112,9 +112,10 @@ export default function SubscriptionPage() {
                                     onClick={() => handleSelectPlan(plan.name)}
                                     className={cn(
                                         "w-full h-14 text-sm font-black rounded-2xl transition-all duration-200",
-                                        plan.buttonVariant === "secondary"
-                                            ? "bg-slate-100 text-slate-900 hover:bg-slate-200 shadow-none"
-                                            : "bg-[#CE0003] text-white hover:bg-[#CE0003]/90 shadow-lg shadow-red-200"
+                                        plan.buttonVariant === "secondary" && "bg-slate-100 text-slate-900 hover:bg-slate-200 shadow-none",
+                                        plan.buttonVariant === "blue" && "bg-blue-600 text-white hover:bg-blue-700 shadow-lg shadow-blue-200",
+                                        plan.buttonVariant === "orange" && "bg-[#CE0003] text-white hover:bg-[#CE0003]/90 shadow-lg shadow-red-200",
+                                        plan.buttonVariant === "black" && "bg-slate-900 text-white hover:bg-black shadow-lg shadow-slate-200",
                                     )}
                                 >
                                     {plan.buttonText}
