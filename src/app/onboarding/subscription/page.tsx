@@ -1,6 +1,5 @@
 "use client"
 
-import { useState } from "react"
 import { Check } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
@@ -52,7 +51,6 @@ const plans = [
 
 export default function SubscriptionPage() {
     const router = useRouter()
-    const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">("monthly")
 
     const handleSelectPlan = (planName: string) => {
         router.push("/backoffice")
@@ -68,39 +66,12 @@ export default function SubscriptionPage() {
             <div className="max-w-7xl w-full space-y-16 relative z-10">
                 {/* Header Section */}
                 <div className="text-center space-y-6">
-                    <div className="inline-flex items-center px-4 py-1.5 rounded-full border border-slate-200 bg-white/50 backdrop-blur-sm text-sm font-semibold text-slate-900 shadow-sm">
-                        Pricing
-                    </div>
                     <h1 className="text-5xl font-bold text-slate-900 sm:text-6xl tracking-tight max-w-4xl mx-auto leading-[1.1]">
                         Transparent and flexible pricing plans
                     </h1>
                     <p className="text-lg text-slate-500 max-w-2xl mx-auto">
                         All good things starts with a tracker. Get inspired without breaking your wallet with premium templates.
                     </p>
-
-                    {/* Toggle */}
-                    <div className="flex justify-center pt-4">
-                        <div className="inline-flex p-1 bg-slate-100 rounded-full">
-                            <button
-                                onClick={() => setBillingCycle("monthly")}
-                                className={cn(
-                                    "px-6 py-2 rounded-full text-sm font-bold transition-all",
-                                    billingCycle === "monthly" ? "bg-[#191A43] text-white shadow-sm" : "text-slate-500 hover:text-slate-900"
-                                )}
-                            >
-                                Monthly
-                            </button>
-                            <button
-                                onClick={() => setBillingCycle("yearly")}
-                                className={cn(
-                                    "px-6 py-2 rounded-full text-sm font-bold transition-all flex items-center gap-2",
-                                    billingCycle === "yearly" ? "bg-[#191A43] text-white shadow-sm" : "text-slate-500 hover:text-slate-900"
-                                )}
-                            >
-                                Yearly <span className="text-[10px] opacity-70">(30% Off)</span>
-                            </button>
-                        </div>
-                    </div>
                 </div>
 
                 {/* Cards Grid */}
