@@ -11,7 +11,7 @@ const plans = [
         name: "Free Trial",
         description: "Perfect to get started",
         price: "Gh0",
-        period: "7 days",
+        period: "1 week",
         features: ["Customer notifications", "Customer data Collection", "Real-time order status updates"],
         buttonText: "Start Free Trial",
         buttonVariant: "secondary",
