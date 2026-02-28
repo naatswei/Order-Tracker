@@ -58,19 +58,19 @@ export function OrderCard({ order, copiedId, onCopy }: OrderCardProps) {
 
                                 <div className="space-y-2 text-[15px]">
                                     <div className="flex gap-2">
-                                        <span className="text-muted-foreground w-24 shrink-0">Customer:</span>
+                                        <span className="text-muted-foreground w-32 shrink-0 whitespace-nowrap">Customer:</span>
                                         <span className="font-medium text-slate-700">{order.customerName}</span>
                                     </div>
                                     <div className="flex gap-2">
-                                        <span className="text-muted-foreground w-24 shrink-0">Contact:</span>
+                                        <span className="text-muted-foreground w-32 shrink-0 whitespace-nowrap">Contact:</span>
                                         <span className="font-medium text-slate-700">{order.customerPhone}</span>
                                     </div>
                                     <div className="flex gap-2">
-                                        <span className="text-muted-foreground w-24 shrink-0">{config.itemLabel}:</span>
+                                        <span className="text-muted-foreground w-32 shrink-0 whitespace-nowrap">{config.itemLabel}:</span>
                                         <span className="font-medium text-slate-700 capitalize">{order.itemType || order.garmentType}</span>
                                     </div>
                                     <div className="flex gap-2">
-                                        <span className="text-muted-foreground w-24 shrink-0">{config.orderLabel === "Tracking Number" ? "Pickup Date" : "Pick Up Date"}:</span>
+                                        <span className="text-muted-foreground w-32 shrink-0 whitespace-nowrap">{config.orderLabel === "Tracking Number" ? "Pickup Date" : "Pick Up Date"}:</span>
                                         <span className="font-medium text-red-400">{order.pickupDate}</span>
                                     </div>
                                 </div>

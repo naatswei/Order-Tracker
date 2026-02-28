@@ -323,19 +323,19 @@ function BulkUpdateContent() {
 
                                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-1 gap-x-8 text-[15px] text-slate-600">
                                                         <div className="flex gap-2">
-                                                            <span className="text-slate-400 w-24 shrink-0">Customer:</span>
+                                                            <span className="text-slate-400 w-32 shrink-0 whitespace-nowrap">Customer:</span>
                                                             <span className="font-medium text-slate-900">{order.customerName}</span>
                                                         </div>
                                                         <div className="flex gap-2">
-                                                            <span className="text-slate-400 w-24 shrink-0">Contact:</span>
+                                                            <span className="text-slate-400 w-32 shrink-0 whitespace-nowrap">Contact:</span>
                                                             <span className="font-medium text-slate-900">{order.customerPhone}</span>
                                                         </div>
                                                         <div className="flex gap-2">
-                                                            <span className="text-slate-400 w-24 shrink-0">{config.itemLabel}:</span>
+                                                            <span className="text-slate-400 w-32 shrink-0 whitespace-nowrap">{config.itemLabel}:</span>
                                                             <span className="font-medium text-slate-900 whitespace-nowrap">{order.itemType}</span>
                                                         </div>
                                                         <div className="flex gap-2">
-                                                            <span className="text-slate-400 w-24 shrink-0">Pick Up Date:</span>
+                                                            <span className="text-slate-400 w-32 shrink-0 whitespace-nowrap">Pick Up Date:</span>
                                                             <span className="font-medium text-red-400">{order.pickupDate}</span>
                                                         </div>
                                                     </div>

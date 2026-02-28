@@ -60,6 +60,11 @@ export default function SubscriptionPage() {
     useEffect(() => {
         if (!isLoaded) return
 
+        if (!organization) {
+            router.replace("/onboarding/organization")
+            return
+        }
+
         const metadata = organization?.publicMetadata as any
         if (metadata?.subscriptionStatus === 'active' || metadata?.subscriptionStatus === 'trialing') {
             router.replace("/backoffice")
