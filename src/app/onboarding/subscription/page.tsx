@@ -1,129 +1,150 @@
 "use client"
 
+import { useState } from "react"
 import { Check } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
 
 const plans = [
     {
-        name: "Free Trial",
+        name: "Starter",
+        label: "Free Trial",
         price: "Gh0",
-        period: "7 days",
-        description: "Perfect to get started",
-        features: ["Customer notifications", "Customer data Collection", "Real-time order status updates"],
-        buttonText: "Start Free Trial",
-        highlighted: false,
+        period: "Forever",
+        features: ["Full library access", "5 assets / mo", "Regular updates", "Desktop and mobile", "Premium support"],
+        buttonText: "Join now",
+        buttonVariant: "secondary",
+        glowColor: "bg-pink-400/20",
     },
     {
-        name: "User",
+        name: "Pro",
+        label: "User",
         price: "Gh99",
         period: "Weekly",
-        description: "Affordable",
-        features: ["Customer notifications", "Customer data Collection", "Real-time order status updates"],
-        buttonText: "Start Free Trial",
-        highlighted: false,
+        features: ["Full library access", "20 assets / mo", "Regular updates", "Desktop and mobile", "Premium support"],
+        buttonText: "Start for free",
+        buttonVariant: "blue",
+        glowColor: "bg-blue-400/20",
     },
     {
-        name: "Month",
+        name: "Company",
+        label: "Month",
         price: "Gh250",
         period: "Monthly",
-        description: "Most Popular",
-        features: ["Customer notifications", "Customer data Collection", "Real-time order status updates"],
-        buttonText: "Start Free Trial",
-        highlighted: true,
+        features: ["Full library access", "30 assets / mo", "Regular updates", "Desktop and mobile", "Premium support"],
+        buttonText: "Start for free",
+        buttonVariant: "orange",
+        glowColor: "bg-yellow-400/20",
     },
     {
-        name: "Teams",
+        name: "Enterprise",
+        label: "Teams",
         price: "Gh499",
         period: "Yearly",
-        description: "Save 65% a year",
-        features: ["Customer notifications", "Customer data Collection", "Real-time order status updates"],
-        buttonText: "Start Free Trial",
-        highlighted: false,
+        features: ["Full library access", "Unlimited assets", "Regular updates", "Desktop and mobile", "Premium support"],
+        buttonText: "Start for free",
+        buttonVariant: "black",
+        glowColor: "bg-purple-400/20",
     },
 ]
 
 export default function SubscriptionPage() {
     const router = useRouter()
+    const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">("monthly")
 
     const handleSelectPlan = (planName: string) => {
-        // For now, all buttons just redirect to backoffice
         router.push("/backoffice")
     }
 
     return (
-        <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-7xl w-full space-y-12">
-                <div className="text-center space-y-4">
-                    <h1 className="text-4xl font-extrabold text-[#191A43] sm:text-5xl sm:tracking-tight lg:text-6xl">
-                        Choose Your Plan
+        <div className="min-h-screen bg-white relative overflow-hidden flex flex-col items-center py-20 px-4 sm:px-6 lg:px-8">
+            {/* Background Glows */}
+            <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-[500px] h-[500px] bg-pink-200/30 rounded-full blur-[120px] -z-10" />
+            <div className="absolute top-1/2 left-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-blue-100/40 rounded-full blur-[150px] -z-10" />
+            <div className="absolute top-1/2 left-3/4 -translate-y-1/2 w-[500px] h-[500px] bg-yellow-100/30 rounded-full blur-[120px] -z-10" />
+
+            <div className="max-w-7xl w-full space-y-16 relative z-10">
+                {/* Header Section */}
+                <div className="text-center space-y-6">
+                    <div className="inline-flex items-center px-4 py-1.5 rounded-full border border-slate-200 bg-white/50 backdrop-blur-sm text-sm font-semibold text-slate-900 shadow-sm">
+                        Pricing
+                    </div>
+                    <h1 className="text-5xl font-bold text-slate-900 sm:text-6xl tracking-tight max-w-4xl mx-auto leading-[1.1]">
+                        Transparent and flexible pricing plans
                     </h1>
-                    <p className="text-xl text-slate-500 max-w-2xl mx-auto">
-                        Simple, Transparent pricing that grows with you. Start free and upgrade anytime.
+                    <p className="text-lg text-slate-500 max-w-2xl mx-auto">
+                        All good things starts with a tracker. Get inspired without breaking your wallet with premium templates.
                     </p>
+
+                    {/* Toggle */}
+                    <div className="flex justify-center pt-4">
+                        <div className="inline-flex p-1 bg-slate-100 rounded-full">
+                            <button
+                                onClick={() => setBillingCycle("monthly")}
+                                className={cn(
+                                    "px-6 py-2 rounded-full text-sm font-bold transition-all",
+                                    billingCycle === "monthly" ? "bg-[#191A43] text-white shadow-sm" : "text-slate-500 hover:text-slate-900"
+                                )}
+                            >
+                                Monthly
+                            </button>
+                            <button
+                                onClick={() => setBillingCycle("yearly")}
+                                className={cn(
+                                    "px-6 py-2 rounded-full text-sm font-bold transition-all flex items-center gap-2",
+                                    billingCycle === "yearly" ? "bg-[#191A43] text-white shadow-sm" : "text-slate-500 hover:text-slate-900"
+                                )}
+                            >
+                                Yearly <span className="text-[10px] opacity-70">(30% Off)</span>
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
-                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                {/* Cards Grid */}
+                <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
                     {plans.map((plan) => (
                         <Card
                             key={plan.name}
-                            className={cn(
-                                "relative flex flex-col border-none shadow-xl transition-all duration-300 hover:-translate-y-1",
-                                plan.highlighted
-                                    ? "bg-[#191A43] text-white scale-105 z-10"
-                                    : "bg-white text-[#191A43]"
-                            )}
+                            className="relative flex flex-col border border-slate-100 bg-white/80 backdrop-blur-md rounded-[2.5rem] p-4 shadow-2xl shadow-slate-200/50 transition-all duration-300 hover:-translate-y-1"
                         >
-                            <CardHeader className="pb-8">
-                                <CardTitle className="text-2xl font-bold">{plan.name}</CardTitle>
-                                <p className={cn(
-                                    "text-sm font-medium",
-                                    plan.highlighted ? "text-slate-300" : "text-slate-500"
-                                )}>
-                                    {plan.description}
-                                </p>
-                            </CardHeader>
-                            <CardContent className="flex-1 space-y-6">
-                                <div className="flex items-baseline gap-1">
-                                    <span className="text-4xl font-extrabold tracking-tight">{plan.price}</span>
-                                    <span className={cn(
-                                        "text-sm font-medium",
-                                        plan.highlighted ? "text-slate-400" : "text-slate-500"
-                                    )}>
-                                        {plan.period}
-                                    </span>
+                            <CardHeader className="space-y-4 pt-8">
+                                <span className="text-sm font-bold text-slate-900">{plan.name}</span>
+                                <div className="space-y-1">
+                                    <div className="flex items-baseline gap-1">
+                                        <span className="text-4xl font-black text-slate-900">{plan.price}</span>
+                                        <span className="text-sm font-bold text-slate-400">/mo</span>
+                                    </div>
+                                    <p className="text-xs font-bold text-slate-400">{plan.period}</p>
                                 </div>
+                            </CardHeader>
+                            <CardContent className="flex-1 pt-4 space-y-6">
                                 <ul className="space-y-4">
-                                    {plan.features.map((feature) => (
-                                        <li key={feature} className="flex items-start gap-3 text-sm">
-                                            <div className={cn(
-                                                "mt-0.5 w-5 h-5 rounded-full flex items-center justify-center shrink-0 border",
-                                                plan.highlighted
-                                                    ? "bg-white/10 border-white/20"
-                                                    : "bg-blue-50 border-blue-100"
-                                            )}>
-                                                <Check className={cn(
-                                                    "w-3 h-3",
-                                                    plan.highlighted ? "text-white" : "text-blue-600"
-                                                )} />
-                                            </div>
-                                            <span className={plan.highlighted ? "text-slate-200" : "text-slate-600"}>
+                                    {plan.features.map((feature, idx) => (
+                                        <li key={idx} className="flex items-center gap-3 text-xs font-bold">
+                                            {idx === 3 && plan.name === "Starter" ? (
+                                                <span className="w-4 h-4 flex items-center justify-center text-slate-300">✕</span>
+                                            ) : (
+                                                <Check className="w-4 h-4 text-slate-400" strokeWidth={3} />
+                                            )}
+                                            <span className={idx === 3 && plan.name === "Starter" ? "text-slate-300" : "text-slate-500"}>
                                                 {feature}
                                             </span>
                                         </li>
                                     ))}
                                 </ul>
                             </CardContent>
-                            <CardFooter className="pt-8">
+                            <CardFooter className="pb-8">
                                 <Button
                                     onClick={() => handleSelectPlan(plan.name)}
                                     className={cn(
-                                        "w-full h-12 text-base font-bold rounded-xl transition-all duration-200",
-                                        plan.highlighted
-                                            ? "bg-white text-[#191A43] hover:bg-slate-100"
-                                            : "bg-[#191A43] text-white hover:bg-[#191A43]/90"
+                                        "w-full h-14 text-sm font-black rounded-2xl transition-all duration-200",
+                                        plan.buttonVariant === "secondary" && "bg-slate-100 text-slate-900 hover:bg-slate-200 shadow-none",
+                                        plan.buttonVariant === "blue" && "bg-blue-600 text-white hover:bg-blue-700 shadow-lg shadow-blue-200",
+                                        plan.buttonVariant === "orange" && "bg-amber-400 text-white hover:bg-amber-500 shadow-lg shadow-amber-100",
+                                        plan.buttonVariant === "black" && "bg-slate-900 text-white hover:bg-black shadow-lg shadow-slate-200",
                                     )}
                                 >
                                     {plan.buttonText}
@@ -133,9 +154,19 @@ export default function SubscriptionPage() {
                     ))}
                 </div>
 
-                <div className="text-center pt-8">
-                    <p className="text-slate-400 text-sm font-medium">
-                        No credit card required. Enjoy 7 days free trial.
+                {/* Footer Logistics */}
+                <div className="pt-20 text-center space-y-8">
+                    <div className="flex flex-wrap justify-center items-center gap-12 opacity-40 grayscale filter hover:grayscale-0 transition-all duration-300">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal" className="h-6" />
+                        <span className="text-2xl font-black italic tracking-tighter">afterpay<span className="text-blue-400">◇</span></span>
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa" className="h-5" />
+                        <div className="flex items-center gap-2">
+                            <div className="w-6 h-6 bg-slate-900 rounded-full" />
+                            <span className="font-bold text-slate-900">Mastercard</span>
+                        </div>
+                    </div>
+                    <p className="text-sm font-bold text-slate-400">
+                        Payments secured by <span className="text-slate-600 font-extrabold">Hubtel</span>
                     </p>
                 </div>
             </div>
