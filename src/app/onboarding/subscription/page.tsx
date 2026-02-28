@@ -85,7 +85,7 @@ export default function SubscriptionPage() {
                         ? `${result.redirect}?type=${businessType}`
                         : result.redirect
 
-                    router.push(redirectUrl)
+                    window.location.href = redirectUrl
                 }
             }
         } catch (error: any) {
