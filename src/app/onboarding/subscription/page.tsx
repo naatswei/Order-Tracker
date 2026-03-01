@@ -182,7 +182,7 @@ export default function SubscriptionPage() {
     return (
         <div className="min-h-screen bg-[#F8FAFC]">
             {/* Header */}
-            <header className="bg-white border-b border-slate-200">
+            <header className="bg-white">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
                     <div className="flex items-center text-xl font-bold tracking-tight">
                         <span className="text-red-600 font-black">O</span>
@@ -224,7 +224,7 @@ export default function SubscriptionPage() {
                                 <CardContent className="flex-1 p-0 pt-10 space-y-10">
                                     <div className="flex flex-col space-y-2">
                                         {plan.name === "Yearly" && (
-                                            <div className="w-fit bg-emerald-50 text-emerald-600 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider mb-1">
+                                            <div className="w-fit bg-emerald-50 text-emerald-600 text-[10px] font-bold px-2 py-0.5 rounded-full tracking-wider mb-1">
                                                 Save 64%
                                             </div>
                                         )}

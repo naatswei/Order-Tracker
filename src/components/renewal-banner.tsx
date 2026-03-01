@@ -41,7 +41,7 @@ export function RenewalBanner() {
                     </span>
                 </div>
                 <Link href="/onboarding/subscription">
-                    <button className="flex items-center gap-1 text-xs font-bold text-amber-900 hover:text-amber-950 transition-colors uppercase tracking-wider">
+                    <button className="flex items-center gap-1 text-xs font-bold text-amber-900 hover:text-amber-950 transition-colors tracking-wider">
                         Renew Now <ArrowRight className="w-3 h-3" />
                     </button>
                 </Link>

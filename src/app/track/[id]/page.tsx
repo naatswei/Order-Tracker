@@ -242,18 +242,18 @@ export default function TrackingDetailsPage() {
 
                         <div className="grid grid-cols-1 gap-2">
                             <div className="p-3 rounded-lg bg-slate-50 border border-slate-100">
-                                <div className="text-xs text-slate-400 uppercase font-bold tracking-wider mb-0.5">Name</div>
+                                <div className="text-xs text-slate-400 font-bold tracking-wider mb-0.5">Name</div>
                                 <div className="font-semibold text-[#191A43] text-sm">{order.customerName}</div>
                             </div>
 
                             <div className="p-3 rounded-lg bg-slate-50 border border-slate-100">
-                                <div className="text-xs text-slate-400 uppercase font-bold tracking-wider mb-0.5">Email</div>
+                                <div className="text-xs text-slate-400 font-bold tracking-wider mb-0.5">Email</div>
                                 <div className="font-semibold text-[#191A43] text-sm break-all">{order.customerEmail}</div>
                             </div>
 
                             {order.customerPhone && (
                                 <div className="p-3 rounded-lg bg-slate-50 border border-slate-100">
-                                    <div className="text-xs text-slate-400 uppercase font-bold tracking-wider mb-0.5">Phone</div>
+                                    <div className="text-xs text-slate-400 font-bold tracking-wider mb-0.5">Phone</div>
                                     <div className="font-semibold text-[#191A43] text-sm">{order.customerPhone}</div>
                                 </div>
                             )}

@@ -169,7 +169,7 @@ export default function BusinessTypePage() {
                 {/* Right Column - Business Type Selection */}
                 <div className="relative lg:col-span-2 flex flex-col min-h-screen">
                     {/* Header - Standardized */}
-                    <div className="w-full border-b border-slate-100 lg:border-slate-200">
+                    <div className="w-full">
                         <div className="mx-auto flex h-16 items-center justify-between px-6 lg:px-12">
                             <div className="flex items-center text-xl font-bold tracking-tight">
                                 <span className="text-red-600 font-black">O</span>

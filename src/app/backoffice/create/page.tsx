@@ -181,7 +181,7 @@ function CreateOrderContent() {
                         <form onSubmit={handleSubmit} className="space-y-6">
                             <div className="grid md:grid-cols-2 gap-6">
                                 <div className="space-y-2">
-                                    <Label htmlFor={`${businessType}-customerName`} className="ml-1 text-xs font-semibold uppercase text-muted-foreground tracking-wider">Customer Name <span className="text-red-500">*</span></Label>
+                                    <Label htmlFor={`${businessType}-customerName`} className="ml-1 text-xs font-semibold text-muted-foreground tracking-wider">Customer Name <span className="text-red-500">*</span></Label>
                                     <Input
                                         id={`${businessType}-customerName`}
                                         value={customerName}
@@ -193,7 +193,7 @@ function CreateOrderContent() {
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label htmlFor={`${businessType}-customerPhone`} className="ml-1 text-xs font-semibold uppercase text-muted-foreground tracking-wider">Customer Contact <span className="text-red-500">*</span></Label>
+                                    <Label htmlFor={`${businessType}-customerPhone`} className="ml-1 text-xs font-semibold text-muted-foreground tracking-wider">Customer Contact <span className="text-red-500">*</span></Label>
                                     <Input
                                         id={`${businessType}-customerPhone`}
                                         type="tel"
@@ -206,7 +206,7 @@ function CreateOrderContent() {
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label htmlFor={`${businessType}-itemType`} className="ml-1 text-xs font-semibold uppercase text-muted-foreground tracking-wider">{config.itemLabel} <span className="text-red-500">*</span></Label>
+                                    <Label htmlFor={`${businessType}-itemType`} className="ml-1 text-xs font-semibold text-muted-foreground tracking-wider">{config.itemLabel} <span className="text-red-500">*</span></Label>
                                     <Input
                                         id={`${businessType}-itemType`}
                                         value={itemType}
@@ -218,7 +218,7 @@ function CreateOrderContent() {
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label htmlFor={`${businessType}-orderNumber`} className="ml-1 text-xs font-semibold uppercase text-muted-foreground tracking-wider">{config.orderLabel} <span className="text-red-500">*</span></Label>
+                                    <Label htmlFor={`${businessType}-orderNumber`} className="ml-1 text-xs font-semibold text-muted-foreground tracking-wider">{config.orderLabel} <span className="text-red-500">*</span></Label>
                                     <Input
                                         id={`${businessType}-orderNumber`}
                                         value={orderNumber}
@@ -230,7 +230,7 @@ function CreateOrderContent() {
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label htmlFor={`${businessType}-pickupDate`} className="ml-1 text-xs font-semibold uppercase text-muted-foreground tracking-wider">{config.orderLabel === "Tracking Number" ? "Date" : "Pick Up Date"} <span className="text-red-500">*</span></Label>
+                                    <Label htmlFor={`${businessType}-pickupDate`} className="ml-1 text-xs font-semibold text-muted-foreground tracking-wider">{config.orderLabel === "Tracking Number" ? "Date" : "Pick Up Date"} <span className="text-red-500">*</span></Label>
                                     <Input
                                         id={`${businessType}-pickupDate`}
                                         value={pickupDate}
@@ -242,7 +242,7 @@ function CreateOrderContent() {
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label htmlFor={`${businessType}-customerEmail`} className="ml-1 text-xs font-semibold uppercase text-muted-foreground tracking-wider">Customer Email</Label>
+                                    <Label htmlFor={`${businessType}-customerEmail`} className="ml-1 text-xs font-semibold text-muted-foreground tracking-wider">Customer Email</Label>
                                     <Input
                                         id={`${businessType}-customerEmail`}
                                         type="email"
@@ -255,7 +255,7 @@ function CreateOrderContent() {
 
                                 {config.extraFields?.map((field) => (
                                     <div key={field.id} className="space-y-2">
-                                        <Label htmlFor={`${businessType}-${field.id}`} className="ml-1 text-xs font-semibold uppercase text-muted-foreground tracking-wider">{field.label}</Label>
+                                        <Label htmlFor={`${businessType}-${field.id}`} className="ml-1 text-xs font-semibold text-muted-foreground tracking-wider">{field.label}</Label>
                                         <Input
                                             id={`${businessType}-${field.id}`}
                                             type={field.type === "number" ? "number" : "text"}
@@ -269,7 +269,7 @@ function CreateOrderContent() {
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="measurements" className="ml-1 text-xs font-semibold uppercase text-muted-foreground tracking-wider">Notes / Measurements</Label>
+                                <Label htmlFor="measurements" className="ml-1 text-xs font-semibold text-muted-foreground tracking-wider">Notes / Measurements</Label>
                                 <Textarea
                                     id="measurements"
                                     value={measurements}
