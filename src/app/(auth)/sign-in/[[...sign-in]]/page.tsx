@@ -36,6 +36,8 @@ export default function SignInPage() {
 
                     <div className="flex justify-center w-full">
                         <SignIn
+                            fallbackRedirectUrl="/backoffice"
+                            forceRedirectUrl="/backoffice"
                             appearance={{
                                 elements: {
                                     rootBox: "w-full",
