@@ -77,7 +77,27 @@ export default function SubscriptionPage() {
         }
 
         const metadata = organization?.publicMetadata as any
-        if (metadata?.subscriptionStatus === 'active' || metadata?.subscriptionStatus === 'trialing') {
+        const subscriptionStatus = metadata?.subscriptionStatus
+        const expiryDateStr = metadata?.subscriptionExpiry as string
+
+        let isExpired = false
+        let isNearExpiry = false
+
+        if (expiryDateStr) {
+            const expiryDate = new Date(expiryDateStr)
+            const now = new Date()
+            isExpired = now > expiryDate
+
+            // Allow renewal if within 3 days
+            const diffTime = expiryDate.getTime() - now.getTime()
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+            isNearExpiry = diffDays <= 3 && diffDays >= 0
+        }
+
+        const isSubscribed = subscriptionStatus === 'active' || subscriptionStatus === 'trialing'
+
+        // Only redirect away if they are active AND NOT nearing expiry
+        if (isSubscribed && !isExpired && !isNearExpiry) {
             router.replace("/backoffice")
         }
     }, [isLoaded, organization, router])
