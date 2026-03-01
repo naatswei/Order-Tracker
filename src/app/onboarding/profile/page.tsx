@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { ArrowRight, Upload, Camera } from "lucide-react"
+import { ArrowRight, Upload, Camera, Sparkles } from "lucide-react"
 import { useOrganization, SignOutButton } from "@clerk/nextjs"
 import { updateOrgProfile } from "@/app/actions/org-metadata"
 
@@ -37,6 +37,18 @@ export default function BusinessProfilePage() {
         email: "",
         website: ""
     })
+
+    useEffect(() => {
+        if (isLoaded && organization && formData.companyName === "") {
+            setFormData(prev => ({
+                ...prev,
+                companyName: organization.name
+            }))
+            if (organization.imageUrl && !imagePreview) {
+                setImagePreview(organization.imageUrl)
+            }
+        }
+    }, [isLoaded, organization, formData.companyName, imagePreview])
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target
@@ -119,6 +131,10 @@ export default function BusinessProfilePage() {
                             <p className="text-muted-foreground text-lg">
                                 Let&apos;s set up your business profile in just a few steps.
                             </p>
+                            <div className="mt-4 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-blue-600 text-xs font-semibold border border-blue-100 animate-pulse">
+                                <Sparkles className="w-3.5 h-3.5" />
+                                We&apos;ve pre-filled some details from your business account
+                            </div>
                         </div>
 
                         <form className="space-y-10" onSubmit={handleSubmit}>
