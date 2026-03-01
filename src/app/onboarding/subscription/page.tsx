@@ -5,7 +5,7 @@ import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
-import { useOrganization, useUser, SignOutButton } from "@clerk/nextjs"
+import { useOrganization, useUser } from "@clerk/nextjs"
 import { updateOrgSubscriptionStatus } from "@/app/actions/org-metadata"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
@@ -188,11 +188,6 @@ export default function SubscriptionPage() {
                         <span className="text-red-600 font-black">O</span>
                         <span className="text-[#191A43] font-bold">Tracker</span>
                     </div>
-                    <SignOutButton>
-                        <button className="text-sm font-medium text-slate-500 hover:text-slate-800 transition-colors">
-                            Sign Out
-                        </button>
-                    </SignOutButton>
                 </div>
             </header>
 
@@ -285,7 +280,7 @@ export default function SubscriptionPage() {
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     )
 }
 

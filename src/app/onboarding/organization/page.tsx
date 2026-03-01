@@ -1,6 +1,6 @@
 "use client"
 
-import { OrganizationList, useOrganization, SignOutButton } from "@clerk/nextjs"
+import { OrganizationList, useOrganization } from "@clerk/nextjs"
 import { useRouter } from "next/navigation"
 import { useEffect } from "react"
 
@@ -24,11 +24,6 @@ export default function OrganizationSelectionPage() {
                         <span className="text-red-600 font-black">O</span>
                         <span className="text-[#191A43] font-bold">Tracker</span>
                     </div>
-                    <SignOutButton>
-                        <button className="text-sm font-medium text-slate-500 hover:text-slate-800 transition-colors">
-                            Sign Out
-                        </button>
-                    </SignOutButton>
                 </div>
             </header>
 

@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { ArrowRight, Upload, Camera, Sparkles } from "lucide-react"
-import { useOrganization, SignOutButton } from "@clerk/nextjs"
+import { useOrganization } from "@clerk/nextjs"
 import { updateOrgProfile } from "@/app/actions/org-metadata"
 
 import { Button } from "@/components/ui/button"
@@ -113,11 +113,6 @@ export default function BusinessProfilePage() {
                         <span className="text-red-600 font-black">O</span>
                         <span className="text-[#191A43] font-bold">Tracker</span>
                     </div>
-                    <SignOutButton>
-                        <button className="text-sm font-medium text-slate-500 hover:text-slate-800 transition-colors">
-                            Sign Out
-                        </button>
-                    </SignOutButton>
                 </div>
             </header>
 
@@ -328,6 +323,6 @@ export default function BusinessProfilePage() {
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     )
 }
