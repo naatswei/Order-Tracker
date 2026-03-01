@@ -125,7 +125,7 @@ function CreateOrderContent() {
                 className="sticky top-0 z-50 bg-white/60 backdrop-blur-xl border-b border-white/20 shadow-sm"
 
             >
-                <div className="w-full px-[30px] py-4">
+                <div className="w-full px-4 sm:px-[30px] py-4">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                             <Package className="w-6 h-6" style={{ color: config.theme.primary }} />

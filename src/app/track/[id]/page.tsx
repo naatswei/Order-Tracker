@@ -142,7 +142,7 @@ export default function TrackingDetailsPage() {
                 className="sticky top-0 z-50 text-white shadow-lg"
                 style={{ backgroundColor: config.theme.primary }}
             >
-                <div className="px-8 h-20 flex items-center justify-between">
+                <div className="px-4 sm:px-8 h-20 flex items-center justify-between">
                     <div className="flex items-center text-2xl font-bold tracking-tight">
                         <span style={{ color: config.theme.secondary }} className="font-black">O</span>
                         <span className="text-white font-bold">Tracker</span>

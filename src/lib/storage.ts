@@ -24,7 +24,7 @@ export interface Order {
     metadata?: Record<string, unknown>
     businessDetails?: {
         name: string
-        imageUrl: string
+        imageUrl: string | null
         contact?: string
         location?: string
         secondaryEmail?: string
