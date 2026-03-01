@@ -167,61 +167,65 @@ export default function BusinessTypePage() {
                 </div>
 
                 {/* Right Column - Business Type Selection */}
-                <div className="relative lg:col-span-2 flex flex-col min-h-screen px-6 py-8 sm:px-8 lg:px-12 xl:px-16">
-                    {/* Header - Logo */}
-                    <div className="absolute top-6 right-6 sm:top-8 sm:right-8 lg:right-12 flex items-center gap-6">
-                        <SignOutButton>
-                            <button className="text-sm font-medium text-gray-400 hover:text-gray-600 transition-colors">
-                                Sign Out
-                            </button>
-                        </SignOutButton>
-                        <div className="flex items-center text-xl font-bold tracking-tight">
-                            <span className="text-red-600 font-black">O</span>
-                            <span className="text-[#191A43] font-bold">Tracker</span>
+                <div className="relative lg:col-span-2 flex flex-col min-h-screen">
+                    {/* Header - Standardized */}
+                    <div className="w-full border-b border-slate-100 lg:border-slate-200">
+                        <div className="mx-auto flex h-16 items-center justify-between px-6 lg:px-12">
+                            <div className="flex items-center text-xl font-bold tracking-tight">
+                                <span className="text-red-600 font-black">O</span>
+                                <span className="text-[#191A43] font-bold">Tracker</span>
+                            </div>
+                            <SignOutButton>
+                                <button className="text-sm font-medium text-slate-400 hover:text-slate-600 transition-colors">
+                                    Sign Out
+                                </button>
+                            </SignOutButton>
                         </div>
                     </div>
 
                     {/* Main Content */}
-                    <div className="flex-1 flex flex-col justify-center max-w-3xl mx-auto w-full pt-20">
-                        <div className="mb-12">
-                            <h1 className="text-2xl sm:text-3xl font-bold text-[#191A43] mb-3">
-                                Enter your Business Type
-                            </h1>
-                            <p className="text-base text-gray-400 font-medium">
-                                Easy Order Entry, Real-Time Customer Update, Customer Transparency and Trust.
-                            </p>
-                        </div>
+                    <div className="flex-1 flex flex-col justify-center px-6 py-8 sm:px-8 lg:px-12 xl:px-16 pt-0">
+                        <div className="max-w-3xl mx-auto w-full">
+                            <div className="mb-12">
+                                <h1 className="text-2xl sm:text-3xl font-bold text-[#191A43] mb-3">
+                                    Enter your Business Type
+                                </h1>
+                                <p className="text-base text-gray-400 font-medium">
+                                    Easy Order Entry, Real-Time Customer Update, Customer Transparency and Trust.
+                                </p>
+                            </div>
 
-                        {/* Business Type Cards - 2x2 Grid */}
-                        <div className="grid grid-cols-2 gap-8 mb-4">
-                            {businessTypes.map((type) => (
-                                <SelectionCard
-                                    key={type.id}
-                                    title={type.title}
-                                    description={type.description}
-                                    icon={type.icon}
-                                    selected={selectedType === type.id}
-                                    onClick={() => setSelectedType(type.id)}
-                                />
-                            ))}
-                        </div>
+                            {/* Business Type Cards - 2x2 Grid */}
+                            <div className="grid grid-cols-2 gap-8 mb-4">
+                                {businessTypes.map((type) => (
+                                    <SelectionCard
+                                        key={type.id}
+                                        title={type.title}
+                                        description={type.description}
+                                        icon={type.icon}
+                                        selected={selectedType === type.id}
+                                        onClick={() => setSelectedType(type.id)}
+                                    />
+                                ))}
+                            </div>
 
-                        {/* Next Button */}
-                        <div className="flex justify-end mt-2">
-                            <Button
-                                onClick={handleNext}
-                                disabled={!selectedType || isLoading}
-                                className="bg-[#191A43] hover:bg-[#191A43]/90 text-white w-48 h-12 rounded-lg font-medium transition-all disabled:opacity-100 disabled:bg-gray-200 disabled:text-gray-400 text-base"
-                            >
-                                {isLoading ? (
-                                    <Loader2 className="h-5 w-5 animate-spin" />
-                                ) : (
-                                    <>
-                                        Next
-                                        <ArrowRight className="ml-2 h-5 w-5" />
-                                    </>
-                                )}
-                            </Button>
+                            {/* Next Button */}
+                            <div className="flex justify-end mt-2">
+                                <Button
+                                    onClick={handleNext}
+                                    disabled={!selectedType || isLoading}
+                                    className="bg-[#191A43] hover:bg-[#191A43]/90 text-white w-48 h-12 rounded-lg font-medium transition-all disabled:opacity-100 disabled:bg-gray-200 disabled:text-gray-400 text-base"
+                                >
+                                    {isLoading ? (
+                                        <Loader2 className="h-5 w-5 animate-spin" />
+                                    ) : (
+                                        <>
+                                            Next
+                                            <ArrowRight className="ml-2 h-5 w-5" />
+                                        </>
+                                    )}
+                                </Button>
+                            </div>
                         </div>
                     </div>
                 </div>
