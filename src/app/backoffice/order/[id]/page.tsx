@@ -203,9 +203,9 @@ export default function OrderUpdatePage() {
             <div className="container mx-auto px-4 py-6 sm:py-8 max-w-6xl space-y-6">
 
 
-                <div className="grid lg:grid-cols-12 gap-6 sm:gap-8">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8">
                     {/* Back Button */}
-                    <div className="flex items-center justify-between col-span-12">
+                    <div className="flex items-center justify-between col-span-1 lg:col-span-12">
                         <Link href="/backoffice">
                             <Button
                                 variant="outline"
