@@ -226,14 +226,14 @@ export default function OrderUpdatePage() {
                                         <Package className="w-5 h-5" style={{ color: config.theme.primary }} />
                                         <div>
                                             <div className="text-xs text-slate-500 font-medium">Order Number</div>
-                                            <div className="text-lg font-bold text-slate-900">{order.orderNumber}</div>
+                                            <div className="text-base sm:text-lg font-bold text-slate-900">{order.orderNumber}</div>
                                         </div>
                                     </div>
                                 </div>
 
                                 <div className="mb-8">
                                     <div className="text-xs text-slate-500 mb-2">Current Status</div>
-                                    <Badge variant="outline" className={`rounded-full px-4 py-1.5 font-medium border text-xs ${getStatusColor(order.currentStatus)}`}>
+                                    <Badge variant="outline" className={`rounded-full px-3 sm:px-4 py-1 sm:py-1.5 font-medium border text-[11px] sm:text-xs ${getStatusColor(order.currentStatus)}`}>
                                         {order.currentStatus}
                                     </Badge>
                                 </div>
@@ -241,19 +241,19 @@ export default function OrderUpdatePage() {
                                 <div className="space-y-4">
                                     <div className="flex items-center gap-3">
                                         <User className="w-4 h-4 text-slate-400" />
-                                        <span className="text-sm text-slate-600 font-medium">{order.customerName}</span>
+                                        <span className="text-[13px] sm:text-sm text-slate-600 font-medium">{order.customerName}</span>
                                     </div>
                                     <div className="flex items-center gap-3">
                                         <Shirt className="w-4 h-4 text-slate-400" />
-                                        <span className="text-sm text-slate-600 font-medium capitalize">{order.garmentType}</span>
+                                        <span className="text-[13px] sm:text-sm text-slate-600 font-medium capitalize">{order.garmentType}</span>
                                     </div>
                                     <div className="flex items-center gap-3">
                                         <Phone className="w-4 h-4 text-slate-400" />
-                                        <span className="text-sm text-slate-600 font-medium">{order.customerPhone}</span>
+                                        <span className="text-[13px] sm:text-sm text-slate-600 font-medium">{order.customerPhone}</span>
                                     </div>
                                     <div className="flex items-center gap-3">
                                         <Mail className="w-4 h-4 text-slate-400" />
-                                        <span className="text-sm text-slate-600 font-medium truncate" title={order.customerEmail}>{order.customerEmail}</span>
+                                        <span className="text-[13px] sm:text-sm text-slate-600 font-medium truncate" title={order.customerEmail}>{order.customerEmail}</span>
                                     </div>
                                 </div>
                             </div>
@@ -280,8 +280,8 @@ export default function OrderUpdatePage() {
                                                 }}
                                             />
                                             <div className="space-y-1">
-                                                <div className="text-sm font-bold text-slate-900">{historyItem.status}</div>
-                                                <div className="flex items-center gap-1 text-xs text-slate-500">
+                                                <div className="text-[13px] sm:text-sm font-bold text-slate-900">{historyItem.status}</div>
+                                                <div className="flex items-center gap-1 text-[11px] sm:text-xs text-slate-500">
                                                     <MapPin className="w-3 h-3" /> {historyItem.location || "Main Office"}
                                                 </div>
                                                 <div className="text-xs text-slate-600 leading-relaxed max-w-[200px]">{historyItem.message}</div>

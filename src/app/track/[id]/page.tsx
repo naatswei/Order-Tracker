@@ -162,7 +162,7 @@ export default function TrackingDetailsPage() {
                         <div className="flex justify-between items-start mb-4">
                             <div>
                                 <p className="text-sm text-slate-500 font-medium mb-1">{config.orderLabel}</p>
-                                <h1 className="text-3xl font-bold tracking-tight" style={{ color: config.theme.primary }}>{order.orderNumber}</h1>
+                                <h1 className="text-2xl sm:text-3xl font-bold tracking-tight" style={{ color: config.theme.primary }}>{order.orderNumber}</h1>
                             </div>
                             <Package className="w-6 h-6" style={{ color: config.theme.primary }} />
                         </div>
@@ -171,7 +171,7 @@ export default function TrackingDetailsPage() {
                             <Badge className={`rounded-lg px-3 py-1.5 text-sm font-semibold border ${getStatusColor(order.currentStatus)}`}>
                                 {order.currentStatus}
                             </Badge>
-                            <span className="text-sm text-slate-400 font-medium">
+                            <span className="text-[13px] sm:text-sm text-slate-400 font-medium">
                                 {order.garmentType}
                             </span>
                         </div>
@@ -179,7 +179,7 @@ export default function TrackingDetailsPage() {
 
                     <div className="bg-slate-50/50 px-6 py-4 border-t border-slate-100 flex justify-between items-center">
                         <div className="text-xs text-slate-400 font-medium">Placed on</div>
-                        <div className="text-sm font-semibold text-slate-700">
+                        <div className="text-[13px] sm:text-sm font-semibold text-slate-700">
                             {new Date(order.createdAt).toLocaleDateString(undefined, { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' })}
                         </div>
                     </div>
@@ -200,7 +200,7 @@ export default function TrackingDetailsPage() {
                                             <div className="text-xs text-slate-400 font-medium">
                                                 {new Date(statusItem.timestamp).toLocaleDateString(undefined, { month: 'numeric', day: 'numeric', year: 'numeric' })}
                                             </div>
-                                            <div className="text-base font-bold" style={{ color: config.theme.primary }}>
+                                            <div className="text-[15px] sm:text-base font-bold" style={{ color: config.theme.primary }}>
                                                 {new Date(statusItem.timestamp).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit', hour12: false })}
                                             </div>
                                         </div>
@@ -221,7 +221,7 @@ export default function TrackingDetailsPage() {
 
                                         {/* Content Column */}
                                         <div className={`flex-1 pb-2 ${isFirst ? "" : "opacity-60"}`}>
-                                            <h4 className="text-base font-semibold leading-tight" style={{ color: config.theme.primary }}>
+                                            <h4 className="text-[15px] sm:text-base font-semibold leading-tight" style={{ color: config.theme.primary }}>
                                                 {statusItem.status}
                                             </h4>
                                             <p className="text-sm text-slate-400 mt-1 leading-relaxed">
