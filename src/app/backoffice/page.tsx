@@ -217,7 +217,7 @@ export default function BackofficePage() {
 
                 <div className="space-y-4">
                     <div className="flex items-center justify-between px-1">
-                        <h2 className="text-[16px] font-semibold tracking-tight text-foreground/80">{config.dashboardTitle}</h2>
+                        <h2 className="text-xs font-bold tracking-wider text-foreground/50 uppercase">{config.dashboardTitle}</h2>
                         <Badge variant="outline" className="rounded-full px-3 bg-white/50">{filteredOrders.length}</Badge>
                     </div>
 

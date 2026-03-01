@@ -6,6 +6,7 @@ import { useState, useEffect } from "react"
 import { Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
+import { verifyPayment } from "@/app/actions/paystack"
 
 interface PaystackButtonProps {
     plan: any
@@ -35,6 +36,22 @@ export default function PaystackButton({
         amount: amountInKobo,
         publicKey: publicKey,
         currency: "GHS",
+        metadata: {
+            custom_fields: [
+                {
+                    display_name: "Plan Name",
+                    variable_name: "plan_name",
+                    value: plan.name
+                },
+                {
+                    display_name: "Organization ID",
+                    variable_name: "org_id",
+                    value: organization?.id
+                }
+            ],
+            orgId: organization?.id,
+            planName: plan.name
+        }
     }
 
     const initializePayment = usePaystackPayment(config)
@@ -59,9 +76,21 @@ export default function PaystackButton({
         }
 
         initializePayment({
-            onSuccess: (reference: any) => {
+            onSuccess: async (reference: any) => {
                 setIsRedirecting(true)
-                onSuccess()
+                try {
+                    const result = await verifyPayment(reference.reference, organization.id, plan.name)
+                    if (result.success) {
+                        toast.success("Payment verified! Activating plan...")
+                        onSuccess()
+                    } else {
+                        toast.error(result.error || "Payment verification failed. Please contact support.")
+                        setIsRedirecting(false)
+                    }
+                } catch (error) {
+                    toast.error("An error occurred during verification.")
+                    setIsRedirecting(false)
+                }
             },
             onClose: () => {
                 console.log("Payment closed")
@@ -83,7 +112,7 @@ export default function PaystackButton({
             {isRedirecting ? (
                 <div className="flex items-center gap-2">
                     <Loader2 className="h-4 w-4 animate-spin" />
-                    <span>Processing...</span>
+                    <span>Verifying...</span>
                 </div>
             ) : (isLoaded ? plan.buttonText : "Loading...")}
         </Button>
