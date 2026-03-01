@@ -5,9 +5,11 @@ import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
-import { useOrganization, SignOutButton } from "@clerk/nextjs"
+import { useOrganization, useUser, SignOutButton } from "@clerk/nextjs"
 import { updateOrgSubscriptionStatus } from "@/app/actions/org-metadata"
 import { cn } from "@/lib/utils"
+import { usePaystackPayment } from "react-paystack"
+import { toast } from "sonner"
 
 const plans = [
     {
@@ -55,7 +57,11 @@ const plans = [
 export default function SubscriptionPage() {
     const router = useRouter()
     const { organization, isLoaded } = useOrganization()
+    const { user } = useUser()
     const [redirectingPlan, setRedirectingPlan] = useState<string | null>(null)
+
+    // Paystack public key from env
+    const publicKey = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || ""
 
     useEffect(() => {
         if (!isLoaded) return
@@ -71,12 +77,9 @@ export default function SubscriptionPage() {
         }
     }, [isLoaded, organization, router])
 
-    const handleSelectPlan = async (planName: string) => {
-        if (!isLoaded || redirectingPlan || !organization) return
-
-        setRedirectingPlan(planName)
-
+    const handleActivateSubscription = async (planName: string) => {
         try {
+            if (!organization) return
             // Mark as trialing/active in Clerk metadata
             await updateOrgSubscriptionStatus(organization.id, 'active')
 
@@ -90,6 +93,46 @@ export default function SubscriptionPage() {
             // Still try to redirect as a fallback
             window.location.href = "/backoffice"
         }
+    }
+
+    const handleSelectPlan = async (plan: any) => {
+        if (!isLoaded || redirectingPlan || !organization) return
+
+        // 1. If it's the Free Trial, activate immediately
+        if (plan.name === "Free Trial") {
+            setRedirectingPlan(plan.name)
+            await handleActivateSubscription(plan.name)
+            return
+        }
+
+        // 2. For paid plans, trigger Paystack
+        if (!publicKey) {
+            toast.error("Payment system configuration missing. Please contact support.")
+            return
+        }
+
+        const amountInGHS = parseInt(plan.price.replace(/[^0-9]/g, ""))
+        const amountInKobo = amountInGHS * 100
+
+        const config = {
+            reference: (new Date()).getTime().toString(),
+            email: organization.publicMetadata?.adminEmail as string || user?.emailAddresses[0].emailAddress || "",
+            amount: amountInKobo,
+            publicKey: publicKey,
+            currency: "GHS",
+        }
+
+        // Initialize Paystack
+        // Note: react-paystack hooks must be called at the top level, 
+        // but since we need dynamic config per plan, we'll use the functional approach
+        // within the button click if possible, or a single hook with updated state.
+        // Actually, the recommended way for dynamic config is to use the hook at the top level
+        // and only call the result. But since we have 4 plans, let's use a simpler wrapper or
+        // update the config state.
+
+        // For simplicity with this library in a loop, we'll manually trigger it 
+        // using the standard Paystack inline script if the hook is too restrictive, 
+        // but let's try to make the hook work by passing the config to it.
     }
 
     return (
@@ -173,25 +216,14 @@ export default function SubscriptionPage() {
                                 </CardContent>
 
                                 <CardFooter className="p-0 pt-10">
-                                    <Button
-                                        onClick={() => handleSelectPlan(plan.name)}
-                                        // We only disable for loading state, not redirect state, 
-                                        // to prevent the "messy" grey-out of other buttons.
-                                        disabled={!isLoaded}
-                                        className={cn(
-                                            "w-full h-12 text-sm font-bold rounded-xl transition-all duration-200",
-                                            plan.name === "Month" ? "bg-white text-[#101323] hover:bg-white/90" : "bg-[#161931] text-white hover:bg-[#161931]/90",
-                                            redirectingPlan === plan.name && "opacity-70 scale-[0.98]",
-                                            !isLoaded && "opacity-50 cursor-not-allowed"
-                                        )}
-                                    >
-                                        {redirectingPlan === plan.name ? (
-                                            <div className="flex items-center gap-2">
-                                                <Loader2 className="h-4 w-4 animate-spin" />
-                                                <span>Processing...</span>
-                                            </div>
-                                        ) : (isLoaded ? plan.buttonText : "Loading...")}
-                                    </Button>
+                                    <PlanButton
+                                        plan={plan}
+                                        publicKey={publicKey}
+                                        organization={organization}
+                                        user={user}
+                                        onSuccess={() => handleActivateSubscription(plan.name)}
+                                        isLoaded={isLoaded}
+                                    />
                                 </CardFooter>
                             </Card>
                         ))}
@@ -212,3 +244,81 @@ export default function SubscriptionPage() {
         </div>
     )
 }
+
+function PlanButton({
+    plan,
+    publicKey,
+    organization,
+    user,
+    onSuccess,
+    isLoaded
+}: {
+    plan: any,
+    publicKey: string,
+    organization: any,
+    user: any,
+    onSuccess: () => void,
+    isLoaded: boolean
+}) {
+    const [isRedirecting, setIsRedirecting] = useState(false)
+
+    const amountInGHS = parseInt(plan.price.replace(/[^0-9]/g, ""))
+    const amountInKobo = amountInGHS * 100
+
+    const config = {
+        reference: (new Date()).getTime().toString(),
+        email: organization?.publicMetadata?.adminEmail as string || user?.primaryEmailAddress?.emailAddress || "",
+        amount: amountInKobo,
+        publicKey: publicKey,
+        currency: "GHS",
+    }
+
+    const initializePayment = usePaystackPayment(config)
+
+    const handleSelect = () => {
+        if (!isLoaded || isRedirecting || !organization) return
+
+        if (plan.name === "Free Trial") {
+            setIsRedirecting(true)
+            onSuccess()
+            return
+        }
+
+        if (!publicKey) {
+            toast.error("Payment system configuration missing. Please contact support.")
+            return
+        }
+
+        initializePayment({
+            onSuccess: (reference: any) => {
+                console.log("Payment success:", reference)
+                setIsRedirecting(true)
+                onSuccess()
+            },
+            onClose: () => {
+                console.log("Payment closed")
+            }
+        })
+    }
+
+    return (
+        <Button
+            onClick={handleSelect}
+            disabled={!isLoaded || isRedirecting}
+            className={cn(
+                "w-full h-12 text-sm font-bold rounded-xl transition-all duration-200",
+                plan.name === "Month" ? "bg-white text-[#101323] hover:bg-white/90" : "bg-[#161931] text-white hover:bg-[#161931]/90",
+                isRedirecting && "opacity-70 scale-[0.98]",
+                !isLoaded && "opacity-50 cursor-not-allowed"
+            )}
+        >
+            {isRedirecting ? (
+                <div className="flex items-center gap-2">
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <span>Processing...</span>
+                </div>
+            ) : (isLoaded ? plan.buttonText : "Loading...")}
+        </Button>
+    )
+}
+
