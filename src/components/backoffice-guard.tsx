@@ -35,7 +35,11 @@ export function BackofficeGuard({ children }: { children: React.ReactNode }) {
             }
 
             // 3. Check Subscription
-            if (metadata.subscriptionStatus !== 'active' && metadata.subscriptionStatus !== 'trialing') {
+            const isSubscribed = metadata.subscriptionStatus === 'active' || metadata.subscriptionStatus === 'trialing'
+            const expiryDate = metadata.subscriptionExpiry ? new Date(metadata.subscriptionExpiry) : null
+            const isExpired = expiryDate ? new Date() > expiryDate : false
+
+            if (!isSubscribed || isExpired) {
                 router.push("/onboarding/subscription")
                 return
             }

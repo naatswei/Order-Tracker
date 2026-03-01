@@ -80,11 +80,28 @@ export default function SubscriptionPage() {
     const handleActivateSubscription = async (planName: string) => {
         try {
             if (!organization) return
-            // Mark as trialing/active in Clerk metadata
-            await updateOrgSubscriptionStatus(organization.id, 'active')
+
+            // Calculate expiry date
+            const now = new Date()
+            let expiryDays = 30
+            if (planName === "Free Trial") expiryDays = 7
+            if (planName === "2 weeks") expiryDays = 14
+            if (planName === "Yearly") expiryDays = 365
+
+            const expiryDate = new Date(now.getTime() + expiryDays * 24 * 60 * 60 * 1000).toISOString()
+            const isTrial = planName === "Free Trial"
+
+            // Mark as active in Clerk metadata with expiry
+            await updateOrgSubscriptionStatus(
+                organization.id,
+                'active',
+                expiryDate,
+                isTrial ? true : undefined
+            )
 
             // Save to localStorage as well for immediate UI consistency
             localStorage.setItem("selectedPlan", planName)
+            localStorage.setItem("subscriptionExpiry", expiryDate)
 
             // Redirect to backoffice
             window.location.href = "/backoffice"
@@ -279,6 +296,11 @@ function PlanButton({
         if (!isLoaded || isRedirecting || !organization) return
 
         if (plan.name === "Free Trial") {
+            // Prevent duplicate trials
+            if (organization.publicMetadata?.trialUsed) {
+                toast.error("You've already used your free trial. Please choose a paid plan to continue.")
+                return
+            }
             setIsRedirecting(true)
             onSuccess()
             return
