@@ -183,7 +183,7 @@ export default function SubscriptionPage() {
         <div className="min-h-screen bg-[#F8FAFC]">
             {/* Header */}
             <header className="bg-white">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+                <div className="w-full px-6 h-16 flex items-center justify-between">
                     <div className="flex items-center text-xl font-bold tracking-tight">
                         <span className="text-red-600 font-black">O</span>
                         <span className="text-[#191A43] font-bold">Tracker</span>

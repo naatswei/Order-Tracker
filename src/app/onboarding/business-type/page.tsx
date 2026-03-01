@@ -170,7 +170,7 @@ export default function BusinessTypePage() {
                 <div className="relative lg:col-span-2 flex flex-col min-h-screen">
                     {/* Header - Standardized */}
                     <div className="w-full">
-                        <div className="mx-auto flex h-16 items-center justify-between px-6 lg:px-12">
+                        <div className="flex h-16 items-center justify-between px-6">
                             <div className="flex items-center text-xl font-bold tracking-tight">
                                 <span className="text-red-600 font-black">O</span>
                                 <span className="text-[#191A43] font-bold">Tracker</span>
