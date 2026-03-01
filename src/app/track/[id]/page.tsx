@@ -147,22 +147,7 @@ export default function TrackingDetailsPage() {
                         <span style={{ color: config.theme.secondary }} className="font-black">O</span>
                         <span className="text-white font-bold">Tracker</span>
                     </div>
-                    <div className="flex items-center gap-3">
-                        {order.businessDetails?.name && (
-                            <span className="text-white font-bold text-lg hidden sm:block">
-                                {order.businessDetails.name}
-                            </span>
-                        )}
-                        {order.businessDetails?.imageUrl ? (
-                            <img
-                                src={order.businessDetails.imageUrl}
-                                alt="Logo"
-                                className="w-10 h-10 object-cover rounded-lg"
-                            />
-                        ) : (
-                            <Package className="w-6 h-6 text-white" />
-                        )}
-                    </div>
+
                 </div>
             </div>
 
