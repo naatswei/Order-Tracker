@@ -83,6 +83,7 @@ export default function BackofficePage() {
                 createdAt: o.createdAt as Date,
                 updatedAt: o.updatedAt as Date,
                 businessType: o.businessType as string,
+                pickupDate: o.pickupDate as string,
                 statusHistory: [],
             }))
             setOrders(mappedOrders)

@@ -57,6 +57,7 @@ export default function TrackingDetailsPage() {
                         updatedAt: foundOrder.updatedAt,
                         businessType: foundOrder.businessType,
                         businessDetails: foundOrder.businessDetails,
+                        pickupDate: foundOrder.pickupDate as string,
                         statusHistory: (foundOrder.statusHistory as Record<string, unknown>[]).map((h) => ({
                             id: h.id as string,
                             status: h.status as string,
@@ -261,10 +262,20 @@ export default function TrackingDetailsPage() {
                     </div>
 
                     <div className="bg-slate-50/50 px-6 py-4 border-t border-slate-100 flex justify-between items-center">
-                        <div className="text-xs text-slate-400 font-medium">Placed on</div>
-                        <div className="text-[13px] sm:text-sm font-semibold text-slate-700">
-                            {new Date(order.createdAt).toLocaleDateString(undefined, { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' })}
+                        <div className="flex flex-col">
+                            <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Placed on</span>
+                            <div className="text-[13px] sm:text-sm font-semibold text-slate-700">
+                                {new Date(order.createdAt).toLocaleDateString(undefined, { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' })}
+                            </div>
                         </div>
+                        {order.pickupDate && (
+                            <div className="flex flex-col items-end">
+                                <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Pick Up Date</span>
+                                <div className="text-[13px] sm:text-sm font-bold text-red-500">
+                                    {order.pickupDate}
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </Card>
 
