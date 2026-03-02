@@ -67,6 +67,25 @@ export async function getInboxMessages(orgId: string) {
     }
 }
 
+export async function getUnreadCount(orgId: string) {
+    try {
+        const { userId } = await auth()
+        if (!userId) return 0
+
+        const result = await db.query.customerMessages.findMany({
+            where: (cm, { eq, and }) => and(
+                eq(cm.clerkOrgId, orgId),
+                eq(cm.isRead, "false")
+            )
+        })
+
+        return result.length
+    } catch (error) {
+        console.error("Error getting unread count:", error)
+        return 0
+    }
+}
+
 export async function markMessageAsRead(messageId: string) {
     try {
         const { userId } = await auth()

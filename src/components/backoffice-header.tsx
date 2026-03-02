@@ -1,12 +1,13 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Package, Mail, Menu, X } from "lucide-react"
-import { OrganizationSwitcher, UserButton } from "@clerk/nextjs"
+import { OrganizationSwitcher, UserButton, useOrganization } from "@clerk/nextjs"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { motion, AnimatePresence } from "framer-motion"
+import { getUnreadCount } from "@/app/actions/messages"
 
 interface BackofficeHeaderProps {
     config: {
@@ -18,8 +19,16 @@ interface BackofficeHeaderProps {
 
 export function BackofficeHeader({ config }: BackofficeHeaderProps) {
     const [isMenuOpen, setIsMenuOpen] = useState(false)
+    const [unreadCount, setUnreadCount] = useState(0)
+    const { organization } = useOrganization()
 
     const toggleMenu = () => setIsMenuOpen(!isMenuOpen)
+
+    useEffect(() => {
+        if (organization?.id) {
+            getUnreadCount(organization.id).then(setUnreadCount)
+        }
+    }, [organization?.id])
 
     return (
         <header className="sticky top-0 z-50 bg-white/60 backdrop-blur-xl border-b border-white/20 shadow-sm">
@@ -39,9 +48,12 @@ export function BackofficeHeader({ config }: BackofficeHeaderProps) {
 
                     {/* Desktop Navigation */}
                     <div className="hidden md:flex items-center gap-4">
-                        <Link href="/backoffice/profile?tab=inbox">
+                        <Link href="/backoffice/inbox">
                             <Button variant="ghost" size="icon" className="relative h-9 w-9 rounded-full bg-slate-100/50 hover:bg-slate-200/50 border border-slate-200 shadow-sm transition-all grayscale hover:grayscale-0">
                                 <Mail className="w-4 h-4 text-slate-600" />
+                                {unreadCount > 0 && (
+                                    <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-600 rounded-full border border-white animate-pulse" />
+                                )}
                             </Button>
                         </Link>
                         <OrganizationSwitcher
@@ -65,9 +77,12 @@ export function BackofficeHeader({ config }: BackofficeHeaderProps) {
 
                     {/* Mobile Menu Button */}
                     <div className="md:hidden flex items-center gap-2">
-                        <Link href="/backoffice/profile?tab=inbox">
+                        <Link href="/backoffice/inbox">
                             <Button variant="ghost" size="icon" className="relative h-9 w-9 rounded-full bg-slate-100/50 hover:bg-slate-200/50 border border-slate-200 shadow-sm transition-colors">
                                 <Mail className="w-4 h-4 text-slate-600" />
+                                {unreadCount > 0 && (
+                                    <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-600 rounded-full border border-white animate-pulse" />
+                                )}
                             </Button>
                         </Link>
                         <Button
