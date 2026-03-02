@@ -16,6 +16,7 @@ import Link from "next/link"
 import { ArrowLeft, MapPin, Clock, User, Phone, Mail, Shirt, Package, Loader2 } from "lucide-react"
 import { UserButton, OrganizationSwitcher, useOrganization } from "@clerk/nextjs"
 import { getBusinessConfig } from "@/lib/business-configs"
+import { BackofficeHeader } from "@/components/backoffice-header"
 
 export default function OrderUpdatePage() {
     const params = useParams()
@@ -161,44 +162,7 @@ export default function OrderUpdatePage() {
     return (
         <div className="min-h-screen bg-[#F9FCFF] font-sans selection:bg-blue-100 pb-20">
             {/* Header */}
-            <div className="sticky top-0 z-50 bg-white/60 backdrop-blur-xl border-b border-white/20 shadow-sm">
-                <div className="w-full px-4 sm:px-8 py-4">
-                    <div className="flex justify-between items-center">
-                        <div className="flex items-center gap-3">
-                            <Package className="w-5 h-5" style={{ color: config.theme.primary }} />
-                            <div className="hidden sm:block">
-                                <h1 className="text-xl font-bold tracking-tight">
-                                    <span className="text-[#CE0003]">O</span>
-                                    <span className="text-[#191A43]">Tracker</span>
-                                </h1>
-                                <p className="text-sm text-slate-500">Add a new status update to this order</p>
-                            </div>
-                            <div className="sm:hidden">
-                                <h1 className="text-lg font-bold text-slate-900 tracking-tight">Update Status</h1>
-                            </div>
-                        </div>
-                        <div className="flex items-center gap-3">
-                            <OrganizationSwitcher
-                                hidePersonal={true}
-                                afterCreateOrganizationUrl="/backoffice"
-                                appearance={{
-                                    elements: {
-                                        rootBox: "flex items-center",
-                                        organizationSwitcherTrigger: "h-9 px-3 rounded-full border border-input bg-transparent hover:bg-accent hover:text-accent-foreground"
-                                    }
-                                }}
-                            />
-                            <UserButton
-                                appearance={{
-                                    elements: {
-                                        userButtonAvatarBox: "w-9 h-9"
-                                    }
-                                }}
-                            />
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <BackofficeHeader config={config} />
 
 
             <div className="container mx-auto px-4 py-6 sm:py-8 max-w-6xl space-y-6">

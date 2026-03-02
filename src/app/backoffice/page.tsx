@@ -10,11 +10,12 @@ import { type Order } from "@/lib/storage"
 import { getOrders } from "@/app/actions/orders"
 import Link from "next/link"
 import { UserButton, OrganizationSwitcher, useOrganization } from "@clerk/nextjs"
-import { Package, Plus, Search, Filter, RefreshCw, Loader2, Mail } from "lucide-react"
+import { Search, Plus, Filter, Package, Mail, ChevronRight, Copy, ExternalLink, Menu, X } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Card, CardContent } from "@/components/ui/card"
 import { OrderCard } from "@/components/order-card"
 import { getBusinessConfig } from "@/lib/business-configs"
+import { BackofficeHeader } from "@/components/backoffice-header"
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -111,48 +112,7 @@ export default function BackofficePage() {
     return (
         <div className="min-h-screen bg-background font-sans selection:bg-primary/20">
             {/* Header */}
-            <div
-                className="sticky top-0 z-50 bg-white/60 backdrop-blur-xl border-b border-white/20 shadow-sm"
-            >
-                <div className="w-full px-4 sm:px-8 py-4">
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                            <Package className="w-6 h-6" style={{ color: config.theme.primary }} />
-                            <div className="hidden sm:block">
-                                <h1 className="text-xl font-bold tracking-tight">
-                                    <span className="text-[#CE0003]">O</span>
-                                    <span className="text-[#191A43]">Tracker</span>
-                                </h1>
-                                <p className="text-xs text-muted-foreground">Backoffice Dashboard</p>
-                            </div>
-                        </div>
-                        <div className="flex items-center gap-4">
-                            <Link href="/backoffice/profile?tab=inbox">
-                                <Button variant="ghost" size="icon" className="relative h-9 w-9 rounded-full bg-slate-100/50 hover:bg-slate-200/50 border border-slate-200 shadow-sm">
-                                    <Mail className="w-4 h-4 text-slate-600" />
-                                </Button>
-                            </Link>
-                            <OrganizationSwitcher
-                                hidePersonal={true}
-                                afterCreateOrganizationUrl="/backoffice"
-                                appearance={{
-                                    elements: {
-                                        rootBox: "flex items-center",
-                                        organizationSwitcherTrigger: "h-9 px-3 rounded-full border border-input bg-transparent hover:bg-accent hover:text-accent-foreground"
-                                    }
-                                }}
-                            />
-                            <UserButton
-                                appearance={{
-                                    elements: {
-                                        userButtonAvatarBox: "w-9 h-9"
-                                    }
-                                }}
-                            />
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <BackofficeHeader config={config} />
 
             <div className="container mx-auto px-4 py-6 sm:py-8 max-w-[1400px] space-y-8 sm:space-y-[70px]">
                 {/* Actions Bar */}

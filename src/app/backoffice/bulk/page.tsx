@@ -15,6 +15,7 @@ import { toast } from "sonner"
 import { useRouter, useSearchParams } from "next/navigation"
 import { OrganizationSwitcher, UserButton, useOrganization } from "@clerk/nextjs"
 import { getBusinessConfig } from "@/lib/business-configs"
+import { BackofficeHeader } from "@/components/backoffice-header"
 
 
 export default function BulkUpdatePage() {
@@ -199,44 +200,7 @@ function BulkUpdateContent() {
     return (
         <div className="min-h-screen bg-background font-sans selection:bg-primary/20">
             {/* Header */}
-            <div
-                className="sticky top-0 z-50 bg-white/60 backdrop-blur-xl border-b border-white/20 shadow-sm"
-
-            >
-                <div className="w-full px-4 sm:px-[30px] py-4">
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                            <Package className="w-6 h-6" style={{ color: config.theme.primary }} />
-                            <div className="hidden sm:block">
-                                <h1 className="text-xl font-bold tracking-tight">
-                                    <span className="text-[#CE0003]">O</span>
-                                    <span className="text-[#191A43]">Tracker</span>
-                                </h1>
-                                <p className="text-xs text-muted-foreground">Backoffice Dashboard</p>
-                            </div>
-                        </div>
-                        <div className="flex items-center gap-3">
-                            <OrganizationSwitcher
-                                hidePersonal={true}
-                                afterCreateOrganizationUrl="/backoffice"
-                                appearance={{
-                                    elements: {
-                                        rootBox: "flex items-center",
-                                        organizationSwitcherTrigger: "h-9 px-3 rounded-full border border-input bg-transparent hover:bg-accent hover:text-accent-foreground"
-                                    }
-                                }}
-                            />
-                            <UserButton
-                                appearance={{
-                                    elements: {
-                                        userButtonAvatarBox: "w-9 h-9"
-                                    }
-                                }}
-                            />
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <BackofficeHeader config={config} />
 
             <div className="container mx-auto px-4 py-8 max-w-[1400px] space-y-6">
 
