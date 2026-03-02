@@ -78,7 +78,7 @@ export async function markMessageAsRead(messageId: string) {
             .set({ isRead: "true" })
             .where(eq(customerMessages.id, messageId))
 
-        revalidatePath("/backoffice/inbox")
+        revalidatePath("/backoffice/profile")
         return { success: true }
     } catch (error: any) {
         console.error("Error marking message as read:", error)
