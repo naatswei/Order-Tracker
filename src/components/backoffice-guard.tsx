@@ -16,7 +16,7 @@ export function BackofficeGuard({ children }: { children: React.ReactNode }) {
 
         const checkOnboarding = async () => {
             if (!organization) {
-                router.push("/onboarding/organization")
+                router.replace("/onboarding/organization")
                 return
             }
 
@@ -24,13 +24,13 @@ export function BackofficeGuard({ children }: { children: React.ReactNode }) {
 
             // 1. Check Business Type
             if (!metadata.businessType) {
-                router.push("/onboarding/business-type")
+                router.replace("/onboarding/business-type")
                 return
             }
 
             // 2. Check Profile (Location/Contact)
             if (!metadata.location || !metadata.contact) {
-                router.push("/onboarding/profile")
+                router.replace("/onboarding/profile")
                 return
             }
 
@@ -40,17 +40,18 @@ export function BackofficeGuard({ children }: { children: React.ReactNode }) {
             const isExpired = expiryDate ? new Date() > expiryDate : false
 
             if (!isSubscribed || isExpired) {
-                router.push("/onboarding/subscription")
+                router.replace("/onboarding/subscription")
                 return
             }
 
+            // If we've made it here, everything is good
             setIsChecking(false)
         }
 
         checkOnboarding()
-    }, [isLoaded, organization, router, pathname])
+    }, [isLoaded, organization, router]) // Removed pathname to prevent re-checks on every nav
 
-    if (!isLoaded || isChecking) {
+    if (!isLoaded || (isChecking && !organization)) {
         return (
             <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50">
                 <Loader2 className="h-10 w-10 animate-spin text-primary opacity-50 mb-4" />

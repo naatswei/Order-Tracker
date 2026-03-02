@@ -60,7 +60,8 @@ export default function BackofficePage() {
             // Sync to localStorage for components that still rely on it
             localStorage.setItem("businessType", orgBusinessType)
         }
-    }, [isLoaded, organization])
+        // Important: depend only on the ID so we don't reload orders on every state change (e.g. searching, copying links)
+    }, [isLoaded, organization?.id])
 
     const loadOrders = async () => {
         setIsLoading(true)
@@ -223,9 +224,15 @@ export default function BackofficePage() {
 
                     <AnimatePresence mode="popLayout">
                         {isLoading ? (
-                            <div className="flex flex-col items-center justify-center py-20 bg-white/40 border-dashed border-2 border-white/60 rounded-xl">
-                                <Loader2 className="w-8 h-8 animate-spin text-primary opacity-50 mb-4" />
-                                <p className="text-muted-foreground">Loading orders...</p>
+                            <div className="grid gap-4">
+                                {[1, 2, 3].map((i) => (
+                                    <div key={i} className="w-full h-[180px] bg-white/40 rounded-xl animate-pulse border border-white/60 flex items-center justify-center">
+                                        <div className="flex flex-col items-center gap-2 opacity-20">
+                                            <div className="w-32 h-4 bg-slate-400 rounded-full" />
+                                            <div className="w-48 h-3 bg-slate-400 rounded-full" />
+                                        </div>
+                                    </div>
+                                ))}
                             </div>
                         ) : filteredOrders.length === 0 ? (
                             <motion.div
@@ -248,6 +255,7 @@ export default function BackofficePage() {
                                         order={order}
                                         copiedId={copiedId}
                                         onCopy={copyTrackingLink}
+                                        businessType={businessType}
                                     />
                                 ))}
                             </div>

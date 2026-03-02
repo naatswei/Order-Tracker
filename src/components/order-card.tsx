@@ -13,18 +13,12 @@ interface OrderCardProps {
     order: Order
     copiedId: string | null
     onCopy: (id: string) => void
+    businessType: string | null
 }
 
-export function OrderCard({ order, copiedId, onCopy }: OrderCardProps) {
-    const [businessType, setBusinessType] = useState<string | null>(null)
+export function OrderCard({ order, copiedId, onCopy, businessType }: OrderCardProps) {
     const config = getBusinessConfig(businessType)
 
-    useEffect(() => {
-        const stored = localStorage.getItem("businessType")
-        if (stored && stored !== businessType) {
-            setTimeout(() => setBusinessType(stored), 0)
-        }
-    }, [businessType])
     const getStatusColor = (status: string) => {
         if (status.toLowerCase().includes("delivered") || status.toLowerCase().includes("completed")) {
             return "bg-green-100 text-green-700 hover:bg-green-100/80 border-green-200"

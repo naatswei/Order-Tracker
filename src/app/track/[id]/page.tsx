@@ -22,6 +22,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Package, MessageSquare, Send } from "lucide-react"
+import { motion, AnimatePresence } from "framer-motion"
 
 
 export default function TrackingDetailsPage() {
@@ -33,6 +34,7 @@ export default function TrackingDetailsPage() {
     const [messageBody, setMessageBody] = useState("")
     const [isSending, setIsSending] = useState(false)
     const [isDialogOpen, setIsDialogOpen] = useState(false)
+    const [showOverlay, setShowOverlay] = useState(true)
 
     useEffect(() => {
         if (trackingId) {
@@ -69,6 +71,15 @@ export default function TrackingDetailsPage() {
             })
         }
     }, [trackingId])
+
+    useEffect(() => {
+        if (!loading && order) {
+            const timer = setTimeout(() => {
+                setShowOverlay(false)
+            }, 2500)
+            return () => clearTimeout(timer)
+        }
+    }, [loading, order])
 
     const handleSendMessage = async () => {
         if (!messageBody) {
@@ -137,6 +148,42 @@ export default function TrackingDetailsPage() {
 
     return (
         <div className="min-h-screen bg-slate-50 font-sans pb-20">
+            {/* Premium Welcome Overlay */}
+            <AnimatePresence>
+                {showOverlay && (
+                    <motion.div
+                        initial={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.6, ease: "easeInOut" }}
+                        className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-white"
+                    >
+                        <motion.div
+                            initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                            animate={{ scale: 1, opacity: 1, y: 0 }}
+                            transition={{ delay: 0.2, duration: 0.7, ease: "easeOut" }}
+                            className="text-center px-6 max-w-sm"
+                        >
+                            <div className="w-24 h-24 mx-auto mb-8 rounded-full flex items-center justify-center bg-slate-50 border border-slate-100 overflow-hidden shadow-sm">
+                                {order.businessDetails?.imageUrl ? (
+                                    <img src={order.businessDetails.imageUrl} alt="Business logo" className="w-full h-full object-cover" />
+                                ) : (
+                                    <Package className="w-10 h-10" style={{ color: config.theme.primary }} />
+                                )}
+                            </div>
+                            <h1 className="text-3xl font-bold text-slate-900 mb-3 tracking-tight">
+                                Welcome, {order.customerName.split(' ')[0]}
+                            </h1>
+                            <p className="text-lg text-slate-500 font-medium leading-relaxed">
+                                Here is the latest update from <br />
+                                <span className="text-slate-900 font-bold" style={{ color: config.theme.primary }}>
+                                    {order.businessDetails?.name || "our shop"}
+                                </span>
+                            </p>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
             {/* Mobile-First Sticky Header */}
             <div
                 className="sticky top-0 z-50 text-white shadow-lg"

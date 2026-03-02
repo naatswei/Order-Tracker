@@ -37,7 +37,7 @@ export default function OrganizationSelectionPage() {
                     </p>
                 </div>
 
-                <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-2 border border-slate-200">
+                <div className="w-full max-w-md flex justify-center">
                     <OrganizationList
                         hidePersonal
                         afterCreateOrganizationUrl="/onboarding/business-type"

@@ -22,38 +22,62 @@ const plans = [
         description: "Perfect to get started",
         price: "Gh0",
         period: "7 days",
-        features: ["Customer notifications", "Customer data Collection", "Real-time order status updates"],
+        features: [
+            "Full access for 7 days",
+            "Unlimited order entry",
+            "Basic customer alerts",
+            "Single user access",
+            "Standard dashboard"
+        ],
         buttonText: "Start Free Trial",
         buttonVariant: "secondary",
         glowColor: "bg-pink-400/20",
     },
     {
         name: "2 weeks",
-        description: "For businesses running sales",
+        description: "For short-term sales",
         price: "Gh199",
-        period: "2 weeks",
-        features: ["Customer notifications", "Customer data Collection", "Real-time order status updates"],
-        buttonText: "Start Free Trial",
+        period: "14 days",
+        features: [
+            "Everything in Free Trial",
+            "Real-time SMS/Email updates",
+            "Customer data collection",
+            "Priority support",
+            "CSV data export"
+        ],
+        buttonText: "Get Started",
         buttonVariant: "secondary",
         glowColor: "bg-blue-400/20",
     },
     {
         name: "Month",
-        description: "Sweet Spot",
+        description: "The Best Seller",
         price: "Gh350",
         period: "Monthly",
-        features: ["Customer notifications", "Customer data Collection", "Real-time order status updates"],
-        buttonText: "Start Free Trial",
+        features: [
+            "Everything in 2 Weeks",
+            "Advanced business analytics",
+            "Multi-member team access",
+            "Custom brand colors",
+            "24/7 Dedicated support"
+        ],
+        buttonText: "Most Popular",
         buttonVariant: "orange",
         glowColor: "bg-[#CE0003]/20",
     },
     {
         name: "Yearly",
-        description: "The Steal",
+        description: "Maximum Value",
         price: "Gh1,500",
         period: "Yearly",
-        features: ["Customer notifications", "Customer data Collection", "Real-time order status updates"],
-        buttonText: "Start Free Trial",
+        features: [
+            "Everything in Month",
+            "Save over 60% annually",
+            "Early access to new tools",
+            "Dedicated account manager",
+            "Full API access"
+        ],
+        buttonText: "Get Maximum Value",
         buttonVariant: "black",
         glowColor: "bg-purple-400/20",
     },
@@ -266,6 +290,27 @@ export default function SubscriptionPage() {
                                 </CardFooter>
                             </Card>
                         ))}
+                    </div>
+
+                    <div className="pt-20 grid grid-cols-1 md:grid-cols-3 gap-12 border-t border-slate-100">
+                        <div className="space-y-3">
+                            <h3 className="font-bold text-[#101323]">Real-time Tracking</h3>
+                            <p className="text-sm text-slate-500 leading-relaxed">
+                                Give your customers peace of mind with instant updates on their order status, from pickup to delivery.
+                            </p>
+                        </div>
+                        <div className="space-y-3">
+                            <h3 className="font-bold text-[#101323]">Team Collaboration</h3>
+                            <p className="text-sm text-slate-500 leading-relaxed">
+                                Invite your staff and managers to help manage orders, update statuses, and track business performance.
+                            </p>
+                        </div>
+                        <div className="space-y-3">
+                            <h3 className="font-bold text-[#101323]">Data Insights</h3>
+                            <p className="text-sm text-slate-500 leading-relaxed">
+                                Understand your business better with insights into your most popular items and peak order times.
+                            </p>
+                        </div>
                     </div>
 
                     <div className="pt-10 flex flex-col items-center space-y-4">

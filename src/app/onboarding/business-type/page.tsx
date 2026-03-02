@@ -124,6 +124,7 @@ export default function BusinessTypePage() {
                                 fill
                                 style={{ objectFit: 'cover' }}
                                 className="opacity-80"
+                                priority
                             />
                             <div className="absolute inset-0 bg-black/20" />
                         </div>
@@ -136,6 +137,7 @@ export default function BusinessTypePage() {
                                 fill
                                 style={{ objectFit: 'cover' }}
                                 className="opacity-80"
+                                priority
                             />
                             <div className="absolute inset-0 bg-black/20" />
                         </div>

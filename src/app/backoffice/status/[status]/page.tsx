@@ -174,7 +174,18 @@ export default function StatusFilterPage() {
 
                 {/* Orders List */}
                 <AnimatePresence mode="popLayout">
-                    {filteredOrders.length === 0 ? (
+                    {loading ? (
+                        <div className="grid gap-4">
+                            {[1, 2, 3].map((i) => (
+                                <div key={i} className="w-full h-[180px] bg-white/40 rounded-xl animate-pulse border border-white/60 flex items-center justify-center">
+                                    <div className="flex flex-col items-center gap-2 opacity-20">
+                                        <div className="w-32 h-4 bg-slate-400 rounded-full" />
+                                        <div className="w-48 h-3 bg-slate-400 rounded-full" />
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    ) : filteredOrders.length === 0 ? (
                         <motion.div
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
@@ -206,6 +217,7 @@ export default function StatusFilterPage() {
                                     order={order}
                                     copiedId={copiedId}
                                     onCopy={copyTrackingLink}
+                                    businessType={businessType}
                                 />
                             ))}
                         </div>
