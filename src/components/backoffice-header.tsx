@@ -5,7 +5,6 @@ import Link from "next/link"
 import { Package, Mail, Menu, X } from "lucide-react"
 import { OrganizationSwitcher, UserButton, useOrganization } from "@clerk/nextjs"
 import { Button } from "@/components/ui/button"
-import { cn } from "@/lib/utils"
 import { motion, AnimatePresence } from "framer-motion"
 import { getUnreadCount } from "@/app/actions/messages"
 
@@ -25,10 +24,30 @@ export function BackofficeHeader({ config }: BackofficeHeaderProps) {
     const toggleMenu = () => setIsMenuOpen(!isMenuOpen)
 
     useEffect(() => {
-        if (organization?.id) {
-            getUnreadCount(organization.id).then(setUnreadCount)
+        if (!organization?.id) return
+
+        const checkMessages = async () => {
+            try {
+                const count = await getUnreadCount(organization.id)
+
+                // Play sound if count increased
+                if (count > unreadCount && unreadCount !== 0) {
+                    const { notificationSound } = await import("@/lib/notifications")
+                    notificationSound.play()
+                }
+
+                setUnreadCount(count)
+            } catch (error) {
+                console.error("Error polling messages:", error)
+            }
         }
-    }, [organization?.id])
+
+        checkMessages()
+
+        // Poll every 30 seconds for new messages
+        const interval = setInterval(checkMessages, 30000)
+        return () => clearInterval(interval)
+    }, [organization?.id, unreadCount])
 
     return (
         <header className="sticky top-0 z-50 bg-white/60 backdrop-blur-xl border-b border-white/20 shadow-sm">

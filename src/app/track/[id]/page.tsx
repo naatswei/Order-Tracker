@@ -38,9 +38,11 @@ export default function TrackingDetailsPage() {
     const [showOverlay, setShowOverlay] = useState(true)
 
     useEffect(() => {
-        if (trackingId) {
-            // setLoading(true) is already default
-            getOrderWithHistory(trackingId).then(foundOrder => {
+        if (!trackingId) return
+
+        const fetchOrder = async () => {
+            try {
+                const foundOrder = await getOrderWithHistory(trackingId)
                 if (foundOrder) {
                     const mappedOrder: Order = {
                         id: foundOrder.id,
@@ -54,7 +56,7 @@ export default function TrackingDetailsPage() {
                         createdAt: foundOrder.createdAt,
                         updatedAt: foundOrder.updatedAt,
                         businessType: foundOrder.businessType,
-                        businessDetails: foundOrder.businessDetails, // Preserve business details from Clerk
+                        businessDetails: foundOrder.businessDetails,
                         statusHistory: (foundOrder.statusHistory as Record<string, unknown>[]).map((h) => ({
                             id: h.id as string,
                             status: h.status as string,
@@ -63,15 +65,30 @@ export default function TrackingDetailsPage() {
                             timestamp: new Date(h.timestamp as string | number | Date)
                         }))
                     }
+
+                    // Play sound if status changed
+                    if (order && mappedOrder.currentStatus !== order.currentStatus) {
+                        toast.success(`Order Status Updated: ${mappedOrder.currentStatus}`, {
+                            duration: 5000,
+                        })
+                        import("@/lib/notifications").then(mod => mod.notificationSound.play())
+                    }
+
                     setOrder(mappedOrder)
                 }
                 setLoading(false)
-            }).catch(err => {
+            } catch (err) {
                 console.error("Error fetching order:", err)
                 setLoading(false)
-            })
+            }
         }
-    }, [trackingId])
+
+        fetchOrder()
+
+        // Poll every 60 seconds for order updates
+        const interval = setInterval(fetchOrder, 60000)
+        return () => clearInterval(interval)
+    }, [trackingId, order?.currentStatus])
 
     useEffect(() => {
         if (!loading && order) {
