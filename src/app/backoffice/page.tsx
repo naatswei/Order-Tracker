@@ -133,6 +133,7 @@ export default function BackofficePage() {
                                 </Button>
                             </Link>
                             <OrganizationSwitcher
+                                hidePersonal={true}
                                 afterCreateOrganizationUrl="/backoffice"
                                 appearance={{
                                     elements: {

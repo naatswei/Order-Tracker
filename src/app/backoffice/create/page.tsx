@@ -139,6 +139,7 @@ function CreateOrderContent() {
                         </div>
                         <div className="flex items-center gap-3">
                             <OrganizationSwitcher
+                                hidePersonal={true}
                                 afterCreateOrganizationUrl="/backoffice"
                                 appearance={{
                                     elements: {
