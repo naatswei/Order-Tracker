@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { type Order } from "@/lib/storage"
 import { getOrderWithHistory } from "@/app/actions/orders"
+import { submitCustomerMessage } from "@/app/actions/messages"
 import Link from "next/link"
 import { getBusinessConfig } from "@/lib/business-configs"
 import { toast } from "sonner"
@@ -76,7 +77,7 @@ export default function TrackingDetailsPage() {
         if (!loading && order) {
             const timer = setTimeout(() => {
                 setShowOverlay(false)
-            }, 2500)
+            }, 3000)
             return () => clearTimeout(timer)
         }
     }, [loading, order])
@@ -87,15 +88,33 @@ export default function TrackingDetailsPage() {
             return
         }
 
-        setIsSending(true)
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1500))
+        if (!order) {
+            toast.error("Order details are missing.")
+            return
+        }
 
-        toast.success("Message sent successfully! We&apos;ll get back to you soon.")
-        setIsSending(false)
-        setIsDialogOpen(false)
-        setMessageSubject("")
-        setMessageBody("")
+        setIsSending(true)
+        try {
+            const formData = new FormData()
+            const result = await submitCustomerMessage({
+                orderId: order.id,
+                subject: messageSubject || "Order Inquiry",
+                message: messageBody
+            })
+
+            if (result.error) {
+                toast.error(result.error)
+            } else {
+                toast.success("Message sent successfully! We'll get back to you soon.")
+                setIsDialogOpen(false)
+                setMessageSubject("")
+                setMessageBody("")
+            }
+        } catch (error) {
+            toast.error("Failed to send message. Please try again.")
+        } finally {
+            setIsSending(false)
+        }
     }
 
     if (loading) {

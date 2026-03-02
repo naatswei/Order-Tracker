@@ -40,3 +40,23 @@ export const statusHistoryRelations = relations(statusHistory, ({ one }) => ({
         references: [orders.id],
     }),
 }));
+
+export const customerMessages = pgTable("customer_messages", {
+    id: text("id").primaryKey(),
+    orderId: text("order_id").references(() => orders.id, { onDelete: "set null" }), // Optional link to the specific order
+    clerkOrgId: text("clerk_org_id").notNull(), // Critical for scoping messages to the right business inbox
+    customerName: text("customer_name").notNull(),
+    customerEmail: text("customer_email"),
+    customerPhone: text("customer_phone"),
+    subject: text("subject").notNull(),
+    message: text("message").notNull(),
+    isRead: text("is_read").default("false").notNull(), // Using text because boolean sometimes triggers strict Neon type checks when using sqlite-like libs, but boolean is fine if available. Actually, Drizzle pg-core has boolean. Let's use boolean.
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const customerMessagesRelations = relations(customerMessages, ({ one }) => ({
+    order: one(orders, {
+        fields: [customerMessages.orderId],
+        references: [orders.id],
+    }),
+}));

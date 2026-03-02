@@ -10,7 +10,7 @@ import { type Order } from "@/lib/storage"
 import { getOrders } from "@/app/actions/orders"
 import Link from "next/link"
 import { UserButton, OrganizationSwitcher, useOrganization } from "@clerk/nextjs"
-import { Package, Plus, Search, Filter, RefreshCw, Loader2 } from "lucide-react"
+import { Package, Plus, Search, Filter, RefreshCw, Loader2, Mail } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Card, CardContent } from "@/components/ui/card"
 import { OrderCard } from "@/components/order-card"
@@ -127,6 +127,11 @@ export default function BackofficePage() {
                             </div>
                         </div>
                         <div className="flex items-center gap-4">
+                            <Link href="/backoffice/inbox">
+                                <Button variant="ghost" size="icon" className="relative h-9 w-9 rounded-full bg-slate-100/50 hover:bg-slate-200/50 border border-slate-200 shadow-sm">
+                                    <Mail className="w-4 h-4 text-slate-600" />
+                                </Button>
+                            </Link>
                             <OrganizationSwitcher
                                 afterCreateOrganizationUrl="/backoffice"
                                 appearance={{
@@ -243,7 +248,7 @@ export default function BackofficePage() {
                             >
                                 <Card className="bg-white/40 border-dashed border-2 border-white/60 shadow-none text-center py-20">
                                     <Package className="w-12 h-12 mx-auto mb-4 opacity-20" />
-                                    <p className="font-medium">No orders found</p>
+                                    <p className="font-medium">You have no orders, create new order</p>
                                     {searchQuery && <Button variant="link" onClick={() => setSearchQuery("")} className="mt-2 text-primary">Clear search</Button>}
                                 </Card>
                             </motion.div>
