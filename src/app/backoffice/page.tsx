@@ -127,7 +127,7 @@ export default function BackofficePage() {
                             </div>
                         </div>
                         <div className="flex items-center gap-4">
-                            <Link href="/backoffice/inbox">
+                            <Link href="/backoffice/profile?tab=inbox">
                                 <Button variant="ghost" size="icon" className="relative h-9 w-9 rounded-full bg-slate-100/50 hover:bg-slate-200/50 border border-slate-200 shadow-sm">
                                     <Mail className="w-4 h-4 text-slate-600" />
                                 </Button>
