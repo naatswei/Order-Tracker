@@ -16,6 +16,8 @@ import { Package, ArrowLeft, Loader2 } from "lucide-react"
 import { toast } from "sonner"
 import { useSearchParams, useRouter } from "next/navigation"
 import { getBusinessConfig } from "@/lib/business-configs"
+import { DatePicker } from "@/components/ui/date-picker"
+import { format, parse } from "date-fns"
 
 function CreateOrderContent() {
     const router = useRouter()
@@ -29,7 +31,7 @@ function CreateOrderContent() {
     const [customerEmail, setCustomerEmail] = useState("")
     const [customerPhone, setCustomerPhone] = useState("")
     const [itemType, setItemType] = useState("")
-    const [pickupDate, setPickupDate] = useState("")
+    const [pickupDate, setPickupDate] = useState<Date | undefined>(undefined)
     const [measurements, setMeasurements] = useState("")
     const [metadata, setMetadata] = useState<Record<string, unknown>>({})
     const [isSaving, setIsSaving] = useState(false)
@@ -63,7 +65,17 @@ function CreateOrderContent() {
                     setCustomerEmail(orderToEdit.customerEmail || "")
                     setCustomerPhone(orderToEdit.customerPhone)
                     setItemType(orderToEdit.itemType)
-                    setPickupDate(orderToEdit.pickupDate || "")
+                    if (orderToEdit.pickupDate) {
+                        try {
+                            // Try parsing standard format or ISO
+                            const parsedDate = new Date(orderToEdit.pickupDate)
+                            if (!isNaN(parsedDate.getTime())) {
+                                setPickupDate(parsedDate)
+                            }
+                        } catch (e) {
+                            console.error("Failed to parse date", e)
+                        }
+                    }
                     setMeasurements(orderToEdit.measurements || "")
                     setMetadata(orderToEdit.metadata as Record<string, unknown> || {})
                 }
@@ -83,7 +95,7 @@ function CreateOrderContent() {
                     customerEmail,
                     customerPhone,
                     itemType,
-                    pickupDate,
+                    pickupDate: pickupDate ? format(pickupDate, "yyyy-MM-dd") : "",
                     measurements,
                     metadata,
                 })
@@ -95,7 +107,7 @@ function CreateOrderContent() {
                     customerEmail,
                     customerPhone,
                     itemType,
-                    pickupDate,
+                    pickupDate: pickupDate ? format(pickupDate, "yyyy-MM-dd") : "",
                     measurements,
                     metadata,
                     businessType: localStorage.getItem("businessType") || "tailoring",
@@ -117,7 +129,7 @@ function CreateOrderContent() {
         customerPhone.trim() !== "" &&
         itemType.trim() !== "" &&
         orderNumber.trim() !== "" &&
-        pickupDate.trim() !== ""
+        pickupDate !== undefined
 
     return (
         <div className="min-h-screen bg-background font-sans selection:bg-primary/20">
@@ -196,13 +208,10 @@ function CreateOrderContent() {
 
                                 <div className="space-y-2">
                                     <Label htmlFor={`${businessType}-pickupDate`} className="ml-1 text-xs font-semibold text-muted-foreground tracking-wider">{config.orderLabel === "Tracking Number" ? "Date" : "Pick Up Date"} <span className="text-red-500">*</span></Label>
-                                    <Input
-                                        id={`${businessType}-pickupDate`}
-                                        value={pickupDate}
-                                        onChange={(e) => setPickupDate(e.target.value)}
-                                        placeholder="7/20/2025"
-                                        required
-                                        className="h-12 rounded-xl bg-white/50 border-zinc-200 focus-visible:ring-primary/20"
+                                    <DatePicker
+                                        date={pickupDate}
+                                        setDate={setPickupDate}
+                                        placeholder="Select a date"
                                     />
                                 </div>
 
