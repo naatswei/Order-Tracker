@@ -66,7 +66,7 @@ export function BackofficeHeader({ config }: BackofficeHeaderProps) {
                     {/* Mobile Menu Button */}
                     <div className="md:hidden flex items-center gap-2">
                         <Link href="/backoffice/profile?tab=inbox">
-                            <Button variant="ghost" size="icon" className="relative h-9 w-9 rounded-full bg-slate-100/50 border border-slate-200 shadow-sm">
+                            <Button variant="ghost" size="icon" className="relative h-9 w-9 rounded-full bg-slate-100/50 hover:bg-slate-200/50 border border-slate-200 shadow-sm transition-colors">
                                 <Mail className="w-4 h-4 text-slate-600" />
                             </Button>
                         </Link>
@@ -74,7 +74,7 @@ export function BackofficeHeader({ config }: BackofficeHeaderProps) {
                             variant="ghost"
                             size="icon"
                             onClick={toggleMenu}
-                            className="h-9 w-9 rounded-full bg-slate-100/50 border border-slate-200 shadow-sm"
+                            className="h-9 w-9 rounded-full bg-slate-200/50 hover:bg-slate-200 border border-slate-200 shadow-sm transition-colors"
                         >
                             {isMenuOpen ? <X className="w-5 h-5 text-slate-600" /> : <Menu className="w-5 h-5 text-slate-600" />}
                         </Button>
@@ -124,7 +124,7 @@ export function BackofficeHeader({ config }: BackofficeHeaderProps) {
                                     </div>
                                 </div>
                                 <Link href="/backoffice/profile" onClick={() => setIsMenuOpen(false)}>
-                                    <Button variant="ghost" size="sm" className="text-primary font-bold">
+                                    <Button variant="ghost" size="sm" className="text-[#191A43] hover:bg-slate-100 font-bold transition-colors">
                                         View Profile
                                     </Button>
                                 </Link>
