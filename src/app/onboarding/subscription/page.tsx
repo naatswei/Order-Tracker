@@ -26,7 +26,7 @@ const plans = [
             "Full access for 7 days",
             "Unlimited order entry",
             "Basic customer alerts",
-            "Single user access",
+            "Multi-member team access",
             "Standard dashboard"
         ],
         buttonText: "Start Free Trial",
@@ -57,7 +57,7 @@ const plans = [
         features: [
             "Everything in 2 Weeks",
             "Advanced business analytics",
-            "Multi-member team access",
+            "Priority team management",
             "Custom brand colors",
             "24/7 Dedicated support"
         ],
