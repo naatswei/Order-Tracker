@@ -20,7 +20,7 @@ const plans = [
     {
         name: "Free Trial",
         description: "Perfect to get started",
-        price: "Gh0",
+        price: "GHS 0",
         period: "7 days",
         features: [
             "Full access for 7 days",
@@ -36,7 +36,7 @@ const plans = [
     {
         name: "2 weeks",
         description: "For short-term sales",
-        price: "Gh199",
+        price: "GHS 199",
         period: "14 days",
         features: [
             "Everything in Free Trial",
@@ -52,7 +52,7 @@ const plans = [
     {
         name: "Month",
         description: "The Best Seller",
-        price: "Gh350",
+        price: "GHS 350",
         period: "Monthly",
         features: [
             "Everything in 2 Weeks",
@@ -68,7 +68,7 @@ const plans = [
     {
         name: "Yearly",
         description: "Maximum Value",
-        price: "Gh1,500",
+        price: "GHS 1,500",
         period: "Yearly",
         features: [
             "Everything in Month",
