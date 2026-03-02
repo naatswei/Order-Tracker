@@ -56,7 +56,7 @@ export function BackofficeHeader({ config }: BackofficeHeaderProps) {
                     {/* Logo */}
                     <Link href="/backoffice" className="flex items-center gap-2 group">
                         <Package className="w-6 h-6 transition-transform group-hover:scale-110" style={{ color: config.theme.primary }} />
-                        <div className="hidden xs:block">
+                        <div className="flex flex-col">
                             <h1 className="text-xl font-bold tracking-tight">
                                 <span className="text-[#CE0003]">O</span>
                                 <span className="text-[#191A43]">Tracker</span>
