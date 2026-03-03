@@ -38,7 +38,7 @@ export function OrderCard({ order, copiedId, onCopy, businessType }: OrderCardPr
             transition={{ duration: 0.2 }}
         >
             <div className="flex justify-center w-full">
-                <Card className="group overflow-hidden border-white/50 bg-white/60 hover:bg-white/80 backdrop-blur-sm transition-all shadow-sm hover:shadow-md rounded-xl w-full max-w-[1370px] h-auto flex flex-col justify-center">
+                <Card className="group overflow-hidden border border-slate-200 bg-white shadow-sm hover:shadow-md transition-all rounded-xl w-full max-w-[1370px] h-auto flex flex-col justify-center">
                     <CardContent className="p-6">
                         <div className="flex flex-col md:flex-row justify-between gap-6">
                             {/* Main Info */}

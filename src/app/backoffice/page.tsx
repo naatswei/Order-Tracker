@@ -122,10 +122,10 @@ export default function BackofficePage() {
                     <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
                         {/* Search Input */}
                         <div className="relative w-full md:flex-1 md:max-w-xl">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                             <Input
                                 placeholder={config.searchPlaceholder}
-                                className="pl-9 h-11 rounded-lg bg-white/50 border-slate-200 focus-visible:ring-primary/20 transition-all font-medium placeholder:font-normal w-full"
+                                className="pl-9 h-11 rounded-lg bg-white border-slate-200 focus-visible:ring-primary/20 transition-all font-medium placeholder:font-normal w-full shadow-sm"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                             />
@@ -208,9 +208,9 @@ export default function BackofficePage() {
                                 animate={{ opacity: 1 }}
                                 layout
                             >
-                                <Card className="bg-white/40 border-dashed border-2 border-white/60 shadow-none text-center py-20">
-                                    <Package className="w-12 h-12 mx-auto mb-4 opacity-20" />
-                                    <p className="font-medium">You have no orders, create new order</p>
+                                <Card className="bg-white border-slate-200 shadow-sm text-center py-20">
+                                    <Package className="w-12 h-12 mx-auto mb-4 text-slate-300" />
+                                    <p className="font-medium text-slate-900">You have no orders, create new order</p>
                                     {searchQuery && <Button variant="link" onClick={() => setSearchQuery("")} className="mt-2 text-primary">Clear search</Button>}
                                 </Card>
                             </motion.div>

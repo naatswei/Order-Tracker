@@ -4,21 +4,25 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --background: #F9FCFF;
-  --foreground: #191A43;
+  --background: #F8FAFC;
+  /* Slate-50 for structure */
+  --foreground: #0F172A;
+  /* Slate-900 */
   --card: #FFFFFF;
-  --card-foreground: #191A43;
+  --card-foreground: #0F172A;
   --popover: #FFFFFF;
-  --popover-foreground: #191A43;
+  --popover-foreground: #0F172A;
 
   /* Brand Colors */
   --primary: #191A43;
   --primary-foreground: #FFFFFF;
-  --secondary: #F0F4FF;
-  --secondary-foreground: #191A43;
+  --secondary: #F1F5F9;
+  /* Slate-100 */
+  --secondary-foreground: #0F172A;
 
-  --muted: #E2E8F0;
+  --muted: #F1F5F9;
   --muted-foreground: #64748B;
+  /* Slate-500 */
 
   /* Strong Action / Brand Red */
   --accent: #CE0003;

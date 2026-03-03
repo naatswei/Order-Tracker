@@ -50,12 +50,12 @@ export function BackofficeHeader({ config }: BackofficeHeaderProps) {
     }, [organization?.id, unreadCount])
 
     return (
-        <header className="sticky top-0 z-50 bg-white/60 backdrop-blur-xl border-b border-white/20 shadow-sm">
+        <header className="sticky top-0 z-50 bg-white border-b border-slate-200">
             <div className="w-full px-4 sm:px-8 py-4">
                 <div className="flex items-center justify-between">
                     {/* Logo */}
                     <Link href="/backoffice" className="flex items-center gap-2 group">
-                        <Package className="w-6 h-6 transition-transform group-hover:scale-110" style={{ color: config.theme.primary }} />
+                        <Package className="w-6 h-6 text-slate-900 transition-transform group-hover:scale-110" />
                         <div className="flex flex-col">
                             <h1 className="text-xl font-bold tracking-tight">
                                 <span className="text-[#CE0003]">O</span>
@@ -124,7 +124,7 @@ export function BackofficeHeader({ config }: BackofficeHeaderProps) {
                         animate={{ opacity: 1, height: "auto" }}
                         exit={{ opacity: 0, height: 0 }}
                         transition={{ duration: 0.2, ease: "easeInOut" }}
-                        className="md:hidden border-t border-slate-100 bg-white/95 backdrop-blur-xl overflow-hidden shadow-xl"
+                        className="md:hidden border-t border-slate-100 bg-white overflow-hidden shadow-xl"
                     >
                         <div className="px-4 py-6 space-y-6">
                             <div className="space-y-2">
