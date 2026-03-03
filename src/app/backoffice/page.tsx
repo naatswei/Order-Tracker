@@ -135,7 +135,7 @@ export default function BackofficePage() {
                         <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                    <Button variant="outline" className="h-12 rounded-xl bg-white border border-slate-100 text-slate-700 hover:bg-slate-50 gap-2 px-5 shadow-[0_4px_20px_rgb(0,0,0,0.02)] flex-1 md:flex-none font-medium">
+                                    <Button variant="outline" className="h-12 rounded-xl bg-white border border-slate-100 text-slate-700 hover:bg-white hover:border-slate-200 hover:text-slate-900 gap-2 px-5 shadow-[0_4px_20px_rgb(0,0,0,0.02)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] hover:-translate-y-0.5 transition-all duration-300 flex-1 md:flex-none font-medium">
                                         <Filter className="w-4 h-4" />
                                         {statusFilter === "All" ? "Filter" : statusFilter}
                                     </Button>

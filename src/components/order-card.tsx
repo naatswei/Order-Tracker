@@ -88,7 +88,7 @@ export function OrderCard({ order, copiedId, onCopy, businessType }: OrderCardPr
                                 <Button
                                     variant="outline"
                                     onClick={() => onCopy(order.id)}
-                                    className={`w-full bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100 rounded-lg h-11 font-medium ${copiedId === order.id ? "text-green-600 border-green-200 bg-green-50" : ""}`}
+                                    className={`w-full bg-slate-50/50 border-slate-200 text-slate-600 hover:bg-white hover:border-slate-300 hover:text-slate-900 hover:shadow-[0_2px_10px_rgb(0,0,0,0.04)] hover:-translate-y-px transition-all duration-300 rounded-lg h-11 font-medium ${copiedId === order.id ? "text-green-600 border-green-200 bg-green-50 hover:bg-green-50 hover:border-green-200 hover:shadow-none translate-y-0" : ""}`}
                                 >
                                     {copiedId === order.id ? "Copied!" : "Copy Link"}
                                 </Button>
