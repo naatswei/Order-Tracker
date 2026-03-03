@@ -145,7 +145,7 @@ export default function BackofficePage() {
                                     <DropdownMenuSeparator />
                                     <Link href="/backoffice" className="w-full">
                                         <DropdownMenuItem
-                                            className="cursor-pointer"
+                                            className="cursor-pointer focus:bg-slate-50 focus:text-slate-900 transition-colors"
                                             style={{ color: config.theme.primary }}
                                         >
                                             All {config.dashboardTitle.split(" ")[1]}s
@@ -154,7 +154,7 @@ export default function BackofficePage() {
                                     {statusOptions.map((status) => (
                                         <Link key={status} href={`/backoffice/status/${encodeURIComponent(status)}`} className="w-full">
                                             <DropdownMenuItem
-                                                className="cursor-pointer"
+                                                className="cursor-pointer focus:bg-slate-50 focus:text-slate-900 transition-colors"
                                                 style={{ color: config.theme.primary }}
                                             >
                                                 {status}
