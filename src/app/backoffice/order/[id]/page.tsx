@@ -292,7 +292,7 @@ export default function OrderUpdatePage() {
                                             value={status}
                                             onChange={(e) => setStatus(e.target.value)}
                                             placeholder="Enter custom status"
-                                            className="h-12 bg-slate-50 border-slate-200 focus-visible:ring-blue-500/20"
+                                            className="h-12 bg-slate-50 border-slate-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80"
                                         />
                                     </div>
 
@@ -302,7 +302,7 @@ export default function OrderUpdatePage() {
                                             value={location}
                                             onChange={(e) => setLocation(e.target.value)}
                                             placeholder="e.g., Main Office, Factory"
-                                            className="h-12 bg-slate-50 border-slate-200 focus-visible:ring-blue-500/20"
+                                            className="h-12 bg-slate-50 border-slate-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80"
                                         />
                                     </div>
 
@@ -312,7 +312,7 @@ export default function OrderUpdatePage() {
                                             value={message}
                                             onChange={(e) => setMessage(e.target.value)}
                                             placeholder="Detailed message for customer"
-                                            className="min-h-[100px] bg-slate-50 border-slate-200 focus-visible:ring-blue-500/20 resize-none"
+                                            className="min-h-[100px] bg-slate-50 border-slate-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80 resize-none"
                                         />
                                         <p className="text-xs text-slate-400">This message will be visible to the customers.</p>
                                     </div>

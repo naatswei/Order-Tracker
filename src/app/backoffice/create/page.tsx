@@ -165,7 +165,7 @@ function CreateOrderContent() {
                                         onChange={(e) => setCustomerName(e.target.value)}
                                         placeholder="Naa"
                                         required
-                                        className="h-12 rounded-xl bg-white/50 border-zinc-200 focus-visible:ring-primary/20"
+                                        className="h-12 rounded-xl bg-white/50 border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80"
                                     />
                                 </div>
 
@@ -178,7 +178,7 @@ function CreateOrderContent() {
                                         onChange={(e) => setCustomerPhone(e.target.value)}
                                         placeholder="0577064301"
                                         required
-                                        className="h-12 rounded-xl bg-white/50 border-zinc-200 focus-visible:ring-primary/20"
+                                        className="h-12 rounded-xl bg-white/50 border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80"
                                     />
                                 </div>
 
@@ -190,7 +190,7 @@ function CreateOrderContent() {
                                         onChange={(e) => setItemType(e.target.value)}
                                         placeholder={config.itemPlaceholder}
                                         required
-                                        className="h-12 rounded-xl bg-white/50 border-zinc-200 focus-visible:ring-primary/20"
+                                        className="h-12 rounded-xl bg-white/50 border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80"
                                     />
                                 </div>
 
@@ -202,7 +202,7 @@ function CreateOrderContent() {
                                         onChange={(e) => setOrderNumber(e.target.value)}
                                         placeholder={config.orderPlaceholder}
                                         required
-                                        className="h-12 rounded-xl bg-white/50 border-zinc-200 focus-visible:ring-primary/20"
+                                        className="h-12 rounded-xl bg-white/50 border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80"
                                     />
                                 </div>
 
@@ -223,7 +223,7 @@ function CreateOrderContent() {
                                         value={customerEmail}
                                         onChange={(e) => setCustomerEmail(e.target.value)}
                                         placeholder="naa@gmail.com"
-                                        className="h-12 rounded-xl bg-white/50 border-zinc-200 focus-visible:ring-primary/20"
+                                        className="h-12 rounded-xl bg-white/50 border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80"
                                     />
                                 </div>
 
@@ -236,7 +236,7 @@ function CreateOrderContent() {
                                             value={(metadata[field.id] as string) || ""}
                                             onChange={(e) => setMetadata({ ...metadata, [field.id]: e.target.value })}
                                             placeholder={field.placeholder}
-                                            className="h-12 rounded-xl bg-white/50 border-zinc-200 focus-visible:ring-primary/20"
+                                            className="h-12 rounded-xl bg-white/50 border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80"
                                         />
                                     </div>
                                 ))}
@@ -250,7 +250,7 @@ function CreateOrderContent() {
                                     onChange={(e) => setMeasurements(e.target.value)}
                                     placeholder="Details, measurements or special instructions..."
                                     rows={4}
-                                    className="rounded-xl bg-white/50 border-zinc-200 focus-visible:ring-primary/20 resize-none p-4"
+                                    className="rounded-xl bg-white/50 border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80 resize-none p-4"
                                 />
                             </div>
 

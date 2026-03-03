@@ -414,7 +414,7 @@ function BulkUpdateContent() {
                                         value={customStatus}
                                         onChange={(e) => setCustomStatus(e.target.value)}
                                         placeholder="Enter custom status"
-                                        className="h-12 bg-slate-50 border-slate-200 rounded-lg focus-visible:ring-purple-500/20"
+                                        className="h-12 bg-slate-50 border-slate-200 rounded-lg focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80"
                                     />
                                 </div>
 
@@ -424,7 +424,7 @@ function BulkUpdateContent() {
                                         value={location}
                                         onChange={(e) => setLocation(e.target.value)}
                                         placeholder="e.g., Main Office, Factory"
-                                        className="h-12 bg-slate-50 border-slate-200 rounded-lg focus-visible:ring-purple-500/20"
+                                        className="h-12 bg-slate-50 border-slate-200 rounded-lg focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80"
                                     />
                                 </div>
 
@@ -434,7 +434,7 @@ function BulkUpdateContent() {
                                         value={message}
                                         onChange={(e) => setMessage(e.target.value)}
                                         placeholder="Detailed message for customer"
-                                        className="min-h-[100px] bg-slate-50 border-slate-200 rounded-lg focus-visible:ring-purple-500/20 resize-none p-4"
+                                        className="min-h-[100px] bg-slate-50 border-slate-200 rounded-lg focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80 resize-none p-4"
                                     />
                                     <p className="text-[11px] text-slate-400">This message will be visible to the customers.</p>
                                 </div>
