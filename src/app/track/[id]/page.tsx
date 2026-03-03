@@ -383,7 +383,7 @@ export default function TrackingDetailsPage() {
                             </div>
                             <div className="space-y-3">
                                 <Label className="text-[10px] uppercase tracking-[0.2em] text-[#CE0003] font-bold block">Contact Channel</Label>
-                                <p className="text-base font-light text-white/80 break-all leading-none">{order.customerEmail}</p>
+                                <p className="text-base font-light text-white/80 whitespace-nowrap overflow-hidden text-ellipsis leading-none">{order.customerEmail}</p>
                             </div>
                         </div>
                     </CardContent>
