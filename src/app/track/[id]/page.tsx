@@ -227,11 +227,11 @@ export default function TrackingDetailsPage() {
                                 Private Access
                             </motion.span>
                             <h1 className="text-4xl font-extralight text-white mb-4 tracking-tight">
-                                Welcome, <span className="font-normal italic">{order.customerName.split(' ')[0]}</span>
+                                Welcome, <span className="font-normal">{order.customerName.split(' ')[0]}</span>
                             </h1>
                             <div className="h-[1px] w-12 bg-[#CE0003] mx-auto mb-6" />
                             <p className="text-sm text-white/40 font-light leading-loose tracking-wide">
-                                Curating your experience with <br />
+                                Track your order progress from <br />
                                 <span className="text-white/80 font-medium tracking-normal">
                                     {order.businessDetails?.name || "The Atelier"}
                                 </span>
@@ -251,7 +251,7 @@ export default function TrackingDetailsPage() {
                         <ArrowLeft className="w-5 h-5" />
                     </Link>
                     <div className="flex items-center gap-1.5">
-                        <span className="text-[#CE0003] font-black text-xl italic tracking-tighter">O</span>
+                        <span className="text-[#CE0003] font-black text-xl tracking-tighter">O</span>
                         <span className="text-white/90 font-light text-lg tracking-widest uppercase items-center flex">Tracker</span>
                     </div>
                     <div className="w-9" /> {/* Spacer */}
@@ -305,7 +305,7 @@ export default function TrackingDetailsPage() {
                             <Clock className="w-5 h-5 text-blue-400" strokeWidth={1.5} />
                             <div>
                                 <p className="text-[10px] uppercase tracking-widest text-white/30 font-bold mb-1">Estimated Arrival</p>
-                                <p className="text-sm font-medium text-white/90 italic">
+                                <p className="text-sm font-medium text-white/90">
                                     {order.pickupDate || "Evaluating..."}
                                 </p>
                             </div>
@@ -377,7 +377,7 @@ export default function TrackingDetailsPage() {
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 text-center sm:text-left">
                             <div className="space-y-1">
                                 <Label className="text-[10px] uppercase tracking-[0.2em] text-[#CE0003] font-bold">Client</Label>
-                                <p className="text-xl font-light text-white italic">{order.customerName}</p>
+                                <p className="text-xl font-light text-white">{order.customerName}</p>
                             </div>
                             <div className="space-y-1">
                                 <Label className="text-[10px] uppercase tracking-[0.2em] text-white/20 font-bold">Contact Channel</Label>
@@ -406,7 +406,7 @@ export default function TrackingDetailsPage() {
                         <DialogContent className="sm:max-w-md bg-[#10111A] border-white/10 text-white rounded-[2rem] shadow-2xl backdrop-blur-3xl">
                             <DialogHeader>
                                 <DialogTitle className="text-2xl font-light tracking-tight text-white/90">Send us a message</DialogTitle>
-                                <DialogDescription className="text-white/40 font-light italic">
+                                <DialogDescription className="text-white/40 font-light">
                                     Response expected via {order.customerEmail.split('@')[0]}... shortly.
                                 </DialogDescription>
                             </DialogHeader>

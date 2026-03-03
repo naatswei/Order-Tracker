@@ -45,7 +45,7 @@ export default function TrackPage() {
             <div className="container mx-auto px-6 py-12 relative z-10 flex flex-col min-h-screen">
                 <header className="flex justify-between items-center mb-20">
                     <div className="flex items-center gap-1.5">
-                        <span className="text-[#CE0003] font-black text-2xl italic tracking-tighter">O</span>
+                        <span className="text-[#CE0003] font-black text-2xl tracking-tighter">O</span>
                         <span className="text-white/90 font-light text-xl tracking-[0.2em] uppercase">Tracker</span>
                     </div>
                     <Link href="/">
@@ -74,7 +74,7 @@ export default function TrackPage() {
                             </motion.div>
                             <h1 className="text-5xl sm:text-7xl font-extralight tracking-tighter leading-tight">
                                 Trace your <br />
-                                <span className="font-normal italic text-white/90">Masterpiece.</span>
+                                <span className="font-normal text-white/90">Masterpiece.</span>
                             </h1>
                             <p className="text-white/30 font-light tracking-wide max-w-sm mx-auto leading-relaxed">
                                 Enter your exclusive reference number below to reveal the journey of your curation.
