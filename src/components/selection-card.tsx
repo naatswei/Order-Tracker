@@ -32,18 +32,18 @@ export function SelectionCard({
             disabled={!href && disabled}
             type="button"
             className={cn(
-                "relative flex w-full flex-col items-center text-center gap-4 rounded-xl border p-8 transition-all hover:border-primary/50 hover:bg-muted/50 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 shadow-lg shadow-gray-200/50",
+                "relative flex w-full flex-col items-center text-center gap-5 rounded-[2rem] border transition-all duration-500 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50",
                 selected
-                    ? "border-primary/50 bg-primary/5 ring-1 ring-primary/50"
-                    : "border-border bg-card",
+                    ? "border-primary/20 bg-primary/5 shadow-[0_8px_30px_rgb(0,0,0,0.06)] -translate-y-1 p-8"
+                    : "border-slate-100 bg-white hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:-translate-y-0.5 hover:border-slate-200 p-8 shadow-[0_2px_10px_rgb(0,0,0,0.02)]",
             )}
         >
             <div
                 className={cn(
-                    "flex h-14 w-14 items-center justify-center rounded-full bg-slate-100 transition-colors mb-2",
+                    "flex h-16 w-16 items-center justify-center rounded-2xl bg-white shadow-sm border border-slate-50 transition-colors mb-2",
                     selected
-                        ? "bg-primary/10 text-primary"
-                        : "text-slate-900",
+                        ? "text-primary shadow-[0_4px_20px_rgb(0,0,0,0.04)]"
+                        : "text-slate-400",
                 )}
             >
                 <Icon className="h-6 w-6" />

@@ -50,69 +50,69 @@ export function BackofficeHeader({ config }: BackofficeHeaderProps) {
     }, [organization?.id, unreadCount])
 
     return (
-        <header className="sticky top-0 z-50 bg-white border-b border-slate-200">
-            <div className="w-full px-4 sm:px-8 py-4">
-                <div className="flex items-center justify-between">
-                    {/* Logo */}
-                    <Link href="/backoffice" className="flex items-center gap-2 group">
-                        <Package className="w-6 h-6 text-slate-900 transition-transform group-hover:scale-110" />
-                        <div className="flex flex-col">
-                            <h1 className="text-xl font-bold tracking-tight">
-                                <span className="text-[#CE0003]">O</span>
-                                <span className="text-[#191A43]">Tracker</span>
-                            </h1>
-                            <p className="text-[10px] text-muted-foreground leading-none font-medium">Backoffice Dashboard</p>
-                        </div>
-                    </Link>
-
-                    {/* Desktop Navigation */}
-                    <div className="hidden md:flex items-center gap-4">
-                        <Link href="/backoffice/inbox">
-                            <Button variant="ghost" size="icon" className="relative h-9 w-9 rounded-full bg-slate-100/50 hover:bg-slate-200/50 border border-slate-200 shadow-sm transition-all grayscale hover:grayscale-0">
-                                <Mail className="w-4 h-4 text-slate-600" />
-                                {unreadCount > 0 && (
-                                    <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-600 rounded-full border border-white animate-pulse" />
-                                )}
-                            </Button>
-                        </Link>
-                        <OrganizationSwitcher
-                            hidePersonal={true}
-                            afterCreateOrganizationUrl="/backoffice"
-                            appearance={{
-                                elements: {
-                                    rootBox: "flex items-center",
-                                    organizationSwitcherTrigger: "h-9 px-3 rounded-full border border-input bg-transparent hover:bg-accent hover:text-accent-foreground transition-all"
-                                }
-                            }}
-                        />
-                        <UserButton
-                            appearance={{
-                                elements: {
-                                    userButtonAvatarBox: "w-9 h-9 border border-slate-200 shadow-sm hover:ring-2 ring-primary/10 transition-all"
-                                }
-                            }}
-                        />
+        <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b-[0.5px] border-slate-100 shadow-[0_2px_20px_rgb(0,0,0,0.02)]">
+            <div className="w-full px-4 sm:px-8 py-4 flex items-center justify-between">
+                {/* Logo */}
+                <Link href="/backoffice" className="flex items-center gap-3 group">
+                    <div className="w-8 h-8 rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center shadow-sm group-hover:shadow-md transition-all">
+                        <Package className="w-4 h-4 text-slate-800 transition-transform group-hover:scale-110" />
                     </div>
+                    <div className="flex flex-col">
+                        <h1 className="text-xl font-medium tracking-wide">
+                            <span className="text-[#CE0003] font-semibold">O</span>
+                            <span className="text-slate-800">Tracker</span>
+                        </h1>
+                        <p className="text-[10px] text-slate-400 uppercase tracking-widest leading-none font-medium mt-[2px]">Backoffice</p>
+                    </div>
+                </Link>
 
-                    {/* Mobile Menu Button */}
-                    <div className="md:hidden flex items-center gap-2">
-                        <Link href="/backoffice/inbox">
-                            <Button variant="ghost" size="icon" className="relative h-9 w-9 rounded-full bg-slate-100/50 hover:bg-slate-200/50 border border-slate-200 shadow-sm transition-colors">
-                                <Mail className="w-4 h-4 text-slate-600" />
-                                {unreadCount > 0 && (
-                                    <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-600 rounded-full border border-white animate-pulse" />
-                                )}
-                            </Button>
-                        </Link>
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={toggleMenu}
-                            className="h-9 w-9 rounded-full bg-slate-200/50 hover:bg-slate-200 border border-slate-200 shadow-sm transition-colors"
-                        >
-                            {isMenuOpen ? <X className="w-5 h-5 text-slate-600" /> : <Menu className="w-5 h-5 text-slate-600" />}
+                {/* Desktop Navigation */}
+                <div className="hidden md:flex items-center gap-4">
+                    <Link href="/backoffice/inbox">
+                        <Button variant="ghost" size="icon" className="relative h-9 w-9 rounded-full bg-slate-100/50 hover:bg-slate-200/50 border border-slate-200 shadow-sm transition-all grayscale hover:grayscale-0">
+                            <Mail className="w-4 h-4 text-slate-600" />
+                            {unreadCount > 0 && (
+                                <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-600 rounded-full border border-white animate-pulse" />
+                            )}
                         </Button>
-                    </div>
+                    </Link>
+                    <OrganizationSwitcher
+                        hidePersonal={true}
+                        afterCreateOrganizationUrl="/backoffice"
+                        appearance={{
+                            elements: {
+                                rootBox: "flex items-center",
+                                organizationSwitcherTrigger: "h-9 px-3 rounded-full border border-input bg-transparent hover:bg-accent hover:text-accent-foreground transition-all"
+                            }
+                        }}
+                    />
+                    <UserButton
+                        appearance={{
+                            elements: {
+                                userButtonAvatarBox: "w-9 h-9 border border-slate-200 shadow-sm hover:ring-2 ring-primary/10 transition-all"
+                            }
+                        }}
+                    />
+                </div>
+
+                {/* Mobile Menu Button */}
+                <div className="md:hidden flex items-center gap-2">
+                    <Link href="/backoffice/inbox">
+                        <Button variant="ghost" size="icon" className="relative h-9 w-9 rounded-full bg-slate-100/50 hover:bg-slate-200/50 border border-slate-200 shadow-sm transition-colors">
+                            <Mail className="w-4 h-4 text-slate-600" />
+                            {unreadCount > 0 && (
+                                <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-600 rounded-full border border-white animate-pulse" />
+                            )}
+                        </Button>
+                    </Link>
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={toggleMenu}
+                        className="h-9 w-9 rounded-full bg-slate-200/50 hover:bg-slate-200 border border-slate-200 shadow-sm transition-colors"
+                    >
+                        {isMenuOpen ? <X className="w-5 h-5 text-slate-600" /> : <Menu className="w-5 h-5 text-slate-600" />}
+                    </Button>
                 </div>
             </div>
 
@@ -167,6 +167,6 @@ export function BackofficeHeader({ config }: BackofficeHeaderProps) {
                     </motion.div>
                 )}
             </AnimatePresence>
-        </header>
+        </header >
     )
 }

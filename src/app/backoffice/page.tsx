@@ -117,15 +117,15 @@ export default function BackofficePage() {
 
             <div className="container mx-auto px-4 py-6 sm:py-8 max-w-[1400px] space-y-8 sm:space-y-[70px]">
                 {/* Actions Bar */}
-                <div className="space-y-4">
-                    <h2 className="text-lg font-bold text-slate-900">Track {config.orderLabel.toLowerCase()}</h2>
+                <div className="space-y-6">
+                    <h2 className="text-2xl font-semibold tracking-tight text-slate-800">Track {config.orderLabel.toLowerCase()}</h2>
                     <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
                         {/* Search Input */}
                         <div className="relative w-full md:flex-1 md:max-w-xl">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                             <Input
                                 placeholder={config.searchPlaceholder}
-                                className="pl-9 h-11 rounded-lg bg-white border-slate-200 focus-visible:ring-primary/20 transition-all font-medium placeholder:font-normal w-full shadow-sm"
+                                className="pl-11 h-12 rounded-xl bg-white border-none shadow-[0_4px_20px_rgb(0,0,0,0.03)] focus-visible:ring-1 focus-visible:ring-slate-200 transition-all font-medium placeholder:text-slate-400 w-full"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                             />
@@ -135,7 +135,7 @@ export default function BackofficePage() {
                         <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                    <Button variant="outline" className="h-11 rounded-lg border-slate-200 text-slate-700 hover:bg-slate-50 gap-2 px-4 shadow-sm flex-1 md:flex-none">
+                                    <Button variant="outline" className="h-12 rounded-xl bg-white border border-slate-100 text-slate-700 hover:bg-slate-50 gap-2 px-5 shadow-[0_4px_20px_rgb(0,0,0,0.02)] flex-1 md:flex-none font-medium">
                                         <Filter className="w-4 h-4" />
                                         {statusFilter === "All" ? "Filter" : statusFilter}
                                     </Button>
@@ -165,7 +165,7 @@ export default function BackofficePage() {
                             </DropdownMenu>
                             <Link href={searchQuery ? `/backoffice/bulk?search=${encodeURIComponent(searchQuery)}` : "/backoffice/bulk"} className="flex-1 md:flex-none">
                                 <Button
-                                    className="w-full h-11 rounded-lg text-white gap-2 px-4 shadow-sm font-medium border-0 transition-all duration-200 hover:brightness-95 active:scale-[0.98]"
+                                    className="w-full h-12 rounded-xl text-white gap-2 px-5 shadow-[0_4px_20px_rgb(0,0,0,0.04)] font-medium border-0 transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] hover:-translate-y-0.5 active:scale-[0.98]"
                                     style={{ backgroundColor: config.theme.primary }}
                                 >
                                     Bulk Update
@@ -173,7 +173,7 @@ export default function BackofficePage() {
                             </Link>
                             <Link href="/backoffice/create" className="flex-1 md:flex-none">
                                 <Button
-                                    className="w-full h-11 rounded-lg shadow-sm gap-2 px-6 font-medium text-white border-0 transition-all duration-200 hover:brightness-95 active:scale-[0.98]"
+                                    className="w-full h-12 rounded-xl shadow-[0_4px_20px_rgb(0,0,0,0.04)] gap-2 px-6 font-medium text-white border-0 transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] hover:-translate-y-0.5 active:scale-[0.98]"
                                     style={{ backgroundColor: config.theme.secondary }}
                                 >
                                     <Plus className="w-4 h-4" /> Create New Order
@@ -184,19 +184,20 @@ export default function BackofficePage() {
                 </div>
 
                 <div className="space-y-4">
-                    <div className="flex items-center justify-between px-1">
-                        <h2 className="text-xs font-bold tracking-wider text-foreground/50">{config.dashboardTitle}</h2>
-                        <Badge variant="outline" className="rounded-full px-3 bg-white/50">{filteredOrders.length}</Badge>
+                    <div className="flex items-center justify-between px-2 mb-2">
+                        <h2 className="text-xs font-bold tracking-widest uppercase text-slate-400">{config.dashboardTitle}</h2>
+                        <Badge variant="outline" className="rounded-full px-3 py-1 bg-white border-slate-200 text-slate-600 shadow-sm">{filteredOrders.length}</Badge>
                     </div>
 
                     <AnimatePresence mode="popLayout">
                         {isLoading ? (
                             <div className="grid gap-4">
                                 {[1, 2, 3].map((i) => (
-                                    <div key={i} className="w-full h-[180px] bg-white/40 rounded-xl animate-pulse border border-white/60 flex items-center justify-center">
-                                        <div className="flex flex-col items-center gap-2 opacity-20">
-                                            <div className="w-32 h-4 bg-slate-400 rounded-full" />
-                                            <div className="w-48 h-3 bg-slate-400 rounded-full" />
+                                    <div key={i} className="w-full h-[180px] bg-white rounded-3xl shadow-[0_4px_30px_rgb(0,0,0,0.02)] animate-pulse border border-slate-100 flex items-center justify-center">
+                                        <div className="flex flex-col items-center gap-3 opacity-30">
+                                            <div className="w-12 h-12 bg-slate-200 rounded-2xl" />
+                                            <div className="w-32 h-4 bg-slate-200 rounded-full" />
+                                            <div className="w-48 h-3 bg-slate-200 rounded-full" />
                                         </div>
                                     </div>
                                 ))}
@@ -208,10 +209,13 @@ export default function BackofficePage() {
                                 animate={{ opacity: 1 }}
                                 layout
                             >
-                                <Card className="bg-white border-slate-200 shadow-sm text-center py-20">
-                                    <Package className="w-12 h-12 mx-auto mb-4 text-slate-300" />
-                                    <p className="font-medium text-slate-900">You have no orders, create new order</p>
-                                    {searchQuery && <Button variant="link" onClick={() => setSearchQuery("")} className="mt-2 text-primary">Clear search</Button>}
+                                <Card className="bg-transparent border-dashed border-2 border-slate-200 shadow-none text-center py-24 rounded-3xl">
+                                    <div className="w-16 h-16 bg-white rounded-2xl shadow-[0_4px_20px_rgb(0,0,0,0.04)] border border-slate-100 flex items-center justify-center mx-auto mb-6">
+                                        <Package className="w-8 h-8 text-slate-400" />
+                                    </div>
+                                    <h3 className="text-xl font-semibold text-slate-800 mb-2">No orders found</h3>
+                                    <p className="text-slate-500 max-w-sm mx-auto font-medium">Get started by creating your first order or adjusting your search filters.</p>
+                                    {searchQuery && <Button variant="link" onClick={() => setSearchQuery("")} className="mt-4 text-[#191A43] font-medium">Clear search filters</Button>}
                                 </Card>
                             </motion.div>
                         ) : (
@@ -229,7 +233,7 @@ export default function BackofficePage() {
                         )}
                     </AnimatePresence>
                 </div>
-            </div>
-        </div>
+            </div >
+        </div >
     )
 }

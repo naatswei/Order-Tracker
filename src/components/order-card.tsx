@@ -38,8 +38,8 @@ export function OrderCard({ order, copiedId, onCopy, businessType }: OrderCardPr
             transition={{ duration: 0.2 }}
         >
             <div className="flex justify-center w-full">
-                <Card className="group overflow-hidden border border-slate-200 bg-white shadow-sm hover:shadow-md transition-all rounded-xl w-full max-w-[1370px] h-auto flex flex-col justify-center">
-                    <CardContent className="p-6">
+                <Card className="group overflow-hidden border border-slate-100 bg-white shadow-[0_4px_30px_rgb(0,0,0,0.03)] hover:shadow-[0_12px_40px_rgb(0,0,0,0.06)] hover:-translate-y-0.5 transition-all duration-500 rounded-2xl w-full max-w-[1370px] h-auto flex flex-col justify-center">
+                    <CardContent className="p-7">
                         <div className="flex flex-col md:flex-row justify-between gap-6">
                             {/* Main Info */}
                             <div className="flex-1 space-y-4">
@@ -51,21 +51,21 @@ export function OrderCard({ order, copiedId, onCopy, businessType }: OrderCardPr
                                 </div>
 
                                 <div className="space-y-2 text-[15px]">
-                                    <div className="flex gap-2">
-                                        <span className="text-muted-foreground w-32 shrink-0 whitespace-nowrap">Customer:</span>
-                                        <span className="font-medium text-slate-700">{order.customerName}</span>
+                                    <div className="flex gap-2 items-center">
+                                        <span className="text-slate-400 text-sm font-medium w-28 shrink-0 whitespace-nowrap">Customer:</span>
+                                        <span className="font-semibold text-slate-800">{order.customerName}</span>
                                     </div>
-                                    <div className="flex gap-2">
-                                        <span className="text-muted-foreground w-32 shrink-0 whitespace-nowrap">Contact:</span>
-                                        <span className="font-medium text-slate-700">{order.customerPhone}</span>
+                                    <div className="flex gap-2 items-center">
+                                        <span className="text-slate-400 text-sm font-medium w-28 shrink-0 whitespace-nowrap">Contact:</span>
+                                        <span className="font-semibold text-slate-800">{order.customerPhone}</span>
                                     </div>
-                                    <div className="flex gap-2">
-                                        <span className="text-muted-foreground w-32 shrink-0 whitespace-nowrap">{config.itemLabel}:</span>
-                                        <span className="font-medium text-slate-700 capitalize">{order.itemType || order.garmentType}</span>
+                                    <div className="flex gap-2 items-center">
+                                        <span className="text-slate-400 text-sm font-medium w-28 shrink-0 whitespace-nowrap">{config.itemLabel}:</span>
+                                        <span className="font-semibold text-slate-800 capitalize">{order.itemType || order.garmentType}</span>
                                     </div>
-                                    <div className="flex gap-2">
-                                        <span className="text-muted-foreground w-32 shrink-0 whitespace-nowrap">{config.orderLabel === "Tracking Number" ? "Pickup Date" : "Pick Up Date"}:</span>
-                                        <span className="font-medium text-red-400">{order.pickupDate}</span>
+                                    <div className="flex gap-2 items-center">
+                                        <span className="text-slate-400 text-sm font-medium w-28 shrink-0 whitespace-nowrap">{config.orderLabel === "Tracking Number" ? "Pickup Date" : "Pick Up Date"}:</span>
+                                        <span className="font-semibold text-red-500">{order.pickupDate}</span>
                                     </div>
                                 </div>
 

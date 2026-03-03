@@ -173,9 +173,9 @@ export default function BusinessTypePage() {
                     {/* Header - Standardized */}
                     <div className="w-full">
                         <div className="flex h-16 items-center justify-between px-6">
-                            <div className="flex items-center text-xl font-bold tracking-tight">
-                                <span className="text-red-600 font-black">O</span>
-                                <span className="text-[#191A43] font-bold">Tracker</span>
+                            <div className="flex items-center text-xl font-medium tracking-wide">
+                                <span className="text-[#CE0003] font-semibold">O</span>
+                                <span className="text-slate-800">Tracker</span>
                             </div>
                         </div>
                     </div>
@@ -184,11 +184,11 @@ export default function BusinessTypePage() {
                     <div className="flex-1 flex flex-col justify-center px-6 py-8 sm:px-8 lg:px-12 xl:px-16 pt-0">
                         <div className="max-w-3xl mx-auto w-full">
                             <div className="mb-12">
-                                <h1 className="text-2xl sm:text-3xl font-bold text-[#191A43] mb-3">
-                                    Enter your Business Type
+                                <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-slate-900 mb-3">
+                                    Select your Business Type
                                 </h1>
-                                <p className="text-base text-gray-400 font-medium">
-                                    Easy Order Entry, Real-Time Customer Update, Customer Transparency and Trust.
+                                <p className="text-base text-slate-500 font-medium">
+                                    Tailored tracking experiences for your specific industry needs.
                                 </p>
                             </div>
 
@@ -211,7 +211,7 @@ export default function BusinessTypePage() {
                                 <Button
                                     onClick={handleNext}
                                     disabled={!selectedType || isLoading}
-                                    className="bg-[#191A43] hover:bg-[#191A43]/90 text-white w-48 h-12 rounded-lg font-medium transition-all disabled:opacity-100 disabled:bg-gray-200 disabled:text-gray-400 text-base"
+                                    className="bg-slate-900 hover:bg-slate-800 hover:-translate-y-0.5 text-white shadow-[0_4px_20px_rgb(0,0,0,0.06)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.1)] w-48 h-12 rounded-2xl font-medium transition-all duration-300 disabled:opacity-100 disabled:bg-slate-100 disabled:text-slate-400 text-base"
                                 >
                                     {isLoading ? (
                                         <Loader2 className="h-5 w-5 animate-spin" />

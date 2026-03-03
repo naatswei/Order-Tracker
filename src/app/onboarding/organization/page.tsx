@@ -16,20 +16,20 @@ export default function OrganizationSelectionPage() {
     }, [isLoaded, organization, router])
 
     return (
-        <div className="min-h-screen bg-[#F8FAFC]">
+        <div className="min-h-screen bg-[#FAFAFA]">
             {/* Standard Header */}
-            <header className="bg-white sticky top-0 z-50">
+            <header className="bg-white/90 backdrop-blur-md sticky top-0 z-50 border-b-[0.5px] border-slate-100 shadow-[0_2px_20px_rgb(0,0,0,0.02)]">
                 <div className="w-full px-6 h-16 flex items-center justify-between">
-                    <div className="flex items-center text-xl font-bold tracking-tight">
-                        <span className="text-red-600 font-black">O</span>
-                        <span className="text-[#191A43] font-bold">Tracker</span>
+                    <div className="flex items-center text-xl font-medium tracking-wide">
+                        <span className="text-[#CE0003] font-semibold">O</span>
+                        <span className="text-slate-800">Tracker</span>
                     </div>
                 </div>
             </header>
 
             <div className="flex flex-col items-center justify-center p-4 py-20">
-                <div className="max-w-md w-full space-y-8 text-center mb-8">
-                    <h1 className="text-2xl font-bold text-[#191A43]">
+                <div className="max-w-md w-full space-y-6 text-center mb-10">
+                    <h1 className="text-3xl font-semibold text-slate-900 tracking-tight">
                         Create your Business Account
                     </h1>
                     <p className="text-slate-500">

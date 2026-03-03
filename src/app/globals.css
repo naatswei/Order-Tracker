@@ -4,25 +4,21 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --background: #F8FAFC;
-  /* Slate-50 for structure */
-  --foreground: #0F172A;
-  /* Slate-900 */
+  --background: #FAFAFA;
+  --foreground: #111827;
   --card: #FFFFFF;
-  --card-foreground: #0F172A;
+  --card-foreground: #111827;
   --popover: #FFFFFF;
-  --popover-foreground: #0F172A;
+  --popover-foreground: #111827;
 
   /* Brand Colors */
   --primary: #191A43;
   --primary-foreground: #FFFFFF;
-  --secondary: #F1F5F9;
-  /* Slate-100 */
-  --secondary-foreground: #0F172A;
+  --secondary: #F3F4F6;
+  --secondary-foreground: #111827;
 
-  --muted: #F1F5F9;
-  --muted-foreground: #64748B;
-  /* Slate-500 */
+  --muted: #F9FAFB;
+  --muted-foreground: #6B7280;
 
   /* Strong Action / Brand Red */
   --accent: #CE0003;
@@ -31,9 +27,9 @@
   --destructive: #CE0003;
   --destructive-foreground: #FFFFFF;
 
-  --border: #E2E8F0;
-  --input: #E2E8F0;
-  --ring: #191A43;
+  --border: #F3F4F6;
+  --input: #F3F4F6;
+  --ring: #111827;
 
   /* Hover/Highlight */
   --highlight: #5256FF;

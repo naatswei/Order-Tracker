@@ -109,11 +109,13 @@ export default function InboxPage() {
                             <p className="text-muted-foreground">Loading messages...</p>
                         </div>
                     ) : messages.length === 0 ? (
-                        <Card className="bg-slate-50 border-dashed border-2 border-slate-200 shadow-none">
-                            <CardContent className="py-20 text-center text-slate-400">
-                                <Mail className="w-12 h-12 mx-auto mb-4 opacity-20" />
-                                <p className="font-medium text-slate-500">Your inbox is empty</p>
-                                <p className="text-sm mt-1">When customers send messages from the tracking page, they will appear here.</p>
+                        <Card className="bg-transparent border-dashed border-2 border-slate-200 shadow-none rounded-3xl">
+                            <CardContent className="py-24 text-center">
+                                <div className="w-16 h-16 bg-white rounded-2xl shadow-[0_4px_20px_rgb(0,0,0,0.04)] border border-slate-100 flex items-center justify-center mx-auto mb-6">
+                                    <Mail className="w-8 h-8 text-slate-400" />
+                                </div>
+                                <h3 className="text-xl font-semibold text-slate-800 mb-2">Your inbox is empty</h3>
+                                <p className="text-slate-500 font-medium">When customers send messages from the tracking page, they will appear here.</p>
                             </CardContent>
                         </Card>
                     ) : (
@@ -125,16 +127,16 @@ export default function InboxPage() {
                                     initial={{ opacity: 0, y: 10 }}
                                     animate={{ opacity: 1, y: 0 }}
                                 >
-                                    <Card className={`overflow-hidden transition-all duration-200 border-l-[3px] shadow-sm hover:shadow-md ${msg.isRead === "false" ? "bg-white border-l-[#191A43]" : "bg-slate-50/50 border-l-slate-200 border-t-slate-100 border-r-slate-100 border-b-slate-100"}`}>
-                                        <div className="p-5">
+                                    <Card className={`overflow-hidden transition-all duration-500 rounded-2xl border ${msg.isRead === "false" ? "bg-white border-slate-200 shadow-[0_4px_20px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] hover:-translate-y-0.5" : "bg-slate-50/50 border-slate-100 shadow-sm"}`}>
+                                        <div className="p-6">
                                             <div className="flex flex-col md:flex-row gap-4 justify-between items-start">
                                                 <div className="flex-1 min-w-0">
                                                     <div className="flex items-center gap-3 mb-1">
-                                                        <h3 className={`text-base font-semibold truncate ${msg.isRead === "false" ? "text-slate-900" : "text-slate-700"}`}>
+                                                        <h3 className={`text-lg font-semibold truncate ${msg.isRead === "false" ? "text-slate-900" : "text-slate-700"}`}>
                                                             {msg.customerName}
                                                         </h3>
                                                         {msg.isRead === "false" && (
-                                                            <Badge className="bg-red-50 text-red-600 border-red-100 rounded-md px-2 py-0.5 text-[11px] font-bold tracking-wide uppercase shadow-none">
+                                                            <Badge className="bg-red-50 text-red-600 border border-red-100/50 rounded-full px-2.5 py-0.5 text-[10px] font-bold tracking-widest uppercase shadow-none">
                                                                 New
                                                             </Badge>
                                                         )}
@@ -158,7 +160,7 @@ export default function InboxPage() {
                                                             onClick={() => handleMarkAsRead(msg.id)}
                                                             variant="outline"
                                                             size="sm"
-                                                            className="w-full text-xs"
+                                                            className="w-full text-xs rounded-xl border-slate-200 text-slate-700 hover:bg-slate-50"
                                                         >
                                                             Mark as Read
                                                         </Button>
@@ -170,7 +172,7 @@ export default function InboxPage() {
                                                     )}
                                                     {msg.order && (
                                                         <Link href={`/backoffice/order/${msg.order.id}`}>
-                                                            <Button variant="ghost" size="sm" className="w-full text-xs text-slate-500">
+                                                            <Button variant="ghost" size="sm" className="w-full text-xs text-slate-500 rounded-xl hover:bg-slate-100">
                                                                 View Order
                                                             </Button>
                                                         </Link>
