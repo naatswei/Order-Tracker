@@ -25,10 +25,10 @@ export function DatePicker({ date, setDate, placeholder = "Pick a date", classNa
         <Popover>
             <PopoverTrigger asChild>
                 <Button
-                    variant={"outline"}
+                    variant="outline"
                     className={cn(
-                        "w-full justify-start text-left font-normal h-12 rounded-xl bg-white/50 border-zinc-200 focus-visible:ring-primary/20",
-                        !date && "text-muted-foreground",
+                        "w-full justify-start text-left font-normal h-12 rounded-xl bg-slate-50 border-slate-200 text-slate-700 hover:bg-white hover:border-slate-300 focus-visible:ring-primary/20 hover:text-slate-900 transition-all shadow-[0_2px_10px_rgb(0,0,0,0.02)]",
+                        !date && "text-slate-400",
                         className
                     )}
                 >
