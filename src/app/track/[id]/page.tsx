@@ -142,7 +142,7 @@ export default function TrackingDetailsPage() {
                     className="text-center"
                 >
                     <div className="w-16 h-[2px] bg-gradient-to-r from-transparent via-[#CE0003] to-transparent mx-auto mb-4" />
-                    <p className="text-white/40 text-xs font-light tracking-[0.2em] uppercase">Refining Experience</p>
+                    <p className="text-white/70 text-xs font-light tracking-[0.2em] uppercase">Refining Experience</p>
                 </motion.div>
             </div>
         )
@@ -158,19 +158,19 @@ export default function TrackingDetailsPage() {
                     animate={{ opacity: 1, scale: 1 }}
                     className="max-w-md w-full"
                 >
-                    <Card className="bg-white/5 backdrop-blur-xl border-white/10 shadow-2xl rounded-[2rem] overflow-hidden">
+                    <Card className="bg-white/10 backdrop-blur-xl border-white/30 shadow-2xl rounded-[2rem] overflow-hidden">
                         <CardContent className="py-16 text-center space-y-8">
                             <div className="w-24 h-24 bg-[#CE0003]/10 rounded-full flex items-center justify-center mx-auto border border-[#CE0003]/20">
                                 <Package className="w-10 h-10 text-[#CE0003]" strokeWidth={1} />
                             </div>
                             <div className="space-y-2">
                                 <h2 className="text-2xl font-light text-white tracking-tight">Trace Not Found</h2>
-                                <p className="text-white/40 font-light text-sm">
+                                <p className="text-white/60 font-light text-sm">
                                     Reference <span className="text-white/80 font-medium">{trackingId}</span> is invalid.
                                 </p>
                             </div>
                             <Link href="/track" className="block px-8">
-                                <Button variant="outline" className="w-full h-12 rounded-full border-white/20 text-white hover:bg-white/10 font-light tracking-wide">
+                                <Button variant="outline" className="w-full h-12 rounded-full border-white/30 text-white hover:bg-white/10 font-light tracking-wide">
                                     Return to Search
                                 </Button>
                             </Link>
@@ -206,15 +206,15 @@ export default function TrackingDetailsPage() {
                         >
                             <div className="w-32 h-32 mx-auto mb-10 relative">
                                 <motion.div
-                                    className="absolute inset-0 border border-white/10 rounded-full"
+                                    className="absolute inset-0 border border-white/30 rounded-full"
                                     animate={{ scale: [1, 1.2, 1], opacity: [0.5, 0, 0.5] }}
                                     transition={{ duration: 3, repeat: Infinity }}
                                 />
-                                <div className="absolute inset-2 rounded-full overflow-hidden bg-white/5 flex items-center justify-center border border-white/[0.08]">
+                                <div className="absolute inset-2 rounded-full overflow-hidden bg-white/10 flex items-center justify-center border border-white/20">
                                     {order.businessDetails?.imageUrl ? (
                                         <img src={order.businessDetails.imageUrl} alt="Brand" className="w-full h-full object-cover scale-110" />
                                     ) : (
-                                        <span className="text-4xl font-extralight text-white/20">O</span>
+                                        <span className="text-4xl font-extralight text-white/50">O</span>
                                     )}
                                 </div>
                             </div>
@@ -222,7 +222,7 @@ export default function TrackingDetailsPage() {
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
                                 transition={{ delay: 0.5 }}
-                                className="block text-[10px] uppercase tracking-[0.4em] text-white/30 mb-4"
+                                className="block text-[10px] uppercase tracking-[0.4em] text-white/60 mb-4"
                             >
                                 Private Access
                             </motion.span>
@@ -230,7 +230,7 @@ export default function TrackingDetailsPage() {
                                 Welcome, <span className="font-normal">{order.customerName.split(' ')[0]}</span>
                             </h1>
                             <div className="h-[1px] w-12 bg-[#CE0003] mx-auto mb-6" />
-                            <p className="text-sm text-white/40 font-light leading-loose tracking-wide">
+                            <p className="text-sm text-white/60 font-light leading-loose tracking-wide">
                                 Track your order progress from <br />
                                 <span className="text-white/80 font-medium tracking-normal">
                                     {order.businessDetails?.name || "The Atelier"}
@@ -244,7 +244,7 @@ export default function TrackingDetailsPage() {
             {/* Sticky Navigation */}
             <motion.header
                 style={{ opacity: headerOpacity }}
-                className="fixed top-0 inset-x-0 z-40 h-20 bg-[#0A0B14]/80 backdrop-blur-xl border-b border-white/[0.05]"
+                className="fixed top-0 inset-x-0 z-40 h-20 bg-[#0A0B14]/80 backdrop-blur-xl border-b border-white/15"
             >
                 <div className="container h-full mx-auto px-6 flex items-center justify-between">
                     <Link href="/track" className="p-2 -ml-2 text-white/50 hover:text-white transition-colors">
@@ -269,20 +269,20 @@ export default function TrackingDetailsPage() {
                 >
                     <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6">
                         <div className="space-y-2">
-                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 mb-4">
+                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/30 mb-4">
                                 <span className="w-1 h-1 rounded-full bg-[#CE0003] animate-pulse" />
-                                <span className="text-[10px] uppercase tracking-widest text-white/40 font-medium">Live Journey</span>
+                                <span className="text-[10px] uppercase tracking-widest text-white/70 font-medium">Live Journey</span>
                             </div>
                             <h1 className="text-4xl sm:text-6xl font-light tracking-tighter text-white">
                                 {order.orderNumber}
                             </h1>
-                            <p className="text-white/30 font-light tracking-wide">Ref: {order.id.slice(0, 8).toUpperCase()}</p>
+                            <p className="text-white/60 font-light tracking-wide">Ref: {order.id.slice(0, 8).toUpperCase()}</p>
                         </div>
                         <div className="flex flex-col items-center sm:items-end gap-2">
                             <Badge className="bg-[#CE0003] hover:bg-[#CE0003] text-white text-[11px] px-4 py-1.5 rounded-full border-none font-medium tracking-wider uppercase">
                                 {order.currentStatus}
                             </Badge>
-                            <span className="text-xs text-white/20 font-light tracking-widest uppercase">{order.garmentType}</span>
+                            <span className="text-xs text-white/50 font-light tracking-widest uppercase">{order.garmentType}</span>
                         </div>
                     </div>
                 </motion.div>
@@ -293,7 +293,7 @@ export default function TrackingDetailsPage() {
                         <CardContent className="p-6 flex flex-col items-center sm:items-start text-center sm:text-left gap-3">
                             <Calendar className="w-5 h-5 text-[#CE0003]" strokeWidth={1.5} />
                             <div>
-                                <p className="text-[10px] uppercase tracking-widest text-white/30 font-bold mb-1">Initiated</p>
+                                <p className="text-[10px] uppercase tracking-widest text-white/60 font-bold mb-1">Initiated</p>
                                 <p className="text-sm font-light text-white/80">
                                     {new Date(order.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
                                 </p>
@@ -304,7 +304,7 @@ export default function TrackingDetailsPage() {
                         <CardContent className="p-6 flex flex-col items-center sm:items-start text-center sm:text-left gap-3">
                             <Clock className="w-5 h-5 text-blue-400" strokeWidth={1.5} />
                             <div>
-                                <p className="text-[10px] uppercase tracking-widest text-white/30 font-bold mb-1">Estimated Arrival</p>
+                                <p className="text-[10px] uppercase tracking-widest text-white/60 font-bold mb-1">Estimated Arrival</p>
                                 <p className="text-sm font-medium text-white/90">
                                     {order.pickupDate || "Evaluating..."}
                                 </p>
@@ -316,12 +316,12 @@ export default function TrackingDetailsPage() {
                 {/* Timeline */}
                 <div className="space-y-8 mb-16">
                     <div className="flex items-center justify-between mb-8 px-2">
-                        <h3 className="text-xs font-bold uppercase tracking-[0.3em] text-white/40">Tracking History</h3>
-                        <div className="text-[10px] text-white/10 tracking-[0.1em]">{order.statusHistory.length} checkpoints passed</div>
+                        <h3 className="text-xs font-bold uppercase tracking-[0.3em] text-white/70">Tracking History</h3>
+                        <div className="text-[10px] text-white/40 tracking-[0.1em]">{order.statusHistory.length} checkpoints passed</div>
                     </div>
                     <div className="relative pl-6 sm:pl-10 space-y-12">
                         {/* Timeline Spine */}
-                        <div className="absolute left-[7px] sm:left-[11px] top-2 bottom-2 w-[1px] bg-gradient-to-b from-[#CE0003] via-white/10 to-transparent" />
+                        <div className="absolute left-[7px] sm:left-[11px] top-2 bottom-2 w-[1px] bg-gradient-to-b from-[#CE0003] via-white/30 to-transparent" />
 
                         {order.statusHistory.map((statusItem, index) => {
                             const isCurrent = index === 0;
@@ -335,7 +335,7 @@ export default function TrackingDetailsPage() {
                                     className={`relative group ${isCurrent ? "opacity-100" : "opacity-40"}`}
                                 >
                                     {/* Vertical Node */}
-                                    <div className={`absolute -left-[24px] sm:-left-[32px] top-1 w-[11px] h-[11px] rounded-full border-2 border-[#0A0B14] z-10 transition-transform group-hover:scale-125 ${isCurrent ? "bg-[#CE0003] ring-4 ring-[#CE0003]/20" : "bg-white/20"
+                                    <div className={`absolute -left-[24px] sm:-left-[32px] top-1 w-[11px] h-[11px] rounded-full border-2 border-[#0A0B14] z-10 transition-transform group-hover:scale-125 ${isCurrent ? "bg-[#CE0003] ring-4 ring-[#CE0003]/20" : "bg-white/50"
                                         }`} />
 
                                     <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
@@ -345,21 +345,21 @@ export default function TrackingDetailsPage() {
                                                     {statusItem.status}
                                                 </h4>
                                                 {statusItem.location && (
-                                                    <div className="flex items-center gap-1 text-[10px] text-white/20 uppercase tracking-widest">
+                                                    <div className="flex items-center gap-1 text-[10px] text-white/50 uppercase tracking-widest">
                                                         <MapPin className="w-3 h-3" strokeWidth={1.5} />
                                                         {statusItem.location}
                                                     </div>
                                                 )}
                                             </div>
-                                            <p className="text-sm text-white/30 font-light leading-relaxed max-w-md">
+                                            <p className="text-sm text-white/60 font-light leading-relaxed max-w-md">
                                                 {statusItem.message}
                                             </p>
                                         </div>
                                         <div className="text-right shrink-0">
-                                            <div className="text-[11px] text-white/40 font-medium tabular-nums uppercase tracking-tighter">
+                                            <div className="text-[11px] text-white/70 font-medium tabular-nums uppercase tracking-tighter">
                                                 {new Date(statusItem.timestamp).toLocaleDateString(undefined, { day: '2-digit', month: 'short' })}
                                             </div>
-                                            <div className="text-[10px] text-white/20 font-light tabular-nums">
+                                            <div className="text-[10px] text-white/50 font-light tabular-nums">
                                                 {new Date(statusItem.timestamp).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit', hour12: false })}
                                             </div>
                                         </div>
@@ -371,16 +371,16 @@ export default function TrackingDetailsPage() {
                 </div>
 
                 {/* Clientele Identity */}
-                <Card className="bg-white/[0.02] border border-white/[0.05] rounded-[2.5rem] mb-16 shadow-inner">
+                <Card className="bg-white/5 border border-white/15 rounded-[2.5rem] mb-16 shadow-inner">
                     <CardContent className="p-8 space-y-8">
-                        <h3 className="text-xs font-bold uppercase tracking-[0.3em] text-white/20 text-center">Customer Details</h3>
+                        <h3 className="text-xs font-bold uppercase tracking-[0.3em] text-white/50 text-center">Customer Details</h3>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 text-center sm:text-left">
                             <div className="space-y-1">
                                 <Label className="text-[10px] uppercase tracking-[0.2em] text-[#CE0003] font-bold">Client</Label>
                                 <p className="text-xl font-light text-white">{order.customerName}</p>
                             </div>
                             <div className="space-y-1">
-                                <Label className="text-[10px] uppercase tracking-[0.2em] text-white/20 font-bold">Contact Channel</Label>
+                                <Label className="text-[10px] uppercase tracking-[0.2em] text-white/50 font-bold">Contact Channel</Label>
                                 <p className="text-sm font-light text-white/60 break-all">{order.customerEmail}</p>
                             </div>
                         </div>
@@ -389,7 +389,7 @@ export default function TrackingDetailsPage() {
 
                 {/* Help Section */}
                 <div className="text-center space-y-10">
-                    <p className="text-xs text-white/20 font-light tracking-[0.2em] uppercase">Need any help?</p>
+                    <p className="text-xs text-white/50 font-light tracking-[0.2em] uppercase">Need any help?</p>
 
                     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                         <DialogTrigger asChild>
@@ -407,29 +407,29 @@ export default function TrackingDetailsPage() {
                             <DialogHeader>
                                 <DialogTitle className="text-2xl font-light tracking-tight text-white/90">Send us a message</DialogTitle>
                                 <DialogDescription className="text-white/40 font-light">
-                                    Response expected via {order.customerEmail.split('@')[0]}... shortly.
+                                    Response expected via {order.customerEmail.split('@')[0]}... soon.
                                 </DialogDescription>
                             </DialogHeader>
 
                             <div className="space-y-6 py-8">
                                 <div className="space-y-3">
-                                    <Label htmlFor="subject" className="text-[10px] uppercase tracking-widest text-white/30 font-bold ml-1">Topic</Label>
+                                    <Label htmlFor="subject" className="text-[10px] uppercase tracking-widest text-white/60 font-bold ml-1">Topic</Label>
                                     <Input
                                         id="subject"
                                         value={messageSubject}
                                         onChange={(e) => setMessageSubject(e.target.value)}
                                         placeholder="Specific refinement request..."
-                                        className="bg-white/5 border-white/10 rounded-2xl h-12 focus:border-[#CE0003] focus:ring-1 focus:ring-[#CE0003]/20 placeholder:text-white/10 text-sm font-light"
+                                        className="bg-white/10 border-white/30 rounded-2xl h-12 focus:border-[#CE0003] focus:ring-1 focus:ring-[#CE0003]/20 placeholder:text-white/40 text-sm font-light"
                                     />
                                 </div>
                                 <div className="space-y-3">
-                                    <Label htmlFor="message" className="text-[10px] uppercase tracking-widest text-white/30 font-bold ml-1">Message</Label>
+                                    <Label htmlFor="message" className="text-[10px] uppercase tracking-widest text-white/60 font-bold ml-1">Message</Label>
                                     <Textarea
                                         id="message"
                                         value={messageBody}
                                         onChange={(e) => setMessageBody(e.target.value)}
                                         placeholder="How may we elevate your experience?"
-                                        className="min-h-[160px] bg-white/5 border-white/10 rounded-[1.5rem] focus:border-[#CE0003] focus:ring-1 focus:ring-[#CE0003]/20 resize-none placeholder:text-white/10 text-sm font-light leading-relaxed"
+                                        className="min-h-[160px] bg-white/10 border-white/30 rounded-[1.5rem] focus:border-[#CE0003] focus:ring-1 focus:ring-[#CE0003]/20 resize-none placeholder:text-white/40 text-sm font-light leading-relaxed"
                                     />
                                 </div>
                             </div>
@@ -451,7 +451,7 @@ export default function TrackingDetailsPage() {
                         </DialogContent>
                     </Dialog>
 
-                    <div className="pt-20 opacity-20 text-[10px] uppercase tracking-[0.5em] font-light">
+                    <div className="pt-20 opacity-50 text-[10px] uppercase tracking-[0.5em] font-light">
                         Powering Premium Trust
                     </div>
                 </div>
