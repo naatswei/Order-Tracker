@@ -444,7 +444,7 @@ export default function TrackingDetailsPage() {
                                 ) : (
                                     <>
                                         <Send className="w-4 h-4" strokeWidth={2} />
-                                        Transmit Request
+                                        Send Request
                                     </>
                                 )}
                             </Button>
