@@ -252,7 +252,7 @@ export default function TrackingDetailsPage() {
                     </Link>
                     <div className="flex items-center gap-1.5">
                         <span className="text-[#CE0003] font-black text-xl tracking-tighter">O</span>
-                        <span className="text-white/90 font-light text-lg tracking-widest uppercase items-center flex">Tracker</span>
+                        <span className="text-white/90 font-light text-lg tracking-widest items-center flex">Tracker</span>
                     </div>
                     <div className="w-9" /> {/* Spacer */}
                 </div>
