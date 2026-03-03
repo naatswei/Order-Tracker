@@ -394,7 +394,7 @@ export default function TrackingDetailsPage() {
                     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                         <DialogTrigger asChild>
                             <Button
-                                className="group relative overflow-hidden bg-white text-[#0A0B14] hover:bg-white/90 h-16 px-10 rounded-full font-medium tracking-wide transition-all duration-500 hover:scale-[1.02] active:scale-95 shadow-[0_0_30px_rgba(255,255,255,0.1)] border-none"
+                                className="group relative overflow-hidden bg-white text-[#0A0B14] hover:bg-white/90 h-11 px-8 rounded-full font-light tracking-wide transition-all duration-500 hover:scale-[1.02] active:scale-95 shadow-[0_0_30px_rgba(255,255,255,0.1)] border-none text-xs"
                             >
                                 <span className="relative z-10 flex items-center gap-3">
                                     <MessageSquare className="w-4 h-4 transition-transform group-hover:rotate-12" />
@@ -435,7 +435,7 @@ export default function TrackingDetailsPage() {
                             </div>
 
                             <Button
-                                className="w-full bg-[#CE0003] hover:bg-[#CE0003]/90 text-white rounded-full h-14 font-medium gap-3 shadow-xl transition-all active:scale-95 border-none"
+                                className="w-full bg-[#CE0003] hover:bg-[#CE0003]/90 text-white rounded-full h-10 font-light gap-3 shadow-xl transition-all active:scale-95 border-none text-xs"
                                 onClick={handleSendMessage}
                                 disabled={isSending}
                             >

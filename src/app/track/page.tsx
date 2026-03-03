@@ -102,7 +102,7 @@ export default function TrackPage() {
                                     </div>
                                     <Button
                                         type="submit"
-                                        className="w-full bg-[#CE0003] hover:bg-[#CE0003]/90 text-white h-16 rounded-full font-medium tracking-[0.1em] text-sm uppercase shadow-xl transition-all active:scale-95 group border-none"
+                                        className="w-full bg-[#CE0003] hover:bg-[#CE0003]/90 text-white h-12 rounded-full font-light tracking-[0.1em] text-xs uppercase shadow-xl transition-all active:scale-95 group border-none"
                                     >
                                         Track Order
                                         <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
