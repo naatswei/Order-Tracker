@@ -355,11 +355,11 @@ export default function TrackingDetailsPage() {
                                                 {statusItem.message}
                                             </p>
                                         </div>
-                                        <div className="text-right shrink-0">
-                                            <div className="text-[11px] text-white/70 font-medium tabular-nums uppercase tracking-tighter">
-                                                {new Date(statusItem.timestamp).toLocaleDateString(undefined, { day: '2-digit', month: 'short' })}
+                                        <div className="text-right shrink-0 flex flex-col justify-end">
+                                            <div className="text-[10px] text-white/70 font-medium tabular-nums uppercase tracking-widest">
+                                                {new Date(statusItem.timestamp).toLocaleDateString(undefined, { day: '2-digit', month: 'short', year: 'numeric' })}
                                             </div>
-                                            <div className="text-[10px] text-white/50 font-light tabular-nums">
+                                            <div className="text-[11px] text-white/40 font-light tabular-nums mt-0.5">
                                                 {new Date(statusItem.timestamp).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit', hour12: false })}
                                             </div>
                                         </div>
