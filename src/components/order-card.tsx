@@ -6,7 +6,6 @@ import { Card, CardContent } from "@/components/ui/card"
 import Link from "next/link"
 import { motion } from "framer-motion"
 import type { Order } from "@/lib/storage"
-import { useState, useEffect } from "react"
 import { getBusinessConfig } from "@/lib/business-configs"
 
 interface OrderCardProps {
@@ -18,7 +17,6 @@ interface OrderCardProps {
 
 export function OrderCard({ order, copiedId, onCopy, businessType }: OrderCardProps) {
     const config = getBusinessConfig(businessType)
-    const [isMobileExpanded, setIsMobileExpanded] = useState(false)
 
     const getStatusColor = (status: string) => {
         if (status.toLowerCase().includes("delivered") || status.toLowerCase().includes("completed")) {
@@ -39,13 +37,7 @@ export function OrderCard({ order, copiedId, onCopy, businessType }: OrderCardPr
             transition={{ duration: 0.2 }}
         >
             <div className="flex justify-center w-full">
-                <Card
-                    className="group overflow-hidden border border-slate-100 bg-white shadow-[0_4px_30px_rgb(0,0,0,0.03)] hover:shadow-[0_12px_40px_rgb(0,0,0,0.06)] hover:-translate-y-0.5 transition-all duration-500 rounded-2xl w-full max-w-[1370px] h-auto flex flex-col justify-center cursor-pointer md:cursor-default"
-                    onClick={(e) => {
-                        if ((e.target as HTMLElement).closest('button, a')) return;
-                        setIsMobileExpanded(!isMobileExpanded);
-                    }}
-                >
+                <Card className="group overflow-hidden border border-slate-100 bg-white shadow-[0_4px_30px_rgb(0,0,0,0.03)] hover:shadow-[0_12px_40px_rgb(0,0,0,0.06)] hover:-translate-y-0.5 transition-all duration-500 rounded-2xl w-full max-w-[1370px] h-auto flex flex-col justify-center">
                     <CardContent className="p-7">
                         <div className="flex flex-col md:flex-row justify-between gap-6">
                             {/* Main Info */}
@@ -82,10 +74,10 @@ export function OrderCard({ order, copiedId, onCopy, businessType }: OrderCardPr
                             </div>
 
                             {/* Actions */}
-                            <div className={`flex flex-col w-full md:w-48 shrink-0 transition-all duration-500 ease-out md:overflow-visible md:max-h-none md:gap-3 md:opacity-0 md:translate-x-2 md:pointer-events-none md:group-hover:opacity-100 md:group-hover:translate-x-0 md:group-hover:pointer-events-auto ${isMobileExpanded ? 'max-h-[400px] mt-4 md:mt-0 opacity-100 pointer-events-auto gap-3' : 'max-h-0 overflow-hidden opacity-0 pointer-events-none gap-0 md:mt-0'}`}>
+                            <div className="flex flex-col gap-3 w-full md:w-48 shrink-0">
                                 <Link href={`/backoffice/order/${order.id}`}>
                                     <Button
-                                        className="w-full text-white rounded-lg h-11 shadow-sm font-medium border-0"
+                                        className="w-full text-white rounded-lg h-11 shadow-[0_4px_20px_rgb(0,0,0,0.04)] font-medium border-0 transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] hover:-translate-y-0.5 active:scale-[0.98]"
                                         style={{ backgroundColor: config.theme.secondary }}
                                     >
                                         Update Status
@@ -95,14 +87,14 @@ export function OrderCard({ order, copiedId, onCopy, businessType }: OrderCardPr
                                 <Button
                                     variant="outline"
                                     onClick={() => onCopy(order.id)}
-                                    className={`w-full bg-slate-50/50 border-slate-200 text-slate-600 hover:bg-white hover:border-slate-300 hover:text-slate-900 hover:shadow-[0_2px_10px_rgb(0,0,0,0.04)] hover:-translate-y-px transition-all duration-300 rounded-lg h-11 font-medium ${copiedId === order.id ? "text-green-600 border-green-200 bg-green-50 hover:bg-green-50 hover:border-green-200 hover:shadow-none translate-y-0" : ""}`}
+                                    className={`w-full bg-slate-50/50 border-slate-200 text-slate-600 hover:bg-white hover:border-slate-300 hover:text-slate-900 hover:shadow-[0_2px_10px_rgb(0,0,0,0.04)] hover:-translate-y-px active:scale-[0.98] transition-all duration-300 rounded-lg h-11 font-medium ${copiedId === order.id ? "text-green-600 border-green-200 bg-green-50 hover:bg-green-50 hover:border-green-200 hover:shadow-none translate-y-0" : ""}`}
                                 >
                                     {copiedId === order.id ? "Copied!" : "Copy Link"}
                                 </Button>
 
                                 <Link href={`/backoffice/create?edit=${order.id}`}>
                                     <Button
-                                        className="w-full text-white rounded-lg h-11 shadow-sm font-medium mt-1 border-0"
+                                        className="w-full text-white rounded-lg h-11 shadow-[0_4px_20px_rgb(0,0,0,0.04)] font-medium mt-1 border-0 transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] hover:-translate-y-0.5 active:scale-[0.98]"
                                         style={{ backgroundColor: config.theme.primary }}
                                     >
                                         Edit Order
