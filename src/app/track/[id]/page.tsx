@@ -338,8 +338,8 @@ export default function TrackingDetailsPage() {
                                     <div className={`absolute -left-[24px] sm:-left-[32px] top-1 w-[11px] h-[11px] rounded-full border-2 border-[#0A0B14] z-10 transition-transform group-hover:scale-125 ${isCurrent ? "bg-[#CE0003] ring-4 ring-[#CE0003]/20" : "bg-white/50"
                                         }`} />
 
-                                    <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
-                                        <div className="flex-1 space-y-2">
+                                    <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 sm:gap-4">
+                                        <div className="flex-1 space-y-1.5">
                                             <div className="flex items-center gap-3">
                                                 <h4 className={`text-lg font-light tracking-tight transition-colors ${isCurrent ? "text-white" : "text-white/60 group-hover:text-white/80"}`}>
                                                     {statusItem.status}
@@ -355,11 +355,11 @@ export default function TrackingDetailsPage() {
                                                 {statusItem.message}
                                             </p>
                                         </div>
-                                        <div className="text-right shrink-0 flex flex-col justify-end">
-                                            <div className="text-[10px] text-white/70 font-medium tabular-nums uppercase tracking-widest">
-                                                {new Date(statusItem.timestamp).toLocaleDateString(undefined, { day: '2-digit', month: 'short', year: 'numeric' })}
+                                        <div className="text-left sm:text-right shrink-0 pt-1 sm:pt-0">
+                                            <div className="text-[11px] text-white/70 font-medium tabular-nums uppercase tracking-tighter">
+                                                {new Date(statusItem.timestamp).toLocaleDateString(undefined, { day: '2-digit', month: 'short' })}
                                             </div>
-                                            <div className="text-[11px] text-white/40 font-light tabular-nums mt-0.5">
+                                            <div className="text-[10px] text-white/50 font-light tabular-nums">
                                                 {new Date(statusItem.timestamp).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit', hour12: false })}
                                             </div>
                                         </div>
