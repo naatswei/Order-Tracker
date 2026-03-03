@@ -370,18 +370,20 @@ export default function TrackingDetailsPage() {
                     </div>
                 </div>
 
-                {/* Clientele Identity */}
-                <Card className="bg-white/5 border border-white/15 rounded-[2.5rem] mb-16 shadow-inner">
-                    <CardContent className="p-8 space-y-8">
-                        <h3 className="text-xs font-bold uppercase tracking-[0.3em] text-white/50 text-center">Customer Details</h3>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 text-center sm:text-left">
-                            <div className="space-y-1">
-                                <Label className="text-[10px] uppercase tracking-[0.2em] text-[#CE0003] font-bold">Client</Label>
-                                <p className="text-xl font-light text-white">{order.customerName}</p>
+                {/* Customer Details Section */}
+                <Card className="bg-white/5 border border-white/20 rounded-[2.5rem] mb-16 shadow-2xl overflow-hidden">
+                    <CardContent className="p-0">
+                        <div className="bg-white/[0.03] px-8 py-4 border-b border-white/10 text-center">
+                            <h3 className="text-[10px] font-bold uppercase tracking-[0.4em] text-white/40">Customer Details</h3>
+                        </div>
+                        <div className="p-8 sm:p-12 grid grid-cols-1 sm:grid-cols-2 gap-12 text-center sm:text-left">
+                            <div className="space-y-3">
+                                <Label className="text-[10px] uppercase tracking-[0.2em] text-[#CE0003] font-bold block">Client</Label>
+                                <p className="text-2xl font-light text-white leading-none">{order.customerName}</p>
                             </div>
-                            <div className="space-y-1">
-                                <Label className="text-[10px] uppercase tracking-[0.2em] text-white/50 font-bold">Contact Channel</Label>
-                                <p className="text-sm font-light text-white/60 break-all">{order.customerEmail}</p>
+                            <div className="space-y-3">
+                                <Label className="text-[10px] uppercase tracking-[0.2em] text-[#CE0003] font-bold block">Contact Channel</Label>
+                                <p className="text-base font-light text-white/80 break-all leading-none">{order.customerEmail}</p>
                             </div>
                         </div>
                     </CardContent>
