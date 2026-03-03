@@ -293,7 +293,7 @@ export default function TrackingDetailsPage() {
                         <CardContent className="p-6 flex flex-col items-center sm:items-start text-center sm:text-left gap-3">
                             <Calendar className="w-5 h-5 text-[#CE0003]" strokeWidth={1.5} />
                             <div>
-                                <p className="text-[10px] uppercase tracking-widest text-white/60 font-bold mb-1">Initiated</p>
+                                <p className="text-[10px] uppercase tracking-widest text-white/60 font-bold mb-1">Order Created</p>
                                 <p className="text-sm font-light text-white/80">
                                     {new Date(order.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
                                 </p>
