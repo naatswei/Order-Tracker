@@ -86,7 +86,7 @@ export default function TrackPage() {
                                 <form onSubmit={handleSubmit} className="space-y-8">
                                     <div className="space-y-3 text-left">
                                         <Label htmlFor="trackingId" className="text-[10px] uppercase tracking-[0.2em] text-[#CE0003] font-bold ml-1">
-                                            {isGeneric ? "Reference Identity" : config.orderLabel}
+                                            {isGeneric ? "Order Reference" : config.orderLabel}
                                         </Label>
                                         <div className="relative group">
                                             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/10 group-focus-within:text-[#CE0003]/40 transition-colors" strokeWidth={1.5} />
@@ -104,7 +104,7 @@ export default function TrackPage() {
                                         type="submit"
                                         className="w-full bg-[#CE0003] hover:bg-[#CE0003]/90 text-white h-16 rounded-full font-medium tracking-[0.1em] text-sm uppercase shadow-xl transition-all active:scale-95 group border-none"
                                     >
-                                        Initialize Search
+                                        Track Order
                                         <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
                                     </Button>
                                 </form>

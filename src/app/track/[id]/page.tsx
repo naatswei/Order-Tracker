@@ -227,7 +227,7 @@ export default function TrackingDetailsPage() {
                                 Private Access
                             </motion.span>
                             <h1 className="text-4xl font-extralight text-white mb-4 tracking-tight">
-                                Greeting, <span className="font-normal italic">{order.customerName.split(' ')[0]}</span>
+                                Welcome, <span className="font-normal italic">{order.customerName.split(' ')[0]}</span>
                             </h1>
                             <div className="h-[1px] w-12 bg-[#CE0003] mx-auto mb-6" />
                             <p className="text-sm text-white/40 font-light leading-loose tracking-wide">
@@ -316,7 +316,7 @@ export default function TrackingDetailsPage() {
                 {/* Timeline */}
                 <div className="space-y-8 mb-16">
                     <div className="flex items-center justify-between mb-8 px-2">
-                        <h3 className="text-xs font-bold uppercase tracking-[0.3em] text-white/40">Continuum</h3>
+                        <h3 className="text-xs font-bold uppercase tracking-[0.3em] text-white/40">Tracking History</h3>
                         <div className="text-[10px] text-white/10 tracking-[0.1em]">{order.statusHistory.length} checkpoints passed</div>
                     </div>
                     <div className="relative pl-6 sm:pl-10 space-y-12">
@@ -373,10 +373,10 @@ export default function TrackingDetailsPage() {
                 {/* Clientele Identity */}
                 <Card className="bg-white/[0.02] border border-white/[0.05] rounded-[2.5rem] mb-16 shadow-inner">
                     <CardContent className="p-8 space-y-8">
-                        <h3 className="text-xs font-bold uppercase tracking-[0.3em] text-white/20 text-center">Identity</h3>
+                        <h3 className="text-xs font-bold uppercase tracking-[0.3em] text-white/20 text-center">Customer Details</h3>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 text-center sm:text-left">
                             <div className="space-y-1">
-                                <Label className="text-[10px] uppercase tracking-[0.2em] text-[#CE0003] font-bold">Patron</Label>
+                                <Label className="text-[10px] uppercase tracking-[0.2em] text-[#CE0003] font-bold">Client</Label>
                                 <p className="text-xl font-light text-white italic">{order.customerName}</p>
                             </div>
                             <div className="space-y-1">
@@ -387,9 +387,9 @@ export default function TrackingDetailsPage() {
                     </CardContent>
                 </Card>
 
-                {/* Concierge Action */}
+                {/* Help Section */}
                 <div className="text-center space-y-10">
-                    <p className="text-xs text-white/20 font-light tracking-[0.2em] uppercase">Private Concierge Available</p>
+                    <p className="text-xs text-white/20 font-light tracking-[0.2em] uppercase">Need any help?</p>
 
                     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                         <DialogTrigger asChild>
@@ -398,16 +398,16 @@ export default function TrackingDetailsPage() {
                             >
                                 <span className="relative z-10 flex items-center gap-3">
                                     <MessageSquare className="w-4 h-4 transition-transform group-hover:rotate-12" />
-                                    Consult our Specialists
+                                    Send a Message
                                 </span>
                                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#CE0003]/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
                             </Button>
                         </DialogTrigger>
                         <DialogContent className="sm:max-w-md bg-[#10111A] border-white/10 text-white rounded-[2rem] shadow-2xl backdrop-blur-3xl">
                             <DialogHeader>
-                                <DialogTitle className="text-2xl font-light tracking-tight text-white/90">Curate an Inquiry</DialogTitle>
+                                <DialogTitle className="text-2xl font-light tracking-tight text-white/90">Send us a message</DialogTitle>
                                 <DialogDescription className="text-white/40 font-light italic">
-                                    Response expected via {order.customerEmail.split('@')[0]}... within moments.
+                                    Response expected via {order.customerEmail.split('@')[0]}... shortly.
                                 </DialogDescription>
                             </DialogHeader>
 
