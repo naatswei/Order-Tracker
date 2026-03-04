@@ -84,6 +84,8 @@ export function BackofficeHeader({ config }: BackofficeHeaderProps) {
                     <OrganizationSwitcher
                         hidePersonal={true}
                         afterCreateOrganizationUrl="/backoffice"
+                        afterSelectOrganizationUrl="/backoffice"
+                        afterLeaveOrganizationUrl="/backoffice"
                         appearance={{
                             elements: {
                                 rootBox: "flex items-center",
@@ -216,6 +218,8 @@ export function BackofficeHeader({ config }: BackofficeHeaderProps) {
                                     <OrganizationSwitcher
                                         hidePersonal={true}
                                         afterCreateOrganizationUrl="/backoffice"
+                                        afterSelectOrganizationUrl="/backoffice"
+                                        afterLeaveOrganizationUrl="/backoffice"
                                         appearance={{
                                             elements: {
                                                 rootBox: "flex w-full",
