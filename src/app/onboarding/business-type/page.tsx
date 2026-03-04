@@ -16,6 +16,7 @@ interface BusinessType {
     title: string
     description: string
     icon: LucideIcon
+    imageSrc: string
 }
 
 // Custom Hair Icon component compatible with LucideIcon
@@ -67,24 +68,28 @@ export default function BusinessTypePage() {
             title: "Tailoring",
             description: "Custom clothing and Production",
             icon: Shirt,
+            imageSrc: "/images/tailoring.jpg",
         },
         {
             id: "hair-retail",
             title: "Hair Retail",
             description: "Pre-orders and Delivery",
-            icon: HairIcon as unknown as LucideIcon, // Cast directly to LucideIcon 
+            icon: HairIcon as unknown as LucideIcon,
+            imageSrc: "/images/hair.jpg",
         },
         {
             id: "logistics",
             title: "Logistics",
             description: "Pre-orders and delivery",
             icon: Warehouse,
+            imageSrc: "/images/logistics.png",
         },
         {
             id: "online-business",
             title: "Online Business",
             description: "E-commerce and Digital Services",
             icon: Laptop,
+            imageSrc: "/images/online.jpg",
         },
     ]
 
@@ -200,6 +205,7 @@ export default function BusinessTypePage() {
                                         title={type.title}
                                         description={type.description}
                                         icon={type.icon}
+                                        imageSrc={type.imageSrc}
                                         selected={selectedType === type.id}
                                         onClick={() => setSelectedType(type.id)}
                                     />
