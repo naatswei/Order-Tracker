@@ -50,10 +50,10 @@ export const BUSINESS_CONFIGS: Record<string, BusinessConfig> = {
         searchPlaceholder: "Search by order number, name",
         dashboardTitle: "Active Orders",
         theme: {
-            primary: "#EF5F18",   // Orange
-            secondary: "#251A65", // Dark Blue
-            accent: "#EF5F18",    // Orange
-            text: "#251A65"
+            primary: "#85A39E",   // Sage Green
+            secondary: "#E6DFD4", // Beige
+            accent: "#85A39E",    // Sage Green
+            text: "#2E3A3F"       // Darker slate for text/contrast
         }
     },
     "hair-retail": {
@@ -75,10 +75,10 @@ export const BUSINESS_CONFIGS: Record<string, BusinessConfig> = {
         searchPlaceholder: "Search by order number, name",
         dashboardTitle: "Active Hair Orders",
         theme: {
-            primary: "#EF5F18",   // Orange
-            secondary: "#251A65", // Dark Blue
-            accent: "#EF5F18",    // Orange
-            text: "#251A65"
+            primary: "#85A39E",   // Sage Green
+            secondary: "#E6DFD4", // Beige
+            accent: "#85A39E",    // Sage Green
+            text: "#2E3A3F"       // Darker slate for text/contrast
         },
         extraFields: [
             { id: "length", label: "Wig Length", placeholder: "e.g., 22 inches", type: "text" },
@@ -104,10 +104,10 @@ export const BUSINESS_CONFIGS: Record<string, BusinessConfig> = {
         searchPlaceholder: "Search by tracking number, recipient",
         dashboardTitle: "Active Shipments",
         theme: {
-            primary: "#EF5F18",   // Orange
-            secondary: "#251A65", // Dark Blue
-            accent: "#EF5F18",    // Orange
-            text: "#251A65"
+            primary: "#85A39E",   // Sage Green
+            secondary: "#E6DFD4", // Beige
+            accent: "#85A39E",    // Sage Green
+            text: "#2E3A3F"       // Darker slate for text/contrast
         },
         extraFields: [
             { id: "weight", label: "Weight (kg)", placeholder: "e.g., 5.5", type: "number" },
@@ -133,10 +133,10 @@ export const BUSINESS_CONFIGS: Record<string, BusinessConfig> = {
         searchPlaceholder: "Search by order number, customer name",
         dashboardTitle: "Active Online Orders",
         theme: {
-            primary: "#EF5F18",   // Orange
-            secondary: "#251A65", // Dark Blue
-            accent: "#EF5F18",    // Orange
-            text: "#251A65"
+            primary: "#85A39E",   // Sage Green
+            secondary: "#E6DFD4", // Beige
+            accent: "#85A39E",    // Sage Green
+            text: "#2E3A3F"       // Darker slate for text/contrast
         },
         extraFields: [
             { id: "quantity", label: "Quantity", placeholder: "1", type: "number" },

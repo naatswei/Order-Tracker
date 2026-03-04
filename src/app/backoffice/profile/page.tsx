@@ -349,7 +349,7 @@ export default function ProfilePage() {
                                             )}
                                         </div>
                                         {isExpired && (
-                                            <Button className="h-11 px-6 rounded-xl font-bold bg-[#CE0003] hover:bg-[#CE0003]/90 text-white shadow-sm">
+                                            <Button className="h-11 px-6 rounded-xl font-bold bg-[#85A39E] hover:bg-[#85A39E]/90 text-white shadow-sm">
                                                 Renew Now
                                             </Button>
                                         )}
@@ -368,7 +368,7 @@ export default function ProfilePage() {
                                         )}>
                                             <CardHeader className="p-0 space-y-1">
                                                 {plan.name === "Month" && (
-                                                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#CE0003] text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full shadow-sm whitespace-nowrap">
+                                                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#85A39E] text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full shadow-sm whitespace-nowrap">
                                                         Most Popular
                                                     </div>
                                                 )}

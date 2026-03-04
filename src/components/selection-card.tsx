@@ -37,7 +37,7 @@ export function SelectionCard({
             className={cn(
                 "relative flex w-full items-center sm:flex-col sm:text-center gap-4 sm:gap-5 rounded-2xl sm:rounded-[2rem] border-2 transition-all duration-300 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50",
                 selected
-                    ? "border-[#191A43] bg-[#191A43]/[0.04] shadow-[0_8px_30px_rgb(25,26,67,0.12)] -translate-y-1 p-4 sm:p-8 ring-2 ring-[#191A43]/20"
+                    ? "border-[#D4C9BA] bg-[#D4C9BA]/[0.04] shadow-[0_8px_30px_rgb(25,26,67,0.12)] -translate-y-1 p-4 sm:p-8 ring-2 ring-[#D4C9BA]/20"
                     : "border-slate-200 bg-white hover:bg-slate-50/50 hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] hover:-translate-y-0.5 hover:border-slate-300 p-4 sm:p-8 shadow-sm",
             )}
         >
@@ -47,7 +47,7 @@ export function SelectionCard({
                     {/* Mobile image */}
                     <div className={cn(
                         "sm:hidden relative w-16 h-16 rounded-xl overflow-hidden shrink-0 border-2 transition-colors",
-                        selected ? "border-[#191A43]/30" : "border-slate-200"
+                        selected ? "border-[#D4C9BA]/30" : "border-slate-200"
                     )}>
                         <Image
                             src={imageSrc}
@@ -62,7 +62,7 @@ export function SelectionCard({
                         className={cn(
                             "hidden sm:flex h-16 w-16 items-center justify-center rounded-2xl bg-white shadow-sm transition-colors mb-2",
                             selected
-                                ? "text-[#191A43] shadow-[0_4px_20px_rgb(25,26,67,0.12)] border-2 border-[#191A43]/30"
+                                ? "text-[#D4C9BA] shadow-[0_4px_20px_rgb(25,26,67,0.12)] border-2 border-[#D4C9BA]/30"
                                 : "text-slate-600 border border-slate-200",
                         )}
                     >
@@ -74,7 +74,7 @@ export function SelectionCard({
                     className={cn(
                         "flex h-16 w-16 items-center justify-center rounded-2xl bg-white shadow-sm transition-colors sm:mb-2 shrink-0",
                         selected
-                            ? "text-[#191A43] shadow-[0_4px_20px_rgb(25,26,67,0.12)] border-2 border-[#191A43]/30"
+                            ? "text-[#D4C9BA] shadow-[0_4px_20px_rgb(25,26,67,0.12)] border-2 border-[#D4C9BA]/30"
                             : "text-slate-600 border border-slate-200",
                     )}
                 >
@@ -84,7 +84,7 @@ export function SelectionCard({
             <div className="space-y-1 sm:space-y-1.5 text-left sm:text-center">
                 <h3 className={cn(
                     "font-semibold leading-none tracking-tight transition-colors",
-                    selected ? "text-[#191A43]" : "text-slate-800"
+                    selected ? "text-[#D4C9BA]" : "text-slate-800"
                 )}>{title}</h3>
                 <p className="text-sm text-muted-foreground">{description}</p>
             </div>

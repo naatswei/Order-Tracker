@@ -59,8 +59,8 @@ export function BackofficeHeader({ config }: BackofficeHeaderProps) {
                     </div>
                     <div className="flex flex-col">
                         <h1 className="text-xl font-bold tracking-tight">
-                            <span className="text-[#CE0003]">O</span>
-                            <span className="text-[#191A43]">Tracker</span>
+                            <span className="text-[#85A39E]">O</span>
+                            <span className="text-[#D4C9BA]">Tracker</span>
                         </h1>
                         <p className="text-[11px] text-slate-500 font-medium mt-[2px]">Backoffice Dashboard</p>
                     </div>
@@ -139,8 +139,8 @@ export function BackofficeHeader({ config }: BackofficeHeaderProps) {
                                     onClick={() => setIsMenuOpen(false)}
                                     className="flex items-center gap-3 px-3 py-3 rounded-xl text-slate-700 hover:bg-slate-50 transition-colors group"
                                 >
-                                    <div className="w-9 h-9 rounded-lg bg-slate-100 flex items-center justify-center group-hover:bg-[#191A43]/10 transition-colors">
-                                        <LayoutDashboard className="w-4 h-4 text-slate-500 group-hover:text-[#191A43] transition-colors" />
+                                    <div className="w-9 h-9 rounded-lg bg-slate-100 flex items-center justify-center group-hover:bg-[#D4C9BA]/10 transition-colors">
+                                        <LayoutDashboard className="w-4 h-4 text-slate-500 group-hover:text-[#D4C9BA] transition-colors" />
                                     </div>
                                     <div className="flex-1">
                                         <p className="text-sm font-semibold text-slate-800">Dashboard</p>
@@ -154,10 +154,10 @@ export function BackofficeHeader({ config }: BackofficeHeaderProps) {
                                     onClick={() => setIsMenuOpen(false)}
                                     className="flex items-center gap-3 px-3 py-3 rounded-xl text-slate-700 hover:bg-slate-50 transition-colors group"
                                 >
-                                    <div className="w-9 h-9 rounded-lg bg-slate-100 flex items-center justify-center group-hover:bg-[#191A43]/10 transition-colors relative">
-                                        <Mail className="w-4 h-4 text-slate-500 group-hover:text-[#191A43] transition-colors" />
+                                    <div className="w-9 h-9 rounded-lg bg-slate-100 flex items-center justify-center group-hover:bg-[#D4C9BA]/10 transition-colors relative">
+                                        <Mail className="w-4 h-4 text-slate-500 group-hover:text-[#D4C9BA] transition-colors" />
                                         {unreadCount > 0 && (
-                                            <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-[#CE0003] rounded-full text-[9px] text-white font-bold flex items-center justify-center border-2 border-white">
+                                            <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-[#85A39E] rounded-full text-[9px] text-white font-bold flex items-center justify-center border-2 border-white">
                                                 {unreadCount > 9 ? '9+' : unreadCount}
                                             </span>
                                         )}
@@ -176,8 +176,8 @@ export function BackofficeHeader({ config }: BackofficeHeaderProps) {
                                     onClick={() => setIsMenuOpen(false)}
                                     className="flex items-center gap-3 px-3 py-3 rounded-xl text-slate-700 hover:bg-slate-50 transition-colors group"
                                 >
-                                    <div className="w-9 h-9 rounded-lg bg-slate-100 flex items-center justify-center group-hover:bg-[#191A43]/10 transition-colors">
-                                        <User className="w-4 h-4 text-slate-500 group-hover:text-[#191A43] transition-colors" />
+                                    <div className="w-9 h-9 rounded-lg bg-slate-100 flex items-center justify-center group-hover:bg-[#D4C9BA]/10 transition-colors">
+                                        <User className="w-4 h-4 text-slate-500 group-hover:text-[#D4C9BA] transition-colors" />
                                     </div>
                                     <div className="flex-1">
                                         <p className="text-sm font-semibold text-slate-800">Profile</p>

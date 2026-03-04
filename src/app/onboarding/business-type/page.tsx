@@ -179,8 +179,8 @@ export default function BusinessTypePage() {
                     <div className="w-full">
                         <div className="flex h-16 items-center justify-between px-6">
                             <div className="flex items-center text-xl font-bold tracking-tight">
-                                <span className="text-[#CE0003]">O</span>
-                                <span className="text-[#191A43]">Tracker</span>
+                                <span className="text-[#85A39E]">O</span>
+                                <span className="text-[#D4C9BA]">Tracker</span>
                             </div>
                         </div>
                     </div>

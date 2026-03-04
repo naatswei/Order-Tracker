@@ -71,7 +71,7 @@ export default function TrackingDetailsPage() {
 
                     if (order && mappedOrder.currentStatus !== order.currentStatus) {
                         toast.success(`Exclusive Update: ${mappedOrder.currentStatus}`, {
-                            style: { background: "#191A43", color: "#fff", border: "none" }
+                            style: { background: "#D4C9BA", color: "#fff", border: "none" }
                         })
                         import("@/lib/notifications").then(mod => mod.notificationSound.play())
                     }
@@ -114,7 +114,7 @@ export default function TrackingDetailsPage() {
                     if (latest.sender === "business") {
                         import("@/lib/notifications").then(mod => mod.notificationSound.play())
                         toast.success("New reply from the business!", {
-                            style: { background: "#191A43", color: "#fff", border: "none" }
+                            style: { background: "#D4C9BA", color: "#fff", border: "none" }
                         })
                     }
                 }
@@ -211,7 +211,7 @@ export default function TrackingDetailsPage() {
                     transition={{ duration: 2, repeat: Infinity }}
                     className="text-center"
                 >
-                    <div className="w-16 h-[2px] bg-gradient-to-r from-transparent via-[#CE0003] to-transparent mx-auto mb-4" />
+                    <div className="w-16 h-[2px] bg-gradient-to-r from-transparent via-[#85A39E] to-transparent mx-auto mb-4" />
                     <p className="text-white/70 text-xs font-light tracking-[0.2em] uppercase">Refining Experience</p>
                 </motion.div>
             </div>
@@ -230,8 +230,8 @@ export default function TrackingDetailsPage() {
                 >
                     <Card className="bg-white/10 backdrop-blur-xl border-white/30 shadow-2xl rounded-[2rem] overflow-hidden">
                         <CardContent className="py-16 text-center space-y-8">
-                            <div className="w-24 h-24 bg-[#CE0003]/10 rounded-full flex items-center justify-center mx-auto border border-[#CE0003]/20">
-                                <Package className="w-10 h-10 text-[#CE0003]" strokeWidth={1} />
+                            <div className="w-24 h-24 bg-[#85A39E]/10 rounded-full flex items-center justify-center mx-auto border border-[#85A39E]/20">
+                                <Package className="w-10 h-10 text-[#85A39E]" strokeWidth={1} />
                             </div>
                             <div className="space-y-2">
                                 <h2 className="text-2xl font-light text-white tracking-tight">Trace Not Found</h2>
@@ -252,10 +252,10 @@ export default function TrackingDetailsPage() {
     }
 
     return (
-        <div ref={containerRef} className="min-h-screen bg-[#0A0B14] text-white selection:bg-[#CE0003]/30 overflow-x-hidden">
+        <div ref={containerRef} className="min-h-screen bg-[#0A0B14] text-white selection:bg-[#85A39E]/30 overflow-x-hidden">
             {/* Ambient Background Elements */}
             <div className="fixed inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-[#CE0003]/5 rounded-full blur-[120px]" />
+                <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-[#85A39E]/5 rounded-full blur-[120px]" />
                 <div className="absolute bottom-[10%] right-[-5%] w-[30%] h-[30%] bg-blue-500/5 rounded-full blur-[100px]" />
             </div>
 
@@ -299,7 +299,7 @@ export default function TrackingDetailsPage() {
                             <h1 className="text-4xl font-extralight text-white mb-4 tracking-tight">
                                 Welcome, <span className="font-normal">{order.customerName.split(' ')[0]}</span>
                             </h1>
-                            <div className="h-[1px] w-12 bg-[#CE0003] mx-auto mb-6" />
+                            <div className="h-[1px] w-12 bg-[#85A39E] mx-auto mb-6" />
                             <p className="text-sm text-white/60 font-light leading-loose tracking-wide">
                                 Track your order progress from <br />
                                 <span className="text-white/80 font-medium tracking-normal">
@@ -318,7 +318,7 @@ export default function TrackingDetailsPage() {
             >
                 <div className="container h-full mx-auto px-6 flex items-center justify-center">
                     <div className="flex items-center text-xl font-bold tracking-tight">
-                        <span className="text-[#CE0003]">O</span>
+                        <span className="text-[#85A39E]">O</span>
                         <span className="text-white">Tracker</span>
                     </div>
                 </div>
@@ -336,7 +336,7 @@ export default function TrackingDetailsPage() {
                     <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6">
                         <div className="space-y-2">
                             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/30 mb-4">
-                                <span className="w-1 h-1 rounded-full bg-[#CE0003] animate-pulse" />
+                                <span className="w-1 h-1 rounded-full bg-[#85A39E] animate-pulse" />
                                 <span className="text-[10px] uppercase tracking-widest text-white/70 font-medium">Live Journey</span>
                             </div>
                             <h1 className="text-4xl sm:text-6xl font-light tracking-tighter text-white">
@@ -345,7 +345,7 @@ export default function TrackingDetailsPage() {
                             <p className="text-white/60 font-light tracking-wide">Ref: {order.id.slice(0, 8).toUpperCase()}</p>
                         </div>
                         <div className="flex flex-col items-center sm:items-end gap-2">
-                            <Badge className="bg-[#CE0003] hover:bg-[#CE0003] text-white text-[11px] px-4 py-1.5 rounded-full border-none font-medium tracking-wider uppercase">
+                            <Badge className="bg-[#85A39E] hover:bg-[#85A39E] text-white text-[11px] px-4 py-1.5 rounded-full border-none font-medium tracking-wider uppercase">
                                 {order.currentStatus}
                             </Badge>
                             <span className="text-xs text-white/50 font-light tracking-widest uppercase">{order.garmentType}</span>
@@ -357,7 +357,7 @@ export default function TrackingDetailsPage() {
                 <div className="grid grid-cols-2 gap-4 mb-12">
                     <Card className="bg-white/[0.03] backdrop-blur-md border border-white/[0.08] rounded-3xl overflow-hidden shadow-2xl">
                         <CardContent className="p-6 flex flex-col items-center sm:items-start text-center sm:text-left gap-3">
-                            <Calendar className="w-5 h-5 text-[#CE0003]" strokeWidth={1.5} />
+                            <Calendar className="w-5 h-5 text-[#85A39E]" strokeWidth={1.5} />
                             <div>
                                 <p className="text-[10px] uppercase tracking-widest text-white/60 font-bold mb-1">Order Created</p>
                                 <p className="text-sm font-light text-white/80">
@@ -387,7 +387,7 @@ export default function TrackingDetailsPage() {
                     </div>
                     <div className="relative pl-6 sm:pl-10 space-y-12">
                         {/* Timeline Spine */}
-                        <div className="absolute left-[7px] sm:left-[11px] top-2 bottom-2 w-[1px] bg-gradient-to-b from-[#CE0003] via-white/30 to-transparent" />
+                        <div className="absolute left-[7px] sm:left-[11px] top-2 bottom-2 w-[1px] bg-gradient-to-b from-[#85A39E] via-white/30 to-transparent" />
 
                         {order.statusHistory.map((statusItem, index) => {
                             const isCurrent = index === 0;
@@ -401,7 +401,7 @@ export default function TrackingDetailsPage() {
                                     className={`relative group ${isCurrent ? "opacity-100" : "opacity-40"}`}
                                 >
                                     {/* Vertical Node */}
-                                    <div className={`absolute -left-[24px] sm:-left-[32px] top-1 w-[11px] h-[11px] rounded-full border-2 border-[#0A0B14] z-10 transition-transform group-hover:scale-125 ${isCurrent ? "bg-[#CE0003] ring-4 ring-[#CE0003]/20" : "bg-white/50"
+                                    <div className={`absolute -left-[24px] sm:-left-[32px] top-1 w-[11px] h-[11px] rounded-full border-2 border-[#0A0B14] z-10 transition-transform group-hover:scale-125 ${isCurrent ? "bg-[#85A39E] ring-4 ring-[#85A39E]/20" : "bg-white/50"
                                         }`} />
 
                                     <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 sm:gap-4">
@@ -444,11 +444,11 @@ export default function TrackingDetailsPage() {
                         </div>
                         <div className="p-8 sm:p-12 grid grid-cols-1 sm:grid-cols-2 gap-12 text-center sm:text-left">
                             <div className="space-y-3">
-                                <Label className="text-[10px] uppercase tracking-[0.2em] text-[#CE0003] font-bold block">Client</Label>
+                                <Label className="text-[10px] uppercase tracking-[0.2em] text-[#85A39E] font-bold block">Client</Label>
                                 <p className="text-2xl font-light text-white leading-none">{order.customerName}</p>
                             </div>
                             <div className="space-y-3">
-                                <Label className="text-[10px] uppercase tracking-[0.2em] text-[#CE0003] font-bold block">Contact Channel</Label>
+                                <Label className="text-[10px] uppercase tracking-[0.2em] text-[#85A39E] font-bold block">Contact Channel</Label>
                                 <p className="text-base font-light text-white/80 whitespace-nowrap overflow-hidden text-ellipsis leading-none">{order.customerEmail}</p>
                             </div>
                         </div>
@@ -471,7 +471,7 @@ export default function TrackingDetailsPage() {
                                     <MessageSquare className="w-4 h-4 transition-transform group-hover:rotate-12" />
                                     {chatMessages.length > 0 ? `View Conversation (${chatMessages.length})` : "Send a Message"}
                                 </span>
-                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#CE0003]/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#85A39E]/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
                             </Button>
                         </div>
                     ) : (
@@ -508,7 +508,7 @@ export default function TrackingDetailsPage() {
                                     >
                                         <div className={`max-w-[80%] rounded-2xl px-4 py-3 ${msg.sender === "customer"
                                             ? "bg-white/15 text-white"
-                                            : "bg-[#CE0003]/20 text-white border border-[#CE0003]/20"
+                                            : "bg-[#85A39E]/20 text-white border border-[#85A39E]/20"
                                             }`}>
                                             <div className="flex items-center gap-2 mb-1">
                                                 {msg.sender === "customer" ? (
@@ -570,7 +570,7 @@ export default function TrackingDetailsPage() {
                                             updateTypingStatus(typingId, "customer")
                                         }}
                                         placeholder="Type your message..."
-                                        className="flex-1 min-h-[44px] max-h-[100px] bg-white/10 border-white/20 rounded-2xl text-sm font-light text-white placeholder:text-white/30 resize-none focus:border-[#CE0003]/50 focus:ring-1 focus:ring-[#CE0003]/20"
+                                        className="flex-1 min-h-[44px] max-h-[100px] bg-white/10 border-white/20 rounded-2xl text-sm font-light text-white placeholder:text-white/30 resize-none focus:border-[#85A39E]/50 focus:ring-1 focus:ring-[#85A39E]/20"
                                         rows={1}
                                         onKeyDown={(e) => {
                                             if (e.key === "Enter" && !e.shiftKey) {
@@ -582,7 +582,7 @@ export default function TrackingDetailsPage() {
                                     <Button
                                         onClick={handleSendMessage}
                                         disabled={!messageBody.trim() || isSending}
-                                        className="h-11 px-4 rounded-xl bg-[#CE0003] hover:bg-[#CE0003]/80 text-white font-semibold text-xs border-none shrink-0 transition-all active:scale-95 flex items-center gap-2"
+                                        className="h-11 px-4 rounded-xl bg-[#85A39E] hover:bg-[#85A39E]/80 text-white font-semibold text-xs border-none shrink-0 transition-all active:scale-95 flex items-center gap-2"
                                     >
                                         {isSending ? (
                                             <span className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
