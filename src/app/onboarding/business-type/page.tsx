@@ -68,14 +68,14 @@ export default function BusinessTypePage() {
             title: "Tailoring",
             description: "Custom clothing and Production",
             icon: Shirt,
-            imageSrc: "/images/tailoring.jpg",
+            imageSrc: "/images/hair.jpg",
         },
         {
             id: "hair-retail",
             title: "Hair Retail",
             description: "Pre-orders and Delivery",
             icon: HairIcon as unknown as LucideIcon,
-            imageSrc: "/images/hair.jpg",
+            imageSrc: "/images/tailoring.jpg",
         },
         {
             id: "logistics",
