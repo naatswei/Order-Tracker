@@ -43,7 +43,7 @@ export function OrderCard({ order, copiedId, onCopy, businessType }: OrderCardPr
                             {/* Main Info */}
                             <div className="flex-1 space-y-4">
                                 <div className="flex items-center gap-4">
-                                    <h3 className="text-xl font-bold tracking-tight" style={{ color: config.theme.primary }}>{order.orderNumber}</h3>
+                                    <h3 className="text-xl font-bold tracking-tight text-[#EF5F18]">{order.orderNumber}</h3>
                                     <Badge variant="outline" className={`rounded-full px-3 py-0.5 font-normal text-sm border ${getStatusColor(order.currentStatus)} bg-opacity-50`}>
                                         {order.currentStatus}
                                     </Badge>
