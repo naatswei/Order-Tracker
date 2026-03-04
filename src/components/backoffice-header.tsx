@@ -191,6 +191,24 @@ export function BackofficeHeader({ config }: BackofficeHeaderProps) {
                             {/* Divider */}
                             <div className="border-t border-slate-100" />
 
+                            {/* User Account Section */}
+                            <div className="flex items-center gap-3 px-1">
+                                <UserButton
+                                    appearance={{
+                                        elements: {
+                                            userButtonAvatarBox: "w-10 h-10 border-2 border-slate-200 shadow-sm"
+                                        }
+                                    }}
+                                />
+                                <div className="flex-1 min-w-0">
+                                    <p className="text-sm font-semibold text-slate-800 truncate">Account</p>
+                                    <p className="text-[11px] text-slate-400">Manage & security</p>
+                                </div>
+                            </div>
+
+                            {/* Divider */}
+                            <div className="border-t border-slate-100" />
+
                             {/* Organization Section */}
                             <div className="space-y-2.5">
                                 <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider px-1">Workspace</p>
@@ -206,24 +224,6 @@ export function BackofficeHeader({ config }: BackofficeHeaderProps) {
                                             }
                                         }}
                                     />
-                                </div>
-                            </div>
-
-                            {/* Divider */}
-                            <div className="border-t border-slate-100" />
-
-                            {/* User Account Section */}
-                            <div className="flex items-center gap-3 px-1">
-                                <UserButton
-                                    appearance={{
-                                        elements: {
-                                            userButtonAvatarBox: "w-10 h-10 border-2 border-slate-200 shadow-sm"
-                                        }
-                                    }}
-                                />
-                                <div className="flex-1 min-w-0">
-                                    <p className="text-sm font-semibold text-slate-800 truncate">Account</p>
-                                    <p className="text-[11px] text-slate-400">Manage & security</p>
                                 </div>
                             </div>
                         </div>
