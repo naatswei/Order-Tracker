@@ -369,7 +369,7 @@ export default function ProfilePage() {
                                         )}>
                                             <CardHeader className="p-0 space-y-1">
                                                 {plan.name === "Month" && (
-                                                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#CE0003] text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full shadow-sm">
+                                                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#CE0003] text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full shadow-sm whitespace-nowrap">
                                                         Most Popular
                                                     </div>
                                                 )}
