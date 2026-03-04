@@ -184,7 +184,7 @@ export default function ProfilePage() {
         <div className="min-h-screen bg-slate-50/50 font-sans">
             <BackofficeHeader config={config} />
 
-            <div className="container mx-auto px-4 py-8 max-w-[1000px] space-y-8">
+            <div className="container mx-auto px-4 py-6 sm:py-8 max-w-[1000px] space-y-6 sm:space-y-8">
                 {/* Header */}
                 <div className="flex items-center gap-4">
                     <Link href="/backoffice">
@@ -198,13 +198,13 @@ export default function ProfilePage() {
                     </div>
                 </div>
 
-                <Tabs defaultValue="profile" className="space-y-8">
-                    <TabsList className="bg-white border border-slate-200 p-1.5 h-14 rounded-2xl shadow-sm inline-flex">
-                        <TabsTrigger value="profile" className="rounded-xl px-6 data-[state=active]:bg-slate-100 data-[state=active]:text-slate-900 data-[state=active]:shadow-none text-slate-500 font-medium transition-all gap-2">
+                <Tabs defaultValue="profile" className="space-y-6 sm:space-y-8">
+                    <TabsList className="bg-white border border-slate-200 p-1.5 h-auto sm:h-14 rounded-2xl shadow-sm flex flex-col sm:flex-row w-full sm:w-auto sm:inline-flex gap-1">
+                        <TabsTrigger value="profile" className="w-full sm:w-auto rounded-xl px-4 sm:px-6 py-2.5 sm:py-0 h-auto sm:h-11 data-[state=active]:bg-slate-100 data-[state=active]:text-slate-900 data-[state=active]:shadow-none text-slate-500 font-medium transition-all gap-2 justify-start sm:justify-center">
                             <Building2 className="w-4 h-4" />
                             Business Profile
                         </TabsTrigger>
-                        <TabsTrigger value="subscription" className="rounded-xl px-6 data-[state=active]:bg-slate-100 data-[state=active]:text-slate-900 data-[state=active]:shadow-none text-slate-500 font-medium transition-all gap-2">
+                        <TabsTrigger value="subscription" className="w-full sm:w-auto rounded-xl px-4 sm:px-6 py-2.5 sm:py-0 h-auto sm:h-11 data-[state=active]:bg-slate-100 data-[state=active]:text-slate-900 data-[state=active]:shadow-none text-slate-500 font-medium transition-all gap-2 justify-start sm:justify-center">
                             <CreditCard className="w-4 h-4" />
                             Subscription & Billing
                         </TabsTrigger>
@@ -213,7 +213,7 @@ export default function ProfilePage() {
                     <TabsContent value="profile">
                         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
                             <Card className="border-slate-200 shadow-sm overflow-hidden bg-white rounded-3xl">
-                                <CardContent className="p-8">
+                                <CardContent className="p-5 sm:p-8">
                                     <form onSubmit={handleProfileSubmit} className="space-y-8">
                                         <div className="flex flex-col sm:flex-row items-center gap-6 pb-8 border-b border-slate-100">
                                             <div
@@ -318,11 +318,11 @@ export default function ProfilePage() {
                     </TabsContent>
 
                     <TabsContent value="subscription">
-                        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-8">
+                        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6 sm:space-y-8">
                             {/* Current Plan Overview */}
-                            <Card className="border-slate-200 shadow-sm overflow-hidden bg-white rounded-3xl w-fit min-w-[350px] pr-8">
-                                <CardContent className="p-8">
-                                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-12">
+                            <Card className="border-slate-200 shadow-sm overflow-hidden bg-white rounded-3xl w-full sm:w-fit sm:min-w-[350px] pr-0 sm:pr-8">
+                                <CardContent className="p-5 sm:p-8">
+                                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 sm:gap-12">
                                         <div className="space-y-2">
                                             <h2 className="text-xl font-bold flex items-center gap-3">
                                                 {subscriptionPlan ? `Current Plan (${subscriptionPlan})` : "Current Plan"}
@@ -357,7 +357,7 @@ export default function ProfilePage() {
 
                             {/* Upgrade Plans Grid */}
                             <div>
-                                <h3 className="text-lg font-bold text-slate-900 mb-6">Upgrade your workspace</h3>
+                                <h3 className="text-lg font-bold text-slate-900 mb-4 sm:mb-6">Upgrade your workspace</h3>
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                                     {plans.map((plan) => (
                                         <Card key={plan.name} className={cn(
@@ -373,8 +373,8 @@ export default function ProfilePage() {
                                                 <h3 className="text-lg font-bold">{plan.name}</h3>
                                                 <p className="text-[11px] text-slate-500 font-medium">{plan.description}</p>
                                             </CardHeader>
-                                            <CardContent className="p-0 pt-6 flex-1 flex flex-col">
-                                                <div className="mb-6">
+                                            <CardContent className="p-0 pt-4 sm:pt-6 flex-1 flex flex-col">
+                                                <div className="mb-4 sm:mb-6">
                                                     <span className="text-2xl font-bold tracking-tight">{plan.price}</span>
                                                     <span className="text-xs text-slate-500 font-medium ml-1">/{plan.period.replace(" Monthly", "mo").replace(" Yearly", "yr")}</span>
                                                 </div>
