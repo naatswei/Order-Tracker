@@ -12,6 +12,7 @@ import Link from "next/link"
 import { getBusinessConfig } from "@/lib/business-configs"
 import { toast } from "sonner"
 import { Textarea } from "@/components/ui/textarea"
+import { Label } from "@/components/ui/label"
 import { Package, MessageSquare, Send, ChevronRight, MapPin, Calendar, Clock, User, Building2 } from "lucide-react"
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion"
 
