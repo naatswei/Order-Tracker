@@ -246,15 +246,11 @@ export default function TrackingDetailsPage() {
                 style={{ opacity: headerOpacity }}
                 className="fixed top-0 inset-x-0 z-40 h-20 bg-[#0A0B14]/80 backdrop-blur-xl border-b border-white/15"
             >
-                <div className="container h-full mx-auto px-6 flex items-center justify-between">
-                    <Link href="/track" className="p-2 -ml-2 text-white/50 hover:text-white transition-colors">
-                        <ArrowLeft className="w-5 h-5" />
-                    </Link>
+                <div className="container h-full mx-auto px-6 flex items-center justify-center">
                     <div className="flex items-center text-xl font-bold tracking-tight">
                         <span className="text-[#CE0003]">O</span>
                         <span className="text-white">Tracker</span>
                     </div>
-                    <div className="w-9" /> {/* Spacer */}
                 </div>
             </motion.header>
 
