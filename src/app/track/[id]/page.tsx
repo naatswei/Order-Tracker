@@ -155,35 +155,50 @@ export default function TrackingDetailsPage() {
     }, [chatMessages, chatOpen])
 
     const handleSendMessage = async () => {
-        if (!messageBody) {
+        if (!messageBody.trim()) {
             toast.error("Please compose your message")
             return
         }
+        const currentMessageBody = messageBody.trim()
 
+        // Find existing threadId from chat
+        const existingThread = chatMessages.length > 0 ? chatMessages[0].threadId : undefined
+
+        // Optimistic UI update
+        const newMessage = {
+            id: `temp-${Date.now()}`,
+            orderId: order!.id,
+            threadId: existingThread || "new",
+            sender: "customer",
+            customerName: order!.customerName,
+            customerEmail: order!.customerEmail,
+            customerPhone: order!.customerPhone,
+            subject: "Customer Inquiry",
+            message: currentMessageBody,
+            isRead: "false",
+            createdAt: new Date().toISOString()
+        }
+
+        setChatMessages(prev => [...prev, newMessage])
+        setMessageBody("")
         setIsSending(true)
-        try {
-            // Find existing threadId from chat
-            const existingThread = chatMessages.length > 0 ? chatMessages[0].threadId : undefined
 
+        try {
             const result = await submitCustomerMessage({
                 orderId: order!.id,
                 subject: "Customer Inquiry",
-                message: messageBody,
+                message: currentMessageBody,
                 threadId: existingThread !== "legacy" ? existingThread : undefined
             })
 
             if (result.error) {
                 toast.error(result.error)
-            } else {
-                setMessageBody("")
-                // Reload chat
-                const chatResult = await getThreadMessages(order!.id)
-                if (chatResult.messages) {
-                    setChatMessages(chatResult.messages)
-                }
+                // Remove the optimistic message on error
+                setChatMessages(prev => prev.filter(m => m.id !== newMessage.id))
             }
         } catch (error) {
-            toast.error("Submission failed. Please try again.")
+            toast.error("Failed to send message")
+            setChatMessages(prev => prev.filter(m => m.id !== newMessage.id))
         } finally {
             setIsSending(false)
         }

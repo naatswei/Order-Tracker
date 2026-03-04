@@ -159,22 +159,43 @@ export default function InboxPage() {
 
     const handleSendReply = async (thread: ReturnType<typeof groupByThread>[0]) => {
         if (!replyText.trim()) return
+        const currentReplyText = replyText.trim()
+
+        // Optimistic UI update
+        const newMessage: Message = {
+            id: `temp-${Date.now()}`,
+            orderId: thread.orderId,
+            threadId: thread.key,
+            sender: "business",
+            customerName: thread.customerName,
+            customerEmail: null,
+            customerPhone: null,
+            subject: "Reply",
+            message: currentReplyText,
+            isRead: "true",
+            createdAt: new Date()
+        }
+
+        setMessages(prev => [newMessage, ...prev])
+        setReplyText("")
         setIsSending(true)
+
         try {
             const result = await submitBusinessReply({
                 threadId: thread.key,
                 orderId: thread.orderId,
-                message: replyText.trim()
+                message: currentReplyText
             })
             if (result.error) {
                 toast.error(result.error)
+                // Remove the optimistic message on error
+                setMessages(prev => prev.filter(m => m.id !== newMessage.id))
             } else {
                 toast.success("Reply sent!")
-                setReplyText("")
-                await loadMessages()
             }
         } catch (error) {
             toast.error("Failed to send reply")
+            setMessages(prev => prev.filter(m => m.id !== newMessage.id))
         } finally {
             setIsSending(false)
         }
