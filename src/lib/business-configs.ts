@@ -73,7 +73,7 @@ export const BUSINESS_CONFIGS: Record<string, BusinessConfig> = {
         orderPrefix: "HR",
         orderPlaceholder: "eg., HR9102",
         searchPlaceholder: "Search by order number, name",
-        dashboardTitle: "Active Hair Orders",
+        dashboardTitle: "Active Orders",
         theme: {
             primary: "#4D1D3A",   // Deep Plum
             secondary: "#C77D9E", // Dusty Rose
