@@ -306,8 +306,7 @@ export default function ProfilePage() {
                                             <Button
                                                 type="submit"
                                                 disabled={profileLoading}
-                                                style={{ backgroundColor: config.theme.primary }}
-                                                className="min-w-[140px] h-11 rounded-xl text-white font-bold shadow-sm hover:opacity-90 transition-opacity"
+                                                className="min-w-[140px] h-11 rounded-xl bg-[#191A43] hover:bg-[#191A43]/90 text-white font-bold shadow-sm transition-opacity"
                                             >
                                                 {profileLoading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
                                                 Save Changes
