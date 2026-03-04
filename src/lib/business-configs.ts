@@ -131,7 +131,7 @@ export const BUSINESS_CONFIGS: Record<string, BusinessConfig> = {
         orderPrefix: "OB",
         orderPlaceholder: "eg., OB2044",
         searchPlaceholder: "Search by order number, customer name",
-        dashboardTitle: "Active Online Orders",
+        dashboardTitle: "Active Orders",
         theme: {
             primary: "#C9A84C",   // Golden Mustard
             secondary: "#8A9A84", // Sage Olive
