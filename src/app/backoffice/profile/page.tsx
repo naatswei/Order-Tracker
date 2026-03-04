@@ -194,19 +194,19 @@ export default function ProfilePage() {
                     </Link>
                     <div>
                         <h1 className="text-2xl font-bold tracking-tight text-slate-900">Settings</h1>
-                        <p className="text-sm text-slate-500 font-medium">Manage your business profile and subscription</p>
+                        <p className="text-xs sm:text-sm text-slate-500 font-medium">Manage your business profile and subscription</p>
                     </div>
                 </div>
 
                 <Tabs defaultValue="profile" className="space-y-6 sm:space-y-8">
                     <div className="overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 sm:pb-0 hide-scrollbar">
-                        <TabsList className="bg-white border border-slate-200 p-1.5 h-14 rounded-2xl shadow-sm inline-flex min-w-max w-full sm:w-auto">
-                            <TabsTrigger value="profile" className="rounded-xl px-6 data-[state=active]:bg-slate-100 data-[state=active]:text-slate-900 data-[state=active]:shadow-none text-slate-500 font-medium transition-all gap-2 flex-1 sm:flex-none">
-                                <Building2 className="w-4 h-4" />
+                        <TabsList className="bg-white border border-slate-200 p-1.5 h-12 sm:h-14 rounded-2xl shadow-sm inline-flex min-w-max w-full sm:w-auto">
+                            <TabsTrigger value="profile" className="rounded-xl px-4 sm:px-6 data-[state=active]:bg-slate-100 data-[state=active]:text-slate-900 data-[state=active]:shadow-none text-slate-500 font-medium transition-all gap-1.5 sm:gap-2 flex-1 sm:flex-none text-xs sm:text-sm">
+                                <Building2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                                 Business Profile
                             </TabsTrigger>
-                            <TabsTrigger value="subscription" className="rounded-xl px-6 data-[state=active]:bg-slate-100 data-[state=active]:text-slate-900 data-[state=active]:shadow-none text-slate-500 font-medium transition-all gap-2 flex-1 sm:flex-none">
-                                <CreditCard className="w-4 h-4" />
+                            <TabsTrigger value="subscription" className="rounded-xl px-4 sm:px-6 data-[state=active]:bg-slate-100 data-[state=active]:text-slate-900 data-[state=active]:shadow-none text-slate-500 font-medium transition-all gap-1.5 sm:gap-2 flex-1 sm:flex-none text-xs sm:text-sm">
+                                <CreditCard className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                                 Subscription & Billing
                             </TabsTrigger>
                         </TabsList>
