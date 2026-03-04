@@ -270,13 +270,13 @@ export default function OrderUpdatePage() {
                                 {/* Quick Options */}
                                 <div>
                                     <div className="text-sm font-medium text-slate-500 mb-4">Quick Status Options</div>
-                                    <div className="flex flex-wrap gap-3">
+                                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                                         {quickStatuses.map((qs: string) => (
                                             <button
                                                 key={qs}
                                                 type="button"
                                                 onClick={() => handleQuickStatus(qs)}
-                                                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all shadow-sm border ${status === qs ? "text-white border-0" : "bg-white text-slate-700 border-slate-200 hover:bg-slate-50 hover:border-slate-300"}`}
+                                                className={`px-3 py-2.5 rounded-lg text-xs sm:text-sm font-medium transition-all shadow-sm border text-center ${status === qs ? "text-white border-0" : "bg-white text-slate-700 border-slate-200 hover:bg-slate-50 hover:border-slate-300"}`}
                                                 style={{ backgroundColor: status === qs ? config.theme.accent : undefined }}
                                             >
                                                 {qs}
