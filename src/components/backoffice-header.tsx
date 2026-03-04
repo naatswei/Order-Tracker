@@ -130,7 +130,7 @@ export function BackofficeHeader({ config }: BackofficeHeaderProps) {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -8 }}
                         transition={{ duration: 0.2, ease: "easeOut" }}
-                        className="md:hidden absolute top-full left-0 right-0 bg-white border-t border-slate-100 shadow-[0_20px_60px_rgb(0,0,0,0.08)] overflow-hidden z-50"
+                        className="md:hidden absolute top-full left-0 right-0 bg-white border-t border-slate-100 shadow-[0_20px_60px_rgb(0,0,0,0.08)] overflow-visible z-50"
                     >
                         <div className="px-5 py-5 space-y-4">
                             {/* Quick Navigation Links */}
