@@ -75,6 +75,8 @@ export default function InboxPage() {
     const [replyText, setReplyText] = useState("")
     const [isSending, setIsSending] = useState(false)
     const [isCustomerTyping, setIsCustomerTyping] = useState(false)
+
+    const threads = groupByThread(messages)
     const config = getBusinessConfig(businessType)
 
     useEffect(() => {
@@ -153,7 +155,7 @@ export default function InboxPage() {
         pollTyping()
         const interval = setInterval(pollTyping, 3000)
         return () => clearInterval(interval)
-    }, [expandedThread])
+    }, [expandedThread, threads])
 
     const handleSendReply = async (thread: ReturnType<typeof groupByThread>[0]) => {
         if (!replyText.trim()) return
@@ -178,8 +180,6 @@ export default function InboxPage() {
             setIsSending(false)
         }
     }
-
-    const threads = groupByThread(messages)
 
     if (!isLoaded) {
         return (
@@ -232,7 +232,7 @@ export default function InboxPage() {
                                     initial={{ opacity: 0, y: 10 }}
                                     animate={{ opacity: 1, y: 0 }}
                                 >
-                                    <Card className={`overflow-hidden transition-all duration-300 rounded-2xl border ${thread.hasUnread ? "bg-white border-slate-200 shadow-[0_4px_20px_rgb(0,0,0,0.04)]" : "bg-slate-50/50 border-slate-100 shadow-sm"}`}>
+                                    <Card className={`overflow-hidden transition-all duration-300 rounded-2xl border ${thread.hasUnread ? "bg-white border-slate-200 shadow-[0_4px_20_rgb(0,0,0,0.04)]" : "bg-slate-50/50 border-slate-100 shadow-sm"}`}>
                                         {/* Thread Header - clickable */}
                                         <div
                                             className="p-5 cursor-pointer hover:bg-slate-50/80 transition-colors"
@@ -346,10 +346,7 @@ export default function InboxPage() {
                                                                     onChange={(e) => {
                                                                         setReplyText(e.target.value)
                                                                         // Update typing status
-                                                                        const threadObj = threads.find(t => t.key === expandedThread)
-                                                                        if (threadObj) {
-                                                                            updateTypingStatus(threadObj.key, "business")
-                                                                        }
+                                                                        updateTypingStatus(thread.key, "business")
                                                                     }}
                                                                     placeholder="Type your reply..."
                                                                     className="flex-1 min-h-[44px] max-h-[120px] rounded-xl bg-white border-slate-200 text-sm resize-none focus-visible:border-slate-300 focus-visible:ring-[3px] focus-visible:ring-slate-100/80"

@@ -26,6 +26,8 @@ export default function TrackingDetailsPage() {
     const [chatOpen, setChatOpen] = useState(false)
     const [chatMessages, setChatMessages] = useState<any[]>([])
     const [isBusinessTyping, setIsBusinessTyping] = useState(false)
+
+    console.log("Tracking Page State:", { trackingId, chatOpen, messagesCount: chatMessages.length, isBusinessTyping })
     const [showOverlay, setShowOverlay] = useState(true)
     const chatEndRef = useRef<HTMLDivElement>(null)
 
@@ -133,9 +135,11 @@ export default function TrackingDetailsPage() {
 
         const pollTyping = async () => {
             const typingId = order.id
+            console.log("Polling typing for order:", typingId)
             const result = await getTypingStatus(typingId)
             if (result.statuses) {
                 const businessStatus = result.statuses.find(s => s.userType === "business")
+                console.log("Typing result:", businessStatus)
                 setIsBusinessTyping(!!businessStatus)
             }
         }
