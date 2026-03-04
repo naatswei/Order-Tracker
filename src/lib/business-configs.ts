@@ -50,10 +50,10 @@ export const BUSINESS_CONFIGS: Record<string, BusinessConfig> = {
         searchPlaceholder: "Search by order number, name",
         dashboardTitle: "Active Orders",
         theme: {
-            primary: "#191A43",
-            secondary: "#CE0003",
-            accent: "#CE0003",
-            text: "#191A43"
+            primary: "#2C2C2C",   // Rich Charcoal
+            secondary: "#B87333", // Warm Copper
+            accent: "#D4956A",    // Soft Copper/Terracotta
+            text: "#2C2C2C"
         }
     },
     "hair-retail": {
@@ -75,9 +75,9 @@ export const BUSINESS_CONFIGS: Record<string, BusinessConfig> = {
         searchPlaceholder: "Search by order number, name",
         dashboardTitle: "Active Hair Orders",
         theme: {
-            primary: "#4D1D3A", // Dark Plum
-            secondary: "#F49FBC", // Soft Pink
-            accent: "#D4AF37", // Gold
+            primary: "#4D1D3A",   // Deep Plum
+            secondary: "#C77D9E", // Dusty Rose
+            accent: "#D4AF37",    // Rose Gold
             text: "#4D1D3A"
         },
         extraFields: [
@@ -104,10 +104,10 @@ export const BUSINESS_CONFIGS: Record<string, BusinessConfig> = {
         searchPlaceholder: "Search by tracking number, recipient",
         dashboardTitle: "Active Shipments",
         theme: {
-            primary: "#0F2D52", // Navy
-            secondary: "#4A5568", // Slate
-            accent: "#3182CE", // Bright Blue
-            text: "#0F2D52"
+            primary: "#0D3B4F",   // Deep Teal
+            secondary: "#1A8A7D", // Vivid Teal
+            accent: "#2196F3",    // Electric Blue
+            text: "#0D3B4F"
         },
         extraFields: [
             { id: "weight", label: "Weight (kg)", placeholder: "e.g., 5.5", type: "number" },
@@ -133,10 +133,10 @@ export const BUSINESS_CONFIGS: Record<string, BusinessConfig> = {
         searchPlaceholder: "Search by order number, customer name",
         dashboardTitle: "Active Online Orders",
         theme: {
-            primary: "#191A43", // Navy
-            secondary: "#CE0003", // Red
-            accent: "#CE0003", // Red
-            text: "#191A43"
+            primary: "#312E81",   // Deep Indigo
+            secondary: "#F97066", // Warm Coral
+            accent: "#818CF8",    // Soft Violet
+            text: "#312E81"
         },
         extraFields: [
             { id: "quantity", label: "Quantity", placeholder: "1", type: "number" },
