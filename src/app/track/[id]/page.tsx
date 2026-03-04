@@ -134,12 +134,11 @@ export default function TrackingDetailsPage() {
         }
 
         const pollTyping = async () => {
-            const typingId = order.id
-            console.log("Polling typing for order:", typingId)
-            const result = await getTypingStatus(typingId)
+            if (!order?.id) return
+            // Use the order.id as the primary identifier to match the backoffice grouping
+            const result = await getTypingStatus(order.id)
             if (result.statuses) {
                 const businessStatus = result.statuses.find(s => s.userType === "business")
-                console.log("Typing result:", businessStatus)
                 setIsBusinessTyping(!!businessStatus)
             }
         }

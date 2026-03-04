@@ -34,7 +34,8 @@ function groupByThread(messages: Message[]) {
     const threads: Record<string, { orderId: string | null; customerName: string; subject: string; messages: Message[]; hasUnread: boolean; latestAt: Date }> = {}
 
     for (const msg of messages) {
-        const key = msg.threadId || msg.orderId || msg.id
+        // Prioritize orderId as the key for consistency with the tracking page
+        const key = msg.orderId || msg.threadId || msg.id
         if (!threads[key]) {
             threads[key] = {
                 orderId: msg.orderId,
@@ -124,9 +125,10 @@ export default function InboxPage() {
             for (const msg of unreadCustomerMsgs) {
                 await markThreadAsRead(msg.threadId)
             }
-            // Update local state
+            // Update local state using the same key logic
             setMessages(prev => prev.map(m => {
-                if ((m.orderId || m.id) === threadKey && m.sender === "customer") {
+                const msgKey = m.orderId || m.threadId || m.id
+                if (msgKey === threadKey && m.sender === "customer") {
                     return { ...m, isRead: "true" }
                 }
                 return m
