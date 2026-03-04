@@ -223,7 +223,8 @@ function BulkUpdateContent() {
                     <>
                         <div className="flex justify-end">
                             <Button
-                                className="text-white rounded-xl h-11 px-6 shadow-sm font-medium border-0 bg-[#2B7FFF] hover:bg-[#2B7FFF]/90 transition-all duration-200"
+                                className="text-white rounded-xl h-11 px-6 shadow-sm font-medium border-0 hover:brightness-95 transition-all duration-200"
+                                style={{ backgroundColor: config.theme.primary }}
                                 onClick={handleBulkUpdateClick}
                                 disabled={selectedIds.length === 0}
                             >
@@ -241,7 +242,7 @@ function BulkUpdateContent() {
                                 <div className="flex items-center gap-4">
                                     <div
                                         className={`w-6 h-6 rounded-md border-2 flex items-center justify-center transition-all ${selectedIds.length === orders.length && orders.length > 0 ? 'border-transparent' : 'border-slate-300 bg-white'}`}
-                                        style={{ backgroundColor: selectedIds.length === orders.length && orders.length > 0 ? '#2B7FFF' : undefined }}
+                                        style={{ backgroundColor: selectedIds.length === orders.length && orders.length > 0 ? config.theme.primary : undefined }}
                                     >
                                         {selectedIds.length === orders.length && orders.length > 0 && <span className="text-white text-lg leading-none pb-1">✓</span>}
                                     </div>
@@ -272,7 +273,7 @@ function BulkUpdateContent() {
                                                 >
                                                     <div
                                                         className={`w-6 h-6 rounded-md border-2 flex items-center justify-center transition-all ${selectedIds.includes(order.id) ? 'border-transparent' : 'border-slate-300 bg-white'}`}
-                                                        style={{ backgroundColor: selectedIds.includes(order.id) ? '#2B7FFF' : undefined, borderColor: selectedIds.includes(order.id) ? '#2B7FFF' : undefined }}
+                                                        style={{ backgroundColor: selectedIds.includes(order.id) ? config.theme.primary : undefined, borderColor: selectedIds.includes(order.id) ? config.theme.primary : undefined }}
                                                     >
                                                         {selectedIds.includes(order.id) && <span className="text-white text-lg leading-none pb-1">✓</span>}
                                                     </div>
@@ -361,9 +362,9 @@ function BulkUpdateContent() {
                         className="space-y-6"
                     >
                         {/* Selected Header */}
-                        <div className="bg-blue-50/50 rounded-xl p-4 flex items-center justify-between border border-blue-100">
+                        <div className="rounded-xl p-4 flex items-center justify-between border" style={{ backgroundColor: `${config.theme.primary}0D`, borderColor: `${config.theme.primary}1A` }}>
                             <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
+                                <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ backgroundColor: config.theme.primary }}>
                                     <Check className="text-white w-6 h-6" />
                                 </div>
                                 <div>
@@ -395,9 +396,10 @@ function BulkUpdateContent() {
                                             variant="outline"
                                             onClick={() => handleQuickStatusClick(status)}
                                             className={`h-11 px-6 rounded-lg border text-sm font-medium transition-all duration-200 ${selectedStatus === status
-                                                ? "text-white shadow-md border-0 bg-[#2B7FFF] hover:bg-[#2B7FFF]/90"
+                                                ? "text-white shadow-md border-0 hover:brightness-95"
                                                 : "bg-white border-slate-200 text-slate-600 hover:bg-slate-50 hover:border-slate-300"
                                                 }`}
+                                            style={selectedStatus === status ? { backgroundColor: config.theme.accent } : undefined}
                                         >
                                             {status}
                                         </Button>
