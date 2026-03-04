@@ -62,3 +62,10 @@ export const customerMessagesRelations = relations(customerMessages, ({ one }) =
         references: [orders.id],
     }),
 }));
+
+export const typingStatus = pgTable("typing_status", {
+    id: text("id").primaryKey(), // threadId:userType
+    threadId: text("thread_id").notNull(),
+    userType: text("user_type").notNull(), // "customer" or "business"
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});

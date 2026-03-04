@@ -1,8 +1,8 @@
 "use server"
 
 import { db } from "@/db"
-import { customerMessages, orders } from "@/db/schema"
-import { eq, desc, and, asc } from "drizzle-orm"
+import { customerMessages, orders, typingStatus } from "@/db/schema"
+import { eq, desc, and, asc, gt } from "drizzle-orm"
 import { nanoid } from "nanoid"
 import { revalidatePath } from "next/cache"
 import { auth } from "@clerk/nextjs/server"
@@ -209,5 +209,43 @@ export async function markThreadAsRead(threadId: string) {
     } catch (error: any) {
         console.error("Error marking thread as read:", error)
         return { error: error.message || "Failed to update thread" }
+    }
+}
+
+export async function updateTypingStatus(threadId: string, userType: "customer" | "business") {
+    try {
+        const id = `${threadId}:${userType}`
+        await db.insert(typingStatus)
+            .values({
+                id,
+                threadId,
+                userType,
+                updatedAt: new Date(),
+            })
+            .onConflictDoUpdate({
+                target: typingStatus.id,
+                set: { updatedAt: new Date() },
+            })
+        return { success: true }
+    } catch (error) {
+        console.error("Error updating typing status:", error)
+        return { error: "Failed to update typing status" }
+    }
+}
+
+export async function getTypingStatus(threadId: string) {
+    try {
+        // Typing is considered active if updated within the last 10 seconds
+        const tenSecondsAgo = new Date(Date.now() - 10000)
+        const results = await db.select()
+            .from(typingStatus)
+            .where(and(
+                eq(typingStatus.threadId, threadId),
+                gt(typingStatus.updatedAt, tenSecondsAgo)
+            ))
+        return { statuses: results }
+    } catch (error) {
+        console.error("Error getting typing status:", error)
+        return { error: "Failed to get typing status" }
     }
 }

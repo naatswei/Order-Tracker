@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useOrganization } from "@clerk/nextjs"
-import { getInboxMessages, markThreadAsRead, submitBusinessReply } from "@/app/actions/messages"
+import { getInboxMessages, markThreadAsRead, submitBusinessReply, updateTypingStatus, getTypingStatus } from "@/app/actions/messages"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -74,6 +74,7 @@ export default function InboxPage() {
     const [expandedThread, setExpandedThread] = useState<string | null>(null)
     const [replyText, setReplyText] = useState("")
     const [isSending, setIsSending] = useState(false)
+    const [isCustomerTyping, setIsCustomerTyping] = useState(false)
     const config = getBusinessConfig(businessType)
 
     useEffect(() => {
@@ -130,6 +131,29 @@ export default function InboxPage() {
             }))
         }
     }
+
+    // Typing Status Polling
+    useEffect(() => {
+        if (!expandedThread) {
+            setIsCustomerTyping(false)
+            return
+        }
+
+        const pollTyping = async () => {
+            const thread = threads.find(t => t.key === expandedThread)
+            if (!thread) return
+
+            const result = await getTypingStatus(thread.messages[0].threadId)
+            if (result.statuses) {
+                const customerStatus = result.statuses.find(s => s.userType === "customer")
+                setIsCustomerTyping(!!customerStatus)
+            }
+        }
+
+        pollTyping()
+        const interval = setInterval(pollTyping, 3000)
+        return () => clearInterval(interval)
+    }, [expandedThread])
 
     const handleSendReply = async (thread: ReturnType<typeof groupByThread>[0]) => {
         if (!replyText.trim() || !thread.orderId) return
@@ -301,12 +325,34 @@ export default function InboxPage() {
                                                             ))}
                                                         </div>
 
+                                                        {isCustomerTyping && (
+                                                            <motion.div
+                                                                initial={{ opacity: 0, y: 5 }}
+                                                                animate={{ opacity: 1, y: 0 }}
+                                                                className="px-4 py-2 flex items-center gap-2"
+                                                            >
+                                                                <div className="flex gap-1">
+                                                                    <span className="w-1.5 h-1.5 bg-slate-300 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                                                                    <span className="w-1.5 h-1.5 bg-slate-300 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                                                                    <span className="w-1.5 h-1.5 bg-slate-300 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                                                                </div>
+                                                                <span className="text-[11px] font-medium text-slate-400 italic">{thread.customerName} is typing...</span>
+                                                            </motion.div>
+                                                        )}
+
                                                         {/* Reply Input */}
                                                         <div className="p-4 border-t border-slate-100 bg-slate-50/50">
                                                             <div className="flex gap-3">
                                                                 <Textarea
                                                                     value={replyText}
-                                                                    onChange={(e) => setReplyText(e.target.value)}
+                                                                    onChange={(e) => {
+                                                                        setReplyText(e.target.value)
+                                                                        // Update typing status
+                                                                        const threadObj = threads.find(t => t.key === expandedThread)
+                                                                        if (threadObj) {
+                                                                            updateTypingStatus(threadObj.messages[0].threadId, "business")
+                                                                        }
+                                                                    }}
                                                                     placeholder="Type your reply..."
                                                                     className="flex-1 min-h-[44px] max-h-[120px] rounded-xl bg-white border-slate-200 text-sm resize-none focus-visible:border-slate-300 focus-visible:ring-[3px] focus-visible:ring-slate-100/80"
                                                                     rows={1}

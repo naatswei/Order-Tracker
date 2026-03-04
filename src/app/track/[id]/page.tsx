@@ -7,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { type Order } from "@/lib/storage"
 import { getOrderWithHistory } from "@/app/actions/orders"
-import { submitCustomerMessage, getThreadMessages } from "@/app/actions/messages"
+import { submitCustomerMessage, getThreadMessages, updateTypingStatus, getTypingStatus } from "@/app/actions/messages"
 import Link from "next/link"
 import { getBusinessConfig } from "@/lib/business-configs"
 import { toast } from "sonner"
@@ -25,6 +25,7 @@ export default function TrackingDetailsPage() {
     const [isSending, setIsSending] = useState(false)
     const [chatOpen, setChatOpen] = useState(false)
     const [chatMessages, setChatMessages] = useState<any[]>([])
+    const [isBusinessTyping, setIsBusinessTyping] = useState(false)
     const [showOverlay, setShowOverlay] = useState(true)
     const chatEndRef = useRef<HTMLDivElement>(null)
 
@@ -122,6 +123,27 @@ export default function TrackingDetailsPage() {
         const interval = setInterval(loadChat, 30000)
         return () => clearInterval(interval)
     }, [order?.id])
+
+    // Poll for typing status
+    useEffect(() => {
+        if (!order || !chatOpen) {
+            setIsBusinessTyping(false)
+            return
+        }
+
+        const pollTyping = async () => {
+            const threadId = chatMessages.length > 0 ? chatMessages[0].threadId : order.id
+            const result = await getTypingStatus(threadId)
+            if (result.statuses) {
+                const businessStatus = result.statuses.find(s => s.userType === "business")
+                setIsBusinessTyping(!!businessStatus)
+            }
+        }
+
+        pollTyping()
+        const interval = setInterval(pollTyping, 3000)
+        return () => clearInterval(interval)
+    }, [order?.id, chatOpen, chatMessages])
 
     // Auto-scroll chat to bottom
     useEffect(() => {
@@ -491,11 +513,30 @@ export default function TrackingDetailsPage() {
                             </div>
 
                             {/* Compose */}
-                            <div className="p-4 border-t border-white/10">
+                            <div className="p-4 border-t border-white/10 text-white">
+                                {isBusinessTyping && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 5 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        className="px-2 py-2 flex items-center gap-2 mb-1"
+                                    >
+                                        <div className="flex gap-1">
+                                            <span className="w-1 h-1 bg-white/40 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                                            <span className="w-1 h-1 bg-white/40 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                                            <span className="w-1 h-1 bg-white/40 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                                        </div>
+                                        <span className="text-[10px] font-light text-white/40 italic">Business is typing...</span>
+                                    </motion.div>
+                                )}
                                 <div className="flex gap-3">
                                     <Textarea
                                         value={messageBody}
-                                        onChange={(e) => setMessageBody(e.target.value)}
+                                        onChange={(e) => {
+                                            setMessageBody(e.target.value)
+                                            // Update typing status
+                                            const threadId = chatMessages.length > 0 ? chatMessages[0].threadId : order.id
+                                            updateTypingStatus(threadId, "customer")
+                                        }}
                                         placeholder="Type your message..."
                                         className="flex-1 min-h-[44px] max-h-[100px] bg-white/10 border-white/20 rounded-2xl text-sm font-light text-white placeholder:text-white/30 resize-none focus:border-[#CE0003]/50 focus:ring-1 focus:ring-[#CE0003]/20"
                                         rows={1}
