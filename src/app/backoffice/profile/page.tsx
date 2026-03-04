@@ -25,13 +25,6 @@ const PlanButton = dynamic(() => import("@/components/paystack-button"), {
 
 const plans = [
     {
-        name: "Free Trial",
-        description: "Perfect to get started",
-        price: "GHS 0",
-        period: "7 days",
-        features: ["Full access for 7 days", "Unlimited order entry", "Basic customer alerts"],
-    },
-    {
         name: "2 weeks",
         description: "For short-term sales",
         price: "GHS 199",
