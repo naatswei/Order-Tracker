@@ -132,8 +132,8 @@ export default function TrackingDetailsPage() {
         }
 
         const pollTyping = async () => {
-            const threadId = chatMessages.length > 0 ? chatMessages[0].threadId : order.id
-            const result = await getTypingStatus(threadId)
+            const typingId = order.id
+            const result = await getTypingStatus(typingId)
             if (result.statuses) {
                 const businessStatus = result.statuses.find(s => s.userType === "business")
                 setIsBusinessTyping(!!businessStatus)
@@ -534,8 +534,8 @@ export default function TrackingDetailsPage() {
                                         onChange={(e) => {
                                             setMessageBody(e.target.value)
                                             // Update typing status
-                                            const threadId = chatMessages.length > 0 ? chatMessages[0].threadId : order.id
-                                            updateTypingStatus(threadId, "customer")
+                                            const typingId = order.id
+                                            updateTypingStatus(typingId, "customer")
                                         }}
                                         placeholder="Type your message..."
                                         className="flex-1 min-h-[44px] max-h-[100px] bg-white/10 border-white/20 rounded-2xl text-sm font-light text-white placeholder:text-white/30 resize-none focus:border-[#CE0003]/50 focus:ring-1 focus:ring-[#CE0003]/20"

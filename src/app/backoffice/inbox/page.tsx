@@ -143,7 +143,7 @@ export default function InboxPage() {
             const thread = threads.find(t => t.key === expandedThread)
             if (!thread) return
 
-            const result = await getTypingStatus(thread.messages[0].threadId)
+            const result = await getTypingStatus(thread.key)
             if (result.statuses) {
                 const customerStatus = result.statuses.find(s => s.userType === "customer")
                 setIsCustomerTyping(!!customerStatus)
@@ -156,7 +156,7 @@ export default function InboxPage() {
     }, [expandedThread])
 
     const handleSendReply = async (thread: ReturnType<typeof groupByThread>[0]) => {
-        if (!replyText.trim() || !thread.orderId) return
+        if (!replyText.trim()) return
         setIsSending(true)
         try {
             const firstMsg = thread.messages[0]
@@ -260,25 +260,23 @@ export default function InboxPage() {
 
                                                 <div className="flex items-center gap-3 shrink-0">
                                                     {thread.orderId && (
-                                                        <>
-                                                            <Link href={`/backoffice/order/${thread.orderId}`} onClick={(e) => e.stopPropagation()}>
-                                                                <Button variant="ghost" size="sm" className="hidden sm:flex text-xs text-slate-500 rounded-xl hover:bg-slate-100 h-8">
-                                                                    View Order
-                                                                </Button>
-                                                            </Link>
-                                                            <Button
-                                                                variant="outline"
-                                                                size="sm"
-                                                                className="text-[11px] font-bold rounded-xl h-8 px-3 border-slate-200 text-slate-700 hover:bg-slate-50 bg-white shadow-sm"
-                                                                onClick={(e) => {
-                                                                    e.stopPropagation()
-                                                                    handleExpandThread(thread.key, thread)
-                                                                }}
-                                                            >
-                                                                {expandedThread === thread.key ? "Hide" : "Reply"}
+                                                        <Link href={`/backoffice/order/${thread.orderId}`} onClick={(e) => e.stopPropagation()}>
+                                                            <Button variant="ghost" size="sm" className="hidden sm:flex text-xs text-slate-500 rounded-xl hover:bg-slate-100 h-8">
+                                                                View Order
                                                             </Button>
-                                                        </>
+                                                        </Link>
                                                     )}
+                                                    <Button
+                                                        variant="outline"
+                                                        size="sm"
+                                                        className="text-[11px] font-bold rounded-xl h-8 px-3 border-slate-200 text-slate-700 hover:bg-slate-50 bg-white shadow-sm"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation()
+                                                            handleExpandThread(thread.key, thread)
+                                                        }}
+                                                    >
+                                                        {expandedThread === thread.key ? "Hide" : "Reply"}
+                                                    </Button>
                                                     <MessageSquare className={`w-4 h-4 transition-transform ${expandedThread === thread.key ? "rotate-90 text-slate-700" : "text-slate-300"}`} />
                                                 </div>
                                             </div>
@@ -350,7 +348,7 @@ export default function InboxPage() {
                                                                         // Update typing status
                                                                         const threadObj = threads.find(t => t.key === expandedThread)
                                                                         if (threadObj) {
-                                                                            updateTypingStatus(threadObj.messages[0].threadId, "business")
+                                                                            updateTypingStatus(threadObj.key, "business")
                                                                         }
                                                                     }}
                                                                     placeholder="Type your reply..."
