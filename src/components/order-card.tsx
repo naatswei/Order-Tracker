@@ -64,7 +64,7 @@ export function OrderCard({ order, copiedId, onCopy, businessType }: OrderCardPr
                                     </div>
                                     <div className="flex gap-2 items-center">
                                         <span className="text-slate-400 text-sm font-medium w-28 shrink-0 whitespace-nowrap">{config.orderLabel === "Tracking Number" ? "Pickup Date" : "Pick Up Date"}:</span>
-                                        <span className="font-semibold text-red-500">{order.pickupDate}</span>
+                                        <span className="font-semibold text-red-500">{order.pickupDate ? new Date(order.pickupDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}</span>
                                     </div>
                                 </div>
 
