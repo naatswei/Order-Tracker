@@ -13,7 +13,7 @@ import { getBusinessConfig } from "@/lib/business-configs"
 import { toast } from "sonner"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
-import { Package, MessageSquare, Send, ChevronRight, MapPin, Calendar, Clock, User, Building2 } from "lucide-react"
+import { Loader2, Package, CheckCircle2, Clock, Truck, MapPin, Search, Send, MessageSquare, MessageSquareMore, X, ArrowRight, User, Building2, ChevronRight, ExternalLink, Calendar } from "lucide-react"
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion"
 
 export default function TrackingDetailsPage() {
@@ -524,12 +524,26 @@ export default function TrackingDetailsPage() {
                                         animate={{ opacity: 1, y: 0 }}
                                         className="px-2 py-2 flex items-center gap-2 mb-1"
                                     >
-                                        <div className="flex gap-1">
-                                            <span className="w-1 h-1 bg-white/40 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                                            <span className="w-1 h-1 bg-white/40 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                                            <span className="w-1 h-1 bg-white/40 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                                        <div className="flex items-center gap-2 text-white/40">
+                                            <motion.div
+                                                animate={{
+                                                    scale: [1, 1.1, 1],
+                                                }}
+                                                transition={{
+                                                    duration: 1.5,
+                                                    repeat: Infinity,
+                                                    ease: "easeInOut"
+                                                }}
+                                            >
+                                                <MessageSquareMore className="w-3.5 h-3.5" />
+                                            </motion.div>
+                                            <div className="flex gap-1">
+                                                <span className="w-1 h-1 bg-white/40 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                                                <span className="w-1 h-1 bg-white/40 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                                                <span className="w-1 h-1 bg-white/40 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                                            </div>
                                         </div>
-                                        <span className="text-[10px] font-light text-white/40 italic">Business is typing...</span>
+                                        <span className="text-[10px] font-light text-white/40 italic font-sans">Business is typing...</span>
                                     </motion.div>
                                 )}
                                 <div className="flex gap-3">

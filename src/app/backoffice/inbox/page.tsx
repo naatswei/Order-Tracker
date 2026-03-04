@@ -7,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
-import { Loader2, Mail, MailOpen, ArrowLeft, Send, MessageSquare, User, Building2 } from "lucide-react"
+import { Loader2, Mail, MailOpen, ArrowLeft, Send, MessageSquare, MessageSquareMore, User, Building2 } from "lucide-react"
 import { getBusinessConfig } from "@/lib/business-configs"
 import Link from "next/link"
 import { toast } from "sonner"
@@ -34,7 +34,7 @@ function groupByThread(messages: Message[]) {
     const threads: Record<string, { orderId: string | null; customerName: string; subject: string; messages: Message[]; hasUnread: boolean; latestAt: Date }> = {}
 
     for (const msg of messages) {
-        const key = msg.orderId || msg.id
+        const key = msg.threadId || msg.orderId || msg.id
         if (!threads[key]) {
             threads[key] = {
                 orderId: msg.orderId,
@@ -161,9 +161,8 @@ export default function InboxPage() {
         if (!replyText.trim()) return
         setIsSending(true)
         try {
-            const firstMsg = thread.messages[0]
             const result = await submitBusinessReply({
-                threadId: firstMsg.threadId !== "legacy" ? firstMsg.threadId : firstMsg.id,
+                threadId: thread.key,
                 orderId: thread.orderId,
                 message: replyText.trim()
             })
@@ -329,12 +328,26 @@ export default function InboxPage() {
                                                                 animate={{ opacity: 1, y: 0 }}
                                                                 className="px-4 py-2 flex items-center gap-2"
                                                             >
-                                                                <div className="flex gap-1">
-                                                                    <span className="w-1.5 h-1.5 bg-slate-300 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                                                                    <span className="w-1.5 h-1.5 bg-slate-300 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                                                                    <span className="w-1.5 h-1.5 bg-slate-300 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                                                                <div className="flex items-center gap-2 text-slate-400">
+                                                                    <motion.div
+                                                                        animate={{
+                                                                            scale: [1, 1.1, 1],
+                                                                        }}
+                                                                        transition={{
+                                                                            duration: 1.5,
+                                                                            repeat: Infinity,
+                                                                            ease: "easeInOut"
+                                                                        }}
+                                                                    >
+                                                                        <MessageSquareMore className="w-4 h-4" />
+                                                                    </motion.div>
+                                                                    <div className="flex gap-1">
+                                                                        <span className="w-1 h-1 bg-slate-300 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                                                                        <span className="w-1 h-1 bg-slate-300 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                                                                        <span className="w-1 h-1 bg-slate-300 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                                                                    </div>
                                                                 </div>
-                                                                <span className="text-[11px] font-medium text-slate-400 italic">{thread.customerName} is typing...</span>
+                                                                <span className="text-[11px] font-medium text-slate-400 italic font-sans">{thread.customerName} is typing...</span>
                                                             </motion.div>
                                                         )}
 
