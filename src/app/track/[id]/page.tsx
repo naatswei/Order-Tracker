@@ -7,22 +7,12 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { type Order } from "@/lib/storage"
 import { getOrderWithHistory } from "@/app/actions/orders"
-import { submitCustomerMessage } from "@/app/actions/messages"
+import { submitCustomerMessage, getThreadMessages } from "@/app/actions/messages"
 import Link from "next/link"
 import { getBusinessConfig } from "@/lib/business-configs"
 import { toast } from "sonner"
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { Package, MessageSquare, Send, ChevronRight, MapPin, Calendar, Clock, ArrowLeft } from "lucide-react"
+import { Package, MessageSquare, Send, ChevronRight, MapPin, Calendar, Clock, User, Building2 } from "lucide-react"
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion"
 
 export default function TrackingDetailsPage() {
@@ -30,11 +20,12 @@ export default function TrackingDetailsPage() {
     const trackingId = params.id as string
     const [order, setOrder] = useState<Order | null>(null)
     const [loading, setLoading] = useState(true)
-    const [messageSubject, setMessageSubject] = useState("")
     const [messageBody, setMessageBody] = useState("")
     const [isSending, setIsSending] = useState(false)
-    const [isDialogOpen, setIsDialogOpen] = useState(false)
+    const [chatOpen, setChatOpen] = useState(false)
+    const [chatMessages, setChatMessages] = useState<any[]>([])
     const [showOverlay, setShowOverlay] = useState(true)
+    const chatEndRef = useRef<HTMLDivElement>(null)
 
     const containerRef = useRef<HTMLDivElement>(null)
     const { scrollYProgress } = useScroll({
@@ -104,6 +95,38 @@ export default function TrackingDetailsPage() {
         }
     }, [loading, order])
 
+    // Load and poll chat messages
+    useEffect(() => {
+        if (!order) return
+
+        const loadChat = async () => {
+            const result = await getThreadMessages(order.id)
+            if (result.messages) {
+                const prev = chatMessages.length
+                setChatMessages(result.messages)
+                // Play sound on new business reply
+                if (result.messages.length > prev && prev > 0) {
+                    const latest = result.messages[result.messages.length - 1]
+                    if (latest.sender === "business") {
+                        import("@/lib/notifications").then(mod => mod.notificationSound.play())
+                        toast.success("New reply from the business!", {
+                            style: { background: "#191A43", color: "#fff", border: "none" }
+                        })
+                    }
+                }
+            }
+        }
+
+        loadChat()
+        const interval = setInterval(loadChat, 30000)
+        return () => clearInterval(interval)
+    }, [order?.id])
+
+    // Auto-scroll chat to bottom
+    useEffect(() => {
+        chatEndRef.current?.scrollIntoView({ behavior: "smooth" })
+    }, [chatMessages, chatOpen])
+
     const handleSendMessage = async () => {
         if (!messageBody) {
             toast.error("Please compose your message")
@@ -112,19 +135,25 @@ export default function TrackingDetailsPage() {
 
         setIsSending(true)
         try {
+            // Find existing threadId from chat
+            const existingThread = chatMessages.length > 0 ? chatMessages[0].threadId : undefined
+
             const result = await submitCustomerMessage({
                 orderId: order!.id,
-                subject: messageSubject || "Concierge Inquiry",
-                message: messageBody
+                subject: "Customer Inquiry",
+                message: messageBody,
+                threadId: existingThread !== "legacy" ? existingThread : undefined
             })
 
             if (result.error) {
                 toast.error(result.error)
             } else {
-                toast.success("Request submitted. Our team will contact you shortly.")
-                setIsDialogOpen(false)
-                setMessageSubject("")
                 setMessageBody("")
+                // Reload chat
+                const chatResult = await getThreadMessages(order!.id)
+                if (chatResult.messages) {
+                    setChatMessages(chatResult.messages)
+                }
             }
         } catch (error) {
             toast.error("Submission failed. Please try again.")
@@ -385,71 +414,114 @@ export default function TrackingDetailsPage() {
                     </CardContent>
                 </Card>
 
-                {/* Help Section */}
-                <div className="text-center space-y-10">
-                    <p className="text-xs text-white/50 font-light tracking-[0.2em] uppercase">Need any help?</p>
+                {/* Chat Section */}
+                <div className="space-y-6">
+                    <div className="text-center">
+                        <p className="text-xs text-white/50 font-light tracking-[0.2em] uppercase mb-6">Messages</p>
+                    </div>
 
-                    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                        <DialogTrigger asChild>
+                    {!chatOpen ? (
+                        <div className="text-center">
                             <Button
+                                onClick={() => setChatOpen(true)}
                                 className="group relative overflow-hidden bg-white text-[#0A0B14] hover:bg-white/90 h-11 px-8 rounded-full font-light tracking-wide transition-all duration-500 hover:scale-[1.02] active:scale-95 shadow-[0_0_30px_rgba(255,255,255,0.1)] border-none text-xs"
                             >
                                 <span className="relative z-10 flex items-center gap-3">
                                     <MessageSquare className="w-4 h-4 transition-transform group-hover:rotate-12" />
-                                    Send a Message
+                                    {chatMessages.length > 0 ? `View Conversation (${chatMessages.length})` : "Send a Message"}
                                 </span>
                                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#CE0003]/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
                             </Button>
-                        </DialogTrigger>
-                        <DialogContent className="sm:max-w-md bg-[#10111A] border-white/10 text-white rounded-[2rem] shadow-2xl backdrop-blur-3xl">
-                            <DialogHeader>
-                                <DialogTitle className="text-2xl font-light tracking-tight text-white/90">Send us a message</DialogTitle>
-                                <DialogDescription className="text-white/40 font-light">
-                                    Response expected via {order.customerEmail.split('@')[0]}... soon.
-                                </DialogDescription>
-                            </DialogHeader>
-
-                            <div className="space-y-6 py-8">
-                                <div className="space-y-3">
-                                    <Label htmlFor="subject" className="text-[10px] uppercase tracking-widest text-white/60 font-bold ml-1">Topic</Label>
-                                    <Input
-                                        id="subject"
-                                        value={messageSubject}
-                                        onChange={(e) => setMessageSubject(e.target.value)}
-                                        placeholder="Specific refinement request..."
-                                        className="bg-white/10 border-white/30 rounded-2xl h-12 focus:border-[#CE0003] focus:ring-1 focus:ring-[#CE0003]/20 placeholder:text-white/40 text-sm font-light"
-                                    />
+                        </div>
+                    ) : (
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="bg-white/5 backdrop-blur-md rounded-3xl border border-white/10 overflow-hidden"
+                        >
+                            {/* Chat Header */}
+                            <div className="flex items-center justify-between p-4 border-b border-white/10">
+                                <div className="flex items-center gap-3">
+                                    <MessageSquare className="w-4 h-4 text-white/60" />
+                                    <span className="text-sm font-light text-white/80">Conversation</span>
                                 </div>
-                                <div className="space-y-3">
-                                    <Label htmlFor="message" className="text-[10px] uppercase tracking-widest text-white/60 font-bold ml-1">Message</Label>
-                                    <Textarea
-                                        id="message"
-                                        value={messageBody}
-                                        onChange={(e) => setMessageBody(e.target.value)}
-                                        placeholder="How may we elevate your experience?"
-                                        className="min-h-[160px] bg-white/10 border-white/30 rounded-[1.5rem] focus:border-[#CE0003] focus:ring-1 focus:ring-[#CE0003]/20 resize-none placeholder:text-white/40 text-sm font-light leading-relaxed"
-                                    />
-                                </div>
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => setChatOpen(false)}
+                                    className="text-white/40 hover:text-white hover:bg-white/10 text-xs rounded-full h-7 px-3"
+                                >
+                                    Minimize
+                                </Button>
                             </div>
 
-                            <Button
-                                className="w-full bg-[#CE0003] hover:bg-[#CE0003]/90 text-white rounded-full h-10 font-light gap-3 shadow-xl transition-all active:scale-95 border-none text-xs"
-                                onClick={handleSendMessage}
-                                disabled={isSending}
-                            >
-                                {isSending ? (
-                                    <span className="h-5 w-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
-                                ) : (
-                                    <>
-                                        <Send className="w-4 h-4" strokeWidth={2} />
-                                        Send Request
-                                    </>
+                            {/* Chat Messages */}
+                            <div className="p-4 space-y-3 max-h-[350px] overflow-y-auto">
+                                {chatMessages.length === 0 && (
+                                    <p className="text-center text-white/30 text-sm py-8 font-light">No messages yet. Start the conversation below.</p>
                                 )}
-                            </Button>
-                        </DialogContent>
-                    </Dialog>
+                                {chatMessages.map((msg: any) => (
+                                    <div
+                                        key={msg.id}
+                                        className={`flex ${msg.sender === "customer" ? "justify-end" : "justify-start"}`}
+                                    >
+                                        <div className={`max-w-[80%] rounded-2xl px-4 py-3 ${msg.sender === "customer"
+                                            ? "bg-white/15 text-white"
+                                            : "bg-[#CE0003]/20 text-white border border-[#CE0003]/20"
+                                            }`}>
+                                            <div className="flex items-center gap-2 mb-1">
+                                                {msg.sender === "customer" ? (
+                                                    <User className="w-3 h-3 opacity-50" />
+                                                ) : (
+                                                    <Building2 className="w-3 h-3 opacity-50" />
+                                                )}
+                                                <span className="text-[10px] font-semibold uppercase tracking-wider opacity-60">
+                                                    {msg.sender === "customer" ? "You" : "Business"}
+                                                </span>
+                                            </div>
+                                            <p className="text-sm leading-relaxed whitespace-pre-wrap font-light">{msg.message}</p>
+                                            <p className="text-[10px] mt-2 opacity-40">
+                                                {new Date(msg.createdAt).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
+                                            </p>
+                                        </div>
+                                    </div>
+                                ))}
+                                <div ref={chatEndRef} />
+                            </div>
 
-                    <div className="pt-20 opacity-50 text-[10px] uppercase tracking-[0.5em] font-light">
+                            {/* Compose */}
+                            <div className="p-4 border-t border-white/10">
+                                <div className="flex gap-3">
+                                    <Textarea
+                                        value={messageBody}
+                                        onChange={(e) => setMessageBody(e.target.value)}
+                                        placeholder="Type your message..."
+                                        className="flex-1 min-h-[44px] max-h-[100px] bg-white/10 border-white/20 rounded-2xl text-sm font-light text-white placeholder:text-white/30 resize-none focus:border-[#CE0003]/50 focus:ring-1 focus:ring-[#CE0003]/20"
+                                        rows={1}
+                                        onKeyDown={(e) => {
+                                            if (e.key === "Enter" && !e.shiftKey) {
+                                                e.preventDefault()
+                                                handleSendMessage()
+                                            }
+                                        }}
+                                    />
+                                    <Button
+                                        onClick={handleSendMessage}
+                                        disabled={!messageBody.trim() || isSending}
+                                        className="h-11 w-11 rounded-xl bg-[#CE0003] hover:bg-[#CE0003]/80 text-white p-0 border-none shrink-0 transition-all active:scale-95"
+                                    >
+                                        {isSending ? (
+                                            <span className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                        ) : (
+                                            <Send className="w-4 h-4" />
+                                        )}
+                                    </Button>
+                                </div>
+                            </div>
+                        </motion.div>
+                    )}
+
+                    <div className="pt-10 text-center opacity-50 text-[10px] uppercase tracking-[0.5em] font-light">
                         Powering Premium Trust
                     </div>
                 </div>

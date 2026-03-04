@@ -2,11 +2,12 @@
 
 import { useState, useEffect } from "react"
 import { useOrganization } from "@clerk/nextjs"
-import { getInboxMessages, markMessageAsRead } from "@/app/actions/messages"
+import { getInboxMessages, markThreadAsRead, submitBusinessReply } from "@/app/actions/messages"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Loader2, Mail, MailOpen, ArrowLeft } from "lucide-react"
+import { Textarea } from "@/components/ui/textarea"
+import { Loader2, Mail, MailOpen, ArrowLeft, Send, MessageSquare, User, Building2 } from "lucide-react"
 import { getBusinessConfig } from "@/lib/business-configs"
 import Link from "next/link"
 import { toast } from "sonner"
@@ -16,6 +17,8 @@ import { BackofficeHeader } from "@/components/backoffice-header"
 type Message = {
     id: string
     orderId: string | null
+    threadId: string
+    sender: string
     customerName: string
     customerEmail: string | null
     customerPhone: string | null
@@ -26,11 +29,51 @@ type Message = {
     order?: any
 }
 
+// Group messages into threads by orderId
+function groupByThread(messages: Message[]) {
+    const threads: Record<string, { orderId: string | null; customerName: string; subject: string; messages: Message[]; hasUnread: boolean; latestAt: Date }> = {}
+
+    for (const msg of messages) {
+        const key = msg.orderId || msg.id
+        if (!threads[key]) {
+            threads[key] = {
+                orderId: msg.orderId,
+                customerName: msg.customerName,
+                subject: msg.subject,
+                messages: [],
+                hasUnread: false,
+                latestAt: new Date(msg.createdAt)
+            }
+        }
+        threads[key].messages.push(msg)
+        if (msg.isRead === "false" && msg.sender === "customer") {
+            threads[key].hasUnread = true
+        }
+        const msgDate = new Date(msg.createdAt)
+        if (msgDate > threads[key].latestAt) {
+            threads[key].latestAt = msgDate
+        }
+    }
+
+    // Sort each thread's messages chronologically
+    for (const key in threads) {
+        threads[key].messages.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
+    }
+
+    // Return as array sorted by latest message
+    return Object.entries(threads)
+        .map(([key, thread]) => ({ key, ...thread }))
+        .sort((a, b) => b.latestAt.getTime() - a.latestAt.getTime())
+}
+
 export default function InboxPage() {
     const { organization, isLoaded } = useOrganization()
     const [messages, setMessages] = useState<Message[]>([])
     const [messagesLoading, setMessagesLoading] = useState(true)
     const [businessType, setBusinessType] = useState<string | null>(null)
+    const [expandedThread, setExpandedThread] = useState<string | null>(null)
+    const [replyText, setReplyText] = useState("")
+    const [isSending, setIsSending] = useState(false)
     const config = getBusinessConfig(businessType)
 
     useEffect(() => {
@@ -63,18 +106,56 @@ export default function InboxPage() {
         }
     }
 
-    const handleMarkAsRead = async (messageId: string) => {
-        try {
-            setMessages(messages.map(m => m.id === messageId ? { ...m, isRead: "true" } : m))
-            const result = await markMessageAsRead(messageId)
-            if (result.error) {
-                toast.error("Failed to mark as read")
-                loadMessages()
+    const handleExpandThread = async (threadKey: string, thread: ReturnType<typeof groupByThread>[0]) => {
+        if (expandedThread === threadKey) {
+            setExpandedThread(null)
+            setReplyText("")
+            return
+        }
+        setExpandedThread(threadKey)
+        setReplyText("")
+
+        // Mark unread customer messages as read
+        if (thread.hasUnread) {
+            const unreadCustomerMsgs = thread.messages.filter(m => m.isRead === "false" && m.sender === "customer")
+            for (const msg of unreadCustomerMsgs) {
+                await markThreadAsRead(msg.threadId)
             }
-        } catch (error) {
-            toast.error("Failed to mark as read")
+            // Update local state
+            setMessages(prev => prev.map(m => {
+                if ((m.orderId || m.id) === threadKey && m.sender === "customer") {
+                    return { ...m, isRead: "true" }
+                }
+                return m
+            }))
         }
     }
+
+    const handleSendReply = async (thread: ReturnType<typeof groupByThread>[0]) => {
+        if (!replyText.trim() || !thread.orderId) return
+        setIsSending(true)
+        try {
+            const firstMsg = thread.messages[0]
+            const result = await submitBusinessReply({
+                threadId: firstMsg.threadId !== "legacy" ? firstMsg.threadId : firstMsg.id,
+                orderId: thread.orderId,
+                message: replyText.trim()
+            })
+            if (result.error) {
+                toast.error(result.error)
+            } else {
+                toast.success("Reply sent!")
+                setReplyText("")
+                await loadMessages()
+            }
+        } catch (error) {
+            toast.error("Failed to send reply")
+        } finally {
+            setIsSending(false)
+        }
+    }
+
+    const threads = groupByThread(messages)
 
     if (!isLoaded) {
         return (
@@ -97,8 +178,8 @@ export default function InboxPage() {
                         </Button>
                     </Link>
                     <div>
-                        <h1 className="text-2xl font-bold tracking-tight text-slate-900">Customer Inbox</h1>
-                        <p className="text-sm text-slate-500 font-medium">Respond to inquiries and messages from your customers</p>
+                        <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">Customer Inbox</h1>
+                        <p className="text-sm text-slate-500 font-medium">View and reply to customer messages</p>
                     </div>
                 </div>
 
@@ -108,7 +189,7 @@ export default function InboxPage() {
                             <Loader2 className="w-8 h-8 animate-spin text-primary opacity-50 mb-4" />
                             <p className="text-muted-foreground">Loading messages...</p>
                         </div>
-                    ) : messages.length === 0 ? (
+                    ) : threads.length === 0 ? (
                         <Card className="bg-transparent border-dashed border-2 border-slate-200 shadow-none rounded-3xl">
                             <CardContent className="py-24 text-center">
                                 <div className="w-16 h-16 bg-white rounded-2xl shadow-[0_4px_20px_rgb(0,0,0,0.04)] border border-slate-100 flex items-center justify-center mx-auto mb-6">
@@ -120,66 +201,129 @@ export default function InboxPage() {
                         </Card>
                     ) : (
                         <div className="grid gap-4">
-                            {messages.map((msg) => (
+                            {threads.map((thread) => (
                                 <motion.div
-                                    key={msg.id}
+                                    key={thread.key}
                                     layout
                                     initial={{ opacity: 0, y: 10 }}
                                     animate={{ opacity: 1, y: 0 }}
                                 >
-                                    <Card className={`overflow-hidden transition-all duration-500 rounded-2xl border ${msg.isRead === "false" ? "bg-white border-slate-200 shadow-[0_4px_20px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] hover:-translate-y-0.5" : "bg-slate-50/50 border-slate-100 shadow-sm"}`}>
-                                        <div className="p-6">
-                                            <div className="flex flex-col md:flex-row gap-4 justify-between items-start">
+                                    <Card className={`overflow-hidden transition-all duration-300 rounded-2xl border ${thread.hasUnread ? "bg-white border-slate-200 shadow-[0_4px_20px_rgb(0,0,0,0.04)]" : "bg-slate-50/50 border-slate-100 shadow-sm"}`}>
+                                        {/* Thread Header - clickable */}
+                                        <div
+                                            className="p-5 cursor-pointer hover:bg-slate-50/80 transition-colors"
+                                            onClick={() => handleExpandThread(thread.key, thread)}
+                                        >
+                                            <div className="flex items-start justify-between gap-4">
                                                 <div className="flex-1 min-w-0">
                                                     <div className="flex items-center gap-3 mb-1">
-                                                        <h3 className={`text-lg font-semibold truncate ${msg.isRead === "false" ? "text-slate-900" : "text-slate-700"}`}>
-                                                            {msg.customerName}
+                                                        <h3 className={`text-base font-semibold truncate ${thread.hasUnread ? "text-slate-900" : "text-slate-600"}`}>
+                                                            {thread.customerName}
                                                         </h3>
-                                                        {msg.isRead === "false" && (
+                                                        {thread.hasUnread && (
                                                             <Badge className="bg-red-50 text-red-600 border border-red-100/50 rounded-full px-2.5 py-0.5 text-[10px] font-bold tracking-widest uppercase shadow-none">
                                                                 New
                                                             </Badge>
                                                         )}
                                                     </div>
-
-                                                    <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-xs text-slate-500 mb-3 font-medium">
-                                                        {msg.customerEmail && <span>{msg.customerEmail}</span>}
-                                                        <span className="hidden sm:inline text-slate-300">•</span>
-                                                        <span>{new Date(msg.createdAt).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}</span>
-                                                    </div>
-
-                                                    <div className="bg-slate-50 p-4 rounded-xl border border-slate-100">
-                                                        <h4 className="font-semibold text-slate-800 text-sm mb-1">Subject: {msg.subject}</h4>
-                                                        <p className="text-slate-600 text-sm leading-relaxed whitespace-pre-wrap">{msg.message}</p>
+                                                    <p className="text-sm font-medium text-slate-700 mb-1 truncate">{thread.subject}</p>
+                                                    <div className="flex items-center gap-3 text-xs text-slate-400">
+                                                        <span>{thread.messages.length} message{thread.messages.length > 1 ? "s" : ""}</span>
+                                                        <span>•</span>
+                                                        <span>{new Date(thread.latestAt).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}</span>
                                                     </div>
                                                 </div>
 
-                                                <div className="w-full md:w-32 shrink-0 flex flex-col gap-3">
-                                                    {msg.isRead === "false" ? (
-                                                        <Button
-                                                            onClick={() => handleMarkAsRead(msg.id)}
-                                                            variant="outline"
-                                                            size="sm"
-                                                            className="w-full text-xs rounded-xl border-slate-200 text-slate-700 hover:bg-slate-50"
-                                                        >
-                                                            Mark as Read
-                                                        </Button>
-                                                    ) : (
-                                                        <div className="flex items-center justify-center gap-1.5 text-xs text-slate-400 font-medium py-1">
-                                                            <MailOpen className="w-3.5 h-3.5" />
-                                                            Read
-                                                        </div>
-                                                    )}
-                                                    {msg.order && (
-                                                        <Link href={`/backoffice/order/${msg.order.id}`}>
-                                                            <Button variant="ghost" size="sm" className="w-full text-xs text-slate-500 rounded-xl hover:bg-slate-100">
+                                                <div className="flex items-center gap-2 shrink-0">
+                                                    {thread.orderId && (
+                                                        <Link href={`/backoffice/order/${thread.orderId}`} onClick={(e) => e.stopPropagation()}>
+                                                            <Button variant="ghost" size="sm" className="text-xs text-slate-500 rounded-xl hover:bg-slate-100 h-8">
                                                                 View Order
                                                             </Button>
                                                         </Link>
                                                     )}
+                                                    <MessageSquare className={`w-4 h-4 transition-transform ${expandedThread === thread.key ? "rotate-90 text-slate-700" : "text-slate-300"}`} />
                                                 </div>
                                             </div>
                                         </div>
+
+                                        {/* Expanded Thread */}
+                                        <AnimatePresence>
+                                            {expandedThread === thread.key && (
+                                                <motion.div
+                                                    initial={{ height: 0, opacity: 0 }}
+                                                    animate={{ height: "auto", opacity: 1 }}
+                                                    exit={{ height: 0, opacity: 0 }}
+                                                    transition={{ duration: 0.25 }}
+                                                    className="overflow-hidden"
+                                                >
+                                                    <div className="border-t border-slate-100">
+                                                        {/* Messages */}
+                                                        <div className="p-4 space-y-3 max-h-[400px] overflow-y-auto">
+                                                            {thread.messages.map((msg) => (
+                                                                <div
+                                                                    key={msg.id}
+                                                                    className={`flex ${msg.sender === "business" ? "justify-end" : "justify-start"}`}
+                                                                >
+                                                                    <div className={`max-w-[80%] rounded-2xl px-4 py-3 ${msg.sender === "business"
+                                                                        ? "bg-slate-800 text-white"
+                                                                        : "bg-slate-100 text-slate-800"
+                                                                        }`}>
+                                                                        <div className="flex items-center gap-2 mb-1">
+                                                                            {msg.sender === "customer" ? (
+                                                                                <User className="w-3 h-3 opacity-50" />
+                                                                            ) : (
+                                                                                <Building2 className="w-3 h-3 opacity-50" />
+                                                                            )}
+                                                                            <span className="text-[10px] font-semibold uppercase tracking-wider opacity-60">
+                                                                                {msg.sender === "customer" ? msg.customerName : "You"}
+                                                                            </span>
+                                                                        </div>
+                                                                        <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.message}</p>
+                                                                        <p className={`text-[10px] mt-2 ${msg.sender === "business" ? "text-white/40" : "text-slate-400"}`}>
+                                                                            {new Date(msg.createdAt).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
+                                                                        </p>
+                                                                    </div>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+
+                                                        {/* Reply Input */}
+                                                        {thread.orderId && (
+                                                            <div className="p-4 border-t border-slate-100 bg-slate-50/50">
+                                                                <div className="flex gap-3">
+                                                                    <Textarea
+                                                                        value={replyText}
+                                                                        onChange={(e) => setReplyText(e.target.value)}
+                                                                        placeholder="Type your reply..."
+                                                                        className="flex-1 min-h-[44px] max-h-[120px] rounded-xl bg-white border-slate-200 text-sm resize-none focus-visible:border-slate-300 focus-visible:ring-[3px] focus-visible:ring-slate-100/80"
+                                                                        rows={1}
+                                                                        onKeyDown={(e) => {
+                                                                            if (e.key === "Enter" && !e.shiftKey) {
+                                                                                e.preventDefault()
+                                                                                handleSendReply(thread)
+                                                                            }
+                                                                        }}
+                                                                    />
+                                                                    <Button
+                                                                        onClick={() => handleSendReply(thread)}
+                                                                        disabled={!replyText.trim() || isSending}
+                                                                        className="h-11 w-11 rounded-xl p-0 border-0 text-white shrink-0"
+                                                                        style={{ backgroundColor: config.theme.primary }}
+                                                                    >
+                                                                        {isSending ? (
+                                                                            <Loader2 className="w-4 h-4 animate-spin" />
+                                                                        ) : (
+                                                                            <Send className="w-4 h-4" />
+                                                                        )}
+                                                                    </Button>
+                                                                </div>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </motion.div>
+                                            )}
+                                        </AnimatePresence>
                                     </Card>
                                 </motion.div>
                             ))}

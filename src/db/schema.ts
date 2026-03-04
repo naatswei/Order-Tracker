@@ -45,6 +45,8 @@ export const customerMessages = pgTable("customer_messages", {
     id: text("id").primaryKey(),
     orderId: text("order_id").references(() => orders.id, { onDelete: "set null" }), // Optional link to the specific order
     clerkOrgId: text("clerk_org_id").notNull(), // Critical for scoping messages to the right business inbox
+    threadId: text("thread_id").notNull().default("legacy"), // Groups messages in the same conversation
+    sender: text("sender").notNull().default("customer"), // "customer" or "business"
     customerName: text("customer_name").notNull(),
     customerEmail: text("customer_email"),
     customerPhone: text("customer_phone"),
