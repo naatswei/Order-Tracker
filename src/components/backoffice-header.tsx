@@ -58,11 +58,11 @@ export function BackofficeHeader({ config }: BackofficeHeaderProps) {
                         <Package className="w-4 h-4 text-slate-800 transition-transform group-hover:scale-110" />
                     </div>
                     <div className="flex flex-col">
-                        <h1 className="text-xl font-medium tracking-wide">
-                            <span className="text-[#CE0003] font-semibold">O</span>
-                            <span className="text-slate-800">Tracker</span>
+                        <h1 className="text-xl font-bold tracking-tight">
+                            <span className="text-[#CE0003]">O</span>
+                            <span className="text-[#191A43]">Tracker</span>
                         </h1>
-                        <p className="text-[10px] text-slate-400 uppercase tracking-widest leading-none font-medium mt-[2px]">Backoffice</p>
+                        <p className="text-[11px] text-slate-500 font-medium mt-[2px]">Backoffice Dashboard</p>
                     </div>
                 </Link>
 
