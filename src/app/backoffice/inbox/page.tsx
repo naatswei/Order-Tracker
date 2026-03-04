@@ -234,13 +234,26 @@ export default function InboxPage() {
                                                     </div>
                                                 </div>
 
-                                                <div className="flex items-center gap-2 shrink-0">
+                                                <div className="flex items-center gap-3 shrink-0">
                                                     {thread.orderId && (
-                                                        <Link href={`/backoffice/order/${thread.orderId}`} onClick={(e) => e.stopPropagation()}>
-                                                            <Button variant="ghost" size="sm" className="text-xs text-slate-500 rounded-xl hover:bg-slate-100 h-8">
-                                                                View Order
+                                                        <>
+                                                            <Link href={`/backoffice/order/${thread.orderId}`} onClick={(e) => e.stopPropagation()}>
+                                                                <Button variant="ghost" size="sm" className="hidden sm:flex text-xs text-slate-500 rounded-xl hover:bg-slate-100 h-8">
+                                                                    View Order
+                                                                </Button>
+                                                            </Link>
+                                                            <Button
+                                                                variant="outline"
+                                                                size="sm"
+                                                                className="text-[11px] font-bold rounded-xl h-8 px-3 border-slate-200 text-slate-700 hover:bg-slate-50 bg-white shadow-sm"
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation()
+                                                                    handleExpandThread(thread.key, thread)
+                                                                }}
+                                                            >
+                                                                {expandedThread === thread.key ? "Hide" : "Reply"}
                                                             </Button>
-                                                        </Link>
+                                                        </>
                                                     )}
                                                     <MessageSquare className={`w-4 h-4 transition-transform ${expandedThread === thread.key ? "rotate-90 text-slate-700" : "text-slate-300"}`} />
                                                 </div>
@@ -289,37 +302,38 @@ export default function InboxPage() {
                                                         </div>
 
                                                         {/* Reply Input */}
-                                                        {thread.orderId && (
-                                                            <div className="p-4 border-t border-slate-100 bg-slate-50/50">
-                                                                <div className="flex gap-3">
-                                                                    <Textarea
-                                                                        value={replyText}
-                                                                        onChange={(e) => setReplyText(e.target.value)}
-                                                                        placeholder="Type your reply..."
-                                                                        className="flex-1 min-h-[44px] max-h-[120px] rounded-xl bg-white border-slate-200 text-sm resize-none focus-visible:border-slate-300 focus-visible:ring-[3px] focus-visible:ring-slate-100/80"
-                                                                        rows={1}
-                                                                        onKeyDown={(e) => {
-                                                                            if (e.key === "Enter" && !e.shiftKey) {
-                                                                                e.preventDefault()
-                                                                                handleSendReply(thread)
-                                                                            }
-                                                                        }}
-                                                                    />
-                                                                    <Button
-                                                                        onClick={() => handleSendReply(thread)}
-                                                                        disabled={!replyText.trim() || isSending}
-                                                                        className="h-11 w-11 rounded-xl p-0 border-0 text-white shrink-0"
-                                                                        style={{ backgroundColor: config.theme.primary }}
-                                                                    >
-                                                                        {isSending ? (
-                                                                            <Loader2 className="w-4 h-4 animate-spin" />
-                                                                        ) : (
+                                                        <div className="p-4 border-t border-slate-100 bg-slate-50/50">
+                                                            <div className="flex gap-3">
+                                                                <Textarea
+                                                                    value={replyText}
+                                                                    onChange={(e) => setReplyText(e.target.value)}
+                                                                    placeholder="Type your reply..."
+                                                                    className="flex-1 min-h-[44px] max-h-[120px] rounded-xl bg-white border-slate-200 text-sm resize-none focus-visible:border-slate-300 focus-visible:ring-[3px] focus-visible:ring-slate-100/80"
+                                                                    rows={1}
+                                                                    onKeyDown={(e) => {
+                                                                        if (e.key === "Enter" && !e.shiftKey) {
+                                                                            e.preventDefault()
+                                                                            handleSendReply(thread)
+                                                                        }
+                                                                    }}
+                                                                />
+                                                                <Button
+                                                                    onClick={() => handleSendReply(thread)}
+                                                                    disabled={!replyText.trim() || isSending}
+                                                                    className="h-11 px-4 rounded-xl border-0 text-white font-semibold text-sm flex items-center gap-2 transition-all active:scale-95 shadow-sm"
+                                                                    style={{ backgroundColor: config.theme.primary }}
+                                                                >
+                                                                    {isSending ? (
+                                                                        <Loader2 className="w-4 h-4 animate-spin" />
+                                                                    ) : (
+                                                                        <>
+                                                                            <span>Send Reply</span>
                                                                             <Send className="w-4 h-4" />
-                                                                        )}
-                                                                    </Button>
-                                                                </div>
+                                                                        </>
+                                                                    )}
+                                                                </Button>
                                                             </div>
-                                                        )}
+                                                        </div>
                                                     </div>
                                                 </motion.div>
                                             )}

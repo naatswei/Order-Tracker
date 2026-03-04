@@ -51,7 +51,7 @@ export async function submitCustomerMessage(data: {
 
 export async function submitBusinessReply(data: {
     threadId: string
-    orderId: string
+    orderId: string | null
     message: string
 }) {
     try {
@@ -60,32 +60,51 @@ export async function submitBusinessReply(data: {
             throw new Error("Unauthorized")
         }
 
-        const orderRecord = await db.query.orders.findFirst({
-            where: eq(orders.id, data.orderId)
-        })
+        let orgId: string | null = null
+        let customerName = "Customer"
+        let customerEmail: string | null = null
+        let customerPhone: string | null = null
 
-        if (!orderRecord) {
-            throw new Error("Order not found")
+        if (data.orderId) {
+            const orderRecord = await db.query.orders.findFirst({
+                where: eq(orders.id, data.orderId)
+            })
+            if (orderRecord) {
+                orgId = orderRecord.clerkOrgId
+                customerName = orderRecord.customerName
+                customerEmail = orderRecord.customerEmail
+                customerPhone = orderRecord.customerPhone
+            }
         }
 
-        if (!orderRecord.clerkOrgId) {
-            throw new Error("Order not associated with any organization")
+        // Fallback to thread info if order not found or not provided
+        if (!orgId) {
+            const firstMsg = await db.query.customerMessages.findFirst({
+                where: eq(customerMessages.threadId, data.threadId)
+            })
+            if (!firstMsg) {
+                throw new Error("Thread not found")
+            }
+            orgId = firstMsg.clerkOrgId
+            customerName = firstMsg.customerName
+            customerEmail = firstMsg.customerEmail
+            customerPhone = firstMsg.customerPhone
         }
 
         const messageId = nanoid()
 
         await db.insert(customerMessages).values({
             id: messageId,
-            orderId: orderRecord.id,
-            clerkOrgId: orderRecord.clerkOrgId,
+            orderId: data.orderId,
+            clerkOrgId: orgId,
             threadId: data.threadId,
             sender: "business",
-            customerName: orderRecord.customerName,
-            customerEmail: orderRecord.customerEmail,
-            customerPhone: orderRecord.customerPhone,
+            customerName,
+            customerEmail,
+            customerPhone,
             subject: "Reply",
             message: data.message,
-            isRead: "true" // Business messages are already "read" by the business
+            isRead: "true"
         })
 
         revalidatePath("/backoffice/inbox")

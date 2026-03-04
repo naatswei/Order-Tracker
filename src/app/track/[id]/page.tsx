@@ -508,12 +508,15 @@ export default function TrackingDetailsPage() {
                                     <Button
                                         onClick={handleSendMessage}
                                         disabled={!messageBody.trim() || isSending}
-                                        className="h-11 w-11 rounded-xl bg-[#CE0003] hover:bg-[#CE0003]/80 text-white p-0 border-none shrink-0 transition-all active:scale-95"
+                                        className="h-11 px-4 rounded-xl bg-[#CE0003] hover:bg-[#CE0003]/80 text-white font-semibold text-xs border-none shrink-0 transition-all active:scale-95 flex items-center gap-2"
                                     >
                                         {isSending ? (
                                             <span className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                                         ) : (
-                                            <Send className="w-4 h-4" />
+                                            <>
+                                                <span>Send</span>
+                                                <Send className="w-3.5 h-3.5" />
+                                            </>
                                         )}
                                     </Button>
                                 </div>
