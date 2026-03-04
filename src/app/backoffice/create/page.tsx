@@ -243,12 +243,12 @@ function CreateOrderContent() {
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="measurements" className="ml-1 text-xs font-semibold text-muted-foreground tracking-wider">Notes / Measurements</Label>
+                                <Label htmlFor="measurements" className="ml-1 text-xs font-semibold text-muted-foreground tracking-wider">{config.id === "tailoring" ? "Notes / Measurements" : "Notes"}</Label>
                                 <Textarea
                                     id="measurements"
                                     value={measurements}
                                     onChange={(e) => setMeasurements(e.target.value)}
-                                    placeholder="Details, measurements or special instructions..."
+                                    placeholder={config.id === "tailoring" ? "Details, measurements or special instructions..." : "Additional notes or special instructions..."}
                                     rows={4}
                                     className="rounded-xl bg-white/50 border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80 resize-none p-4"
                                 />
