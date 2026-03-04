@@ -50,10 +50,10 @@ export const BUSINESS_CONFIGS: Record<string, BusinessConfig> = {
         searchPlaceholder: "Search by order number, name",
         dashboardTitle: "Active Orders",
         theme: {
-            primary: "#2C2C2C",   // Rich Charcoal
-            secondary: "#B87333", // Warm Copper
-            accent: "#D4956A",    // Soft Copper/Terracotta
-            text: "#2C2C2C"
+            primary: "#251A65",   // Dark Blue
+            secondary: "#EF5F18", // Orange
+            accent: "#EF5F18",    // Orange
+            text: "#251A65"
         }
     },
     "hair-retail": {
