@@ -188,7 +188,7 @@ export default function BusinessTypePage() {
                                     Select your Business Type
                                 </h1>
                                 <p className="text-base text-slate-500 font-medium">
-                                    Choose your industry to personalize your tracking experience.
+                                    Streamline orders, automatically update customers in real-time, and gain actionable business insights.
                                 </p>
                             </div>
 
