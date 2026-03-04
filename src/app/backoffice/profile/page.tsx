@@ -320,9 +320,9 @@ export default function ProfilePage() {
                     <TabsContent value="subscription">
                         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-8">
                             {/* Current Plan Overview */}
-                            <Card className="border-slate-200 shadow-sm overflow-hidden bg-white rounded-3xl">
+                            <Card className="border-slate-200 shadow-sm overflow-hidden bg-white rounded-3xl w-fit min-w-[350px] pr-8">
                                 <CardContent className="p-8">
-                                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-12">
                                         <div className="space-y-2">
                                             <h2 className="text-xl font-bold flex items-center gap-3">
                                                 {subscriptionPlan ? `Current Plan (${subscriptionPlan})` : "Current Plan"}
