@@ -75,10 +75,10 @@ export const BUSINESS_CONFIGS: Record<string, BusinessConfig> = {
         searchPlaceholder: "Search by order number, name",
         dashboardTitle: "Active Hair Orders",
         theme: {
-            primary: "#85A39E",   // Sage Green
-            secondary: "#B8A898", // Deep Beige
-            accent: "#85A39E",    // Sage Green
-            text: "#2E3A3F"       // Darker slate for text/contrast
+            primary: "#4D1D3A",   // Deep Plum
+            secondary: "#C77D9E", // Dusty Rose
+            accent: "#D4AF37",    // Rose Gold
+            text: "#4D1D3A"
         },
         extraFields: [
             { id: "length", label: "Wig Length", placeholder: "e.g., 22 inches", type: "text" },
@@ -104,10 +104,10 @@ export const BUSINESS_CONFIGS: Record<string, BusinessConfig> = {
         searchPlaceholder: "Search by tracking number, recipient",
         dashboardTitle: "Active Shipments",
         theme: {
-            primary: "#85A39E",   // Sage Green
-            secondary: "#B8A898", // Deep Beige
-            accent: "#85A39E",    // Sage Green
-            text: "#2E3A3F"       // Darker slate for text/contrast
+            primary: "#0D3B4F",   // Deep Teal
+            secondary: "#1A8A7D", // Vivid Teal
+            accent: "#2196F3",    // Electric Blue
+            text: "#0D3B4F"
         },
         extraFields: [
             { id: "weight", label: "Weight (kg)", placeholder: "e.g., 5.5", type: "number" },
@@ -133,10 +133,10 @@ export const BUSINESS_CONFIGS: Record<string, BusinessConfig> = {
         searchPlaceholder: "Search by order number, customer name",
         dashboardTitle: "Active Online Orders",
         theme: {
-            primary: "#85A39E",   // Sage Green
-            secondary: "#B8A898", // Deep Beige
-            accent: "#85A39E",    // Sage Green
-            text: "#2E3A3F"       // Darker slate for text/contrast
+            primary: "#312E81",   // Deep Indigo
+            secondary: "#F97066", // Warm Coral
+            accent: "#818CF8",    // Soft Violet
+            text: "#312E81"
         },
         extraFields: [
             { id: "quantity", label: "Quantity", placeholder: "1", type: "number" },
