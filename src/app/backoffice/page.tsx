@@ -118,14 +118,14 @@ export default function BackofficePage() {
             <div className="container mx-auto px-4 py-6 sm:py-8 max-w-[1400px] space-y-8 sm:space-y-[70px]">
                 {/* Actions Bar */}
                 <div className="space-y-6">
-                    <h2 className="text-2xl font-semibold tracking-tight text-slate-800">Track Order</h2>
+                    <h2 className="text-xl sm:text-2xl font-semibold tracking-tight text-slate-800">Track Order</h2>
                     <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
                         {/* Search Input */}
                         <div className="relative w-full md:flex-1 md:max-w-xl">
                             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                             <Input
                                 placeholder={config.searchPlaceholder}
-                                className="pl-11 h-12 rounded-xl bg-white border-none shadow-[0_4px_20px_rgb(0,0,0,0.03)] focus-visible:ring-1 focus-visible:ring-slate-200 transition-all font-medium placeholder:text-slate-400 w-full"
+                                className="pl-11 h-10 sm:h-12 rounded-xl bg-white border-none shadow-[0_4px_20px_rgb(0,0,0,0.03)] focus-visible:ring-1 focus-visible:ring-slate-200 transition-all text-sm sm:text-base font-medium placeholder:text-slate-400 w-full"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                             />
@@ -135,7 +135,7 @@ export default function BackofficePage() {
                         <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                    <Button variant="outline" className="h-12 rounded-xl bg-white border border-slate-100 text-slate-700 hover:bg-white hover:border-slate-200 hover:text-slate-900 gap-2 px-5 shadow-[0_4px_20px_rgb(0,0,0,0.02)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] hover:-translate-y-0.5 transition-all duration-300 flex-1 md:flex-none font-medium">
+                                    <Button variant="outline" className="h-10 sm:h-12 rounded-xl bg-white border border-slate-100 text-slate-700 hover:bg-white hover:border-slate-200 hover:text-slate-900 gap-2 px-4 sm:px-5 shadow-[0_4px_20px_rgb(0,0,0,0.02)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] hover:-translate-y-0.5 transition-all duration-300 flex-1 md:flex-none text-sm sm:text-base font-medium">
                                         <Filter className="w-4 h-4" />
                                         {statusFilter === "All" ? "Filter" : statusFilter}
                                     </Button>
@@ -165,7 +165,7 @@ export default function BackofficePage() {
                             </DropdownMenu>
                             <Link href={searchQuery ? `/backoffice/bulk?search=${encodeURIComponent(searchQuery)}` : "/backoffice/bulk"} className="flex-1 md:flex-none">
                                 <Button
-                                    className="w-full h-12 rounded-xl text-white gap-2 px-5 shadow-[0_4px_20px_rgb(0,0,0,0.04)] font-medium border-0 transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] hover:-translate-y-0.5 active:scale-[0.98]"
+                                    className="w-full h-10 sm:h-12 rounded-xl text-white gap-2 px-4 sm:px-5 shadow-[0_4px_20px_rgb(0,0,0,0.04)] text-sm sm:text-base font-medium border-0 transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] hover:-translate-y-0.5 active:scale-[0.98]"
                                     style={{ backgroundColor: config.theme.primary }}
                                 >
                                     Bulk Update
@@ -173,7 +173,7 @@ export default function BackofficePage() {
                             </Link>
                             <Link href="/backoffice/create" className="flex-1 md:flex-none">
                                 <Button
-                                    className="w-full h-12 rounded-xl shadow-[0_4px_20px_rgb(0,0,0,0.04)] gap-2 px-6 font-medium text-white border-0 transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] hover:-translate-y-0.5 active:scale-[0.98]"
+                                    className="w-full h-10 sm:h-12 rounded-xl shadow-[0_4px_20px_rgb(0,0,0,0.04)] gap-2 px-4 sm:px-6 text-sm sm:text-base font-medium text-white border-0 transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] hover:-translate-y-0.5 active:scale-[0.98]"
                                     style={{ backgroundColor: config.theme.secondary }}
                                 >
                                     <Plus className="w-4 h-4" /> Create New Order
