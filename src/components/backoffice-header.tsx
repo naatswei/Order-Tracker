@@ -69,11 +69,16 @@ export function BackofficeHeader({ config }: BackofficeHeaderProps) {
                 {/* Desktop Navigation */}
                 <div className="hidden md:flex items-center gap-4">
                     <Link href="/backoffice/inbox">
-                        <Button variant="ghost" size="icon" className="relative h-9 w-9 rounded-full bg-slate-100/50 hover:bg-slate-200/50 border border-slate-200 shadow-sm transition-all grayscale hover:grayscale-0">
+                        <Button variant="ghost" size="icon" className="relative h-9 w-9 rounded-full bg-slate-100/50 hover:bg-slate-200/50 border border-slate-200 shadow-sm transition-all grayscale hover:grayscale-0" title="Inbox">
                             <Mail className="w-4 h-4 text-slate-600" />
                             {unreadCount > 0 && (
                                 <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-600 rounded-full border border-white animate-pulse" />
                             )}
+                        </Button>
+                    </Link>
+                    <Link href="/backoffice/profile">
+                        <Button variant="ghost" size="icon" className="relative h-9 w-9 rounded-full bg-slate-100/50 hover:bg-slate-200/50 border border-slate-200 shadow-sm transition-all" title="Settings">
+                            <User className="w-4 h-4 text-slate-600" />
                         </Button>
                     </Link>
                     <OrganizationSwitcher
