@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
-import { Package, Mail, Menu, X } from "lucide-react"
+import { Package, Mail, Menu, X, LayoutDashboard, ClipboardList, User, ChevronRight } from "lucide-react"
 import { OrganizationSwitcher, UserButton, useOrganization } from "@clerk/nextjs"
 import { Button } from "@/components/ui/button"
 import { motion, AnimatePresence } from "framer-motion"
@@ -120,48 +120,104 @@ export function BackofficeHeader({ config }: BackofficeHeaderProps) {
             <AnimatePresence>
                 {isMenuOpen && (
                     <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: "auto" }}
-                        exit={{ opacity: 0, height: 0 }}
-                        transition={{ duration: 0.2, ease: "easeInOut" }}
-                        className="md:hidden border-t border-slate-100 bg-white overflow-hidden shadow-xl"
+                        initial={{ opacity: 0, y: -8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -8 }}
+                        transition={{ duration: 0.2, ease: "easeOut" }}
+                        className="md:hidden absolute top-full left-0 right-0 bg-white border-t border-slate-100 shadow-[0_20px_60px_rgb(0,0,0,0.08)] overflow-hidden z-50"
                     >
-                        <div className="px-4 py-6 space-y-6">
-                            <div className="space-y-2">
-                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Switch Organization</p>
-                                <div className="w-full">
+                        <div className="px-5 py-5 space-y-4">
+                            {/* Quick Navigation Links */}
+                            <nav className="space-y-1">
+                                <Link
+                                    href="/backoffice"
+                                    onClick={() => setIsMenuOpen(false)}
+                                    className="flex items-center gap-3 px-3 py-3 rounded-xl text-slate-700 hover:bg-slate-50 transition-colors group"
+                                >
+                                    <div className="w-9 h-9 rounded-lg bg-slate-100 flex items-center justify-center group-hover:bg-[#191A43]/10 transition-colors">
+                                        <LayoutDashboard className="w-4 h-4 text-slate-500 group-hover:text-[#191A43] transition-colors" />
+                                    </div>
+                                    <div className="flex-1">
+                                        <p className="text-sm font-semibold text-slate-800">Dashboard</p>
+                                        <p className="text-[11px] text-slate-400">Overview & analytics</p>
+                                    </div>
+                                    <ChevronRight className="w-4 h-4 text-slate-300" />
+                                </Link>
+
+                                <Link
+                                    href="/backoffice/inbox"
+                                    onClick={() => setIsMenuOpen(false)}
+                                    className="flex items-center gap-3 px-3 py-3 rounded-xl text-slate-700 hover:bg-slate-50 transition-colors group"
+                                >
+                                    <div className="w-9 h-9 rounded-lg bg-slate-100 flex items-center justify-center group-hover:bg-[#191A43]/10 transition-colors relative">
+                                        <Mail className="w-4 h-4 text-slate-500 group-hover:text-[#191A43] transition-colors" />
+                                        {unreadCount > 0 && (
+                                            <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-[#CE0003] rounded-full text-[9px] text-white font-bold flex items-center justify-center border-2 border-white">
+                                                {unreadCount > 9 ? '9+' : unreadCount}
+                                            </span>
+                                        )}
+                                    </div>
+                                    <div className="flex-1">
+                                        <p className="text-sm font-semibold text-slate-800">Messages</p>
+                                        <p className="text-[11px] text-slate-400">
+                                            {unreadCount > 0 ? `${unreadCount} unread` : 'Customer inquiries'}
+                                        </p>
+                                    </div>
+                                    <ChevronRight className="w-4 h-4 text-slate-300" />
+                                </Link>
+
+                                <Link
+                                    href="/backoffice/profile"
+                                    onClick={() => setIsMenuOpen(false)}
+                                    className="flex items-center gap-3 px-3 py-3 rounded-xl text-slate-700 hover:bg-slate-50 transition-colors group"
+                                >
+                                    <div className="w-9 h-9 rounded-lg bg-slate-100 flex items-center justify-center group-hover:bg-[#191A43]/10 transition-colors">
+                                        <User className="w-4 h-4 text-slate-500 group-hover:text-[#191A43] transition-colors" />
+                                    </div>
+                                    <div className="flex-1">
+                                        <p className="text-sm font-semibold text-slate-800">Profile</p>
+                                        <p className="text-[11px] text-slate-400">Settings & preferences</p>
+                                    </div>
+                                    <ChevronRight className="w-4 h-4 text-slate-300" />
+                                </Link>
+                            </nav>
+
+                            {/* Divider */}
+                            <div className="border-t border-slate-100" />
+
+                            {/* Organization Section */}
+                            <div className="space-y-2.5">
+                                <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider px-1">Workspace</p>
+                                <div className="bg-slate-50/80 rounded-xl p-3 border border-slate-100">
                                     <OrganizationSwitcher
                                         hidePersonal={true}
                                         afterCreateOrganizationUrl="/backoffice"
                                         appearance={{
                                             elements: {
                                                 rootBox: "flex w-full",
-                                                organizationSwitcherTrigger: "h-12 px-4 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 w-full justify-between"
+                                                organizationSwitcherTrigger: "h-10 px-3 rounded-lg bg-white border border-slate-200 hover:bg-slate-50 w-full justify-between shadow-sm text-sm font-medium"
                                             }
                                         }}
                                     />
                                 </div>
                             </div>
 
-                            <div className="pt-2 flex items-center justify-between px-1">
-                                <div className="flex items-center gap-3">
-                                    <UserButton
-                                        appearance={{
-                                            elements: {
-                                                userButtonAvatarBox: "w-10 h-10 border-2 border-white shadow-md"
-                                            }
-                                        }}
-                                    />
-                                    <div>
-                                        <p className="text-sm font-bold text-slate-900">Manage Account</p>
-                                        <p className="text-[11px] text-slate-500">Settings & Security</p>
-                                    </div>
+                            {/* Divider */}
+                            <div className="border-t border-slate-100" />
+
+                            {/* User Account Section */}
+                            <div className="flex items-center gap-3 px-1">
+                                <UserButton
+                                    appearance={{
+                                        elements: {
+                                            userButtonAvatarBox: "w-10 h-10 border-2 border-slate-200 shadow-sm"
+                                        }
+                                    }}
+                                />
+                                <div className="flex-1 min-w-0">
+                                    <p className="text-sm font-semibold text-slate-800 truncate">Account</p>
+                                    <p className="text-[11px] text-slate-400">Manage & security</p>
                                 </div>
-                                <Link href="/backoffice/profile" onClick={() => setIsMenuOpen(false)}>
-                                    <Button variant="ghost" size="sm" className="text-[#191A43] hover:bg-slate-100 font-bold transition-colors">
-                                        View Profile
-                                    </Button>
-                                </Link>
                             </div>
                         </div>
                     </motion.div>
