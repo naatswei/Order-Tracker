@@ -87,7 +87,8 @@ export function BackofficeHeader({ config }: BackofficeHeaderProps) {
                         appearance={{
                             elements: {
                                 rootBox: "flex items-center",
-                                organizationSwitcherTrigger: "h-9 px-3 rounded-full border border-input bg-transparent hover:bg-accent hover:text-accent-foreground transition-all"
+                                organizationSwitcherTrigger: "h-9 px-3 rounded-full border border-input bg-transparent hover:bg-accent hover:text-accent-foreground transition-all",
+                                organizationSwitcherPopoverCard: "z-[60]"
                             }
                         }}
                     />
@@ -200,7 +201,8 @@ export function BackofficeHeader({ config }: BackofficeHeaderProps) {
                                         appearance={{
                                             elements: {
                                                 rootBox: "flex w-full",
-                                                organizationSwitcherTrigger: "h-10 px-3 rounded-lg bg-white border border-slate-200 hover:bg-slate-50 w-full justify-between shadow-sm text-sm font-medium"
+                                                organizationSwitcherTrigger: "h-10 px-3 rounded-lg bg-white border border-slate-200 hover:bg-slate-50 w-full justify-between shadow-sm text-sm font-medium",
+                                                organizationSwitcherPopoverCard: "z-[60]"
                                             }
                                         }}
                                     />
