@@ -192,8 +192,8 @@ export default function BusinessTypePage() {
                                 </p>
                             </div>
 
-                            {/* Business Type Cards - 2x2 Grid */}
-                            <div className="grid grid-cols-2 gap-8 mb-4">
+                            {/* Business Type Cards - Grid */}
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-8 mb-4">
                                 {businessTypes.map((type) => (
                                     <SelectionCard
                                         key={type.id}
