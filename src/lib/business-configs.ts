@@ -51,7 +51,7 @@ export const BUSINESS_CONFIGS: Record<string, BusinessConfig> = {
         dashboardTitle: "Active Orders",
         theme: {
             primary: "#85A39E",   // Sage Green
-            secondary: "#E6DFD4", // Beige
+            secondary: "#B8A898", // Deep Beige
             accent: "#85A39E",    // Sage Green
             text: "#2E3A3F"       // Darker slate for text/contrast
         }
@@ -76,7 +76,7 @@ export const BUSINESS_CONFIGS: Record<string, BusinessConfig> = {
         dashboardTitle: "Active Hair Orders",
         theme: {
             primary: "#85A39E",   // Sage Green
-            secondary: "#E6DFD4", // Beige
+            secondary: "#B8A898", // Deep Beige
             accent: "#85A39E",    // Sage Green
             text: "#2E3A3F"       // Darker slate for text/contrast
         },
@@ -105,7 +105,7 @@ export const BUSINESS_CONFIGS: Record<string, BusinessConfig> = {
         dashboardTitle: "Active Shipments",
         theme: {
             primary: "#85A39E",   // Sage Green
-            secondary: "#E6DFD4", // Beige
+            secondary: "#B8A898", // Deep Beige
             accent: "#85A39E",    // Sage Green
             text: "#2E3A3F"       // Darker slate for text/contrast
         },
@@ -134,7 +134,7 @@ export const BUSINESS_CONFIGS: Record<string, BusinessConfig> = {
         dashboardTitle: "Active Online Orders",
         theme: {
             primary: "#85A39E",   // Sage Green
-            secondary: "#E6DFD4", // Beige
+            secondary: "#B8A898", // Deep Beige
             accent: "#85A39E",    // Sage Green
             text: "#2E3A3F"       // Darker slate for text/contrast
         },
