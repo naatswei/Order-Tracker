@@ -21,8 +21,8 @@ export default function OrganizationSelectionPage() {
             <header className="bg-white/90 backdrop-blur-md sticky top-0 z-50 border-b-[0.5px] border-slate-100 shadow-[0_2px_20px_rgb(0,0,0,0.02)]">
                 <div className="w-full px-6 h-16 flex items-center justify-between">
                     <div className="flex items-center text-xl font-bold tracking-tight">
-                        <span className="text-[#85A39E]">O</span>
-                        <span className="text-[#D4C9BA]">Tracker</span>
+                        <span className="text-[#CE0003]">O</span>
+                        <span className="text-[#191A43]">Tracker</span>
                     </div>
                 </div>
             </header>

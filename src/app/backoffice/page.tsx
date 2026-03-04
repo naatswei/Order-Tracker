@@ -215,7 +215,7 @@ export default function BackofficePage() {
                                     </div>
                                     <h3 className="text-xl font-semibold text-slate-800 mb-2">No orders found</h3>
                                     <p className="text-slate-500 max-w-sm mx-auto font-medium">Get started by creating your first order or adjusting your search filters.</p>
-                                    {searchQuery && <Button variant="link" onClick={() => setSearchQuery("")} className="mt-4 text-[#D4C9BA] font-medium">Clear search filters</Button>}
+                                    {searchQuery && <Button variant="link" onClick={() => setSearchQuery("")} className="mt-4 text-[#191A43] font-medium">Clear search filters</Button>}
                                 </Card>
                             </motion.div>
                         ) : (

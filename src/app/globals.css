@@ -12,7 +12,7 @@
   --popover-foreground: #111827;
 
   /* Brand Colors */
-  --primary: #D4C9BA;
+  --primary: #191A43;
   --primary-foreground: #FFFFFF;
   --secondary: #F3F4F6;
   --secondary-foreground: #111827;
@@ -21,10 +21,10 @@
   --muted-foreground: #6B7280;
 
   /* Strong Action / Brand Red */
-  --accent: #85A39E;
+  --accent: #CE0003;
   --accent-foreground: #FFFFFF;
 
-  --destructive: #85A39E;
+  --destructive: #CE0003;
   --destructive-foreground: #FFFFFF;
 
   --border: #F3F4F6;
@@ -34,8 +34,8 @@
   /* Hover/Highlight */
   --highlight: #5256FF;
 
-  --chart-1: #D4C9BA;
-  --chart-2: #85A39E;
+  --chart-1: #191A43;
+  --chart-2: #CE0003;
   --chart-3: #5256FF;
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
@@ -53,7 +53,7 @@
   --popover-foreground: #F8FAFC;
 
   /* Brand Colors in Dark Mode */
-  --primary: #D4C9BA;
+  --primary: #191A43;
   --primary-foreground: #FFFFFF;
   --secondary: #1E293B;
   --secondary-foreground: #F8FAFC;
@@ -61,21 +61,21 @@
   --muted: #1E293B;
   --muted-foreground: #94A3B8;
 
-  --accent: #85A39E;
+  --accent: #CE0003;
   --accent-foreground: #FFFFFF;
 
-  --destructive: #85A39E;
+  --destructive: #CE0003;
   --destructive-foreground: #FFFFFF;
 
   --border: #1E293B;
   --input: #1E293B;
-  --ring: #D4C9BA;
+  --ring: #191A43;
 
   /* Hover/Highlight */
   --highlight: #5256FF;
 
-  --chart-1: #D4C9BA;
-  --chart-2: #85A39E;
+  --chart-1: #191A43;
+  --chart-2: #CE0003;
   --chart-3: #5256FF;
 }
 

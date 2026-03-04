@@ -110,8 +110,8 @@ export default function BusinessProfilePage() {
             <header className="bg-white">
                 <div className="w-full px-6 h-16 flex items-center justify-between">
                     <div className="flex items-center text-xl font-bold tracking-tight">
-                        <span className="text-[#85A39E]">O</span>
-                        <span className="text-[#D4C9BA]">Tracker</span>
+                        <span className="text-[#CE0003]">O</span>
+                        <span className="text-[#191A43]">Tracker</span>
                     </div>
                 </div>
             </header>
@@ -120,7 +120,7 @@ export default function BusinessProfilePage() {
                 <div className="max-w-3xl mx-auto">
                     <div className="bg-white py-12 px-6 shadow-sm border border-border/50 sm:rounded-2xl sm:px-12 backdrop-blur-sm bg-white/95">
                         <div className="mb-10 text-center">
-                            <h1 className="text-3xl font-bold text-[#D4C9BA] mb-3 tracking-tight">
+                            <h1 className="text-3xl font-bold text-[#191A43] mb-3 tracking-tight">
                                 Welcome to your Business Journey
                             </h1>
                             <p className="text-muted-foreground text-lg">

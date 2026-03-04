@@ -63,7 +63,7 @@ const plans = [
         ],
         buttonText: "Most Popular",
         buttonVariant: "orange",
-        glowColor: "bg-[#85A39E]/20",
+        glowColor: "bg-[#CE0003]/20",
     },
     {
         name: "Yearly",
@@ -209,8 +209,8 @@ export default function SubscriptionPage() {
             <header className="bg-white">
                 <div className="w-full px-6 h-16 flex items-center justify-between">
                     <div className="flex items-center text-xl font-bold tracking-tight">
-                        <span className="text-[#85A39E]">O</span>
-                        <span className="text-[#D4C9BA]">Tracker</span>
+                        <span className="text-[#CE0003]">O</span>
+                        <span className="text-[#191A43]">Tracker</span>
                     </div>
                 </div>
             </header>
