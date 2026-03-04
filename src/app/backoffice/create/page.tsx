@@ -207,7 +207,7 @@ function CreateOrderContent() {
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label htmlFor={`${businessType}-pickupDate`} className="ml-1 text-xs font-semibold text-muted-foreground tracking-wider">{config.orderLabel === "Tracking Number" ? "Date" : "Pick Up Date"} <span className="text-red-500">*</span></Label>
+                                    <Label htmlFor={`${businessType}-pickupDate`} className="ml-1 text-xs font-semibold text-muted-foreground tracking-wider">{config.orderLabel === "Tracking Number" ? "Date" : "Delivery Date"} <span className="text-red-500">*</span></Label>
                                     <DatePicker
                                         date={pickupDate}
                                         setDate={setPickupDate}

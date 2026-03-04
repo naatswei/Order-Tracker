@@ -302,7 +302,7 @@ function BulkUpdateContent() {
                                                             <span className="font-medium text-slate-900 whitespace-nowrap">{order.itemType}</span>
                                                         </div>
                                                         <div className="flex gap-2">
-                                                            <span className="text-slate-400 w-36 shrink-0 whitespace-nowrap">Pick Up Date:</span>
+                                                            <span className="text-slate-400 w-36 shrink-0 whitespace-nowrap">Delivery Date:</span>
                                                             <span className="font-medium text-red-400">{order.pickupDate ? new Date(order.pickupDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}</span>
                                                         </div>
                                                     </div>
