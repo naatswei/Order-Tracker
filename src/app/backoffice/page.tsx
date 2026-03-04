@@ -115,7 +115,7 @@ export default function BackofficePage() {
             {/* Header */}
             <BackofficeHeader config={config} />
 
-            <div className="container mx-auto px-4 py-6 sm:py-8 max-w-[1400px] space-y-8 sm:space-y-[70px]">
+            <div className="container mx-auto px-4 pt-10 sm:pt-12 pb-6 sm:pb-8 max-w-[1400px] space-y-8 sm:space-y-[70px]">
                 {/* Actions Bar */}
                 <div className="space-y-6">
                     <h2 className="text-lg sm:text-xl font-semibold tracking-tight text-slate-800">Track Order</h2>
