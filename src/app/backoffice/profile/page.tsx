@@ -199,16 +199,18 @@ export default function ProfilePage() {
                 </div>
 
                 <Tabs defaultValue="profile" className="space-y-6 sm:space-y-8">
-                    <TabsList className="bg-white border border-slate-200 p-1.5 h-auto sm:h-14 rounded-2xl shadow-sm flex flex-col sm:flex-row w-full sm:w-auto sm:inline-flex gap-1">
-                        <TabsTrigger value="profile" className="w-full sm:w-auto rounded-xl px-4 sm:px-6 py-2.5 sm:py-0 h-auto sm:h-11 data-[state=active]:bg-slate-100 data-[state=active]:text-slate-900 data-[state=active]:shadow-none text-slate-500 font-medium transition-all gap-2 justify-start sm:justify-center">
-                            <Building2 className="w-4 h-4" />
-                            Business Profile
-                        </TabsTrigger>
-                        <TabsTrigger value="subscription" className="w-full sm:w-auto rounded-xl px-4 sm:px-6 py-2.5 sm:py-0 h-auto sm:h-11 data-[state=active]:bg-slate-100 data-[state=active]:text-slate-900 data-[state=active]:shadow-none text-slate-500 font-medium transition-all gap-2 justify-start sm:justify-center">
-                            <CreditCard className="w-4 h-4" />
-                            Subscription & Billing
-                        </TabsTrigger>
-                    </TabsList>
+                    <div className="overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 sm:pb-0 hide-scrollbar">
+                        <TabsList className="bg-white border border-slate-200 p-1.5 h-14 rounded-2xl shadow-sm inline-flex min-w-max w-full sm:w-auto">
+                            <TabsTrigger value="profile" className="rounded-xl px-6 data-[state=active]:bg-slate-100 data-[state=active]:text-slate-900 data-[state=active]:shadow-none text-slate-500 font-medium transition-all gap-2 flex-1 sm:flex-none">
+                                <Building2 className="w-4 h-4" />
+                                Business Profile
+                            </TabsTrigger>
+                            <TabsTrigger value="subscription" className="rounded-xl px-6 data-[state=active]:bg-slate-100 data-[state=active]:text-slate-900 data-[state=active]:shadow-none text-slate-500 font-medium transition-all gap-2 flex-1 sm:flex-none">
+                                <CreditCard className="w-4 h-4" />
+                                Subscription & Billing
+                            </TabsTrigger>
+                        </TabsList>
+                    </div>
 
                     <TabsContent value="profile">
                         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
