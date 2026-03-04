@@ -50,8 +50,8 @@ export const BUSINESS_CONFIGS: Record<string, BusinessConfig> = {
         searchPlaceholder: "Search by order number, name",
         dashboardTitle: "Active Orders",
         theme: {
-            primary: "#251A65",   // Dark Blue
-            secondary: "#EF5F18", // Orange
+            primary: "#EF5F18",   // Orange
+            secondary: "#251A65", // Dark Blue
             accent: "#EF5F18",    // Orange
             text: "#251A65"
         }
@@ -75,10 +75,10 @@ export const BUSINESS_CONFIGS: Record<string, BusinessConfig> = {
         searchPlaceholder: "Search by order number, name",
         dashboardTitle: "Active Hair Orders",
         theme: {
-            primary: "#4D1D3A",   // Deep Plum
-            secondary: "#C77D9E", // Dusty Rose
-            accent: "#D4AF37",    // Rose Gold
-            text: "#4D1D3A"
+            primary: "#EF5F18",   // Orange
+            secondary: "#251A65", // Dark Blue
+            accent: "#EF5F18",    // Orange
+            text: "#251A65"
         },
         extraFields: [
             { id: "length", label: "Wig Length", placeholder: "e.g., 22 inches", type: "text" },
@@ -104,10 +104,10 @@ export const BUSINESS_CONFIGS: Record<string, BusinessConfig> = {
         searchPlaceholder: "Search by tracking number, recipient",
         dashboardTitle: "Active Shipments",
         theme: {
-            primary: "#0D3B4F",   // Deep Teal
-            secondary: "#1A8A7D", // Vivid Teal
-            accent: "#2196F3",    // Electric Blue
-            text: "#0D3B4F"
+            primary: "#EF5F18",   // Orange
+            secondary: "#251A65", // Dark Blue
+            accent: "#EF5F18",    // Orange
+            text: "#251A65"
         },
         extraFields: [
             { id: "weight", label: "Weight (kg)", placeholder: "e.g., 5.5", type: "number" },
@@ -133,10 +133,10 @@ export const BUSINESS_CONFIGS: Record<string, BusinessConfig> = {
         searchPlaceholder: "Search by order number, customer name",
         dashboardTitle: "Active Online Orders",
         theme: {
-            primary: "#312E81",   // Deep Indigo
-            secondary: "#F97066", // Warm Coral
-            accent: "#818CF8",    // Soft Violet
-            text: "#312E81"
+            primary: "#EF5F18",   // Orange
+            secondary: "#251A65", // Dark Blue
+            accent: "#EF5F18",    // Orange
+            text: "#251A65"
         },
         extraFields: [
             { id: "quantity", label: "Quantity", placeholder: "1", type: "number" },
