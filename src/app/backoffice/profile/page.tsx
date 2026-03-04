@@ -70,6 +70,7 @@ export default function ProfilePage() {
     // Subscription State
     const [subscriptionStatus, setSubscriptionStatus] = useState<string>("inactive")
     const [subscriptionExpiry, setSubscriptionExpiry] = useState<string>("")
+    const [subscriptionPlan, setSubscriptionPlan] = useState<string | null>(null)
     const publicKey = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || ""
 
     useEffect(() => {
@@ -93,6 +94,7 @@ export default function ProfilePage() {
             const metadata = organization.publicMetadata as any
             setSubscriptionStatus(metadata?.subscriptionStatus || "inactive")
             setSubscriptionExpiry(metadata?.subscriptionExpiry || "")
+            setSubscriptionPlan(metadata?.subscriptionPlan || null)
         }
     }, [isLoaded, organization])
 
@@ -151,11 +153,13 @@ export default function ProfilePage() {
                 organization.id,
                 'active',
                 expiryDate,
-                isTrial ? true : undefined
+                isTrial ? true : undefined,
+                planName
             )
 
             setSubscriptionStatus("active")
             setSubscriptionExpiry(expiryDate)
+            setSubscriptionPlan(planName)
             toast.success(`Successfully upgraded to ${planName} plan!`)
             router.refresh()
         } catch (error) {
@@ -321,7 +325,7 @@ export default function ProfilePage() {
                                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                                         <div className="space-y-2">
                                             <h2 className="text-xl font-bold flex items-center gap-3">
-                                                Current Plan
+                                                {subscriptionPlan ? `Current Plan (${subscriptionPlan})` : "Current Plan"}
                                                 <div className={cn(
                                                     "text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider",
                                                     subscriptionStatus === 'active' && !isExpired ? "bg-emerald-100 text-emerald-700" :

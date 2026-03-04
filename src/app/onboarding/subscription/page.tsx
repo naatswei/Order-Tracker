@@ -140,12 +140,12 @@ export default function SubscriptionPage() {
             const expiryDate = new Date(now.getTime() + expiryDays * 24 * 60 * 60 * 1000).toISOString()
             const isTrial = planName === "Free Trial"
 
-            // Mark as active in Clerk metadata with expiry
             await updateOrgSubscriptionStatus(
                 organization.id,
                 'active',
                 expiryDate,
-                isTrial ? true : undefined
+                isTrial ? true : undefined,
+                planName
             )
 
             // Save to localStorage as well for immediate UI consistency

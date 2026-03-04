@@ -40,7 +40,8 @@ export async function updateOrgSubscriptionStatus(
     orgId: string,
     status: 'active' | 'trialing',
     expiryDate: string,
-    trialUsed?: boolean
+    trialUsed?: boolean,
+    planName?: string
 ) {
     const { userId } = await auth()
     if (!userId) throw new Error('Unauthorized')
@@ -54,6 +55,10 @@ export async function updateOrgSubscriptionStatus(
 
     if (trialUsed !== undefined) {
         metadata.trialUsed = trialUsed
+    }
+
+    if (planName) {
+        metadata.subscriptionPlan = planName
     }
 
     await client.organizations.updateOrganizationMetadata(orgId, {
