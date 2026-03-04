@@ -110,8 +110,8 @@ export default function BusinessProfilePage() {
             <header className="bg-white">
                 <div className="w-full px-6 h-16 flex items-center justify-between">
                     <div className="flex items-center text-xl font-bold tracking-tight">
-                        <span className="text-red-600 font-black">O</span>
-                        <span className="text-[#191A43] font-bold">Tracker</span>
+                        <span className="text-[#CE0003]">O</span>
+                        <span className="text-[#191A43]">Tracker</span>
                     </div>
                 </div>
             </header>

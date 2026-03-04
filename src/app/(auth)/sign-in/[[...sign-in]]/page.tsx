@@ -8,9 +8,9 @@ export default function SignInPage() {
             {/* Left Panel - Branding */}
             <div className="hidden lg:flex w-1/2 flex-col justify-center bg-[#191A43] text-white p-12 relative overflow-hidden">
                 <div className="max-w-md mx-auto w-full z-10 space-y-6">
-                    <div className="flex items-center text-5xl font-bold tracking-tighter">
+                    <div className="flex items-center text-5xl font-bold tracking-tight">
                         <span className="text-[#CE0003]">O</span>
-                        <span>Tracker</span>
+                        <span className="text-white">Tracker</span>
                     </div>
 
                     <p className="text-white/60 text-lg font-light leading-relaxed">
@@ -28,9 +28,9 @@ export default function SignInPage() {
                 <div className="w-full max-w-md">
                     {/* Mobile Branding (only visible on small screens) */}
                     <div className="flex lg:hidden justify-center mb-8">
-                        <div className="flex items-center text-3xl sm:text-4xl font-bold tracking-tighter text-[#191A43]">
+                        <div className="flex items-center text-3xl sm:text-4xl font-bold tracking-tight text-[#191A43]">
                             <span className="text-[#CE0003]">O</span>
-                            <span>Tracker</span>
+                            <span className="text-[#191A43]">Tracker</span>
                         </div>
                     </div>
 

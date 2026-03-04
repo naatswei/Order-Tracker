@@ -44,9 +44,9 @@ export default function TrackPage() {
 
             <div className="container mx-auto px-6 py-12 relative z-10 flex flex-col min-h-screen">
                 <header className="flex justify-between items-center mb-20">
-                    <div className="flex items-center gap-1.5">
-                        <span className="text-[#CE0003] font-black text-2xl tracking-tighter">O</span>
-                        <span className="text-white/90 font-light text-xl tracking-[0.2em]">Tracker</span>
+                    <div className="flex items-center text-2xl font-bold tracking-tight">
+                        <span className="text-[#CE0003]">O</span>
+                        <span className="text-white">Tracker</span>
                     </div>
                     <Link href="/">
                         <Button variant="ghost" className="text-white/70 hover:text-white hover:bg-white/10 font-light tracking-widest text-[10px] uppercase">

@@ -250,9 +250,9 @@ export default function TrackingDetailsPage() {
                     <Link href="/track" className="p-2 -ml-2 text-white/50 hover:text-white transition-colors">
                         <ArrowLeft className="w-5 h-5" />
                     </Link>
-                    <div className="flex items-center gap-1.5">
-                        <span className="text-[#CE0003] font-black text-xl tracking-tighter">O</span>
-                        <span className="text-white/90 font-light text-lg tracking-widest items-center flex">Tracker</span>
+                    <div className="flex items-center text-xl font-bold tracking-tight">
+                        <span className="text-[#CE0003]">O</span>
+                        <span className="text-white">Tracker</span>
                     </div>
                     <div className="w-9" /> {/* Spacer */}
                 </div>
