@@ -7,6 +7,7 @@ import { OrganizationSwitcher, UserButton, useOrganization } from "@clerk/nextjs
 import { Button } from "@/components/ui/button"
 import { motion, AnimatePresence } from "framer-motion"
 import { getUnreadCount } from "@/app/actions/messages"
+import { getPlanLimits } from "@/lib/plan-config"
 
 interface BackofficeHeaderProps {
     config: {
@@ -22,6 +23,11 @@ export function BackofficeHeader({ config }: BackofficeHeaderProps) {
     const { organization } = useOrganization()
 
     const toggleMenu = () => setIsMenuOpen(!isMenuOpen)
+
+    // Plan-based member restriction
+    const planName = organization?.publicMetadata?.subscriptionPlan as string | undefined
+    const planLimits = getPlanLimits(planName)
+    const hideInvite = planLimits.maxMembers === 0
 
     useEffect(() => {
         if (!organization?.id) return
@@ -90,7 +96,11 @@ export function BackofficeHeader({ config }: BackofficeHeaderProps) {
                             elements: {
                                 rootBox: "flex items-center",
                                 organizationSwitcherTrigger: "h-9 px-3 rounded-full border border-input bg-transparent hover:bg-accent hover:text-accent-foreground transition-all",
-                                organizationSwitcherPopoverCard: "z-[60]"
+                                organizationSwitcherPopoverCard: "z-[60]",
+                                ...(hideInvite && {
+                                    organizationSwitcherPopoverActionButton__manageOrganization: "hidden",
+                                    organizationSwitcherPopoverActionButton__createOrganization: "hidden",
+                                })
                             }
                         }}
                     />
@@ -224,7 +234,11 @@ export function BackofficeHeader({ config }: BackofficeHeaderProps) {
                                             elements: {
                                                 rootBox: "flex w-full",
                                                 organizationSwitcherTrigger: "h-10 px-3 rounded-lg bg-white border border-slate-200 hover:bg-slate-50 w-full justify-between shadow-sm text-sm font-medium",
-                                                organizationSwitcherPopoverCard: "z-[60]"
+                                                organizationSwitcherPopoverCard: "z-[60]",
+                                                ...(hideInvite && {
+                                                    organizationSwitcherPopoverActionButton__manageOrganization: "hidden",
+                                                    organizationSwitcherPopoverActionButton__createOrganization: "hidden",
+                                                })
                                             }
                                         }}
                                     />
