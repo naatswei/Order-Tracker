@@ -10,19 +10,19 @@ export interface PlanLimits {
 
 export const PLAN_LIMITS: Record<PlanName, PlanLimits> = {
     "Free Trial": {
-        maxMembers: 0,
+        maxMembers: Infinity,
         maxOrders: 20,
         bulkUpdates: false,
         messaging: false,
     },
     "2 weeks": {
-        maxMembers: 2,
+        maxMembers: Infinity,
         maxOrders: 100,
         bulkUpdates: true,
         messaging: true,
     },
     "Month": {
-        maxMembers: 4,
+        maxMembers: Infinity,
         maxOrders: Infinity,
         bulkUpdates: true,
         messaging: true,

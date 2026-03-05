@@ -23,7 +23,7 @@ const plans = [
         price: "GHS 0",
         period: "7 days",
         features: [
-            "Solo use only (no team members)",
+            "Unlimited team members",
             "Up to 20 orders",
             "Basic status updates",
             "Customer tracking page",
@@ -39,10 +39,11 @@ const plans = [
         price: "GHS 199",
         period: "14 days",
         features: [
-            "Up to 2 team members",
+            "Unlimited team members",
             "Up to 100 orders",
             "Bulk order updates",
-            "Customer messaging inbox"
+            "Customer messaging inbox",
+            "Everything in Free Trial"
         ],
         buttonText: "Get Started",
         buttonVariant: "secondary",
@@ -54,8 +55,9 @@ const plans = [
         price: "GHS 350",
         period: "Monthly",
         features: [
-            "Up to 4 team members",
+            "Unlimited team members",
             "Unlimited orders",
+            "Bulk order updates",
             "Everything in 2 Weeks"
         ],
         buttonText: "Most Popular",
