@@ -66,7 +66,8 @@ export default function TrackingDetailsPage() {
                             location: h.location as string | null,
                             message: h.message as string | null,
                             timestamp: new Date(h.timestamp as string | number | Date)
-                        }))
+                        })),
+                        messagingEnabled: foundOrder.messagingEnabled
                     }
 
                     if (order && mappedOrder.currentStatus !== order.currentStatus) {
@@ -457,13 +458,7 @@ export default function TrackingDetailsPage() {
 
                 {/* Chat Section - Only visible if the business plan allows it */}
                 {(() => {
-                    import { getPlanLimits } from "@/lib/plan-config"
-
-                    // We need to fetch the plan from the business metadata which is attached to the order
-                    const planName = order?.businessDetails?.subscriptionPlan as string | undefined
-                    const planLimits = getPlanLimits(planName)
-
-                    if (!planLimits.messaging) return null;
+                    if (!order.messagingEnabled) return null;
 
                     return (
                         <div className="space-y-6">

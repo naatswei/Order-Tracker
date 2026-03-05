@@ -173,7 +173,9 @@ export async function getOrderWithHistory(id: string) {
     if (!order) return null;
 
     // Fetch business details from Clerk if available
-    let businessDetails = null;
+    let businessDetails: any = null;
+    let messagingEnabled = true;
+
     if (order.clerkOrgId) {
         try {
             const client = await clerkClient()
@@ -183,6 +185,11 @@ export async function getOrderWithHistory(id: string) {
                 imageUrl: org.hasImage ? org.imageUrl : null,
                 ...org.publicMetadata
             }
+
+            // Check messaging plan limit
+            const planName = org.publicMetadata?.subscriptionPlan as string | undefined
+            const limits = getPlanLimits(planName)
+            messagingEnabled = limits.messaging
         } catch (e) {
             console.error("Failed to fetch org details from Clerk", e)
         }
@@ -190,7 +197,8 @@ export async function getOrderWithHistory(id: string) {
 
     return {
         ...order,
-        businessDetails
+        businessDetails,
+        messagingEnabled
     };
 }
 

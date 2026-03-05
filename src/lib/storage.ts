@@ -30,6 +30,7 @@ export interface Order {
         secondaryEmail?: string
         website?: string
     } | null
+    messagingEnabled?: boolean
 }
 
 // Generate unique tracking ID
