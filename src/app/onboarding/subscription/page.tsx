@@ -89,6 +89,8 @@ export default function SubscriptionPage() {
     // Paystack public key from env
     const publicKey = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || ""
 
+    const [canGoBack, setCanGoBack] = useState(false)
+
     useEffect(() => {
         if (!isLoaded) return
 
@@ -116,6 +118,9 @@ export default function SubscriptionPage() {
         }
 
         const isSubscribed = subscriptionStatus === 'active' || subscriptionStatus === 'trialing'
+
+        // Set whether they can go back to dashboard safely without a redirect loop
+        setCanGoBack(isSubscribed && !isExpired)
 
         // Only redirect away if they are active AND NOT nearing expiry
         if (isSubscribed && !isExpired && !isNearExpiry) {
@@ -186,18 +191,6 @@ export default function SubscriptionPage() {
             publicKey: publicKey,
             currency: "GHS",
         }
-
-        // Initialize Paystack
-        // Note: react-paystack hooks must be called at the top level, 
-        // but since we need dynamic config per plan, we'll use the functional approach
-        // within the button click if possible, or a single hook with updated state.
-        // Actually, the recommended way for dynamic config is to use the hook at the top level
-        // and only call the result. But since we have 4 plans, let's use a simpler wrapper or
-        // update the config state.
-
-        // For simplicity with this library in a loop, we'll manually trigger it 
-        // using the standard Paystack inline script if the hook is too restrictive, 
-        // but let's try to make the hook work by passing the config to it.
     }
 
     const metadata = organization?.publicMetadata as any
@@ -216,6 +209,15 @@ export default function SubscriptionPage() {
                         <span className="text-[#CE0003]">O</span>
                         <span className="text-[#191A43]">Tracker</span>
                     </div>
+                    {canGoBack && (
+                        <Button
+                            variant="ghost"
+                            onClick={() => router.push("/backoffice")}
+                            className="text-slate-500 hover:text-slate-900 font-medium"
+                        >
+                            Back to Dashboard
+                        </Button>
+                    )}
                 </div>
             </header>
 
