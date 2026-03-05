@@ -29,24 +29,42 @@ const plans = [
         description: "For short-term sales",
         price: "GHS 199",
         period: "14 days",
-        features: ["Everything in Free Trial", "Real-time updates", "Customer data collection"],
-        buttonText: "Get 2 Weeks",
+        features: [
+            "Everything in Free Trial",
+            "Real-time SMS/Email updates",
+            "Customer data collection",
+            "Priority support",
+            "CSV data export"
+        ],
+        buttonText: "Get Started",
     },
     {
         name: "Month",
         description: "The Best Seller",
         price: "GHS 350",
         period: "Monthly",
-        features: ["Everything in 2 Weeks", "Advanced analytics", "Priority team management"],
-        buttonText: "Get Monthly",
+        features: [
+            "Everything in 2 Weeks",
+            "Advanced business analytics",
+            "Priority team management",
+            "Custom brand colors",
+            "24/7 Dedicated support"
+        ],
+        buttonText: "Most Popular",
     },
     {
         name: "Yearly",
         description: "Maximum Value",
         price: "GHS 1,500",
         period: "Yearly",
-        features: ["Everything in Month", "Save over 60%", "Dedicated account manager"],
-        buttonText: "Get Yearly",
+        features: [
+            "Everything in Month",
+            "Save over 60% annually",
+            "Early access to new tools",
+            "Dedicated account manager",
+            "Full API access"
+        ],
+        buttonText: "Get Maximum Value",
     },
 ]
 
