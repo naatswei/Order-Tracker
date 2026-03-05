@@ -67,40 +67,50 @@ export function BackofficeHeader({ config }: BackofficeHeaderProps) {
                 </Link>
 
                 {/* Desktop Navigation */}
-                <div className="hidden md:flex items-center gap-4">
-                    <Link href="/backoffice/inbox">
-                        <Button variant="ghost" size="icon" className="relative h-9 w-9 rounded-full bg-slate-100/50 hover:bg-slate-200/50 border border-slate-200 shadow-sm transition-all grayscale hover:grayscale-0" title="Inbox">
-                            <Mail className="w-4 h-4 text-slate-600" />
-                            {unreadCount > 0 && (
-                                <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-600 rounded-full border border-white animate-pulse" />
-                            )}
-                        </Button>
-                    </Link>
-                    <Link href="/backoffice/profile">
-                        <Button variant="ghost" size="icon" className="relative h-9 w-9 rounded-full bg-slate-100/50 hover:bg-slate-200/50 border border-slate-200 shadow-sm transition-all" title="Settings">
-                            <Settings className="w-4 h-4 text-slate-600" />
-                        </Button>
-                    </Link>
-                    <OrganizationSwitcher
-                        hidePersonal={true}
-                        afterCreateOrganizationUrl="/backoffice"
-                        afterSelectOrganizationUrl="/backoffice"
-                        afterLeaveOrganizationUrl="/backoffice"
-                        appearance={{
-                            elements: {
-                                rootBox: "flex items-center",
-                                organizationSwitcherTrigger: "h-9 px-3 rounded-full border border-input bg-transparent hover:bg-accent hover:text-accent-foreground transition-all",
-                                organizationSwitcherPopoverCard: "z-[60]"
-                            }
-                        }}
-                    />
-                    <UserButton
-                        appearance={{
-                            elements: {
-                                userButtonAvatarBox: "w-9 h-9 border border-slate-200 shadow-sm hover:ring-2 ring-primary/10 transition-all"
-                            }
-                        }}
-                    />
+                <div className="hidden md:flex items-center gap-3 lg:gap-5">
+                    {/* Action Items */}
+                    <div className="flex items-center gap-2">
+                        <Link href="/backoffice/inbox">
+                            <Button variant="ghost" size="icon" className="relative h-9 w-9 rounded-full bg-white hover:bg-slate-50 border border-slate-200 shadow-sm transition-all text-slate-600 hover:text-slate-900" title="Inbox">
+                                <Mail className="w-4 h-4" />
+                                {unreadCount > 0 && (
+                                    <span className="absolute top-[5px] right-[5px] w-2 h-2 bg-red-500 rounded-full border border-white animate-pulse" />
+                                )}
+                            </Button>
+                        </Link>
+                        <Link href="/backoffice/profile">
+                            <Button variant="ghost" size="icon" className="relative h-9 w-9 rounded-full bg-white hover:bg-slate-50 border border-slate-200 shadow-sm transition-all text-slate-600 hover:text-slate-900" title="Settings">
+                                <Settings className="w-4 h-4" />
+                            </Button>
+                        </Link>
+                    </div>
+
+                    {/* Divider */}
+                    <div className="w-[1px] h-6 bg-slate-200" />
+
+                    {/* Identity & Workspace */}
+                    <div className="flex items-center gap-3 bg-white border border-slate-200 shadow-sm rounded-full py-1 pr-1 pl-3 transition-colors hover:border-slate-300">
+                        <OrganizationSwitcher
+                            hidePersonal={true}
+                            afterCreateOrganizationUrl="/backoffice"
+                            afterSelectOrganizationUrl="/backoffice"
+                            afterLeaveOrganizationUrl="/backoffice"
+                            appearance={{
+                                elements: {
+                                    rootBox: "flex items-center",
+                                    organizationSwitcherTrigger: "h-7 px-2 rounded-md bg-transparent hover:bg-slate-100 transition-all border-none shadow-none text-slate-700 focus:ring-0",
+                                    organizationSwitcherPopoverCard: "z-[60]"
+                                }
+                            }}
+                        />
+                        <UserButton
+                            appearance={{
+                                elements: {
+                                    userButtonAvatarBox: "w-7 h-7 shadow-sm hover:scale-105 transition-all"
+                                }
+                            }}
+                        />
+                    </div>
                 </div>
 
                 {/* Mobile Menu Button */}
