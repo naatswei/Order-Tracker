@@ -12,7 +12,7 @@ export const PLAN_LIMITS: Record<PlanName, PlanLimits> = {
     "Free Trial": {
         maxMembers: Infinity,
         maxOrders: 20,
-        bulkUpdates: false,
+        bulkUpdates: true,
         messaging: true,
     },
     "2 weeks": {

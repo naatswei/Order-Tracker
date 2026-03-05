@@ -25,7 +25,7 @@ const plans = [
         features: [
             "Unlimited team members",
             "Up to 20 orders",
-            "Basic status updates",
+            "Bulk order updates",
             "Customer tracking page",
             "Standard dashboard"
         ],
@@ -41,7 +41,6 @@ const plans = [
         features: [
             "Unlimited team members",
             "Up to 100 orders",
-            "Bulk order updates",
             "Customer messaging inbox",
             "Everything in Free Trial"
         ],
