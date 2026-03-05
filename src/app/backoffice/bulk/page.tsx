@@ -21,7 +21,11 @@ import { getPlanLimits } from "@/lib/plan-config"
 
 export default function BulkUpdatePage() {
     return (
-        <Suspense fallback={<div className="min-h-screen bg-background flex items-center justify-center"><p className="text-muted-foreground animate-pulse">Loading...</p></div>}>
+        <Suspense fallback={
+            <div className="min-h-screen bg-background flex items-center justify-center">
+                <Loader2 className="w-8 h-8 animate-spin text-primary opacity-50" />
+            </div>
+        }>
             <BulkUpdateContent />
         </Suspense>
     )
