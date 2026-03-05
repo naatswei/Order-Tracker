@@ -342,7 +342,7 @@ export default function ProfilePage() {
                                 <CardContent className="p-5 sm:p-8">
                                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 sm:gap-12">
                                         <div className="space-y-2">
-                                            <h2 className="text-xl font-bold flex items-center gap-3">
+                                            <h2 className="text-lg sm:text-xl font-bold flex flex-wrap sm:flex-nowrap items-center gap-2 sm:gap-3">
                                                 {subscriptionPlan ? `Current Plan (${subscriptionPlan})` : "Current Plan"}
                                                 <div className={cn(
                                                     "text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider",
@@ -353,8 +353,8 @@ export default function ProfilePage() {
                                                 </div>
                                             </h2>
                                             {subscriptionExpiry ? (
-                                                <div className="flex items-center gap-2 text-sm text-slate-500 font-medium">
-                                                    <Clock className="w-4 h-4" />
+                                                <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-slate-500 font-medium">
+                                                    <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                                                     {isExpired ? "Expired on " : "Renews on "}
                                                     <span className={cn("font-bold", isExpired ? "text-red-500" : "text-slate-800")}>
                                                         {expiryDateObj?.toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' })}
@@ -375,7 +375,7 @@ export default function ProfilePage() {
 
                             {/* Upgrade Plans Grid */}
                             <div>
-                                <h3 className="text-lg font-bold text-slate-900 mb-4 sm:mb-6">Upgrade your workspace</h3>
+                                <h3 className="text-base sm:text-lg font-bold text-slate-900 mb-4 sm:mb-6">Upgrade your workspace</h3>
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                                     {plans.map((plan) => (
                                         <Card key={plan.name} className={cn(
@@ -398,7 +398,7 @@ export default function ProfilePage() {
                                             </CardHeader>
                                             <CardContent className="p-0 pt-4 sm:pt-6 flex-1 flex flex-col">
                                                 <div className="mb-4 sm:mb-6">
-                                                    <span className="text-2xl font-bold tracking-tight">{plan.price}</span>
+                                                    <span className="text-xl sm:text-2xl font-bold tracking-tight">{plan.price}</span>
                                                     <span className="text-xs text-slate-500 font-medium ml-1">/{plan.period.replace(" Monthly", "mo").replace(" Yearly", "yr")}</span>
                                                 </div>
                                                 <ul className="space-y-3 mb-8 flex-1">
