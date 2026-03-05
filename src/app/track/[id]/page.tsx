@@ -455,153 +455,165 @@ export default function TrackingDetailsPage() {
                     </CardContent>
                 </Card>
 
-                {/* Chat Section */}
-                <div className="space-y-6">
-                    <div className="text-center">
-                        <p className="text-xs text-white/50 font-light tracking-[0.2em] uppercase mb-6">Messages</p>
-                    </div>
+                {/* Chat Section - Only visible if the business plan allows it */}
+                {(() => {
+                    import { getPlanLimits } from "@/lib/plan-config"
 
-                    {!chatOpen ? (
-                        <div className="text-center">
-                            <Button
-                                onClick={() => setChatOpen(true)}
-                                className="group relative overflow-hidden bg-white text-[#0A0B14] hover:bg-white/90 h-11 px-8 rounded-full font-light tracking-wide transition-all duration-500 hover:scale-[1.02] active:scale-95 shadow-[0_0_30px_rgba(255,255,255,0.1)] border-none text-xs"
-                            >
-                                <span className="relative z-10 flex items-center gap-3">
-                                    <MessageSquare className="w-4 h-4 transition-transform group-hover:rotate-12" />
-                                    {chatMessages.length > 0 ? `View Conversation (${chatMessages.length})` : "Send a Message"}
-                                </span>
-                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#CE0003]/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
-                            </Button>
-                        </div>
-                    ) : (
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className="bg-white/5 backdrop-blur-md rounded-3xl border border-white/10 overflow-hidden"
-                        >
-                            {/* Chat Header */}
-                            <div className="flex items-center justify-between p-4 border-b border-white/10">
-                                <div className="flex items-center gap-3">
-                                    <MessageSquare className="w-4 h-4 text-white/60" />
-                                    <span className="text-sm font-light text-white/80">Conversation</span>
-                                </div>
-                                <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => setChatOpen(false)}
-                                    className="text-white/40 hover:text-white hover:bg-white/10 text-xs rounded-full h-7 px-3"
-                                >
-                                    Minimize
-                                </Button>
+                    // We need to fetch the plan from the business metadata which is attached to the order
+                    const planName = order?.businessDetails?.subscriptionPlan as string | undefined
+                    const planLimits = getPlanLimits(planName)
+
+                    if (!planLimits.messaging) return null;
+
+                    return (
+                        <div className="space-y-6">
+                            <div className="text-center">
+                                <p className="text-xs text-white/50 font-light tracking-[0.2em] uppercase mb-6">Messages</p>
                             </div>
 
-                            {/* Chat Messages */}
-                            <div className="p-4 space-y-3 max-h-[350px] overflow-y-auto">
-                                {chatMessages.length === 0 && (
-                                    <p className="text-center text-white/30 text-sm py-8 font-light">No messages yet. Start the conversation below.</p>
-                                )}
-                                {chatMessages.map((msg: any) => (
-                                    <div
-                                        key={msg.id}
-                                        className={`flex ${msg.sender === "customer" ? "justify-end" : "justify-start"}`}
-                                    >
-                                        <div className={`max-w-[80%] rounded-2xl px-4 py-3 ${msg.sender === "customer"
-                                            ? "bg-white/15 text-white"
-                                            : "bg-[#CE0003]/20 text-white border border-[#CE0003]/20"
-                                            }`}>
-                                            <div className="flex items-center gap-2 mb-1">
-                                                {msg.sender === "customer" ? (
-                                                    <User className="w-3 h-3 opacity-50" />
-                                                ) : (
-                                                    <Building2 className="w-3 h-3 opacity-50" />
-                                                )}
-                                                <span className="text-[10px] font-semibold uppercase tracking-wider opacity-60">
-                                                    {msg.sender === "customer" ? "You" : "Business"}
-                                                </span>
-                                            </div>
-                                            <p className="text-sm leading-relaxed whitespace-pre-wrap font-light">{msg.message}</p>
-                                            <p className="text-[10px] mt-2 opacity-40">
-                                                {new Date(msg.createdAt).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
-                                            </p>
-                                        </div>
-                                    </div>
-                                ))}
-                                <div ref={chatEndRef} />
-                            </div>
-
-                            {/* Compose */}
-                            <div className="p-4 border-t border-white/10 text-white">
-                                {isBusinessTyping && (
-                                    <motion.div
-                                        initial={{ opacity: 0, y: 5 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        className="px-2 py-2 flex items-center gap-2 mb-1"
-                                    >
-                                        <div className="flex items-center gap-2 text-white/40">
-                                            <motion.div
-                                                animate={{
-                                                    scale: [1, 1.1, 1],
-                                                }}
-                                                transition={{
-                                                    duration: 1.5,
-                                                    repeat: Infinity,
-                                                    ease: "easeInOut"
-                                                }}
-                                            >
-                                                <MessageSquareMore className="w-3.5 h-3.5" />
-                                            </motion.div>
-                                            <div className="flex gap-1">
-                                                <span className="w-1 h-1 bg-white/40 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                                                <span className="w-1 h-1 bg-white/40 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                                                <span className="w-1 h-1 bg-white/40 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
-                                            </div>
-                                        </div>
-                                        <span className="text-[10px] font-light text-white/40 italic font-sans">Business is typing...</span>
-                                    </motion.div>
-                                )}
-                                <div className="flex gap-3">
-                                    <Textarea
-                                        value={messageBody}
-                                        onChange={(e) => {
-                                            setMessageBody(e.target.value)
-                                            // Update typing status
-                                            const typingId = order.id
-                                            updateTypingStatus(typingId, "customer")
-                                        }}
-                                        placeholder="Type your message..."
-                                        className="flex-1 min-h-[44px] max-h-[100px] bg-white/10 border-white/20 rounded-2xl text-sm font-light text-white placeholder:text-white/30 resize-none focus:border-[#CE0003]/50 focus:ring-1 focus:ring-[#CE0003]/20"
-                                        rows={1}
-                                        onKeyDown={(e) => {
-                                            if (e.key === "Enter" && !e.shiftKey) {
-                                                e.preventDefault()
-                                                handleSendMessage()
-                                            }
-                                        }}
-                                    />
+                            {!chatOpen ? (
+                                <div className="text-center">
                                     <Button
-                                        onClick={handleSendMessage}
-                                        disabled={!messageBody.trim() || isSending}
-                                        className="h-11 px-4 rounded-xl bg-[#CE0003] hover:bg-[#CE0003]/80 text-white font-semibold text-xs border-none shrink-0 transition-all active:scale-95 flex items-center gap-2"
+                                        onClick={() => setChatOpen(true)}
+                                        className="group relative overflow-hidden bg-white text-[#0A0B14] hover:bg-white/90 h-11 px-8 rounded-full font-light tracking-wide transition-all duration-500 hover:scale-[1.02] active:scale-95 shadow-[0_0_30px_rgba(255,255,255,0.1)] border-none text-xs"
                                     >
-                                        {isSending ? (
-                                            <span className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                                        ) : (
-                                            <>
-                                                <span>Send</span>
-                                                <Send className="w-3.5 h-3.5" />
-                                            </>
-                                        )}
+                                        <span className="relative z-10 flex items-center gap-3">
+                                            <MessageSquare className="w-4 h-4 transition-transform group-hover:rotate-12" />
+                                            {chatMessages.length > 0 ? `View Conversation (${chatMessages.length})` : "Send a Message"}
+                                        </span>
+                                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#CE0003]/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
                                     </Button>
                                 </div>
-                            </div>
-                        </motion.div>
-                    )}
+                            ) : (
+                                <motion.div
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    className="bg-white/5 backdrop-blur-md rounded-3xl border border-white/10 overflow-hidden"
+                                >
+                                    {/* Chat Header */}
+                                    <div className="flex items-center justify-between p-4 border-b border-white/10">
+                                        <div className="flex items-center gap-3">
+                                            <MessageSquare className="w-4 h-4 text-white/60" />
+                                            <span className="text-sm font-light text-white/80">Conversation</span>
+                                        </div>
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={() => setChatOpen(false)}
+                                            className="text-white/40 hover:text-white hover:bg-white/10 text-xs rounded-full h-7 px-3"
+                                        >
+                                            Minimize
+                                        </Button>
+                                    </div>
 
-                    <div className="pt-10 text-center opacity-50 text-[10px] uppercase tracking-[0.5em] font-light">
-                        Powering Premium Trust
-                    </div>
-                </div>
+                                    {/* Chat Messages */}
+                                    <div className="p-4 space-y-3 max-h-[350px] overflow-y-auto">
+                                        {chatMessages.length === 0 && (
+                                            <p className="text-center text-white/30 text-sm py-8 font-light">No messages yet. Start the conversation below.</p>
+                                        )}
+                                        {chatMessages.map((msg: any) => (
+                                            <div
+                                                key={msg.id}
+                                                className={`flex ${msg.sender === "customer" ? "justify-end" : "justify-start"}`}
+                                            >
+                                                <div className={`max-w-[80%] rounded-2xl px-4 py-3 ${msg.sender === "customer"
+                                                    ? "bg-white/15 text-white"
+                                                    : "bg-[#CE0003]/20 text-white border border-[#CE0003]/20"
+                                                    }`}>
+                                                    <div className="flex items-center gap-2 mb-1">
+                                                        {msg.sender === "customer" ? (
+                                                            <User className="w-3 h-3 opacity-50" />
+                                                        ) : (
+                                                            <Building2 className="w-3 h-3 opacity-50" />
+                                                        )}
+                                                        <span className="text-[10px] font-semibold uppercase tracking-wider opacity-60">
+                                                            {msg.sender === "customer" ? "You" : "Business"}
+                                                        </span>
+                                                    </div>
+                                                    <p className="text-sm leading-relaxed whitespace-pre-wrap font-light">{msg.message}</p>
+                                                    <p className="text-[10px] mt-2 opacity-40">
+                                                        {new Date(msg.createdAt).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        ))}
+                                        <div ref={chatEndRef} />
+                                    </div>
+
+                                    {/* Compose */}
+                                    <div className="p-4 border-t border-white/10 text-white">
+                                        {isBusinessTyping && (
+                                            <motion.div
+                                                initial={{ opacity: 0, y: 5 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                className="px-2 py-2 flex items-center gap-2 mb-1"
+                                            >
+                                                <div className="flex items-center gap-2 text-white/40">
+                                                    <motion.div
+                                                        animate={{
+                                                            scale: [1, 1.1, 1],
+                                                        }}
+                                                        transition={{
+                                                            duration: 1.5,
+                                                            repeat: Infinity,
+                                                            ease: "easeInOut"
+                                                        }}
+                                                    >
+                                                        <MessageSquareMore className="w-3.5 h-3.5" />
+                                                    </motion.div>
+                                                    <div className="flex gap-1">
+                                                        <span className="w-1 h-1 bg-white/40 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                                                        <span className="w-1 h-1 bg-white/40 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                                                        <span className="w-1 h-1 bg-white/40 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                                                    </div>
+                                                </div>
+                                                <span className="text-[10px] font-light text-white/40 italic font-sans">Business is typing...</span>
+                                            </motion.div>
+                                        )}
+                                        <div className="flex gap-3">
+                                            <Textarea
+                                                value={messageBody}
+                                                onChange={(e) => {
+                                                    setMessageBody(e.target.value)
+                                                    // Update typing status
+                                                    const typingId = order.id
+                                                    updateTypingStatus(typingId, "customer")
+                                                }}
+                                                placeholder="Type your message..."
+                                                className="flex-1 min-h-[44px] max-h-[100px] bg-white/10 border-white/20 rounded-2xl text-sm font-light text-white placeholder:text-white/30 resize-none focus:border-[#CE0003]/50 focus:ring-1 focus:ring-[#CE0003]/20"
+                                                rows={1}
+                                                onKeyDown={(e) => {
+                                                    if (e.key === "Enter" && !e.shiftKey) {
+                                                        e.preventDefault()
+                                                        handleSendMessage()
+                                                    }
+                                                }}
+                                            />
+                                            <Button
+                                                onClick={handleSendMessage}
+                                                disabled={!messageBody.trim() || isSending}
+                                                className="h-11 px-4 rounded-xl bg-[#CE0003] hover:bg-[#CE0003]/80 text-white font-semibold text-xs border-none shrink-0 transition-all active:scale-95 flex items-center gap-2"
+                                            >
+                                                {isSending ? (
+                                                    <span className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                                ) : (
+                                                    <>
+                                                        <span>Send</span>
+                                                        <Send className="w-3.5 h-3.5" />
+                                                    </>
+                                                )}
+                                            </Button>
+                                        </div>
+                                    </div>
+                                </motion.div>
+                            )}
+
+                            <div className="pt-10 text-center opacity-50 text-[10px] uppercase tracking-[0.5em] font-light">
+                                Powering Premium Trust
+                            </div>
+                        </div>
+                    )
+                })()}
             </main>
 
             {/* Visual Grain Overlay */}
