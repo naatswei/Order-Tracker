@@ -33,8 +33,7 @@ const plans = [
             "Up to 2 team members",
             "Up to 100 orders",
             "Bulk order updates",
-            "Customer messaging inbox",
-            "Real-time SMS/Email updates"
+            "Customer messaging inbox"
         ],
         buttonText: "Get Started",
     },
