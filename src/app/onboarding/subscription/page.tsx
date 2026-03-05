@@ -57,7 +57,6 @@ const plans = [
         features: [
             "Unlimited team members",
             "Unlimited orders",
-            "Bulk order updates",
             "Everything in 2 Weeks"
         ],
         buttonText: "Most Popular",
@@ -73,7 +72,7 @@ const plans = [
             "Unlimited team members",
             "Unlimited orders",
             "Everything in Month",
-            "Save over 60% annually"
+            "Save 64% annually"
         ],
         buttonText: "Get Maximum Value",
         buttonVariant: "black",
