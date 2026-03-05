@@ -36,7 +36,7 @@ function BulkUpdateContent() {
     const searchQuery = searchParams.get("search")
 
     // Business Config
-    const { organization } = useOrganization()
+    const { organization, isLoaded } = useOrganization()
     const [businessType, setBusinessType] = useState<string | null>(null)
     const config = getBusinessConfig(businessType)
     const QUICK_STATUSES = config.statuses
@@ -69,8 +69,19 @@ function BulkUpdateContent() {
             setBusinessType(orgBusinessType)
             localStorage.setItem("businessType", orgBusinessType)
         }
-        loadOrders()
-    }, [organization])
+
+        if (isLoaded) {
+            loadOrders()
+        }
+    }, [organization, isLoaded])
+
+    if (!isLoaded) {
+        return (
+            <div className="min-h-screen bg-background flex items-center justify-center">
+                <Loader2 className="w-8 h-8 animate-spin text-primary opacity-50" />
+            </div>
+        )
+    }
 
     // Plan-based feature check
     const planName = organization?.publicMetadata?.subscriptionPlan as string | undefined
