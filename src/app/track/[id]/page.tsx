@@ -372,8 +372,8 @@ export default function TrackingDetailsPage() {
                             <Clock className="w-5 h-5 text-blue-400" strokeWidth={1.5} />
                             <div>
                                 <p className="text-[10px] uppercase tracking-widest text-white/60 font-bold mb-1">Estimated Arrival</p>
-                                <p className="text-sm font-medium text-white/90">
-                                    {order.pickupDate || "Evaluating..."}
+                                <p className="text-sm font-light text-white/80">
+                                    {order.pickupDate ? new Date(order.pickupDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) : "Evaluating..."}
                                 </p>
                             </div>
                         </CardContent>
