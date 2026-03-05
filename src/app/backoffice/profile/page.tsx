@@ -390,6 +390,11 @@ export default function ProfilePage() {
                                                         Most Popular
                                                     </div>
                                                 )}
+                                                {plan.name === "Yearly" && (
+                                                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#191A43] text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full shadow-sm whitespace-nowrap">
+                                                        Save 64%
+                                                    </div>
+                                                )}
                                                 <h3 className="text-lg font-bold">{plan.name}</h3>
                                                 <p className="text-[11px] text-slate-500 font-medium">{plan.description}</p>
                                             </CardHeader>
