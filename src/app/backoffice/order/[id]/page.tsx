@@ -342,7 +342,7 @@ export default function OrderUpdatePage() {
 
                                 <div className="bg-blue-50 text-blue-700 px-4 py-3 rounded-xl text-sm flex items-start gap-2 border border-blue-100">
                                     <span className="font-bold shrink-0">Note:</span>
-                                    <span>Status update will be automatically sent to customer via Email or SMS notification.</span>
+                                    <span>Status update will be visible to customer on their tracking page.</span>
                                 </div>
                             </CardContent>
                         </Card>

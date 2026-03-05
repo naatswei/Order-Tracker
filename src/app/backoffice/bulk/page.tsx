@@ -498,7 +498,7 @@ function BulkUpdateContent() {
                             {/* Footer Note */}
                             <div className="rounded-lg p-4 text-center border" style={{ backgroundColor: `${config.theme.primary}0D`, borderColor: `${config.theme.primary}1A` }}>
                                 <p className="text-xs font-medium" style={{ color: config.theme.primary }}>
-                                    <span className="font-bold">Note:</span> Status update will be automatically sent to customer via Email or SMS notification.
+                                    <span className="font-bold">Note:</span> Status update will be visible to customer on their tracking page.
                                 </p>
                             </div>
 
