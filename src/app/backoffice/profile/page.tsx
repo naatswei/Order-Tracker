@@ -390,7 +390,7 @@ export default function ProfilePage() {
                                                     </div>
                                                 )}
                                                 {plan.name === "Yearly" && (
-                                                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#191A43] text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full shadow-sm whitespace-nowrap">
+                                                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-emerald-500 text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full shadow-sm whitespace-nowrap">
                                                         Save 64%
                                                     </div>
                                                 )}
