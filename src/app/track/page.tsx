@@ -45,7 +45,7 @@ export default function TrackPage() {
             <div className="container mx-auto px-6 py-12 relative z-10 flex flex-col min-h-screen">
                 <header className="flex justify-between items-center mb-20">
                     <div className="flex items-center text-2xl font-bold tracking-tight">
-                        <span className="text-[#3B82F6]">O</span>
+                        <span className="text-[#CE0003]">O</span>
                         <span className="text-white">Tracker</span>
                     </div>
                     <Link href="/">
