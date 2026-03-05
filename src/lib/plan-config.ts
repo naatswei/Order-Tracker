@@ -13,7 +13,7 @@ export const PLAN_LIMITS: Record<PlanName, PlanLimits> = {
         maxMembers: Infinity,
         maxOrders: 20,
         bulkUpdates: false,
-        messaging: false,
+        messaging: true,
     },
     "2 weeks": {
         maxMembers: Infinity,
