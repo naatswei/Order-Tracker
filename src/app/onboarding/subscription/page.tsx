@@ -58,8 +58,7 @@ const plans = [
             "Up to 4 team members",
             "Unlimited orders",
             "Everything in 2 Weeks",
-            "Priority team management",
-            "24/7 Dedicated support"
+            "Priority team management"
         ],
         buttonText: "Most Popular",
         buttonVariant: "orange",
