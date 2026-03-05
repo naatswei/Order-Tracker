@@ -235,6 +235,16 @@ export default function SubscriptionPage() {
                                 )}
                             >
                                 <CardHeader className="space-y-1 p-0">
+                                    {plan.name === "Month" && (
+                                        <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#CE0003] text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full shadow-sm whitespace-nowrap">
+                                            Most Popular
+                                        </div>
+                                    )}
+                                    {plan.name === "Yearly" && (
+                                        <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-emerald-500 text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full shadow-sm whitespace-nowrap">
+                                            Save 64%
+                                        </div>
+                                    )}
                                     <h3 className="text-2xl font-bold tracking-tight">{plan.name}</h3>
                                     <p className={cn(
                                         "text-[13px] font-medium",
@@ -244,11 +254,6 @@ export default function SubscriptionPage() {
 
                                 <CardContent className="flex-1 p-0 pt-10 space-y-10">
                                     <div className="flex flex-col space-y-2">
-                                        {plan.name === "Yearly" && (
-                                            <div className="w-fit bg-emerald-50 text-emerald-600 text-[10px] font-bold px-2 py-0.5 rounded-full tracking-wider mb-1">
-                                                Save 64%
-                                            </div>
-                                        )}
                                         <div className="flex items-baseline gap-2">
                                             <span className="text-3xl font-bold tracking-tight">{plan.price}</span>
                                             <span className={cn(
