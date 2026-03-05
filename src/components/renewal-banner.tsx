@@ -8,9 +8,13 @@ import { useEffect, useState } from "react"
 export function RenewalBanner() {
     const { organization, isLoaded } = useOrganization()
     const [daysLeft, setDaysLeft] = useState<number | null>(null)
+    const [isFreeTrial, setIsFreeTrial] = useState(false)
 
     useEffect(() => {
         if (!isLoaded || !organization) return
+
+        const planName = organization.publicMetadata?.subscriptionPlan as string
+        setIsFreeTrial(planName === "Free Trial")
 
         const expiryDateStr = organization.publicMetadata?.subscriptionExpiry as string
         if (!expiryDateStr) return
@@ -35,14 +39,15 @@ export function RenewalBanner() {
                 <div className="flex items-center gap-2 text-amber-800 text-sm font-medium">
                     <AlertCircle className="w-4 h-4 shrink-0" />
                     <span>
-                        {daysLeft === 0
-                            ? "Your subscription expires today!"
-                            : `Your subscription expires in ${daysLeft} ${daysLeft === 1 ? 'day' : 'days'}.`}
+                        {isFreeTrial
+                            ? (daysLeft === 0 ? "Your free trial expires today!" : `Your free trial expires in ${daysLeft} ${daysLeft === 1 ? 'day' : 'days'}.`)
+                            : (daysLeft === 0 ? "Your subscription expires today!" : `Your subscription expires in ${daysLeft} ${daysLeft === 1 ? 'day' : 'days'}.`)
+                        }
                     </span>
                 </div>
                 <Link href="/onboarding/subscription">
-                    <button className="flex items-center gap-1 text-xs font-bold text-amber-900 hover:text-amber-950 transition-colors tracking-wider">
-                        Renew Now <ArrowRight className="w-3 h-3" />
+                    <button className="flex items-center gap-1 text-xs font-bold text-amber-900 hover:text-amber-950 transition-colors tracking-wider uppercase">
+                        {isFreeTrial ? "Upgrade Now" : "Renew Now"} <ArrowRight className="w-3 h-3" />
                     </button>
                 </Link>
             </div>

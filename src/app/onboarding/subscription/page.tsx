@@ -200,6 +200,13 @@ export default function SubscriptionPage() {
         // but let's try to make the hook work by passing the config to it.
     }
 
+    const metadata = organization?.publicMetadata as any
+    const hasSubscriptionHistory = !!metadata?.subscriptionStatus
+
+    const displayPlans = hasSubscriptionHistory
+        ? plans.filter(p => p.name !== "Free Trial")
+        : plans
+
     return (
         <div className="min-h-screen bg-[#F8FAFC]">
             {/* Header */}
@@ -225,8 +232,8 @@ export default function SubscriptionPage() {
                     </div>
 
                     {/* Cards Grid */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                        {plans.map((plan) => (
+                    <div className={cn("grid grid-cols-1 md:grid-cols-2 gap-6", hasSubscriptionHistory ? "lg:grid-cols-3 max-w-5xl mx-auto" : "lg:grid-cols-4")}>
+                        {displayPlans.map((plan) => (
                             <Card
                                 key={plan.name}
                                 className={cn(
