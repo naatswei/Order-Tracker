@@ -61,8 +61,7 @@ const plans = [
             "Unlimited team members",
             "Unlimited orders",
             "Everything in Month",
-            "Save over 60% annually",
-            "Dedicated account manager"
+            "Save over 60% annually"
         ],
         buttonText: "Get Maximum Value",
     },
