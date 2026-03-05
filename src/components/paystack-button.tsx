@@ -114,7 +114,7 @@ export default function PaystackButton({
                     <Loader2 className="h-4 w-4 animate-spin" />
                     <span>Verifying...</span>
                 </div>
-            ) : (isLoaded ? plan.buttonText : "Loading...")}
+            ) : plan.buttonText}
         </Button>
     )
 }
