@@ -7,12 +7,13 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
-import { Loader2, Mail, MailOpen, ArrowLeft, Send, MessageSquare, MessageSquareMore, User, Building2 } from "lucide-react"
+import { Loader2, Mail, MailOpen, ArrowLeft, Send, MessageSquare, MessageSquareMore, User, Building2, Lock } from "lucide-react"
 import { getBusinessConfig } from "@/lib/business-configs"
 import Link from "next/link"
 import { toast } from "sonner"
 import { motion, AnimatePresence } from "framer-motion"
 import { BackofficeHeader } from "@/components/backoffice-header"
+import { getPlanLimits } from "@/lib/plan-config"
 
 type Message = {
     id: string
@@ -91,6 +92,30 @@ export default function InboxPage() {
             setMessagesLoading(false)
         }
     }, [isLoaded, organization])
+
+    // Plan-based feature check
+    const planName = organization?.publicMetadata?.subscriptionPlan as string | undefined
+    const planLimits = getPlanLimits(planName)
+
+    if (!planLimits.messaging) {
+        return (
+            <div className="min-h-screen bg-slate-50/50 font-sans">
+                <BackofficeHeader config={config} />
+                <div className="container mx-auto px-4 py-16 max-w-lg text-center space-y-6">
+                    <div className="w-16 h-16 rounded-2xl bg-slate-100 flex items-center justify-center mx-auto">
+                        <Lock className="w-8 h-8 text-slate-400" />
+                    </div>
+                    <h2 className="text-xl font-bold text-slate-900">Messaging Unavailable</h2>
+                    <p className="text-slate-500 text-sm">Customer messaging is available on the <strong>2 Weeks</strong> plan and above. Upgrade to unlock this feature.</p>
+                    <Link href="/backoffice/profile?tab=subscription">
+                        <Button className="bg-[#191A43] hover:bg-[#191A43]/90 text-white font-bold rounded-xl px-8 h-11">
+                            Upgrade Plan
+                        </Button>
+                    </Link>
+                </div>
+            </div>
+        )
+    }
 
     const loadMessages = async () => {
         if (!organization?.id) return

@@ -9,13 +9,14 @@ import { Textarea } from "@/components/ui/textarea"
 import { type Order } from "@/lib/storage"
 import { getOrders, bulkUpdateOrderStatus } from "@/app/actions/orders"
 import Link from "next/link"
-import { ArrowLeft, Package, Check, X, Loader2 } from "lucide-react"
+import { ArrowLeft, Package, Check, X, Loader2, Lock } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { toast } from "sonner"
 import { useRouter, useSearchParams } from "next/navigation"
 import { OrganizationSwitcher, UserButton, useOrganization } from "@clerk/nextjs"
 import { getBusinessConfig } from "@/lib/business-configs"
 import { BackofficeHeader } from "@/components/backoffice-header"
+import { getPlanLimits } from "@/lib/plan-config"
 
 
 export default function BulkUpdatePage() {
@@ -70,6 +71,30 @@ function BulkUpdateContent() {
         }
         loadOrders()
     }, [organization])
+
+    // Plan-based feature check
+    const planName = organization?.publicMetadata?.subscriptionPlan as string | undefined
+    const planLimits = getPlanLimits(planName)
+
+    if (!planLimits.bulkUpdates) {
+        return (
+            <div className="min-h-screen bg-slate-50/50 font-sans">
+                <BackofficeHeader config={config} />
+                <div className="container mx-auto px-4 py-16 max-w-lg text-center space-y-6">
+                    <div className="w-16 h-16 rounded-2xl bg-slate-100 flex items-center justify-center mx-auto">
+                        <Lock className="w-8 h-8 text-slate-400" />
+                    </div>
+                    <h2 className="text-xl font-bold text-slate-900">Bulk Updates Unavailable</h2>
+                    <p className="text-slate-500 text-sm">Bulk order updates are available on the <strong>2 Weeks</strong> plan and above. Upgrade to unlock this feature.</p>
+                    <Link href="/backoffice/profile?tab=subscription">
+                        <Button className="bg-[#191A43] hover:bg-[#191A43]/90 text-white font-bold rounded-xl px-8 h-11">
+                            Upgrade Plan
+                        </Button>
+                    </Link>
+                </div>
+            </div>
+        )
+    }
 
     const loadOrders = async () => {
         setIsLoading(true)

@@ -2,9 +2,10 @@
 
 import { db } from "@/db";
 import { orders, statusHistory } from "@/db/schema";
-import { eq, desc, and, or } from "drizzle-orm";
+import { eq, desc, and, or, count } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { auth, clerkClient } from "@clerk/nextjs/server";
+import { getPlanLimits } from "@/lib/plan-config";
 
 interface OrderInput {
     id?: string;
@@ -26,6 +27,27 @@ export async function createOrder(data: OrderInput) {
 
     if (!userId) {
         throw new Error("Unauthorized");
+    }
+
+    // Enforce order limit based on subscription plan
+    if (orgId) {
+        try {
+            const client = await clerkClient();
+            const org = await client.organizations.getOrganization({ organizationId: orgId });
+            const planName = (org.publicMetadata as any)?.subscriptionPlan;
+            const limits = getPlanLimits(planName);
+
+            if (limits.maxOrders !== Infinity) {
+                const [result] = await db.select({ value: count() }).from(orders).where(eq(orders.clerkOrgId, orgId));
+                if (result.value >= limits.maxOrders) {
+                    throw new Error(`Order limit reached (${limits.maxOrders}). Please upgrade your plan to create more orders.`);
+                }
+            }
+        } catch (e: any) {
+            if (e.message?.includes('Order limit reached')) throw e;
+            // If Clerk fails, allow creation to not block workflow
+            console.error("Plan check failed", e);
+        }
     }
 
     const orderId = data.id || Math.random().toString(36).substring(2, 9).toUpperCase();
@@ -98,6 +120,14 @@ export async function getOrders() {
     }
 
     return await query.orderBy(desc(orders.createdAt));
+}
+
+export async function getOrderCount() {
+    const { orgId } = await auth();
+    if (!orgId) return 0;
+
+    const [result] = await db.select({ value: count() }).from(orders).where(eq(orders.clerkOrgId, orgId));
+    return result.value;
 }
 
 export async function getOrderById(id: string) {

@@ -30,11 +30,11 @@ const plans = [
         price: "GHS 199",
         period: "14 days",
         features: [
-            "Everything in Free Trial",
-            "Real-time SMS/Email updates",
-            "Customer data collection",
-            "Priority support",
-            "CSV data export"
+            "Up to 2 team members",
+            "Up to 100 orders",
+            "Bulk order updates",
+            "Customer messaging inbox",
+            "Real-time SMS/Email updates"
         ],
         buttonText: "Get Started",
     },
@@ -44,10 +44,10 @@ const plans = [
         price: "GHS 350",
         period: "Monthly",
         features: [
+            "Up to 4 team members",
+            "Unlimited orders",
             "Everything in 2 Weeks",
-            "Advanced business analytics",
             "Priority team management",
-            "Custom brand colors",
             "24/7 Dedicated support"
         ],
         buttonText: "Most Popular",
@@ -58,11 +58,11 @@ const plans = [
         price: "GHS 1,500",
         period: "Yearly",
         features: [
+            "Unlimited team members",
+            "Unlimited orders",
             "Everything in Month",
             "Save over 60% annually",
-            "Early access to new tools",
-            "Dedicated account manager",
-            "Full API access"
+            "Dedicated account manager"
         ],
         buttonText: "Get Maximum Value",
     },
