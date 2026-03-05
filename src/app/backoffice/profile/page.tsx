@@ -45,8 +45,7 @@ const plans = [
         features: [
             "Up to 4 team members",
             "Unlimited orders",
-            "Everything in 2 Weeks",
-            "Priority team management"
+            "Everything in 2 Weeks"
         ],
         buttonText: "Most Popular",
     },
