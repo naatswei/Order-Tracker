@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
-import { Package, Mail, Menu, X, LayoutDashboard, ClipboardList, User, ChevronRight } from "lucide-react"
+import { Package, Mail, Menu, X, LayoutDashboard, ClipboardList, Settings, ChevronRight } from "lucide-react"
 import { OrganizationSwitcher, UserButton, useOrganization } from "@clerk/nextjs"
 import { Button } from "@/components/ui/button"
 import { motion, AnimatePresence } from "framer-motion"
@@ -78,7 +78,7 @@ export function BackofficeHeader({ config }: BackofficeHeaderProps) {
                     </Link>
                     <Link href="/backoffice/profile">
                         <Button variant="ghost" size="icon" className="relative h-9 w-9 rounded-full bg-slate-100/50 hover:bg-slate-200/50 border border-slate-200 shadow-sm transition-all" title="Settings">
-                            <User className="w-4 h-4 text-slate-600" />
+                            <Settings className="w-4 h-4 text-slate-600" />
                         </Button>
                     </Link>
                     <OrganizationSwitcher
@@ -180,7 +180,7 @@ export function BackofficeHeader({ config }: BackofficeHeaderProps) {
                                     className="flex items-center gap-3 px-3 py-3 rounded-xl text-slate-700 hover:bg-slate-50 transition-colors group"
                                 >
                                     <div className="w-9 h-9 rounded-lg bg-slate-100 flex items-center justify-center group-hover:bg-[#191A43]/10 transition-colors">
-                                        <User className="w-4 h-4 text-slate-500 group-hover:text-[#191A43] transition-colors" />
+                                        <Settings className="w-4 h-4 text-slate-500 group-hover:text-[#191A43] transition-colors" />
                                     </div>
                                     <div className="flex-1">
                                         <p className="text-sm font-semibold text-slate-800">Profile</p>
