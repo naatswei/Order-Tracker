@@ -89,19 +89,42 @@ function BulkUpdateContent() {
 
     if (!planLimits.bulkUpdates) {
         return (
-            <div className="min-h-screen bg-slate-50/50 font-sans">
+            <div className="min-h-screen bg-[#F8FAFC] font-sans selection:bg-primary/20">
                 <BackofficeHeader config={config} />
-                <div className="container mx-auto px-4 py-16 max-w-lg text-center space-y-6">
-                    <div className="w-16 h-16 rounded-2xl bg-slate-100 flex items-center justify-center mx-auto">
-                        <Lock className="w-8 h-8 text-slate-400" />
+                <div className="container mx-auto px-4 py-20 flex flex-col items-center justify-center min-h-[70vh]">
+                    <div className="max-w-md w-full bg-white rounded-3xl p-8 md:p-12 shadow-sm border border-slate-100 text-center space-y-8 relative overflow-hidden">
+                        {/* Decorative background blur */}
+                        <div className="absolute -top-10 -right-10 w-40 h-40 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
+
+                        <div className="relative">
+                            <div className="w-20 h-20 rounded-2xl bg-blue-50/50 flex items-center justify-center mx-auto border border-blue-100/50 mb-6">
+                                <Package className="w-10 h-10 text-blue-500" strokeWidth={1.5} />
+                            </div>
+                            <div className="absolute -bottom-2 -right-2 w-8 h-8 rounded-full bg-white shadow-sm border border-slate-100 flex items-center justify-center">
+                                <Lock className="w-4 h-4 text-slate-400" strokeWidth={2} />
+                            </div>
+                        </div>
+
+                        <div className="space-y-3 relative z-10">
+                            <h2 className="text-2xl font-bold text-slate-900 tracking-tight">Bulk Updates</h2>
+                            <p className="text-slate-500 text-[15px] leading-relaxed">
+                                Save hours of manual work. Update dozens of order statuses and notify all your customers with a single click.
+                            </p>
+                        </div>
+
+                        <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100 text-left space-y-3 relative z-10">
+                            <p className="text-xs font-bold text-slate-900 uppercase tracking-wider">Premium Feature</p>
+                            <p className="text-sm text-slate-600">
+                                Bulk order updates are available on the <strong className="text-slate-900">2 Weeks</strong> plan and above. Upgrade your workspace to unlock this feature.
+                            </p>
+                        </div>
+
+                        <Link href="/backoffice/profile?tab=subscription" className="block relative z-10">
+                            <Button className="w-full bg-[#191A43] hover:bg-[#191A43]/90 text-white font-bold rounded-xl h-12 shadow-lg shadow-[#191A43]/10 transition-all hover:-translate-y-0.5">
+                                View Upgrade Plans
+                            </Button>
+                        </Link>
                     </div>
-                    <h2 className="text-xl font-bold text-slate-900">Bulk Updates Unavailable</h2>
-                    <p className="text-slate-500 text-sm">Bulk order updates are available on the <strong>2 Weeks</strong> plan and above. Upgrade to unlock this feature.</p>
-                    <Link href="/backoffice/profile?tab=subscription">
-                        <Button className="bg-[#191A43] hover:bg-[#191A43]/90 text-white font-bold rounded-xl px-8 h-11">
-                            Upgrade Plan
-                        </Button>
-                    </Link>
                 </div>
             </div>
         )
