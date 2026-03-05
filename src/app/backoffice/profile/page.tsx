@@ -30,6 +30,7 @@ const plans = [
         price: "GHS 199",
         period: "14 days",
         features: ["Everything in Free Trial", "Real-time updates", "Customer data collection"],
+        buttonText: "Get 2 Weeks",
     },
     {
         name: "Month",
@@ -37,6 +38,7 @@ const plans = [
         price: "GHS 350",
         period: "Monthly",
         features: ["Everything in 2 Weeks", "Advanced analytics", "Priority team management"],
+        buttonText: "Get Monthly",
     },
     {
         name: "Yearly",
@@ -44,6 +46,7 @@ const plans = [
         price: "GHS 1,500",
         period: "Yearly",
         features: ["Everything in Month", "Save over 60%", "Dedicated account manager"],
+        buttonText: "Get Yearly",
     },
 ]
 
@@ -330,9 +333,9 @@ export default function ProfilePage() {
                                                 <div className={cn(
                                                     "text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider",
                                                     subscriptionStatus === 'active' && !isExpired ? "bg-emerald-100 text-emerald-700" :
-                                                        subscriptionStatus === 'trialing' ? "bg-blue-100 text-blue-700" : "bg-red-100 text-red-700"
+                                                        subscriptionStatus === 'trialing' ? "bg-slate-100 text-slate-400" : "bg-red-100 text-red-700"
                                                 )}>
-                                                    {isExpired ? "Expired" : subscriptionStatus}
+                                                    {isExpired ? "Expired" : subscriptionStatus === 'trialing' ? "Free Trial" : subscriptionStatus}
                                                 </div>
                                             </h2>
                                             {subscriptionExpiry ? (
