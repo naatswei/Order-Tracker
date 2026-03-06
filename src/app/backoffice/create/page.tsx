@@ -189,6 +189,7 @@ function CreateOrderContent() {
                                         onChange={(e) => setItemType(e.target.value)}
                                         placeholder={config.itemPlaceholder}
                                         required
+                                        autoComplete="off"
                                         className="h-12 rounded-xl bg-white/50 border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80"
                                     />
                                 </div>
