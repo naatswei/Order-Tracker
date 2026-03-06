@@ -39,7 +39,6 @@ export default function OrganizationSelectionPage() {
 
                 <div className="w-full max-w-md flex justify-center">
                     <OrganizationList
-                        hidePersonal
                         afterCreateOrganizationUrl="/onboarding/business-type"
                         afterSelectOrganizationUrl="/onboarding/business-type"
                     />
