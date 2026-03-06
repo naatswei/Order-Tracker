@@ -1,8 +1,10 @@
 "use client"
 
-import { OrganizationList, useOrganization } from "@clerk/nextjs"
+import { OrganizationList, useOrganization, SignOutButton } from "@clerk/nextjs"
 import { useRouter } from "next/navigation"
 import { useEffect } from "react"
+import { LogOut } from "lucide-react"
+import { Button } from "@/components/ui/button"
 
 export default function OrganizationSelectionPage() {
     const { organization, isLoaded } = useOrganization()
@@ -24,6 +26,13 @@ export default function OrganizationSelectionPage() {
                         <span className="text-[#CE0003]">O</span>
                         <span className="text-[#191A43]">Tracker</span>
                     </div>
+
+                    <SignOutButton>
+                        <Button variant="ghost" size="sm" className="text-slate-500 hover:text-slate-900 gap-2">
+                            <LogOut className="w-4 h-4" />
+                            Sign Out
+                        </Button>
+                    </SignOutButton>
                 </div>
             </header>
 
@@ -39,6 +48,7 @@ export default function OrganizationSelectionPage() {
 
                 <div className="w-full max-w-md flex justify-center">
                     <OrganizationList
+                        hidePersonal={true}
                         afterCreateOrganizationUrl="/onboarding/business-type"
                         afterSelectOrganizationUrl="/onboarding/business-type"
                     />

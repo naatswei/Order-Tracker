@@ -53,9 +53,21 @@ export async function createOrder(data: OrderInput) {
     }
 
     // Auto-generate order number
-    const initials = orgName.split(" ").map(n => n[0]).join("").toUpperCase().substring(0, 3) || "ORD";
-    const [countResult] = await db.select({ value: count() }).from(orders).where(eq(orders.clerkOrgId, orgId || "unknown"));
-    const sequenceNumber = countResult.value + 1;
+    let initials = "ORD";
+    if (orgName) {
+        const words = orgName.split(/\s+/);
+        if (words.length > 1) {
+            initials = words.map(w => w[0]).join("").toUpperCase().substring(0, 3);
+        } else {
+            initials = orgName.substring(0, 2).toUpperCase();
+        }
+    }
+
+    const [countResult] = await db.select({ value: count() })
+        .from(orders)
+        .where(eq(orders.clerkOrgId, orgId || "unknown"));
+
+    const sequenceNumber = (countResult?.value || 0) + 1;
     const paddedSequence = String(sequenceNumber).padStart(5, '0');
     const generatedOrderNumber = `${initials}-${paddedSequence}`;
 
