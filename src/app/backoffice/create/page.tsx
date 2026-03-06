@@ -85,6 +85,9 @@ function CreateOrderContent() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
+        // Prevent extremely rapid double-clicks
+        if (isSaving) return
+
         setIsSaving(true)
 
         try {
@@ -115,11 +118,11 @@ function CreateOrderContent() {
                 })
                 toast.success("New order created")
             }
+            // Do NOT setIsSaving(false) on success to prevent double-clicks during route transition
             router.push("/backoffice")
         } catch (error) {
             const message = error instanceof Error ? error.message : "Failed to save order"
             toast.error(message)
-        } finally {
             setIsSaving(false)
         }
     }
