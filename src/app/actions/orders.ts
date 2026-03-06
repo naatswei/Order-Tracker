@@ -29,11 +29,14 @@ export async function createOrder(data: OrderInput) {
         throw new Error("Unauthorized");
     }
 
-    // Enforce order limit based on subscription plan
+    let orgName = "Order";
+
+    // Enforce order limit and get org name
     if (orgId) {
         try {
             const client = await clerkClient();
             const org = await client.organizations.getOrganization({ organizationId: orgId });
+            orgName = org.name;
             const planName = (org.publicMetadata as any)?.subscriptionPlan;
             const limits = getPlanLimits(planName);
 
@@ -45,16 +48,22 @@ export async function createOrder(data: OrderInput) {
             }
         } catch (e: any) {
             if (e.message?.includes('Order limit reached')) throw e;
-            // If Clerk fails, allow creation to not block workflow
             console.error("Plan check failed", e);
         }
     }
+
+    // Auto-generate order number
+    const initials = orgName.split(" ").map(n => n[0]).join("").toUpperCase().substring(0, 3) || "ORD";
+    const [countResult] = await db.select({ value: count() }).from(orders).where(eq(orders.clerkOrgId, orgId || "unknown"));
+    const sequenceNumber = countResult.value + 1;
+    const paddedSequence = String(sequenceNumber).padStart(5, '0');
+    const generatedOrderNumber = `${initials}-${paddedSequence}`;
 
     const orderId = data.id || Math.random().toString(36).substring(2, 9).toUpperCase();
 
     await db.insert(orders).values({
         id: orderId,
-        orderNumber: data.orderNumber,
+        orderNumber: generatedOrderNumber,
         customerName: data.customerName,
         customerEmail: data.customerEmail || null,
         customerPhone: data.customerPhone,

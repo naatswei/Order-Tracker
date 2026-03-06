@@ -128,7 +128,6 @@ function CreateOrderContent() {
         customerName.trim() !== "" &&
         customerPhone.trim() !== "" &&
         itemType.trim() !== "" &&
-        orderNumber.trim() !== "" &&
         pickupDate !== undefined
 
     return (
@@ -195,14 +194,13 @@ function CreateOrderContent() {
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label htmlFor={`${businessType}-orderNumber`} className="ml-1 text-xs font-semibold text-muted-foreground tracking-wider">{config.orderLabel} <span className="text-red-500">*</span></Label>
+                                    <Label htmlFor={`${businessType}-orderNumber`} className="ml-1 text-xs font-semibold text-muted-foreground tracking-wider">{config.orderLabel}</Label>
                                     <Input
                                         id={`${businessType}-orderNumber`}
-                                        value={orderNumber}
-                                        onChange={(e) => setOrderNumber(e.target.value)}
-                                        placeholder={config.orderPlaceholder}
-                                        required
-                                        className="h-12 rounded-xl bg-white/50 border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80"
+                                        value={editingId ? orderNumber : ""}
+                                        disabled
+                                        placeholder={editingId ? "" : "Auto-generated on save"}
+                                        className="h-12 rounded-xl bg-slate-50 border-zinc-200 text-slate-500 cursor-not-allowed"
                                     />
                                 </div>
 
