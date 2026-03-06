@@ -7,15 +7,15 @@ const isProtectedRoute = createRouteMatcher([
 ]);
 
 export default clerkMiddleware(async (auth, req) => {
-    const { userId } = await (auth as any)();
     const { pathname, search } = req.nextUrl;
 
     if (isProtectedRoute(req)) {
-        await (auth as any)().protect();
+        await auth.protect();
     }
 
     // Handle root route redirection squarely in middleware
     if (pathname === '/') {
+        const { userId } = await auth();
         const redirectUrl = userId ? `/backoffice${search}` : `/sign-in${search}`;
         return NextResponse.redirect(new URL(redirectUrl, req.url));
     }

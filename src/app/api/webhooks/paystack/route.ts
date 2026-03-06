@@ -53,7 +53,8 @@ export async function POST(req: Request) {
                     'active',
                     expiryDate,
                     isTrial ? true : undefined,
-                    planName
+                    planName,
+                    true
                 )
 
                 console.log(`Webhook: Successfully updated subscription for Org: ${orgId}, Plan: ${planName}`)

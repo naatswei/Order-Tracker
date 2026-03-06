@@ -41,10 +41,13 @@ export async function updateOrgSubscriptionStatus(
     status: 'active' | 'trialing',
     expiryDate: string,
     trialUsed?: boolean,
-    planName?: string
+    planName?: string,
+    isServerCall = false
 ) {
-    const { userId } = await auth()
-    if (!userId) throw new Error('Unauthorized')
+    if (!isServerCall) {
+        const { userId } = await auth()
+        if (!userId) throw new Error('Unauthorized')
+    }
 
     const client = await clerkClient()
 
