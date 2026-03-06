@@ -13,6 +13,7 @@ import { Badge } from "@/components/ui/badge"
 import { type Order } from "@/lib/storage"
 import { getOrderWithHistory, updateOrderStatus } from "@/app/actions/orders"
 import Link from "next/link"
+import { toast } from "sonner"
 import { ArrowLeft, MapPin, Clock, User, Phone, Mail, Shirt, Package, Loader2 } from "lucide-react"
 import { UserButton, OrganizationSwitcher, useOrganization } from "@clerk/nextjs"
 import { getBusinessConfig } from "@/lib/business-configs"
@@ -92,18 +93,18 @@ export default function OrderUpdatePage() {
         e.preventDefault()
 
         if (!status) {
-            alert("Please enter a status")
+            toast.error("Please enter a status")
             return
         }
 
         setIsUpdating(true)
         try {
             await updateOrderStatus(orderId, status, location || "Main Office", message || "Status updated")
-            alert("Status updated successfully!")
+            toast.success("Status updated successfully!")
             router.push("/backoffice")
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : "Failed to update status"
-            alert(errorMessage)
+            toast.error(errorMessage)
         } finally {
             setIsUpdating(false)
         }
