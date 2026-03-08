@@ -3,9 +3,10 @@
 import { useState, useEffect } from "react"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
-import { ArrowRight, Shirt, Sparkles, Warehouse, Laptop, LucideIcon, Loader2 } from "lucide-react"
+import { ArrowRight, Shirt, Sparkles, Warehouse, Laptop, LucideIcon } from "lucide-react"
 import { useOrganization } from "@clerk/nextjs"
 import { updateOrgBusinessType } from "@/app/actions/org-metadata"
+import { AppLoader } from "@/components/app-loader"
 
 import { Button } from "@/components/ui/button"
 import { SelectionCard } from "@/components/selection-card"
@@ -63,12 +64,7 @@ export default function BusinessTypePage() {
     }, [isLoaded, organization, router])
 
     if (!isLoaded || organization?.publicMetadata?.businessType) {
-        return (
-            <div className="min-h-screen bg-white flex flex-col items-center justify-center gap-4">
-                <Loader2 className="w-8 h-8 text-slate-900 animate-spin" />
-                <p className="text-slate-400 font-medium animate-pulse">Checking business setup...</p>
-            </div>
-        )
+        return <AppLoader message="Checking business setup..." />
     }
 
     const businessTypes: BusinessType[] = [
@@ -229,11 +225,11 @@ export default function BusinessTypePage() {
                                     className="bg-slate-900 hover:bg-slate-800 hover:-translate-y-0.5 text-white shadow-[0_4px_20px_rgb(0,0,0,0.06)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.1)] w-48 h-12 rounded-2xl font-medium transition-all duration-300 disabled:opacity-100 disabled:bg-slate-100 disabled:text-slate-400 text-base"
                                 >
                                     {isLoading ? (
-                                        <Loader2 className="h-5 w-5 animate-spin" />
+                                        <span className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
                                     ) : (
                                         <>
                                             Next
-                                            <ArrowRight className="ml-2 h-5 w-5" />
+                                            <ArrowRight className="ml-2 h-4 w-4" />
                                         </>
                                     )}
                                 </Button>

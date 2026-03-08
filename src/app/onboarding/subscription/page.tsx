@@ -1,12 +1,13 @@
 "use client"
 
-import { Check, Loader2 } from "lucide-react"
+import { Check } from "lucide-react"
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { useOrganization, useUser } from "@clerk/nextjs"
 import { updateOrgSubscriptionStatus } from "@/app/actions/org-metadata"
+import { AppLoader } from "@/components/app-loader"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
 import dynamic from "next/dynamic"
@@ -204,14 +205,7 @@ export default function SubscriptionPage() {
         : plans
 
     if (isLoading) {
-        return (
-            <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center">
-                <div className="flex flex-col items-center gap-4">
-                    <Loader2 className="w-8 h-8 animate-spin text-[#3B82F6]" />
-                    <p className="text-slate-400 text-sm font-medium animate-pulse">Loading plans...</p>
-                </div>
-            </div>
-        )
+        return <AppLoader message="Loading plans..." />
     }
 
     return (

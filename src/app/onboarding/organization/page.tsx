@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import { useEffect } from "react"
 import { LogOut } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { AppLoader } from "@/components/app-loader"
 
 export default function OrganizationSelectionPage() {
     const { organization, isLoaded } = useOrganization()
@@ -21,6 +22,10 @@ export default function OrganizationSelectionPage() {
             router.replace("/backoffice")
         }
     }, [isLoaded, organization, router])
+
+    if (!isLoaded || organization) {
+        return <AppLoader message="Loading your workspace..." />
+    }
 
     return (
         <div className="min-h-screen bg-[#FAFAFA]">

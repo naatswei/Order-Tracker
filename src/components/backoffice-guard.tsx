@@ -3,7 +3,7 @@
 import { useOrganization } from "@clerk/nextjs"
 import { useRouter, usePathname } from "next/navigation"
 import { useEffect, useState } from "react"
-import { Loader2 } from "lucide-react"
+import { AppLoader } from "@/components/app-loader"
 
 export function BackofficeGuard({ children }: { children: React.ReactNode }) {
     const { organization, isLoaded } = useOrganization()
@@ -52,12 +52,7 @@ export function BackofficeGuard({ children }: { children: React.ReactNode }) {
     }, [isLoaded, organization, router]) // Removed pathname to prevent re-checks on every nav
 
     if (!isLoaded || isChecking) {
-        return (
-            <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50">
-                <Loader2 className="h-10 w-10 animate-spin text-primary opacity-50 mb-4" />
-                <p className="text-slate-500 font-medium">Preparing your dashboard...</p>
-            </div>
-        )
+        return <AppLoader message="Preparing your dashboard..." />
     }
 
     return <>{children}</>

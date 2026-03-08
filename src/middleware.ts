@@ -15,9 +15,14 @@ export default clerkMiddleware(async (auth, req) => {
 
     // Handle root route redirection squarely in middleware
     if (pathname === '/') {
-        const { userId } = await auth();
-        const redirectUrl = userId ? `/backoffice${search}` : `/sign-in${search}`;
-        return NextResponse.redirect(new URL(redirectUrl, req.url));
+        const { userId, orgId } = await auth();
+        if (!userId) {
+            return NextResponse.redirect(new URL(`/sign-in${search}`, req.url));
+        }
+
+        // If we have an orgId, go to backoffice. If not, go to onboarding/organization
+        const target = orgId ? `/backoffice${search}` : `/onboarding/organization${search}`;
+        return NextResponse.redirect(new URL(target, req.url));
     }
 });
 

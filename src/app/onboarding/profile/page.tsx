@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import { ArrowRight, Upload, Camera, Sparkles, Loader2 } from "lucide-react"
 import { useOrganization } from "@clerk/nextjs"
 import { updateOrgProfile } from "@/app/actions/org-metadata"
+import { AppLoader } from "@/components/app-loader"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -29,12 +30,7 @@ export default function BusinessProfilePage() {
     }, [isLoaded, organization, router])
 
     if (!isLoaded || (organization?.publicMetadata as any)?.location) {
-        return (
-            <div className="min-h-screen bg-[#F8FAFC] flex flex-col items-center justify-center gap-4">
-                <Loader2 className="w-8 h-8 text-[#191A43] animate-spin" />
-                <p className="text-slate-400 font-medium animate-pulse">Syncing profile...</p>
-            </div>
-        )
+        return <AppLoader message="Syncing profile..." />
     }
     const [imagePreview, setImagePreview] = useState<string | null>(null)
     const fileInputRef = useRef<HTMLInputElement>(null)
