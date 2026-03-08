@@ -603,8 +603,23 @@ export default function TrackingDetailsPage() {
                                 </motion.div>
                             )}
 
-                            <div className="pt-10 text-center opacity-50 text-[10px] uppercase tracking-[0.5em] font-light">
-                                Powering Premium Trust
+                            <div className="pt-10 text-center space-y-4">
+                                <p className="opacity-50 text-[10px] uppercase tracking-[0.5em] font-light">
+                                    Powering Premium Trust
+                                </p>
+                                <motion.div
+                                    initial={{ opacity: 0 }}
+                                    whileInView={{ opacity: 1 }}
+                                    transition={{ delay: 1 }}
+                                >
+                                    <Link
+                                        href="/"
+                                        className="inline-flex items-center gap-2 text-[11px] text-[#3B82F6] hover:text-[#3B82F6]/80 font-medium tracking-tight transition-colors group"
+                                    >
+                                        Use OTracker for your business
+                                        <ChevronRight className="w-3 h-3 transition-transform group-hover:translate-x-0.5" />
+                                    </Link>
+                                </motion.div>
                             </div>
                         </div>
                     )

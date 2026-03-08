@@ -111,10 +111,23 @@ export default function TrackPage() {
                             </CardContent>
                         </Card>
 
-                        <div className="pt-12">
+                        <div className="pt-12 space-y-4 text-center">
                             <p className="text-[10px] text-white/50 font-light tracking-[0.4em] uppercase">
                                 Private & Encrypted Journey
                             </p>
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ delay: 1.5 }}
+                            >
+                                <Link
+                                    href="/"
+                                    className="inline-flex items-center gap-2 text-[11px] text-[#3B82F6] hover:text-[#3B82F6]/80 font-medium tracking-tight transition-colors group"
+                                >
+                                    Use OTracker for your business
+                                    <ArrowRight className="w-3 h-3 transition-transform group-hover:translate-x-0.5" />
+                                </Link>
+                            </motion.div>
                         </div>
                     </motion.div>
                 </div>
