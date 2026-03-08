@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
-import { useOrganization, useUser } from "@clerk/nextjs"
+import { useOrganization, useUser, OrganizationProfile } from "@clerk/nextjs"
 import { useRouter } from "next/navigation"
 import { updateOrgProfile, updateOrgSubscriptionStatus } from "@/app/actions/org-metadata"
 import { Card, CardContent, CardHeader, CardFooter } from "@/components/ui/card"
@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Loader2, ArrowLeft, Camera, Settings, Building2, CreditCard, Check, Clock } from "lucide-react"
+import { Loader2, ArrowLeft, Camera, Settings, Building2, CreditCard, Check, Clock, Users } from "lucide-react"
 import { getBusinessConfig } from "@/lib/business-configs"
 import Link from "next/link"
 import { toast } from "sonner"
@@ -222,6 +222,10 @@ export default function ProfilePage() {
                                 <Building2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                                 Business Profile
                             </TabsTrigger>
+                            <TabsTrigger value="team" className="rounded-xl px-4 sm:px-6 data-[state=active]:bg-slate-100 data-[state=active]:text-slate-900 data-[state=active]:shadow-none text-slate-500 font-medium transition-all gap-1.5 sm:gap-2 flex-1 sm:flex-none text-xs sm:text-sm">
+                                <Users className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                                Team Management
+                            </TabsTrigger>
                             <TabsTrigger value="subscription" className="rounded-xl px-4 sm:px-6 data-[state=active]:bg-slate-100 data-[state=active]:text-slate-900 data-[state=active]:shadow-none text-slate-500 font-medium transition-all gap-1.5 sm:gap-2 flex-1 sm:flex-none text-xs sm:text-sm">
                                 <CreditCard className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                                 Subscription & Billing
@@ -330,6 +334,29 @@ export default function ProfilePage() {
                                             </Button>
                                         </div>
                                     </form>
+                                </CardContent>
+                            </Card>
+                        </motion.div>
+                    </TabsContent>
+
+                    <TabsContent value="team">
+                        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+                            <Card className="border-slate-200 shadow-sm overflow-hidden bg-white rounded-3xl">
+                                <CardContent className="p-0 sm:p-2">
+                                    <div className="w-full">
+                                        <OrganizationProfile
+                                            appearance={{
+                                                elements: {
+                                                    rootBox: "w-full flex justify-center",
+                                                    card: "shadow-none border-none w-full max-w-none p-0",
+                                                    navbar: "hidden", // Hide sidebar to save space
+                                                    scrollBox: "p-4 sm:p-8",
+                                                    headerTitle: "text-2xl font-bold text-slate-900",
+                                                    organizationProfilePage: "w-full"
+                                                }
+                                            }}
+                                        />
+                                    </div>
                                 </CardContent>
                             </Card>
                         </motion.div>
