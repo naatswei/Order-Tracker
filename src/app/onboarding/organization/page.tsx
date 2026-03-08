@@ -1,6 +1,6 @@
 "use client"
 
-import { OrganizationList, useOrganization, SignOutButton } from "@clerk/nextjs"
+import { OrganizationList, useOrganization, SignOutButton, useOrganizationList } from "@clerk/nextjs"
 import { useRouter } from "next/navigation"
 import { useEffect } from "react"
 import { LogOut } from "lucide-react"
@@ -8,6 +8,11 @@ import { Button } from "@/components/ui/button"
 
 export default function OrganizationSelectionPage() {
     const { organization, isLoaded } = useOrganization()
+    const { userMemberships, isLoaded: membershipsLoaded } = useOrganizationList({
+        userMemberships: {
+            infinite: true,
+        },
+    });
     const router = useRouter()
 
     useEffect(() => {
@@ -44,6 +49,15 @@ export default function OrganizationSelectionPage() {
                     <p className="text-slate-500">
                         To start tracking orders, you need a business space. Create a new one or select an existing one below.
                     </p>
+
+                    {membershipsLoaded && userMemberships.data && userMemberships.data.length > 0 && (
+                        <div className="mt-4 p-4 bg-amber-50 rounded-2xl border border-amber-100 text-left">
+                            <p className="text-xs font-semibold text-amber-700 uppercase tracking-wider mb-1">💡 Important Note</p>
+                            <p className="text-sm text-amber-600 leading-relaxed">
+                                Avoid using the same name for multiple businesses. Unique names help you and your customers stay organized!
+                            </p>
+                        </div>
+                    )}
                 </div>
 
                 <div className="w-full max-w-md flex justify-center">

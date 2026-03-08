@@ -44,9 +44,11 @@ export async function updateOrgSubscriptionStatus(
     planName?: string,
     isServerCall = false
 ) {
+    let currentUserId: string | null = null;
     if (!isServerCall) {
         const { userId } = await auth()
         if (!userId) throw new Error('Unauthorized')
+        currentUserId = userId;
     }
 
     const client = await clerkClient()
@@ -58,6 +60,15 @@ export async function updateOrgSubscriptionStatus(
 
     if (trialUsed !== undefined) {
         metadata.trialUsed = trialUsed
+
+        // CRITICAL: Also update the user's metadata so they can't reuse the trial on another org
+        if (trialUsed && currentUserId) {
+            await client.users.updateUserMetadata(currentUserId, {
+                publicMetadata: {
+                    hasUsedTrial: true
+                }
+            })
+        }
     }
 
     if (planName) {

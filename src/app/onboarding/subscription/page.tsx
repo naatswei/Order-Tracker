@@ -193,7 +193,8 @@ export default function SubscriptionPage() {
     }
 
     const metadata = organization?.publicMetadata as any
-    const hasSubscriptionHistory = !!metadata?.subscriptionStatus
+    const userMetadata = user?.publicMetadata as any
+    const hasSubscriptionHistory = !!metadata?.subscriptionStatus || !!userMetadata?.hasUsedTrial
 
     const displayPlans = hasSubscriptionHistory
         ? plans.filter(p => p.name !== "Free Trial")
