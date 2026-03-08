@@ -121,7 +121,7 @@ export default function TrackPage() {
                                 transition={{ delay: 1.5 }}
                             >
                                 <Link
-                                    href="/"
+                                    href="/sign-up"
                                     className="inline-flex items-center gap-2 text-[11px] text-[#3B82F6] hover:text-[#3B82F6]/80 font-medium tracking-tight transition-colors group"
                                 >
                                     Use OTracker for your business
