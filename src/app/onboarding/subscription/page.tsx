@@ -82,7 +82,7 @@ const plans = [
 export default function SubscriptionPage() {
     const router = useRouter()
     const { organization, isLoaded } = useOrganization()
-    const { user } = useUser()
+    const { user, isLoaded: userLoaded } = useUser()
     const [redirectingPlan, setRedirectingPlan] = useState<string | null>(null)
 
     // Paystack public key from env
@@ -91,7 +91,7 @@ export default function SubscriptionPage() {
     const [canGoBack, setCanGoBack] = useState(false)
 
     useEffect(() => {
-        if (!isLoaded) return
+        if (!isLoaded || !userLoaded) return
 
         if (!organization) {
             router.replace("/onboarding/organization")
@@ -194,11 +194,25 @@ export default function SubscriptionPage() {
 
     const metadata = organization?.publicMetadata as any
     const userMetadata = user?.publicMetadata as any
-    const hasSubscriptionHistory = !!metadata?.subscriptionStatus || !!userMetadata?.hasUsedTrial
+
+    // While loading, we assume subscription history exists to prevent "Free Trial" flash
+    const isLoading = !isLoaded || !userLoaded
+    const hasSubscriptionHistory = isLoading || !!metadata?.subscriptionStatus || !!userMetadata?.hasUsedTrial
 
     const displayPlans = hasSubscriptionHistory
         ? plans.filter(p => p.name !== "Free Trial")
         : plans
+
+    if (isLoading) {
+        return (
+            <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center">
+                <div className="flex flex-col items-center gap-4">
+                    <Loader2 className="w-8 h-8 animate-spin text-[#3B82F6]" />
+                    <p className="text-slate-400 text-sm font-medium animate-pulse">Loading plans...</p>
+                </div>
+            </div>
+        )
+    }
 
     return (
         <div className="min-h-screen bg-[#F8FAFC]">
