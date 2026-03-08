@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { ArrowRight, Upload, Camera, Sparkles } from "lucide-react"
+import { ArrowRight, Upload, Camera, Sparkles, Loader2 } from "lucide-react"
 import { useOrganization } from "@clerk/nextjs"
 import { updateOrgProfile } from "@/app/actions/org-metadata"
 
@@ -27,6 +27,15 @@ export default function BusinessProfilePage() {
             router.replace("/backoffice")
         }
     }, [isLoaded, organization, router])
+
+    if (!isLoaded || (organization?.publicMetadata as any)?.location) {
+        return (
+            <div className="min-h-screen bg-[#F8FAFC] flex flex-col items-center justify-center gap-4">
+                <Loader2 className="w-8 h-8 text-[#191A43] animate-spin" />
+                <p className="text-slate-400 font-medium animate-pulse">Syncing profile...</p>
+            </div>
+        )
+    }
     const [imagePreview, setImagePreview] = useState<string | null>(null)
     const fileInputRef = useRef<HTMLInputElement>(null)
 

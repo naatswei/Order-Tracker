@@ -62,6 +62,15 @@ export default function BusinessTypePage() {
         }
     }, [isLoaded, organization, router])
 
+    if (!isLoaded || organization?.publicMetadata?.businessType) {
+        return (
+            <div className="min-h-screen bg-white flex flex-col items-center justify-center gap-4">
+                <Loader2 className="w-8 h-8 text-slate-900 animate-spin" />
+                <p className="text-slate-400 font-medium animate-pulse">Checking business setup...</p>
+            </div>
+        )
+    }
+
     const businessTypes: BusinessType[] = [
         {
             id: "tailoring",

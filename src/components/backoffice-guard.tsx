@@ -51,7 +51,7 @@ export function BackofficeGuard({ children }: { children: React.ReactNode }) {
         checkOnboarding()
     }, [isLoaded, organization, router]) // Removed pathname to prevent re-checks on every nav
 
-    if (!isLoaded || (isChecking && !organization)) {
+    if (!isLoaded || isChecking) {
         return (
             <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50">
                 <Loader2 className="h-10 w-10 animate-spin text-primary opacity-50 mb-4" />
