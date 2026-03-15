@@ -7,8 +7,13 @@ export async function updateOrgBusinessType(orgId: string, businessType: string)
     if (!userId) throw new Error('Unauthorized')
 
     const client = await clerkClient()
+    const org = await client.organizations.getOrganization({ organizationId: orgId })
+    
     await client.organizations.updateOrganizationMetadata(orgId, {
-        publicMetadata: { businessType }
+        publicMetadata: { 
+            ...(org.publicMetadata || {}),
+            businessType 
+        }
     })
     return { success: true }
 }
@@ -18,6 +23,7 @@ export async function updateOrgProfile(orgId: string, data: { companyName: strin
     if (!userId) throw new Error('Unauthorized')
 
     const client = await clerkClient()
+    const org = await client.organizations.getOrganization({ organizationId: orgId })
 
     // Update name and metadata
     await client.organizations.updateOrganization(orgId, {
@@ -26,6 +32,7 @@ export async function updateOrgProfile(orgId: string, data: { companyName: strin
 
     await client.organizations.updateOrganizationMetadata(orgId, {
         publicMetadata: {
+            ...(org.publicMetadata || {}),
             contact: data.contact,
             location: data.location,
             secondaryEmail: data.email,
@@ -52,8 +59,11 @@ export async function updateOrgSubscriptionStatus(
     }
 
     const client = await clerkClient()
+    const org = await client.organizations.getOrganization({ organizationId: orgId })
 
+    const currentMetadata = (org.publicMetadata as any) || {}
     const metadata: any = {
+        ...currentMetadata,
         subscriptionStatus: status,
         subscriptionExpiry: expiryDate
     }
