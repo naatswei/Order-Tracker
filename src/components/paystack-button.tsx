@@ -104,7 +104,7 @@ export default function PaystackButton({
             disabled={!isLoaded || isRedirecting}
             className={cn(
                 "w-full h-12 text-sm font-bold rounded-xl transition-all duration-200",
-                plan.name === "Month" ? "bg-white text-[#101323] hover:bg-white/90" : "bg-[#161931] text-white hover:bg-[#161931]/90",
+                plan.name === "Month" ? "bg-[#161931] text-white hover:bg-[#161931]/90" : "bg-[#161931] text-white hover:bg-[#161931]/90",
                 isRedirecting && "opacity-70 scale-[0.98]",
                 !isLoaded && "opacity-50 cursor-not-allowed"
             )}
