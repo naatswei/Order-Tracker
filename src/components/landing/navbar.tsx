@@ -33,7 +33,7 @@ export function LandingNavbar() {
                                     Dashboard
                                 </Button>
                             </Link>
-                            <UserButton afterSignOutUrl="/" />
+                            <UserButton afterSignOutUrl="/sign-in" />
                         </>
                     ) : (
                         <>
