@@ -117,19 +117,14 @@ export function LandingPricing() {
                                     </div>
                                 )}
 
-                                <div className="mb-8 text-center">
+                                <div className="mb-8">
                                     <h3 className="text-2xl font-extrabold tracking-tight text-[#191A43] mb-1">{plan.name}</h3>
                                     <p className="text-[14px] font-medium text-slate-400">{plan.description}</p>
                                 </div>
 
-                                <div className="mb-12 flex justify-center items-baseline gap-2">
-                                    <span className="text-[14px] font-bold text-[#191A43] uppercase">GHS</span>
-                                    <span className="text-4xl font-black tracking-tight text-[#191A43]">
-                                        {plan.price.replace("GHS ", "")}
-                                    </span>
-                                    <span className="text-[12px] font-bold text-slate-400 uppercase tracking-wider ml-1">
-                                        {plan.duration.replace("/", "")}
-                                    </span>
+                                <div className="mb-10 items-baseline flex gap-2">
+                                    <span className="text-3xl font-black tracking-tight text-[#191A43]">GHS {plan.price.replace("GHS ", "")}</span>
+                                    <span className="text-[14px] font-medium text-slate-400 uppercase tracking-wider">{plan.duration.replace("/", "")}</span>
                                 </div>
 
                                 <ul className="space-y-4 mb-10 flex-1">

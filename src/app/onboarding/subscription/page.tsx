@@ -227,11 +227,11 @@ export default function SubscriptionPage() {
                 <div className="max-w-7xl w-full mx-auto space-y-12">
                     {/* Header Section */}
                     <div className="text-center space-y-4">
-                        <h1 className="text-4xl font-bold text-[#101323] tracking-tight">
-                            Pricing built to suit all business types
+                        <h1 className="text-3xl font-bold text-[#101323] tracking-tight">
+                            Ready to grow your business?
                         </h1>
                         <p className="text-sm font-medium text-slate-400 max-w-2xl mx-auto">
-                            Simple, Transparent pricing that grows with you. Start free and upgrade later.
+                            Choose a plan that fits your business stage. No hidden fees.
                         </p>
                     </div>
 
@@ -257,20 +257,15 @@ export default function SubscriptionPage() {
                                             SAVE 64%
                                         </div>
                                     )}
-                                    <CardHeader className="space-y-1 p-0 text-center">
+                                    <CardHeader className="space-y-1 p-0">
                                         <h3 className="text-2xl font-extrabold tracking-tight text-[#101323]">{plan.name}</h3>
                                         <p className="text-[14px] font-medium text-slate-400">{plan.description}</p>
                                     </CardHeader>
 
                                     <CardContent className="flex-1 p-0 pt-12">
-                                        <div className="mb-12 flex justify-center items-baseline gap-2">
-                                            <span className="text-[14px] font-bold text-[#101323] uppercase">GHS</span>
-                                            <span className="text-4xl font-black tracking-tight text-[#101323]">
-                                                {plan.price.replace("GHS ", "")}
-                                            </span>
-                                            <span className="text-[12px] font-bold text-slate-400 uppercase tracking-wider ml-1">
-                                                {plan.period.replace("/", "")}
-                                            </span>
+                                        <div className="mb-10 flex items-baseline gap-2">
+                                            <span className="text-3xl font-black tracking-tight text-[#101323]">GHS {plan.price.replace("GHS ", "")}</span>
+                                            <span className="text-[14px] font-medium text-slate-400">{plan.period}</span>
                                         </div>
 
                                         <ul className="space-y-5">
