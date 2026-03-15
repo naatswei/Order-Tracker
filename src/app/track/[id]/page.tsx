@@ -319,8 +319,7 @@ export default function TrackingDetailsPage() {
             >
                 <div className="container h-full mx-auto px-6 flex items-center justify-center">
                     <div className="flex items-center text-xl font-bold tracking-tight">
-                        <span className="text-[#CE0003]">O</span>
-                        <span className="text-white">Tracker</span>
+                        <span className="text-[#CE0003]">O</span><span className="text-white">Tracker</span>
                     </div>
                 </div>
             </motion.header>

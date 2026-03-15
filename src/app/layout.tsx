@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Order Tracker",
+  title: "OTracker",
   description: "Track your tailoring, hair, and logistics orders in real-time.",
 };
 

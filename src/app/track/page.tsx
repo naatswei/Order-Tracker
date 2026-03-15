@@ -133,7 +133,7 @@ export default function TrackPage() {
                 </div>
 
                 <footer className="mt-auto py-8 text-center opacity-50 text-[10px] tracking-[0.3em] font-light">
-                    &copy; {new Date().getFullYear()} OTracker Royale
+                    &copy; {new Date().getFullYear()} OTracker
                 </footer>
             </div>
 

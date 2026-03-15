@@ -32,7 +32,7 @@
   --ring: #111827;
 
   /* Hover/Highlight */
-  --highlight: #5256FF;
+  --highlight: #7C3AED; /* Modern Purple from reference */
 
   --chart-1: #191A43;
   --chart-2: #CE0003;
@@ -41,7 +41,12 @@
   --chart-5: oklch(0.769 0.188 70.08);
 
   /* Slightly rounded corners like the design */
-  --radius: 0.75rem;
+  --radius: 1.25rem;
+}
+
+.bg-grid {
+  background-image: radial-gradient(circle at center, #0000000a 1px, transparent 1px);
+  background-size: 32px 32px;
 }
 
 .dark {

@@ -22,7 +22,7 @@ const plans = [
         name: "Free Trial",
         description: "Perfect to get started",
         price: "GHS 0",
-        period: "7 days",
+        period: "/7 days",
         features: [
             "Unlimited team members",
             "Up to 20 orders",
@@ -120,12 +120,7 @@ export default function SubscriptionPage() {
         const isSubscribed = subscriptionStatus === 'active' || subscriptionStatus === 'trialing'
 
         // Set whether they can go back to dashboard safely without a redirect loop
-        setCanGoBack(isSubscribed && !isExpired)
-
-        // Only redirect away if they are active AND NOT nearing expiry
-        if (isSubscribed && !isExpired && !isNearExpiry) {
-            router.replace("/backoffice")
-        }
+        setCanGoBack(true)
     }, [isLoaded, organization, router])
 
     const handleActivateSubscription = async (planName: string) => {
@@ -214,10 +209,9 @@ export default function SubscriptionPage() {
             <header className="bg-white">
                 <div className="w-full px-6 h-16 flex items-center justify-between">
                     <div className="flex items-center text-xl font-bold tracking-tight">
-                        <span className="text-[#CE0003]">O</span>
-                        <span className="text-[#191A43]">Tracker</span>
+                        <span className="text-[#CE0003]">O</span><span className="text-[#191A43]">Tracker</span>
                     </div>
-                    {canGoBack && (
+                    {!!organization && (
                         <Button
                             variant="ghost"
                             onClick={() => router.push("/backoffice")}
@@ -242,72 +236,69 @@ export default function SubscriptionPage() {
                     </div>
 
                     {/* Cards Grid */}
-                    <div className={cn("grid grid-cols-1 md:grid-cols-2 gap-6", hasSubscriptionHistory ? "lg:grid-cols-3 max-w-5xl mx-auto" : "lg:grid-cols-4")}>
+                    <div className={cn("grid grid-cols-1 md:grid-cols-2 gap-6 pt-12", hasSubscriptionHistory ? "lg:grid-cols-3 max-w-5xl mx-auto" : "lg:grid-cols-4")}>
                         {displayPlans.map((plan) => (
-                            <Card
-                                key={plan.name}
-                                className={cn(
-                                    "relative flex flex-col border-0 rounded-[1.5rem] p-8 shadow-sm transition-all duration-300 hover:shadow-xl hover:-translate-y-1",
-                                    plan.name === "Month" ? "bg-[#161931] text-white" : "bg-white text-[#101323]"
-                                )}
-                            >
-                                <CardHeader className="space-y-1 p-0">
-                                    {plan.name === "Month" && (
-                                        <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#CE0003] text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full shadow-sm whitespace-nowrap">
+                            <div key={plan.name} className="relative group">
+                                {plan.name === "Month" && (
+                                    <div className="absolute -top-12 left-0 right-0 bg-[#161931] h-24 rounded-t-[1.5rem] -z-10 flex justify-center pt-3">
+                                        <div className="bg-white text-[#161931] text-[10px] font-bold uppercase tracking-widest px-6 py-1.5 rounded-full h-fit">
                                             Most Popular
                                         </div>
-                                    )}
-                                    {plan.name === "Yearly" && (
-                                        <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-emerald-500 text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full shadow-sm whitespace-nowrap">
-                                            Save 64%
-                                        </div>
-                                    )}
-                                    <h3 className="text-2xl font-bold tracking-tight">{plan.name}</h3>
-                                    <p className={cn(
-                                        "text-[13px] font-medium",
-                                        plan.name === "Month" ? "text-slate-400" : "text-slate-400"
-                                    )}>{plan.description}</p>
-                                </CardHeader>
-
-                                <CardContent className="flex-1 p-0 pt-10 space-y-10">
-                                    <div className="flex flex-col space-y-2">
-                                        <div className="flex items-baseline gap-2">
-                                            <span className="text-3xl font-bold tracking-tight">{plan.price}</span>
-                                            <span className={cn(
-                                                "text-[13px] font-medium",
-                                                plan.name === "Month" ? "text-slate-400" : "text-slate-400"
-                                            )}>{plan.period}</span>
-                                        </div>
                                     </div>
+                                )}
+                                <Card
+                                    className={cn(
+                                        "relative flex flex-col border-0 rounded-[1.5rem] p-8 shadow-sm transition-all duration-300 hover:shadow-xl hover:-translate-y-1 h-full bg-white text-[#101323]",
+                                        plan.name === "Month" && "mt-0"
+                                    )}
+                                >
+                                    {plan.name === "Yearly" && (
+                                        <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#00B171] text-white text-[10px] font-bold uppercase tracking-widest px-4 py-1.5 rounded-full shadow-sm whitespace-nowrap z-20">
+                                            SAVE 64%
+                                        </div>
+                                    )}
+                                    <CardHeader className="space-y-1 p-0 text-center">
+                                        <h3 className="text-2xl font-extrabold tracking-tight text-[#101323]">{plan.name}</h3>
+                                        <p className="text-[14px] font-medium text-slate-400">{plan.description}</p>
+                                    </CardHeader>
 
-                                    <ul className="space-y-4">
-                                        {plan.features.map((feature, idx) => (
-                                            <li key={idx} className="flex items-start gap-3 text-[13px] font-medium">
-                                                <div className={cn(
-                                                    "mt-0.5 w-5 h-5 rounded-full flex items-center justify-center shrink-0 transition-colors",
-                                                    plan.name === "Month" ? "bg-white/10 text-white" : "bg-blue-50 text-blue-500"
-                                                )}>
-                                                    <Check className="w-3 h-3" strokeWidth={3} />
-                                                </div>
-                                                <span className={plan.name === "Month" ? "text-white/90" : "text-[#101323]/80"}>
-                                                    {feature}
-                                                </span>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </CardContent>
+                                    <CardContent className="flex-1 p-0 pt-12">
+                                        <div className="mb-12 flex justify-center items-baseline gap-2">
+                                            <span className="text-[14px] font-bold text-[#101323] uppercase">GHS</span>
+                                            <span className="text-4xl font-black tracking-tight text-[#101323]">
+                                                {plan.price.replace("GHS ", "")}
+                                            </span>
+                                            <span className="text-[12px] font-bold text-slate-400 uppercase tracking-wider ml-1">
+                                                {plan.period.replace("/", "")}
+                                            </span>
+                                        </div>
 
-                                <CardFooter className="p-0 pt-10">
-                                    <PlanButton
-                                        plan={plan}
-                                        publicKey={publicKey}
-                                        organization={organization}
-                                        user={user}
-                                        onSuccess={() => handleActivateSubscription(plan.name)}
-                                        isLoaded={isLoaded}
-                                    />
-                                </CardFooter>
-                            </Card>
+                                        <ul className="space-y-5">
+                                            {plan.features.map((feature, idx) => (
+                                                <li key={idx} className="flex items-center gap-4 text-[15px] font-medium">
+                                                    <div className="w-6 h-6 rounded-full bg-blue-50 text-blue-500 flex items-center justify-center shrink-0">
+                                                        <Check className="w-3.5 h-3.5" strokeWidth={3} />
+                                                    </div>
+                                                    <span className="text-[#101323]/90">
+                                                        {feature}
+                                                    </span>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </CardContent>
+
+                                    <CardFooter className="p-0 pt-10">
+                                        <PlanButton
+                                            plan={plan}
+                                            publicKey={publicKey}
+                                            organization={organization}
+                                            user={user}
+                                            onSuccess={() => handleActivateSubscription(plan.name)}
+                                            isLoaded={isLoaded}
+                                        />
+                                    </CardFooter>
+                                </Card>
+                            </div>
                         ))}
                     </div>
 

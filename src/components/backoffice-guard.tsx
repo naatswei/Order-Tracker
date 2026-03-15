@@ -34,15 +34,9 @@ export function BackofficeGuard({ children }: { children: React.ReactNode }) {
                 return
             }
 
-            // 3. Check Subscription
-            const isSubscribed = metadata.subscriptionStatus === 'active' || metadata.subscriptionStatus === 'trialing'
-            const expiryDate = metadata.subscriptionExpiry ? new Date(metadata.subscriptionExpiry) : null
-            const isExpired = expiryDate ? new Date() > expiryDate : false
-
-            if (!isSubscribed || isExpired) {
-                router.replace("/onboarding/subscription")
-                return
-            }
+            // 3. Subscription Check
+            // We now allow users to enter the backoffice even without an active subscription
+            // so they can see their business data. The RenewalBanner handles the upgrade prompts.
 
             // If we've made it here, everything is good
             setIsChecking(false)

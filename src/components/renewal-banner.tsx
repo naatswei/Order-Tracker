@@ -19,19 +19,25 @@ export function RenewalBanner() {
         const expiryDateStr = organization.publicMetadata?.subscriptionExpiry as string
         if (!expiryDateStr) return
 
-        const expiryDate = new Date(expiryDateStr)
+        const expiryDate = expiryDateStr ? new Date(expiryDateStr) : null
         const now = new Date()
-        const diffTime = expiryDate.getTime() - now.getTime()
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
 
-        if (diffDays <= 3 && diffDays >= 0) {
-            setDaysLeft(diffDays)
+        if (expiryDate) {
+            const diffTime = expiryDate.getTime() - now.getTime()
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+
+            if (diffDays <= 3) {
+                setDaysLeft(diffDays)
+            } else {
+                setDaysLeft(null)
+            }
         } else {
-            setDaysLeft(null)
+            // No expiry date means no subscription ever started or setup error
+            setDaysLeft(-1) // Special value for 'No Subscription'
         }
     }, [isLoaded, organization])
 
-    if (daysLeft === null) return null
+    if (daysLeft === null && isLoaded) return null
 
     return (
         <div className="bg-amber-50 border-b border-amber-200 py-2 px-4 sticky top-0 z-[60]">
@@ -39,9 +45,13 @@ export function RenewalBanner() {
                 <div className="flex items-center gap-2 text-amber-800 text-sm font-medium">
                     <AlertCircle className="w-4 h-4 shrink-0" />
                     <span>
-                        {isFreeTrial
-                            ? (daysLeft === 0 ? "Your free trial expires today!" : `Your free trial expires in ${daysLeft} ${daysLeft === 1 ? 'day' : 'days'}.`)
-                            : (daysLeft === 0 ? "Your subscription expires today!" : `Your subscription expires in ${daysLeft} ${daysLeft === 1 ? 'day' : 'days'}.`)
+                        {daysLeft === -1 
+                            ? "An active subscription is required to use all OTracker features." 
+                            : daysLeft < 0 
+                                ? (isFreeTrial ? "Your free trial has expired." : "Your subscription has expired.")
+                                : isFreeTrial
+                                    ? (daysLeft === 0 ? "Your free trial expires today!" : `Your free trial expires in ${daysLeft} ${daysLeft === 1 ? 'day' : 'days'}.`)
+                                    : (daysLeft === 0 ? "Your subscription expires today!" : `Your subscription expires in ${daysLeft} ${daysLeft === 1 ? 'day' : 'days'}.`)
                         }
                     </span>
                 </div>
