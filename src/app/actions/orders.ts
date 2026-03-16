@@ -22,6 +22,29 @@ interface OrderInput {
     currentStatus?: string;
 }
 
+async function validateSubscription(orgId: string) {
+    const client = await clerkClient();
+    const org = await client.organizations.getOrganization({ organizationId: orgId });
+    const planName = (org.publicMetadata as any)?.subscriptionPlan;
+    const subscriptionStatus = (org.publicMetadata as any)?.subscriptionStatus;
+    const subscriptionExpiry = (org.publicMetadata as any)?.subscriptionExpiry;
+
+    // 1. Check Status
+    if (!subscriptionStatus || (subscriptionStatus !== 'active' && subscriptionStatus !== 'trialing')) {
+        throw new Error("Your subscription is inactive. Please upgrade your plan to continue.");
+    }
+
+    // 2. Check Expiry
+    if (subscriptionExpiry) {
+        const expiryDate = new Date(subscriptionExpiry);
+        if (new Date() > expiryDate) {
+            throw new Error("Your subscription has expired. Please renew your plan to continue.");
+        }
+    }
+
+    return { planName, orgName: org.name };
+}
+
 export async function createOrder(data: OrderInput) {
     const { userId, orgId } = await auth();
 
@@ -31,13 +54,12 @@ export async function createOrder(data: OrderInput) {
 
     let orgName = "Order";
 
-    // Enforce order limit and get org name
+    // Enforce subscription check and order limit
     if (orgId) {
         try {
-            const client = await clerkClient();
-            const org = await client.organizations.getOrganization({ organizationId: orgId });
-            orgName = org.name;
-            const planName = (org.publicMetadata as any)?.subscriptionPlan;
+            const { planName, orgName: validatedOrgName } = await validateSubscription(orgId);
+            orgName = validatedOrgName;
+            
             const limits = getPlanLimits(planName);
 
             if (limits.maxOrders !== Infinity) {
@@ -103,8 +125,12 @@ export async function createOrder(data: OrderInput) {
 }
 
 export async function updateOrderStatus(orderId: string, status: string, location: string, message: string) {
-    const { userId } = await auth();
+    const { userId, orgId } = await auth();
     if (!userId) throw new Error("Unauthorized");
+
+    if (orgId) {
+        await validateSubscription(orgId);
+    }
 
     await db.transaction(async (tx) => {
         // Update order current status
@@ -159,8 +185,12 @@ export async function getOrderById(id: string) {
 }
 
 export async function updateOrder(id: string, data: Partial<OrderInput>) {
-    const { userId } = await auth();
+    const { userId, orgId } = await auth();
     if (!userId) throw new Error("Unauthorized");
+
+    if (orgId) {
+        await validateSubscription(orgId);
+    }
 
     await db.update(orders)
         .set({
@@ -224,8 +254,12 @@ export async function getOrderWithHistory(id: string) {
 }
 
 export async function bulkUpdateOrderStatus(orderIds: string[], status: string, location: string, message: string) {
-    const { userId } = await auth();
+    const { userId, orgId } = await auth();
     if (!userId) throw new Error("Unauthorized");
+
+    if (orgId) {
+        await validateSubscription(orgId);
+    }
 
     await db.transaction(async (tx) => {
         for (const orderId of orderIds) {

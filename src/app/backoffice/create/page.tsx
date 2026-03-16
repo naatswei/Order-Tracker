@@ -12,7 +12,7 @@ import { createOrder, getOrderById, updateOrder } from "@/app/actions/orders"
 import Link from "next/link"
 import { UserButton, OrganizationSwitcher, useOrganization } from "@clerk/nextjs"
 import { BackofficeHeader } from "@/components/backoffice-header"
-import { Package, ArrowLeft, Loader2 } from "lucide-react"
+import { Package, ArrowLeft, Loader2, AlertCircle } from "lucide-react"
 import { toast } from "sonner"
 import { useSearchParams, useRouter } from "next/navigation"
 import { getBusinessConfig } from "@/lib/business-configs"
@@ -83,8 +83,24 @@ function CreateOrderContent() {
         }
     }, [searchParams, organization])
 
+    const isSubscriptionActive = 
+        organization?.publicMetadata?.subscriptionStatus === "active" || 
+        organization?.publicMetadata?.subscriptionStatus === "trialing"
+    
+    const subscriptionExpiry = organization?.publicMetadata?.subscriptionExpiry as string
+    const expiryDate = subscriptionExpiry ? new Date(subscriptionExpiry) : null
+    const isExpired = expiryDate ? new Date() > expiryDate : false
+    const canCreateOrder = isSubscriptionActive && !isExpired
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
+        
+        if (!canCreateOrder) {
+            toast.error("Your subscription has expired. Please renew to continue.")
+            router.push("/onboarding/subscription")
+            return
+        }
+
         // Prevent extremely rapid double-clicks
         if (isSaving) return
 
@@ -167,6 +183,7 @@ function CreateOrderContent() {
                                         onChange={(e) => setCustomerName(e.target.value)}
                                         placeholder="Naa"
                                         required
+                                        disabled={!canCreateOrder}
                                         className="h-12 rounded-xl bg-white/50 border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80"
                                     />
                                 </div>
@@ -180,6 +197,7 @@ function CreateOrderContent() {
                                         onChange={(e) => setCustomerPhone(e.target.value)}
                                         placeholder="0577064301"
                                         required
+                                        disabled={!canCreateOrder}
                                         className="h-12 rounded-xl bg-white/50 border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80"
                                     />
                                 </div>
@@ -193,6 +211,7 @@ function CreateOrderContent() {
                                         placeholder={config.itemPlaceholder}
                                         required
                                         autoComplete="off"
+                                        disabled={!canCreateOrder}
                                         className="h-12 rounded-xl bg-white/50 border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80"
                                     />
                                 </div>
@@ -214,6 +233,7 @@ function CreateOrderContent() {
                                         date={pickupDate}
                                         setDate={setPickupDate}
                                         placeholder="Select a date"
+                                        disabled={!canCreateOrder}
                                     />
                                 </div>
 
@@ -225,6 +245,7 @@ function CreateOrderContent() {
                                         value={customerEmail}
                                         onChange={(e) => setCustomerEmail(e.target.value)}
                                         placeholder="naa@gmail.com"
+                                        disabled={!canCreateOrder}
                                         className="h-12 rounded-xl bg-white/50 border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80"
                                     />
                                 </div>
@@ -238,6 +259,7 @@ function CreateOrderContent() {
                                             value={(metadata[field.id] as string) || ""}
                                             onChange={(e) => setMetadata({ ...metadata, [field.id]: e.target.value })}
                                             placeholder={field.placeholder}
+                                            disabled={!canCreateOrder}
                                             className="h-12 rounded-xl bg-white/50 border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80"
                                         />
                                     </div>
@@ -252,18 +274,19 @@ function CreateOrderContent() {
                                     onChange={(e) => setMeasurements(e.target.value)}
                                     placeholder={config.id === "tailoring" ? "Details, measurements or special instructions..." : "Additional notes or special instructions..."}
                                     rows={4}
+                                    disabled={!canCreateOrder}
                                     className="rounded-xl bg-white/50 border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80 resize-none p-4"
                                 />
                             </div>
 
-                            <div className="pt-2 flex justify-end">
+                            <div className="pt-2 flex flex-col items-end gap-3">
                                 <Button
                                     type="submit"
                                     size="lg"
-                                    disabled={(!editingId && !hasRequiredFields) || isSaving}
+                                    disabled={(!editingId && !hasRequiredFields) || isSaving || !canCreateOrder}
                                     className={`w-full md:w-auto min-w-[200px] h-12 rounded-xl text-base font-semibold transition-all duration-200 border-0 text-white hover:brightness-95 shadow-md`}
                                     style={{
-                                        backgroundColor: isSaving
+                                        backgroundColor: !canCreateOrder || isSaving
                                             ? '#94a3b8'
                                             : (!editingId
                                                 ? (hasRequiredFields ? config.theme.secondary : '#cbd5e1')
@@ -276,9 +299,17 @@ function CreateOrderContent() {
                                             Saving...
                                         </>
                                     ) : (
-                                        editingId ? "Update Order" : "Create Order"
+                                        !canCreateOrder ? "Subscription Expired" : (editingId ? "Update Order" : "Create Order")
                                     )}
                                 </Button>
+                                
+                                {!canCreateOrder && (
+                                    <p className="text-xs font-medium text-slate-500 flex items-center gap-1.5">
+                                        <AlertCircle className="w-3.5 h-3.5 text-amber-500" />
+                                        Upgrade your plan to continue creating orders. 
+                                        <Link href="/onboarding/subscription" className="text-[#CE0003] hover:underline font-bold">Renew Now</Link>
+                                    </p>
+                                )}
                             </div>
                         </form>
                     </CardContent>
