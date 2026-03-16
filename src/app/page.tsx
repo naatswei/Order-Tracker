@@ -59,9 +59,6 @@ function LandingCTA() {
                     <ArrowRight className="w-6 h-6 group-hover/btn:translate-x-1 transition-transform" />
                   </Button>
                 </Link>
-                <div className="text-white/40 text-sm font-semibold tracking-wide uppercase">
-                  No credit card required
-                </div>
               </div>
             </div>
 
