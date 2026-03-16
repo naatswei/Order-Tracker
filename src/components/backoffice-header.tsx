@@ -206,6 +206,7 @@ export function BackofficeHeader({ config }: BackofficeHeaderProps) {
                             {/* User Account Section */}
                             <div className="flex items-center gap-3 px-1">
                                 <UserButton
+                                    afterSignOutUrl="/"
                                     appearance={{
                                         elements: {
                                             userButtonAvatarBox: "w-10 h-10 border-2 border-slate-200 shadow-sm"

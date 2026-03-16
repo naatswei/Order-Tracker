@@ -10,7 +10,7 @@ import { ArrowLeft, Package, Loader2 } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { OrderCard } from "@/components/order-card"
 import { motion, AnimatePresence } from "framer-motion"
-import { UserButton, OrganizationSwitcher, useOrganization } from "@clerk/nextjs"
+import { OrganizationSwitcher, useOrganization } from "@clerk/nextjs"
 import { getBusinessConfig } from "@/lib/business-configs"
 import { BackofficeHeader } from "@/components/backoffice-header"
 

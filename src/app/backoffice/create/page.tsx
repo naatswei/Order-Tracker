@@ -10,7 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { generateTrackingId, type Order } from "@/lib/storage"
 import { createOrder, getOrderById, updateOrder } from "@/app/actions/orders"
 import Link from "next/link"
-import { UserButton, OrganizationSwitcher, useOrganization } from "@clerk/nextjs"
+import { OrganizationSwitcher, useOrganization } from "@clerk/nextjs"
 import { BackofficeHeader } from "@/components/backoffice-header"
 import { Package, ArrowLeft, Loader2, AlertCircle } from "lucide-react"
 import { toast } from "sonner"
