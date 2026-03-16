@@ -382,7 +382,7 @@ function BulkUpdateContent() {
                                                 <div className="flex flex-col gap-2 w-full md:w-auto md:min-w-[140px] pt-4 md:pt-0 border-t md:border-t-0 mt-2 md:mt-0 border-slate-100">
                                                     <Button
                                                         asChild
-                                                        className="w-full text-white text-xs h-8 rounded-lg border-0"
+                                                        className="w-full text-white text-xs h-8 rounded-xl border-0"
                                                         style={{ backgroundColor: config.theme.secondary }}
                                                     >
                                                         <Link href={`/backoffice/order/${order.id}`}>
@@ -400,7 +400,7 @@ function BulkUpdateContent() {
 
                                                     <Button
                                                         asChild
-                                                        className="w-full text-xs h-8 rounded-lg text-white mt-1 border-0"
+                                                        className="w-full text-xs h-8 rounded-xl text-white mt-1 border-0"
                                                         style={{ backgroundColor: config.theme.primary }}
                                                     >
                                                         <Link href={`/backoffice/create?edit=${order.id}`}>

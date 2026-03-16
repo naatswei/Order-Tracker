@@ -135,7 +135,7 @@ export default function BackofficePage() {
                         <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                    <Button variant="outline" className="h-10 sm:h-12 rounded-xl bg-white border border-slate-100 text-slate-700 hover:bg-white hover:border-slate-200 hover:text-slate-900 gap-2 px-4 sm:px-5 shadow-[0_4px_20px_rgb(0,0,0,0.02)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] hover:-translate-y-0.5 transition-all duration-300 flex-1 md:flex-none text-sm sm:text-base font-medium">
+                                    <Button variant="outline" className="h-10 sm:h-12 rounded-xl bg-white border border-slate-100 text-slate-700 hover:bg-white hover:border-slate-200 hover:text-slate-900 gap-2 px-4 sm:px-5 shadow-[0_4px_20px_rgb(0,0,0,0.02)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] hover:-translate-y-0.5 transition-all duration-300 md:flex-none text-sm sm:text-base font-medium">
                                         <Filter className="w-4 h-4" />
                                         {statusFilter === "All" ? "Filter" : statusFilter}
                                     </Button>
@@ -165,7 +165,7 @@ export default function BackofficePage() {
                             </DropdownMenu>
                             <Button
                                 asChild
-                                className="w-full h-10 sm:h-12 rounded-xl text-white gap-2 px-4 sm:px-5 shadow-[0_4px_20px_rgb(0,0,0,0.04)] text-sm sm:text-base font-medium border-0 transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] hover:-translate-y-0.5 active:scale-[0.98]"
+                                className="flex-1 md:flex-none h-10 sm:h-12 rounded-xl text-white gap-2 px-4 sm:px-5 shadow-[0_4px_20px_rgb(0,0,0,0.04)] text-sm sm:text-base font-medium border-0 transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] hover:-translate-y-0.5 active:scale-[0.98]"
                                 style={{ backgroundColor: config.theme.primary }}
                             >
                                 <Link href={searchQuery ? `/backoffice/bulk?search=${encodeURIComponent(searchQuery)}` : "/backoffice/bulk"}>
@@ -174,7 +174,7 @@ export default function BackofficePage() {
                             </Button>
                             <Button
                                 asChild
-                                className="w-full h-10 sm:h-12 rounded-xl shadow-[0_4px_20px_rgb(0,0,0,0.04)] gap-2 px-4 sm:px-6 text-sm sm:text-base font-medium text-white border-0 transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] hover:-translate-y-0.5 active:scale-[0.98]"
+                                className="flex-1 md:flex-none h-10 sm:h-12 rounded-xl shadow-[0_4px_20px_rgb(0,0,0,0.04)] gap-2 px-4 sm:px-6 text-sm sm:text-base font-medium text-white border-0 transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] hover:-translate-y-0.5 active:scale-[0.98]"
                                 style={{ backgroundColor: config.theme.secondary }}
                             >
                                 <Link href="/backoffice/create">

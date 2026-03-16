@@ -117,7 +117,7 @@ export default function StatusFilterPage() {
                             {filteredOrders.length > 0 && (
                                 <Button
                                     asChild
-                                    className="text-white rounded-lg h-9 px-4 shadow-sm font-medium text-sm border-0"
+                                    className="text-white rounded-xl h-9 px-4 shadow-sm font-medium text-sm border-0"
                                     style={{ backgroundColor: config.theme.primary }}
                                 >
                                     <Link href={`/backoffice/bulk?status=${encodeURIComponent(statusFilter)}`}>
