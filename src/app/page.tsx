@@ -17,9 +17,9 @@ function LandingCTA() {
 
       <div className="max-w-4xl mx-auto px-6 relative z-10">
         <div className="bg-[#CE0003] rounded-[2rem] md:rounded-[3rem] p-10 md:p-20 text-center shadow-2xl transform hover:scale-[1.01] transition-transform duration-500">
-          <h2 className="text-2xl md:text-4xl font-black text-white mb-6 md:mb-8 leading-tight"> Ready to professionalize your brand?</h2>
+          <h2 className="text-2xl md:text-4xl font-black text-white mb-6 md:mb-8 leading-tight"> Scale your business from anywhere in the world.</h2>
           <p className="text-white/95 text-base md:text-lg mb-10 md:mb-12 max-w-2xl mx-auto font-medium">
-            Join 1,000+ modern businesses who are scaling their operations with OTracker.
+            Join 1,000+ diaspora business owners who are professionalizing their local brands with OTracker.
           </p>
           <Link href="/sign-up">
             <Button className="w-full sm:w-auto bg-white text-[#CE0003] hover:bg-slate-50 rounded-2xl h-14 md:h-16 px-10 md:px-12 text-base md:text-lg font-bold shadow-xl transition-all active:scale-95 flex items-center justify-center mx-auto gap-3">

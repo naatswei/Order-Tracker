@@ -5,8 +5,8 @@ import { MessageSquare, LayoutDashboard, Bell, BarChart3, Clock, Users } from "l
 
 const features = [
     {
-        title: "Inquiry Automation",
-        description: "Stop answering 'Where is my order?'. Let OTracker handle the status updates automatically.",
+        title: "Remote Oversight",
+        description: "Get immediate updates on your local operations. Stop chasing staff for status reports.",
         icon: MessageSquare,
         color: "bg-blue-500"
     },
@@ -23,14 +23,14 @@ const features = [
         color: "bg-[#191A43]"
     },
     {
-        title: "Business Insights",
-        description: "Track your growth, top customers, and logistics performance with intuitive analytics.",
+        title: "Business Analytics",
+        description: "Track revenue, top customers, and staff performance with real-time analytics from abroad.",
         icon: BarChart3,
         color: "bg-green-500"
     },
     {
-        title: "24/7 Availability",
-        description: "Your tracking dashboard never sleeps. Customers can check their status anytime, anywhere.",
+        title: "Cross-border Trust",
+        description: "Give your local customers the professional experience they deserve, no matter your timezone.",
         icon: Clock,
         color: "bg-orange-500"
     },
@@ -53,7 +53,7 @@ export function LandingFeatures() {
                         viewport={{ once: true }}
                         className="text-2xl md:text-3xl font-bold text-[#191A43] mb-6 tracking-tight"
                     >
-                        Built For The Modern <span className="text-[#CE0003]">Service Merchant</span>
+                        Built For The <span className="text-[#CE0003]">International Owner</span>
                     </motion.h2>
                     <motion.p
                         initial={{ opacity: 0, y: 20 }}
@@ -62,7 +62,7 @@ export function LandingFeatures() {
                         transition={{ delay: 0.1 }}
                         className="text-sm md:text-base text-slate-500 max-w-2xl mx-auto font-medium"
                     >
-                        Everything you need to scale your independent business into a global brand without the manual headache.
+                        Everything you need to manage your business operations from thousands of miles away without the manual headache.
                     </motion.p>
                 </div>
 

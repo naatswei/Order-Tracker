@@ -19,11 +19,11 @@ export function LandingHero() {
                     >
 
                         <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#191A43] leading-[1.1] mb-8 tracking-[-0.02em]">
-                            Professional <span className="text-[#CE0003]">Tracking</span> For Modern Merchants
+                            Manage Your <span className="text-[#CE0003]">Business Back Home</span>, From Anywhere
                         </h1>
 
                         <p className="text-sm md:text-base text-slate-500 leading-relaxed mb-10 max-w-xl mx-auto lg:mx-0 font-medium">
-                            Eliminate inquiry fatigue and build radical trust. Give your customers the professional tracking experience they deserve.
+                            The international dashboard for the diaspora. Eliminate inquiry fatigue, track local operations, and build radical trust with your customers and staff.
                         </p>
 
                         <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 mb-14">
@@ -49,8 +49,8 @@ export function LandingHero() {
                                 <span>Real-time Tracking</span>
                             </div>
                             <div className="flex items-center gap-2.5 text-slate-500 text-sm font-semibold">
-                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                                <span>Secure Payments</span>
+                                <span className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
+                                <span>Global Visibility</span>
                             </div>
                         </div>
                     </motion.div>
