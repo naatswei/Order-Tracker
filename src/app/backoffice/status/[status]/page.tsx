@@ -115,14 +115,15 @@ export default function StatusFilterPage() {
                         <span className="sm:hidden text-sm font-medium text-muted-foreground">Status:</span>
                         <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
                             {filteredOrders.length > 0 && (
-                                <Link href={`/backoffice/bulk?status=${encodeURIComponent(statusFilter)}`}>
-                                    <Button
-                                        className="text-white rounded-lg h-9 px-4 shadow-sm font-medium text-sm border-0"
-                                        style={{ backgroundColor: config.theme.primary }}
-                                    >
+                                <Button
+                                    asChild
+                                    className="text-white rounded-lg h-9 px-4 shadow-sm font-medium text-sm border-0"
+                                    style={{ backgroundColor: config.theme.primary }}
+                                >
+                                    <Link href={`/backoffice/bulk?status=${encodeURIComponent(statusFilter)}`}>
                                         Bulk Update
-                                    </Button>
-                                </Link>
+                                    </Link>
+                                </Button>
                             )}
 
                             <div className="flex items-center gap-3">

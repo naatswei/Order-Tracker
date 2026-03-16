@@ -9,7 +9,7 @@ import { AppLoader } from "@/components/app-loader"
 
 export default function OrganizationSelectionPage() {
     const { organization, isLoaded } = useOrganization()
-    const { userMemberships, isLoaded: membershipsLoaded } = useOrganizationList({
+    const { userMemberships, isLoaded: membershipsLoaded, setActive } = useOrganizationList({
         userMemberships: {
             infinite: true,
         },

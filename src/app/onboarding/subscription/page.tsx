@@ -10,6 +10,7 @@ import { updateOrgSubscriptionStatus } from "@/app/actions/org-metadata"
 import { AppLoader } from "@/components/app-loader"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
+import Link from "next/link"
 import dynamic from "next/dynamic"
 
 const PlanButton = dynamic(() => import("@/components/paystack-button"), {
@@ -100,24 +101,19 @@ export default function SubscriptionPage() {
         }
 
         const metadata = organization?.publicMetadata as any
-        const subscriptionStatus = metadata?.subscriptionStatus
+        const subscriptionStatus = metadata?.subscriptionStatus as string
         const expiryDateStr = metadata?.subscriptionExpiry as string
 
-        let isExpired = false
-        let isNearExpiry = false
-
-        if (expiryDateStr) {
-            const expiryDate = new Date(expiryDateStr)
-            const now = new Date()
-            isExpired = now > expiryDate
-
-            // Allow renewal if within 3 days
-            const diffTime = expiryDate.getTime() - now.getTime()
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-            isNearExpiry = diffDays <= 3 && diffDays >= 0
-        }
-
         const isSubscribed = subscriptionStatus === 'active' || subscriptionStatus === 'trialing'
+        const isExpired = expiryDateStr ? (new Date() > new Date(expiryDateStr)) : false
+
+        // CRITICAL: If they have an active plan and reached this page, 
+        // we should automatically send them to the dashboard.
+        // This solves the issue for "not a new user" cases who land here accidentally.
+        if (isSubscribed && !isExpired) {
+            router.replace("/backoffice")
+            return
+        }
 
         // Set whether they can go back to dashboard safely without a redirect loop
         setCanGoBack(true)
@@ -211,7 +207,7 @@ export default function SubscriptionPage() {
                     <div className="flex items-center text-xl font-bold tracking-tight">
                         <span className="text-[#CE0003]">O</span><span className="text-[#191A43]">Tracker</span>
                     </div>
-                    {!!organization && hasSubscriptionHistory && (
+                    {!!organization && (
                         <Button
                             asChild
                             variant="ghost"

@@ -23,11 +23,11 @@ export function LandingNavbar() {
                 <div className="flex items-center gap-2 sm:gap-4">
                     {userId ? (
                         <>
-                            <Link href="/backoffice">
-                                <Button className="bg-[#191A43] hover:bg-[#191A43]/90 text-white rounded-xl px-4 sm:px-6 h-9 sm:h-11 text-xs sm:text-sm font-semibold shadow-md transition-all active:scale-95">
+                            <Button asChild className="bg-[#191A43] hover:bg-[#191A43]/90 text-white rounded-xl px-4 sm:px-6 h-9 sm:h-11 text-xs sm:text-sm font-semibold shadow-md transition-all active:scale-95">
+                                <Link href="/backoffice">
                                     Dashboard
-                                </Button>
-                            </Link>
+                                </Link>
+                            </Button>
                             <UserButton afterSignOutUrl="/" />
                         </>
                     ) : (

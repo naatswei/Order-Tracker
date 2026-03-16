@@ -20,48 +20,33 @@ export function BackofficeGuard({ children }: { children: React.ReactNode }) {
         if (!isLoaded || !membershipsLoaded) return
 
         const checkOnboarding = async () => {
-            if (!organization) {
-                // Auto-select if they only have one organization
-                const memberships = userMemberships.data
-                if (memberships && memberships.length === 1 && setActive) {
+            if (organization) {
+                // If we have an organization, absolutely let them in.
+                // We don't check metadata here to avoid redirect loops.
+                setIsChecking(false)
+                return
+            }
+
+            // If no organization, try to auto-select
+            const memberships = userMemberships.data
+            if (memberships && memberships.length === 1 && setActive) {
+                try {
                     await setActive({ organization: memberships[0].organization.id })
-                    // The component will re-render with the new organization, so we return here
+                    // Don't call setIsChecking(false) yet, let the next render with 'organization' do it
                     return
+                } catch (e) {
+                    console.error("Failed to auto-select organization", e)
                 }
+            }
 
+            // If we've finished loading and still have no organization, send them to choose/create one
+            if (pathname !== "/onboarding/organization") {
                 router.replace("/onboarding/organization")
-                return
             }
-
-
-            const metadata = organization.publicMetadata as any
-
-            // 1. Check Business Type
-            if (!metadata.businessType) {
-                router.replace("/onboarding/business-type")
-                return
-            }
-
-            // 2. Check Profile (Location/Contact)
-            if (!metadata.location || !metadata.contact) {
-                router.replace("/onboarding/profile")
-                return
-            }
-
-            // 3. Subscription Check
-            // New users MUST at least start a trial or pick a plan before entering.
-            // Returning users with expired subscriptions are still allowed (handled by banners).
-            if (!metadata.subscriptionStatus) {
-                router.replace("/onboarding/subscription")
-                return
-            }
-
-            // If we've made it here, everything is good
-            setIsChecking(false)
         }
 
         checkOnboarding()
-    }, [isLoaded, organization, membershipsLoaded, router]) // Removed pathname to prevent re-checks on every nav
+    }, [isLoaded, organization?.id, membershipsLoaded, router, pathname])
 
     if (!isLoaded || isChecking) {
         return <AppLoader message="Preparing your dashboard..." />

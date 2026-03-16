@@ -163,22 +163,24 @@ export default function BackofficePage() {
                                     ))}
                                 </DropdownMenuContent>
                             </DropdownMenu>
-                            <Link href={searchQuery ? `/backoffice/bulk?search=${encodeURIComponent(searchQuery)}` : "/backoffice/bulk"} className="flex-1 md:flex-none">
-                                <Button
-                                    className="w-full h-10 sm:h-12 rounded-xl text-white gap-2 px-4 sm:px-5 shadow-[0_4px_20px_rgb(0,0,0,0.04)] text-sm sm:text-base font-medium border-0 transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] hover:-translate-y-0.5 active:scale-[0.98]"
-                                    style={{ backgroundColor: config.theme.primary }}
-                                >
+                            <Button
+                                asChild
+                                className="w-full h-10 sm:h-12 rounded-xl text-white gap-2 px-4 sm:px-5 shadow-[0_4px_20px_rgb(0,0,0,0.04)] text-sm sm:text-base font-medium border-0 transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] hover:-translate-y-0.5 active:scale-[0.98]"
+                                style={{ backgroundColor: config.theme.primary }}
+                            >
+                                <Link href={searchQuery ? `/backoffice/bulk?search=${encodeURIComponent(searchQuery)}` : "/backoffice/bulk"}>
                                     Bulk Update
-                                </Button>
-                            </Link>
-                            <Link href="/backoffice/create" className="flex-1 md:flex-none">
-                                <Button
-                                    className="w-full h-10 sm:h-12 rounded-xl shadow-[0_4px_20px_rgb(0,0,0,0.04)] gap-2 px-4 sm:px-6 text-sm sm:text-base font-medium text-white border-0 transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] hover:-translate-y-0.5 active:scale-[0.98]"
-                                    style={{ backgroundColor: config.theme.secondary }}
-                                >
+                                </Link>
+                            </Button>
+                            <Button
+                                asChild
+                                className="w-full h-10 sm:h-12 rounded-xl shadow-[0_4px_20px_rgb(0,0,0,0.04)] gap-2 px-4 sm:px-6 text-sm sm:text-base font-medium text-white border-0 transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] hover:-translate-y-0.5 active:scale-[0.98]"
+                                style={{ backgroundColor: config.theme.secondary }}
+                            >
+                                <Link href="/backoffice/create">
                                     <Plus className="w-4 h-4" /> Create New Order
-                                </Button>
-                            </Link>
+                                </Link>
+                            </Button>
                         </div>
                     </div>
                 </div>
