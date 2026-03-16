@@ -60,8 +60,9 @@ export default function PaystackButton({
         if (!isLoaded || isRedirecting || !organization) return
 
         if (plan.name === "Free Trial") {
-            // Prevent duplicate trials
-            if (organization.publicMetadata?.trialUsed) {
+            // Prevent duplicate trials (check both org and user)
+            const hasUsedTrial = organization.publicMetadata?.trialUsed || user?.publicMetadata?.hasUsedTrial
+            if (hasUsedTrial) {
                 toast.error("You've already used your free trial. Please choose a paid plan to continue.")
                 return
             }

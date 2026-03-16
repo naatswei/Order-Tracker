@@ -188,8 +188,11 @@ export default function SubscriptionPage() {
     const metadata = organization?.publicMetadata as any
     const userMetadata = user?.publicMetadata as any
 
-    // Stabilize the check to prevent layout shifts during hydration
-    const hasSubscriptionHistory = isLoading || !!metadata?.subscriptionStatus || !!userMetadata?.hasUsedTrial
+    // Prevent Free Trial reuse by checking trial flags explicitly
+    const hasSubscriptionHistory = isLoading || 
+        !!metadata?.subscriptionStatus || 
+        !!metadata?.trialUsed || 
+        !!userMetadata?.hasUsedTrial
 
     const displayPlans = hasSubscriptionHistory
         ? plans.filter(p => p.name !== "Free Trial")

@@ -442,8 +442,20 @@ export default function TrackingDetailsPage() {
                                     </div>
                                     <div className="space-y-3">
                                         <Label className="text-[10px] uppercase tracking-[0.2em] text-[#3B82F6] font-bold block">Contact</Label>
-                                        <p className="text-base font-light text-white/80 whitespace-nowrap overflow-hidden text-ellipsis leading-none">{order.customerEmail}</p>
+                                        <p className="text-base font-light text-white/80 whitespace-nowrap overflow-hidden text-ellipsis leading-none">
+                                            {order.customerPhone || order.customerEmail || "N/A"}
+                                        </p>
                                     </div>
+                                    {order.measurements && (
+                                        <div className="col-span-full space-y-3 pt-6 border-t border-white/10">
+                                            <Label className="text-[10px] uppercase tracking-[0.2em] text-[#3B82F6] font-bold block">
+                                                {order.businessType === "tailoring" ? "Notes / Measurements" : "Special Instructions"}
+                                            </Label>
+                                            <p className="text-sm font-light text-white/70 leading-relaxed whitespace-pre-wrap italic">
+                                                "{order.measurements}"
+                                            </p>
+                                        </div>
+                                    )}
                                 </div>
                             </CardContent>
                         </Card>
@@ -452,7 +464,7 @@ export default function TrackingDetailsPage() {
                         {order.messagingEnabled && (
                             <div className="space-y-6">
                                 <div className="text-center">
-                                    <p className="text-xs text-white/50 font-light tracking-[0.2em] uppercase mb-6">Concierge</p>
+                                    <p className="text-xs text-white/50 font-light tracking-[0.2em] uppercase mb-6">Customer Care</p>
                                 </div>
 
                                 {!chatOpen ? (
