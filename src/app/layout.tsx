@@ -29,7 +29,10 @@ export default function RootLayout({
     <ClerkProvider
       signInUrl="/sign-in"
       signUpUrl="/sign-up"
+      afterSignInUrl="/backoffice"
+      afterSignUpUrl="/onboarding/business-type"
       afterSignOutUrl="/"
+
       appearance={{
         variables: { colorPrimary: '#191A43' }
       }}
