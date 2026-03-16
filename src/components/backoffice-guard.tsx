@@ -27,6 +27,19 @@ export function BackofficeGuard({ children }: { children: React.ReactNode }) {
                     return
                 }
 
+                if (!metadata.subscriptionStatus || (metadata.subscriptionStatus !== 'active' && metadata.subscriptionStatus !== 'trialing')) {
+                    router.replace("/onboarding/subscription")
+                    return
+                }
+
+                if (metadata.subscriptionExpiry) {
+                    const expiryDate = new Date(metadata.subscriptionExpiry)
+                    if (new Date() > expiryDate) {
+                        router.replace("/onboarding/subscription")
+                        return
+                    }
+                }
+
                 // If we have an organization and its metadata is configured, let them in.
                 setIsChecking(false)
                 return

@@ -56,21 +56,16 @@ export async function createOrder(data: OrderInput) {
 
     // Enforce subscription check and order limit
     if (orgId) {
-        try {
-            const { planName, orgName: validatedOrgName } = await validateSubscription(orgId);
-            orgName = validatedOrgName;
-            
-            const limits = getPlanLimits(planName);
+        const { planName, orgName: validatedOrgName } = await validateSubscription(orgId);
+        orgName = validatedOrgName;
 
-            if (limits.maxOrders !== Infinity) {
-                const [result] = await db.select({ value: count() }).from(orders).where(eq(orders.clerkOrgId, orgId));
-                if (result.value >= limits.maxOrders) {
-                    throw new Error(`Order limit reached (${limits.maxOrders}). Please upgrade your plan to create more orders.`);
-                }
+        const limits = getPlanLimits(planName);
+
+        if (limits.maxOrders !== Infinity) {
+            const [result] = await db.select({ value: count() }).from(orders).where(eq(orders.clerkOrgId, orgId));
+            if (result.value >= limits.maxOrders) {
+                throw new Error(`Order limit reached (${limits.maxOrders}). Please upgrade your plan to create more orders.`);
             }
-        } catch (e: any) {
-            if (e.message?.includes('Order limit reached')) throw e;
-            console.error("Plan check failed", e);
         }
     }
 
