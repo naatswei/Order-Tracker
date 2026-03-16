@@ -211,7 +211,7 @@ export default function SubscriptionPage() {
                     <div className="flex items-center text-xl font-bold tracking-tight">
                         <span className="text-[#CE0003]">O</span><span className="text-[#191A43]">Tracker</span>
                     </div>
-                    {!!organization && (
+                    {!!organization && hasSubscriptionHistory && (
                         <Button
                             variant="ghost"
                             onClick={() => router.push("/backoffice")}

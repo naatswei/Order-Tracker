@@ -35,8 +35,12 @@ export function BackofficeGuard({ children }: { children: React.ReactNode }) {
             }
 
             // 3. Subscription Check
-            // We now allow users to enter the backoffice even without an active subscription
-            // so they can see their business data. The RenewalBanner handles the upgrade prompts.
+            // New users MUST at least start a trial or pick a plan before entering.
+            // Returning users with expired subscriptions are still allowed (handled by banners).
+            if (!metadata.subscriptionStatus) {
+                router.replace("/onboarding/subscription")
+                return
+            }
 
             // If we've made it here, everything is good
             setIsChecking(false)
