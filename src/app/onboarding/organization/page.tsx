@@ -17,11 +17,24 @@ export default function OrganizationSelectionPage() {
     const router = useRouter()
 
     useEffect(() => {
-        if (isLoaded && organization) {
-            // If they already have an org selected, let BackofficeGuard handle routing
+        if (!isLoaded || !membershipsLoaded) return
+
+        if (organization) {
             router.replace("/backoffice")
+            return
         }
-    }, [isLoaded, organization, router])
+
+        // Auto-select if they only have one organization
+        const memberships = userMemberships.data
+        if (memberships && memberships.length === 1 && setActive) {
+            const autoSelect = async () => {
+                await setActive({ organization: memberships[0].organization.id })
+                router.replace("/backoffice")
+            }
+            autoSelect()
+        }
+    }, [isLoaded, organization, membershipsLoaded, userMemberships.data, setActive, router])
+
 
     if (!isLoaded || organization) {
         return <AppLoader message="Loading your workspace..." />
