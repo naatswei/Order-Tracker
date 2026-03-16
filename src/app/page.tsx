@@ -88,7 +88,6 @@ export default function HomePage() {
       />
 
       <LandingNavbar />
-
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}

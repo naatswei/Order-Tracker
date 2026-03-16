@@ -4,6 +4,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { motion } from "framer-motion"
 import { ArrowRight, CheckCircle2, MessageSquare, ShieldCheck, Zap } from "lucide-react"
+import Image from "next/image"
 export function LandingHero() {
     return (
         <section className="relative pt-32 pb-24 lg:pt-48 lg:pb-40 overflow-hidden bg-white bg-grid">
