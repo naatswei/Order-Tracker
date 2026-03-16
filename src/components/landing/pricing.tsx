@@ -67,7 +67,7 @@ const plans = [
 
 export function LandingPricing() {
     return (
-        <section id="pricing" className="py-32 md:py-48 bg-slate-50">
+        <section id="pricing" className="py-32 md:py-48 bg-slate-50 scroll-mt-32">
             <div className="max-w-7xl mx-auto px-6">
                 <div className="text-center mb-12 md:mb-20 px-4">
                     <motion.h2
