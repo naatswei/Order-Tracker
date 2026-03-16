@@ -16,8 +16,8 @@ export function LandingNavbar() {
         >
             <div className="max-w-7xl mx-auto flex items-center justify-between bg-white/80 backdrop-blur-2xl border border-white/30 shadow-2xl shadow-indigo-500/10 rounded-xl sm:rounded-2xl px-3 sm:px-6 py-2 sm:py-3 box-border gap-1 sm:gap-2">
                 <Link href="/" className="flex items-center gap-0 group shrink-0">
-                    <span className="text-[#CE0003] font-bold text-lg sm:text-2xl tracking-tighter">O</span>
-                    <span className="text-[#191A43] font-bold text-lg sm:text-2xl tracking-tighter">Tracker</span>
+                    <span className="text-[#CE0003] font-bold text-base sm:text-2xl tracking-tighter">O</span>
+                    <span className="text-[#191A43] font-bold text-base sm:text-2xl tracking-tighter">Tracker</span>
                 </Link>
 
 
@@ -34,12 +34,12 @@ export function LandingNavbar() {
                     ) : (
                         <>
                             <Link href="/sign-in">
-                                <Button variant="ghost" className="text-slate-600 font-semibold hover:bg-slate-100 rounded-xl px-2 sm:px-6 h-9 sm:h-11 text-xs sm:text-sm">
+                                <Button variant="ghost" className="text-slate-600 font-semibold hover:bg-slate-100 rounded-xl px-2 sm:px-6 h-9 sm:h-11 text-xs sm:text-sm hidden sm:flex">
                                     Sign In
                                 </Button>
                             </Link>
                             <Link href="/sign-up">
-                                <Button className="bg-[#CE0003] hover:bg-[#CE0003]/90 text-white rounded-xl px-2.5 sm:px-6 h-9 sm:h-11 text-xs sm:text-sm font-semibold shadow-md transition-all active:scale-95">
+                                <Button className="bg-[#CE0003] hover:bg-[#CE0003]/90 text-white rounded-xl px-2.5 sm:px-6 h-9 sm:h-11 text-[10px] sm:text-sm font-semibold shadow-md transition-all active:scale-95">
                                     Get Started
                                 </Button>
                             </Link>
