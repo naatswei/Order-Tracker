@@ -188,6 +188,7 @@ export default function SubscriptionPage() {
         }
     }
 
+    const isLoading = !isLoaded || !userLoaded
     const metadata = organization?.publicMetadata as any
     const userMetadata = user?.publicMetadata as any
 

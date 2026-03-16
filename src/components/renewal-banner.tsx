@@ -45,13 +45,15 @@ export function RenewalBanner() {
                 <div className="flex items-center gap-2 text-amber-800 text-sm font-medium">
                     <AlertCircle className="w-4 h-4 shrink-0" />
                     <span>
-                        {daysLeft === -1 
-                            ? "An active subscription is required to use all OTracker features." 
-                            : daysLeft < 0 
-                                ? (isFreeTrial ? "Your free trial has expired." : "Your subscription has expired.")
-                                : isFreeTrial
-                                    ? (daysLeft === 0 ? "Your free trial expires today!" : `Your free trial expires in ${daysLeft} ${daysLeft === 1 ? 'day' : 'days'}.`)
-                                    : (daysLeft === 0 ? "Your subscription expires today!" : `Your subscription expires in ${daysLeft} ${daysLeft === 1 ? 'day' : 'days'}.`)
+                        {daysLeft === null 
+                            ? "Loading subscription status..."
+                            : daysLeft === -1 
+                                ? "An active subscription is required to use all OTracker features." 
+                                : daysLeft < 0 
+                                    ? (isFreeTrial ? "Your free trial has expired." : "Your subscription has expired.")
+                                    : isFreeTrial
+                                        ? (daysLeft === 0 ? "Your free trial expires today!" : `Your free trial expires in ${daysLeft} ${daysLeft === 1 ? 'day' : 'days'}.`)
+                                        : (daysLeft === 0 ? "Your subscription expires today!" : `Your subscription expires in ${daysLeft} ${daysLeft === 1 ? 'day' : 'days'}.`)
                         }
                     </span>
                 </div>
