@@ -4,17 +4,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { motion } from "framer-motion"
 import { ArrowRight, CheckCircle2, MessageSquare, ShieldCheck, Zap } from "lucide-react"
-import Image from "next/image"
-
 export function LandingHero() {
-    const scrollToFeatures = (e: React.MouseEvent) => {
-        e.preventDefault()
-        const featuresSection = document.getElementById('features')
-        if (featuresSection) {
-            featuresSection.scrollIntoView({ behavior: 'smooth' })
-        }
-    }
-
     return (
         <section className="relative pt-32 pb-24 lg:pt-48 lg:pb-40 overflow-hidden bg-white bg-grid">
             <div className="max-w-7xl mx-auto px-6 relative z-10">
@@ -40,13 +30,6 @@ export function LandingHero() {
                                     Start Free Trial
                                 </Button>
                             </Link>
-                            <Button 
-                                onClick={scrollToFeatures}
-                                variant="ghost" 
-                                className="text-slate-600 hover:text-[#191A43] hover:bg-slate-50 rounded-xl h-11 px-8 text-sm font-semibold transition-all cursor-pointer"
-                            >
-                                View Features
-                            </Button>
                         </div>
 
                          <div className="flex flex-wrap items-center gap-8 justify-center lg:justify-start">
