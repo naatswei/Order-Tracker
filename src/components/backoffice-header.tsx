@@ -103,7 +103,7 @@ export function BackofficeHeader({ config }: BackofficeHeaderProps) {
                             }}
                         />
                         <UserButton
-                            afterSignOutUrl="/sign-in"
+                            afterSignOutUrl="/"
                             appearance={{
                                 elements: {
                                     userButtonAvatarBox: "w-7 h-7 shadow-sm hover:scale-105 transition-all"

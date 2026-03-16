@@ -28,7 +28,7 @@ export function LandingNavbar() {
                                     Dashboard
                                 </Button>
                             </Link>
-                            <UserButton afterSignOutUrl="/sign-in" />
+                            <UserButton afterSignOutUrl="/" />
                         </>
                     ) : (
                         <div className="flex items-center gap-2 sm:gap-4">
