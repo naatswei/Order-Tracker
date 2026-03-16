@@ -395,7 +395,7 @@ export default function InboxPage() {
                                                                         <span className="w-1 h-1 bg-slate-300 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
                                                                     </div>
                                                                 </div>
-                                                                <span className="text-[11px] font-medium text-slate-400 italic font-sans">{thread.customerName} is typing...</span>
+                                                                <span className="text-[11px] font-medium text-slate-400 font-sans">{thread.customerName} is typing...</span>
                                                             </motion.div>
                                                         )}
 

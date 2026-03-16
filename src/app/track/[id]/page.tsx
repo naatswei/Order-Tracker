@@ -451,7 +451,7 @@ export default function TrackingDetailsPage() {
                                             <Label className="text-[10px] uppercase tracking-[0.2em] text-[#3B82F6] font-bold block">
                                                 {order.businessType === "tailoring" ? "Notes / Measurements" : "Special Instructions"}
                                             </Label>
-                                            <p className="text-sm font-light text-white/70 leading-relaxed whitespace-pre-wrap italic">
+                                            <p className="text-sm font-light text-white/70 leading-relaxed whitespace-pre-wrap">
                                                 "{order.measurements}"
                                             </p>
                                         </div>
@@ -503,7 +503,7 @@ export default function TrackingDetailsPage() {
 
                                         <div className="p-4 space-y-3 max-h-[350px] overflow-y-auto">
                                             {chatMessages.length === 0 && (
-                                                <p className="text-center text-white/30 text-sm py-8 font-light italic">No message history found.</p>
+                                                <p className="text-center text-white/30 text-sm py-8 font-light">No message history found.</p>
                                             )}
                                             {chatMessages.map((msg: any) => (
                                                 <div
@@ -525,7 +525,7 @@ export default function TrackingDetailsPage() {
                                                             </span>
                                                         </div>
                                                         <p className="text-sm leading-relaxed whitespace-pre-wrap font-light">{msg.message}</p>
-                                                        <p className="text-[10px] mt-2 opacity-40 italic">
+                                                        <p className="text-[10px] mt-2 opacity-40">
                                                             {new Date(msg.createdAt).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
                                                         </p>
                                                     </div>
@@ -549,7 +549,7 @@ export default function TrackingDetailsPage() {
                                                             <span className="w-1 h-1 bg-white/40 rounded-full animate-bounce delay-150" />
                                                         </div>
                                                     </div>
-                                                    <span className="text-[10px] font-light text-white/40 italic font-sans">{order.customerName} is typing...</span>
+                                                    <span className="text-[10px] font-light text-white/40 font-sans">{order.customerName} is typing...</span>
                                                 </motion.div>
                                             )}
                                             <div className="flex gap-3">
