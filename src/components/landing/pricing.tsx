@@ -5,6 +5,7 @@ import { motion } from "framer-motion"
 import { Check } from "lucide-react"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
+import { useOrganization, useUser } from "@clerk/nextjs"
 
 const plans = [
     {
@@ -66,6 +67,24 @@ const plans = [
 ]
 
 export function LandingPricing() {
+    const { organization, isLoaded: orgLoaded } = useOrganization()
+    const { user, isLoaded: userLoaded } = useUser()
+
+    const isLoaded = orgLoaded && userLoaded
+    const metadata = organization?.publicMetadata as any
+    const userMetadata = user?.publicMetadata as any
+
+    // Prevent Free Trial reuse by checking trial flags explicitly
+    const hasSubscriptionHistory = isLoaded && (
+        !!metadata?.subscriptionStatus || 
+        !!metadata?.trialUsed || 
+        !!userMetadata?.hasUsedTrial
+    )
+
+    const displayPlans = hasSubscriptionHistory
+        ? plans.filter(p => p.name !== "Free Trial")
+        : plans
+
     return (
         <section id="pricing" className="py-32 md:py-48 bg-slate-50 scroll-mt-32">
             <div className="max-w-7xl mx-auto px-6">
@@ -89,8 +108,11 @@ export function LandingPricing() {
                     </motion.p>
                 </div>
 
-                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 pt-12">
-                    {plans.map((plan, index) => (
+                <div className={cn(
+                    "grid grid-cols-1 md:grid-cols-2 gap-8 pt-12",
+                    displayPlans.length === 3 ? "lg:grid-cols-3 max-w-5xl mx-auto" : "lg:grid-cols-4"
+                )}>
+                    {displayPlans.map((plan, index) => (
                         <motion.div
                             key={plan.name}
                             initial={{ opacity: 0, y: 20 }}
