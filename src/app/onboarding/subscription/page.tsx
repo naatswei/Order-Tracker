@@ -213,11 +213,13 @@ export default function SubscriptionPage() {
                     </div>
                     {!!organization && hasSubscriptionHistory && (
                         <Button
+                            asChild
                             variant="ghost"
-                            onClick={() => router.push("/backoffice")}
                             className="text-slate-500 hover:text-slate-900 font-medium"
                         >
-                            Back to Dashboard
+                            <Link href="/backoffice">
+                                Back to Dashboard
+                            </Link>
                         </Button>
                     )}
                 </div>
