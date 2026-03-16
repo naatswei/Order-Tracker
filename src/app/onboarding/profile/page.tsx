@@ -24,7 +24,7 @@ export default function BusinessProfilePage() {
             return
         }
         const metadata = organization?.publicMetadata as any
-        if (metadata?.location && metadata?.contact) {
+        if (metadata?.location && metadata?.contact && metadata?.businessType) {
             router.replace("/backoffice")
         }
     }, [isLoaded, organization, router])

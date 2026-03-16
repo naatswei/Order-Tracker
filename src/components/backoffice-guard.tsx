@@ -21,8 +21,13 @@ export function BackofficeGuard({ children }: { children: React.ReactNode }) {
 
         const checkOnboarding = async () => {
             if (organization) {
-                // If we have an organization, absolutely let them in.
-                // We don't check metadata here to avoid redirect loops.
+                const metadata = organization.publicMetadata as any
+                if (!metadata.businessType) {
+                    router.replace("/onboarding/business-type")
+                    return
+                }
+
+                // If we have an organization and its metadata is configured, let them in.
                 setIsChecking(false)
                 return
             }

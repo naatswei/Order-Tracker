@@ -20,7 +20,7 @@ export default function OrganizationSelectionPage() {
         if (!isLoaded || !membershipsLoaded) return
 
         if (organization) {
-            router.replace("/backoffice")
+            router.replace("/onboarding/business-type")
             return
         }
 
@@ -29,7 +29,7 @@ export default function OrganizationSelectionPage() {
         if (memberships && memberships.length === 1 && setActive) {
             const autoSelect = async () => {
                 await setActive({ organization: memberships[0].organization.id })
-                router.replace("/backoffice")
+                router.replace("/onboarding/business-type")
             }
             autoSelect()
         }
