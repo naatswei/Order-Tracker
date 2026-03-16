@@ -32,11 +32,6 @@ export function LandingHero() {
                                     Start Free Trial
                                 </Button>
                             </Link>
-                            <Link href="#features">
-                                <Button variant="ghost" className="text-slate-600 hover:text-[#191A43] hover:bg-slate-50 rounded-xl h-11 px-8 text-sm font-semibold transition-all">
-                                    View Features
-                                </Button>
-                            </Link>
                         </div>
 
                          <div className="flex flex-wrap items-center gap-8 justify-center lg:justify-start">
