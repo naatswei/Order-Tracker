@@ -204,11 +204,12 @@ export default function ProfilePage() {
             <div className="container mx-auto px-4 py-6 sm:py-8 max-w-[1000px] space-y-6 sm:space-y-8">
                 {/* Header */}
                 <div className="flex items-center gap-4">
-                    <Link href="/backoffice">
-                        <Button variant="ghost" size="icon" className="shrink-0 text-slate-500 hover:text-slate-900 rounded-full hover:bg-white shadow-sm transition-all border border-transparent hover:border-slate-200">
+                    <Button asChild variant="ghost" size="icon" className="shrink-0 text-slate-500 hover:text-slate-900 rounded-full hover:bg-white shadow-sm transition-all border border-transparent hover:border-slate-200">
+                        <Link href="/backoffice">
                             <ArrowLeft className="w-5 h-5" />
-                        </Button>
-                    </Link>
+                        </Link>
+                    </Button>
+
                     <div>
                         <h1 className="text-2xl font-bold tracking-tight text-slate-900">Settings</h1>
                         <p className="text-xs sm:text-sm text-slate-500 font-medium">Manage your business profile and subscription</p>

@@ -101,13 +101,14 @@ export default function StatusFilterPage() {
             <div className="container mx-auto px-4 py-6 sm:py-8 max-w-[1400px] space-y-6 sm:space-y-8">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     {/* Back Button */}
-                    <Link href="/backoffice" className="w-full sm:w-auto">
-                        <Button variant="outline"
-                            className="w-full sm:w-auto gap-2 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 hover:text-slate-900 transition-all duration-300 justify-center rounded-xl shadow-[0_2px_10px_rgb(0,0,0,0.02)] hover:shadow-[0_4px_20px_rgb(0,0,0,0.04)] hover:-translate-y-0.5"
-                        >
+                    <Button asChild variant="outline"
+                        className="w-full sm:w-auto gap-2 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 hover:text-slate-900 transition-all duration-300 justify-center rounded-xl shadow-[0_2px_10px_rgb(0,0,0,0.02)] hover:shadow-[0_4px_20px_rgb(0,0,0,0.04)] hover:-translate-y-0.5"
+                    >
+                        <Link href="/backoffice">
                             <ArrowLeft className="w-4 h-4" /> Back to Dashboard
-                        </Button>
-                    </Link>
+                        </Link>
+                    </Button>
+
 
                     {/* Status Filter Info */}
                     <div className="flex flex-wrap items-center justify-between sm:justify-end gap-3 bg-slate-50 sm:bg-transparent p-3 sm:p-0 rounded-lg sm:rounded-none w-full sm:w-auto">
@@ -162,15 +163,17 @@ export default function StatusFilterPage() {
                                     <Package className="w-12 h-12 mx-auto mb-4 opacity-20" />
                                     <p className="font-medium">No orders found with status &quot;{statusFilter}&quot;</p>
                                     <div className="flex items-center justify-center mt-6">
-                                        <Link href="/backoffice">
-                                            <Button
-                                                className="gap-2 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 hover:text-slate-900 transition-all duration-300 rounded-xl shadow-[0_2px_10px_rgb(0,0,0,0.02)] hover:shadow-[0_4px_20px_rgb(0,0,0,0.04)] hover:-translate-y-0.5"
-                                                variant="outline"
-                                            >
+                                        <Button
+                                            asChild
+                                            className="gap-2 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 hover:text-slate-900 transition-all duration-300 rounded-xl shadow-[0_2px_10px_rgb(0,0,0,0.02)] hover:shadow-[0_4px_20px_rgb(0,0,0,0.04)] hover:-translate-y-0.5"
+                                            variant="outline"
+                                        >
+                                            <Link href="/backoffice">
                                                 <ArrowLeft className="w-4 h-4" />
                                                 Back to Dashboard
-                                            </Button>
-                                        </Link>
+                                            </Link>
+                                        </Button>
+
                                     </div>
                                 </CardContent>
                             </Card>

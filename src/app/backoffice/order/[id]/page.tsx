@@ -141,9 +141,10 @@ export default function OrderUpdatePage() {
                         </div>
                         <h2 className="text-2xl font-bold tracking-tight">Order Not Found</h2>
                         <p className="text-muted-foreground">The order you requested could not be found.</p>
-                        <Link href="/backoffice">
-                            <Button size="lg" className="rounded-full shadow-sm bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 hover:text-slate-900 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5" variant="outline">Back to Dashboard</Button>
-                        </Link>
+                        <Button asChild size="lg" className="rounded-full shadow-sm bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 hover:text-slate-900 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5" variant="outline">
+                            <Link href="/backoffice">Back to Dashboard</Link>
+                        </Button>
+
                     </CardContent>
                 </Card>
             </div>
@@ -172,15 +173,17 @@ export default function OrderUpdatePage() {
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8">
                     {/* Back Button */}
                     <div className="flex items-center justify-between col-span-1 lg:col-span-12">
-                        <Link href="/backoffice">
-                            <Button
-                                variant="outline"
-                                className="gap-2 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 hover:text-slate-900 transition-all duration-300 rounded-xl shadow-sm hover:shadow-md hover:-translate-y-0.5"
-                            >
+                        <Button
+                            asChild
+                            variant="outline"
+                            className="gap-2 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 hover:text-slate-900 transition-all duration-300 rounded-xl shadow-sm hover:shadow-md hover:-translate-y-0.5"
+                        >
+                            <Link href="/backoffice">
                                 <ArrowLeft className="w-4 h-4" />
                                 Back to Dashboard
-                            </Button>
-                        </Link>
+                            </Link>
+                        </Button>
+
                     </div>
                     {/* Left Column - Order Info */}
                     <div className="lg:col-span-4 space-y-6">

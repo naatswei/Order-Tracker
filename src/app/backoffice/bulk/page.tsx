@@ -271,14 +271,17 @@ function BulkUpdateContent() {
                 {/* Header - Only show back button in List View */}
                 {!isUpdating && (
                     <div className="flex items-center justify-between">
-                        <Link href="/backoffice">
-                            <Button variant="outline"
-                                className="gap-2 px-4 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 hover:text-slate-900 transition-all duration-300 rounded-xl h-10 shadow-[0_2px_10px_rgb(0,0,0,0.02)] hover:shadow-[0_4px_20px_rgb(0,0,0,0.04)] hover:-translate-y-0.5"
-                            >
+                        <Button
+                            asChild
+                            variant="outline"
+                            className="gap-2 px-4 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 hover:text-slate-900 transition-all duration-300 rounded-xl h-10 shadow-[0_2px_10px_rgb(0,0,0,0.02)] hover:shadow-[0_4px_20px_rgb(0,0,0,0.04)] hover:-translate-y-0.5"
+                        >
+                            <Link href="/backoffice">
                                 <ArrowLeft className="w-4 h-4" />
                                 Back to Dashboard
-                            </Button>
-                        </Link>
+                            </Link>
+                        </Button>
+
                     </div>
                 )}
 
