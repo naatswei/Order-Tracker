@@ -14,7 +14,7 @@ export function BackofficeGuard({ children }: { children: React.ReactNode }) {
     });
     const router = useRouter()
     const pathname = usePathname()
-    const [isChecking, setIsChecking] = useState(true)
+    const [validatedOrgId, setValidatedOrgId] = useState<string | null>(null)
 
     useEffect(() => {
         if (!isLoaded || !membershipsLoaded) return
@@ -22,36 +22,28 @@ export function BackofficeGuard({ children }: { children: React.ReactNode }) {
         const checkOnboarding = async () => {
             if (organization) {
                 const metadata = organization.publicMetadata as any
+                
+                // 1. Check Business Type
                 if (!metadata.businessType) {
                     router.replace("/onboarding/business-type")
                     return
                 }
 
-                // CRITICAL: LocalStorage fallback to bridge Clerk sync delay
-                const lastActivation = localStorage.getItem('lastActivation')
-                const isRecentlyActivated = lastActivation && (Date.now() - parseInt(lastActivation) < 30000)
-
+                // 2. Check Subscription/Plan
+                // If they have NO subscription status AND NO plan name, they are brand new and MUST subscribe
                 if (!metadata.subscriptionStatus || (metadata.subscriptionStatus !== 'active' && metadata.subscriptionStatus !== 'trialing')) {
-                    // If they have NO subscription status AND NO plan name, they are brand new and MUST subscribe
                     if (!metadata.subscriptionPlan) {
                         router.replace("/onboarding/subscription")
                         return
                     }
                     
-                    // Allow them through only if they HAVE a plan (but it's inactive/expired), 
-                    // the dashboard/actions will handle the 'inactive' state with a banner
-                    setIsChecking(false)
+                    // If they have a plan but it's inactive/expired, let them through (dashboard shows banner)
+                    setValidatedOrgId(organization.id)
                     return
                 }
 
-                if (metadata.subscriptionExpiry) {
-                    // Allow them through, the dashboard/actions will handle the 'expired' state
-                    setIsChecking(false)
-                    return
-                }
-
-                // If we have an organization and its metadata is configured, let them in.
-                setIsChecking(false)
+                // Passed all checks!
+                setValidatedOrgId(organization.id)
                 return
             }
 
@@ -60,7 +52,6 @@ export function BackofficeGuard({ children }: { children: React.ReactNode }) {
             if (memberships && memberships.length === 1 && setActive) {
                 try {
                     await setActive({ organization: memberships[0].organization.id })
-                    // Don't call setIsChecking(false) yet, let the next render with 'organization' do it
                     return
                 } catch (e) {
                     console.error("Failed to auto-select organization", e)
@@ -74,9 +65,10 @@ export function BackofficeGuard({ children }: { children: React.ReactNode }) {
         }
 
         checkOnboarding()
-    }, [isLoaded, organization?.id, membershipsLoaded, router, pathname])
+    }, [isLoaded, organization?.id, membershipsLoaded, router, pathname, setActive, userMemberships.data])
 
-    if (!isLoaded || isChecking) {
+    // CRITICAL: Prevent dashboard content from flashing until the current organization has been validated
+    if (!isLoaded || !membershipsLoaded || !organization || organization.id !== validatedOrgId) {
         return <DashboardSkeleton />
     }
 

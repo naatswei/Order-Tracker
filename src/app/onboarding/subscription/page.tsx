@@ -324,7 +324,7 @@ export default function SubscriptionPage() {
                             <img
                                 src="https://upload.wikimedia.org/wikipedia/commons/f/f9/Paystack_Logo.svg"
                                 alt="Paystack"
-                                className="h-4 w-auto opacity-50 grayscale"
+                                className="h-4 w-auto opacity-80"
                             />
                         </p>
                     </div>
