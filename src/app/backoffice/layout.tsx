@@ -1,5 +1,4 @@
 import { BackofficeGuard } from "@/components/backoffice-guard"
-import { RenewalBanner } from "@/components/renewal-banner"
 
 export default function BackofficeLayout({
     children,
@@ -8,7 +7,6 @@ export default function BackofficeLayout({
 }) {
     return (
         <BackofficeGuard>
-            <RenewalBanner />
             {children}
         </BackofficeGuard>
     )
