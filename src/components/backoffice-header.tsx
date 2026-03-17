@@ -91,7 +91,7 @@ export function BackofficeHeader({ config }: BackofficeHeaderProps) {
                     <div className="flex items-center gap-3 bg-white border border-slate-200 shadow-sm rounded-full py-1 pr-1 pl-3 transition-colors hover:border-slate-300">
                         <OrganizationSwitcher
                             hidePersonal={true}
-                            afterCreateOrganizationUrl="/backoffice"
+                            afterCreateOrganizationUrl="/onboarding/business-type"
                             afterSelectOrganizationUrl="/backoffice"
                             afterLeaveOrganizationUrl="/backoffice"
                             appearance={{

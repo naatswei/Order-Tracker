@@ -32,7 +32,14 @@ export function BackofficeGuard({ children }: { children: React.ReactNode }) {
                 const isRecentlyActivated = lastActivation && (Date.now() - parseInt(lastActivation) < 30000)
 
                 if (!metadata.subscriptionStatus || (metadata.subscriptionStatus !== 'active' && metadata.subscriptionStatus !== 'trialing')) {
-                    // Allow them through, the dashboard/actions will handle the 'inactive' state
+                    // If they have NO subscription status AND NO plan name, they are brand new and MUST subscribe
+                    if (!metadata.subscriptionPlan) {
+                        router.replace("/onboarding/subscription")
+                        return
+                    }
+                    
+                    // Allow them through only if they HAVE a plan (but it's inactive/expired), 
+                    // the dashboard/actions will handle the 'inactive' state with a banner
                     setIsChecking(false)
                     return
                 }
