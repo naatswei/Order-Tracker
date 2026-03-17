@@ -5,7 +5,6 @@ import { motion } from "framer-motion"
 import { Check } from "lucide-react"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
-import { useOrganization, useUser } from "@clerk/nextjs"
 
 const plans = [
     {
@@ -67,24 +66,6 @@ const plans = [
 ]
 
 export function LandingPricing() {
-    const { organization, isLoaded: orgLoaded } = useOrganization()
-    const { user, isLoaded: userLoaded } = useUser()
-
-    const isLoaded = orgLoaded && userLoaded
-    const metadata = organization?.publicMetadata as any
-    const userMetadata = user?.publicMetadata as any
-
-    // Prevent Free Trial reuse by checking trial flags explicitly
-    const hasSubscriptionHistory = isLoaded && (
-        !!metadata?.subscriptionStatus || 
-        !!metadata?.trialUsed || 
-        !!userMetadata?.hasUsedTrial
-    )
-
-    const displayPlans = hasSubscriptionHistory
-        ? plans.filter(p => p.name !== "Free Trial")
-        : plans
-
     return (
         <section id="pricing" className="py-32 md:py-48 bg-slate-50 scroll-mt-32">
             <div className="max-w-7xl mx-auto px-6">
@@ -108,18 +89,15 @@ export function LandingPricing() {
                     </motion.p>
                 </div>
 
-                <div className={cn(
-                    "grid grid-cols-1 md:grid-cols-2 gap-8 pt-12",
-                    displayPlans.length === 3 ? "lg:grid-cols-3 max-w-5xl mx-auto" : "lg:grid-cols-4"
-                )}>
-                    {displayPlans.map((plan, index) => (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 pt-12">
+                    {plans.map((plan, index) => (
                         <motion.div
                             key={plan.name}
                             initial={{ opacity: 0, y: 20 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: index * 0.1 }}
-                            className="relative group"
+                            className="relative group h-full"
                         >
                             {plan.popular && (
                                 <div className="absolute -top-12 left-0 right-0 bg-[#191A43] h-24 rounded-t-[2rem] -z-10 flex justify-center pt-3">
@@ -149,7 +127,7 @@ export function LandingPricing() {
                                     <span className="text-[14px] font-medium text-slate-400 uppercase tracking-wider">{plan.duration.replace("/", "")}</span>
                                 </div>
 
-                                <ul className="space-y-4 mb-10 flex-1">
+                                <ul className="space-y-4 flex-1">
                                     {plan.features.map((feature) => (
                                         <li key={feature} className="flex items-center gap-2.5 text-[13px] font-medium text-[#191A43]/90">
                                             <div className="w-4.5 h-4.5 rounded-full bg-indigo-50 text-indigo-500 flex items-center justify-center shrink-0">
@@ -159,29 +137,25 @@ export function LandingPricing() {
                                         </li>
                                     ))}
                                 </ul>
-
-                                <Link 
-                                    href={`/sign-up?plan=${encodeURIComponent(plan.name)}`} 
-                                    className="mt-auto"
-                                    onClick={() => {
-                                        if (typeof window !== 'undefined') {
-                                            localStorage.setItem('pendingPlan', plan.name)
-                                        }
-                                    }}
-                                >
-                                    <Button className={cn(
-                                        "w-full h-14 rounded-2xl font-bold text-base transition-all active:scale-95",
-                                        plan.popular
-                                            ? "bg-[#191A43] text-white hover:bg-[#191A43]/90 shadow-lg shadow-indigo-500/20"
-                                            : "bg-[#191A43] text-white hover:bg-[#191A43]/90"
-                                    )}>
-                                        {plan.cta}
-                                    </Button>
-                                </Link>
                             </div>
                         </motion.div>
                     ))}
                 </div>
+
+                <div className="mt-20 text-center">
+                    <Link href="/sign-up">
+                        <Button className="h-16 px-12 rounded-2xl bg-[#191A43] text-white font-bold text-lg hover:bg-[#101323] shadow-xl hover:shadow-2xl transition-all active:scale-95">
+                            Start Your Free Journey
+                        </Button>
+                    </Link>
+                    <p className="mt-4 text-sm font-medium text-slate-400">
+                        No credit card required to start your free trial.
+                    </p>
+                </div>
+            </div>
+        </section>
+    )
+}
             </div>
         </section>
     )
