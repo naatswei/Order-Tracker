@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils"
 import { toast } from "sonner"
 import Link from "next/link"
 import dynamic from "next/dynamic"
+import { OnboardingHeader } from "@/components/onboarding-header"
 
 const PlanButton = dynamic(() => import("@/components/paystack-button"), {
     ssr: false,
@@ -220,24 +221,7 @@ export default function SubscriptionPage() {
     return (
         <div className="min-h-screen bg-[#F8FAFC]">
             {/* Header */}
-            <header className="bg-white">
-                <div className="w-full px-6 h-16 flex items-center justify-between">
-                    <div className="flex items-center text-xl font-bold tracking-tight">
-                        <span className="text-[#CE0003]">O</span><span className="text-[#191A43]">Tracker</span>
-                    </div>
-                    {!!organization && (
-                        <Button
-                            asChild
-                            variant="ghost"
-                            className="text-slate-500 hover:text-slate-900 font-medium"
-                        >
-                            <Link href="/backoffice">
-                                Back to Dashboard
-                            </Link>
-                        </Button>
-                    )}
-                </div>
-            </header>
+            <OnboardingHeader />
 
             <div className="pt-10 pb-20 px-4 sm:px-6 lg:px-8">
                 <div className="max-w-7xl w-full mx-auto space-y-12">
@@ -335,12 +319,18 @@ export default function SubscriptionPage() {
                     </div>
 
                     <div className="pt-10 flex flex-col items-center space-y-4">
-                        <p className="text-sm font-medium text-slate-400 flex items-center gap-2">
+                        <Link 
+                            href="/onboarding/organization?restart=true"
+                            className="text-sm font-medium text-slate-400 hover:text-slate-600 transition-colors underline underline-offset-4"
+                        >
+                            Switch to another workspace
+                        </Link>
+                        <p className="text-[12px] font-medium text-slate-300 flex items-center gap-2">
                             Payments secured by
                             <img
                                 src="https://upload.wikimedia.org/wikipedia/commons/f/f9/Paystack_Logo.svg"
                                 alt="Paystack"
-                                className="h-4 w-auto opacity-80"
+                                className="h-4 w-auto opacity-50 grayscale"
                             />
                         </p>
                     </div>

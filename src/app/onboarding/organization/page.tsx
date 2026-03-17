@@ -6,6 +6,7 @@ import { useEffect } from "react"
 import { LogOut } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { AppLoader } from "@/components/app-loader"
+import { OnboardingHeader } from "@/components/onboarding-header"
 
 export default function OrganizationSelectionPage() {
     const { organization, isLoaded } = useOrganization()
@@ -15,25 +16,28 @@ export default function OrganizationSelectionPage() {
         },
     });
     const router = useRouter()
+    const searchParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null
+    const isRestarting = searchParams?.get('restart') === 'true'
 
     useEffect(() => {
         if (!isLoaded || !membershipsLoaded) return
 
-        if (organization) {
+        // Only auto-redirect if NOT explicitly restarting/switching
+        if (organization && !isRestarting) {
             router.replace("/onboarding/business-type")
             return
         }
 
-        // Auto-select if they only have one organization
+        // Auto-select if they only have one organization AND NOT restarting
         const memberships = userMemberships.data
-        if (memberships && memberships.length === 1 && setActive) {
+        if (memberships && memberships.length === 1 && setActive && !isRestarting) {
             const autoSelect = async () => {
                 await setActive({ organization: memberships[0].organization.id })
                 router.replace("/onboarding/business-type")
             }
             autoSelect()
         }
-    }, [isLoaded, organization, membershipsLoaded, userMemberships.data, setActive, router])
+    }, [isLoaded, organization, membershipsLoaded, userMemberships.data, setActive, router, isRestarting])
 
 
     if (!isLoaded || organization) {
@@ -43,21 +47,7 @@ export default function OrganizationSelectionPage() {
     return (
         <div className="min-h-screen bg-[#FAFAFA]">
             {/* Standard Header */}
-            <header className="bg-white/90 backdrop-blur-md sticky top-0 z-50 border-b-[0.5px] border-slate-100 shadow-[0_2px_20px_rgb(0,0,0,0.02)]">
-                <div className="w-full px-6 h-16 flex items-center justify-between">
-                    <div className="flex items-center text-xl font-bold tracking-tight">
-                        <span className="text-[#CE0003]">O</span>
-                        <span className="text-[#191A43]">Tracker</span>
-                    </div>
-
-                    <SignOutButton>
-                        <Button variant="ghost" size="sm" className="text-slate-500 hover:text-slate-900 gap-2">
-                            <LogOut className="w-4 h-4" />
-                            Sign Out
-                        </Button>
-                    </SignOutButton>
-                </div>
-            </header>
+            <OnboardingHeader />
 
             <div className="flex flex-col items-center justify-center p-4 py-20">
                 <div className="max-w-md w-full space-y-6 text-center mb-10">

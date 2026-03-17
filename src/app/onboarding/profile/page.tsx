@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { cn } from "@/lib/utils"
+import { OnboardingHeader } from "@/components/onboarding-header"
 
 export default function BusinessProfilePage() {
     const router = useRouter()
@@ -112,14 +113,7 @@ export default function BusinessProfilePage() {
     return (
         <div className="min-h-screen bg-[#F8FAFC]">
             {/* Header */}
-            <header className="bg-white">
-                <div className="w-full px-6 h-16 flex items-center justify-between">
-                    <div className="flex items-center text-xl font-bold tracking-tight">
-                        <span className="text-[#CE0003]">O</span>
-                        <span className="text-[#191A43]">Tracker</span>
-                    </div>
-                </div>
-            </header>
+            <OnboardingHeader />
 
             <div className="py-12 px-4 sm:px-6 lg:px-8">
                 <div className="max-w-3xl mx-auto">
