@@ -1,12 +1,11 @@
 "use client"
 
 import Link from "next/link"
-import { useAuth, UserButton } from "@clerk/nextjs"
+import { SignedIn, SignedOut, ClerkLoading, UserButton } from "@clerk/nextjs"
 import { Button } from "@/components/ui/button"
 import { motion } from "framer-motion"
 
 export function LandingNavbar() {
-    const { userId } = useAuth()
 
     return (
         <motion.nav
@@ -20,8 +19,12 @@ export function LandingNavbar() {
                     <span className="text-[#191A43] font-bold text-lg sm:text-2xl tracking-tighter">Tracker</span>
                 </Link>
 
-                <div className="flex items-center gap-2 sm:gap-4">
-                    {userId ? (
+                <div className="flex items-center gap-2 sm:gap-4 min-w-[140px] justify-end">
+                    <ClerkLoading>
+                        <div className="h-10 sm:h-12 w-32 bg-slate-50 animate-pulse rounded-full" />
+                    </ClerkLoading>
+                    
+                    <SignedIn>
                         <div className="flex items-center gap-3 sm:gap-5">
                             <Button asChild className="bg-[#191A43] hover:bg-[#191A43]/90 text-white rounded-full px-5 sm:px-8 h-10 sm:h-12 text-xs sm:text-sm font-bold shadow-lg shadow-[#191A43]/10 transition-all active:scale-95">
                                 <Link href="/backoffice">
@@ -37,7 +40,9 @@ export function LandingNavbar() {
                                 }}
                             />
                         </div>
-                    ) : (
+                    </SignedIn>
+
+                    <SignedOut>
                         <div className="flex items-center gap-2 sm:gap-6">
                             <Link href="/sign-in" className="text-xs sm:text-sm font-bold text-slate-600 hover:text-[#191A43] transition-colors whitespace-nowrap px-1">
                                 Sign In
@@ -48,7 +53,7 @@ export function LandingNavbar() {
                                 </Button>
                             </Link>
                         </div>
-                    )}
+                    </SignedOut>
                 </div>
             </div>
         </motion.nav>
