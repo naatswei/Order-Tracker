@@ -119,6 +119,10 @@ export default function SubscriptionPage() {
         setCanGoBack(true)
     }, [isLoaded, organization, router])
 
+    const isLoading = !isLoaded || !userLoaded
+    const metadata = organization?.publicMetadata as any
+    const userMetadata = user?.publicMetadata as any
+
     const handleActivateSubscription = async (planName: string) => {
         try {
             if (!organization) return
@@ -143,16 +147,16 @@ export default function SubscriptionPage() {
 
             // Save to localStorage as well for immediate UI consistency
             if (typeof window !== "undefined") {
-                localStorage.setItem("selectedPlan", planName)
+                localStorage.setItem("subscriptionStatus", 'active')
                 localStorage.setItem("subscriptionExpiry", expiryDate)
+                localStorage.setItem("lastActivation", Date.now().toString())
+                
+                toast.success(`${planName} activated!`)
                 window.location.href = "/backoffice"
             }
         } catch (error) {
-            console.error("Failed to update subscription status:", error)
-            // Still try to redirect as a fallback
-            if (typeof window !== "undefined") {
-                window.location.href = "/backoffice"
-            }
+            console.error("Failed to activate subscription:", error)
+            toast.error("Failed to activate subscription. Please try again or contact support.")
         }
     }
 
@@ -184,15 +188,26 @@ export default function SubscriptionPage() {
         }
     }
 
-    const isLoading = !isLoaded || !userLoaded
-    const metadata = organization?.publicMetadata as any
-    const userMetadata = user?.publicMetadata as any
-
     // Prevent Free Trial reuse by checking trial flags explicitly
     const hasSubscriptionHistory = isLoading || 
         !!metadata?.subscriptionStatus || 
         !!metadata?.trialUsed || 
         !!userMetadata?.hasUsedTrial
+
+    useEffect(() => {
+        if (!isLoaded || !userLoaded || !organization) return
+
+        const searchParams = new URLSearchParams(window.location.search)
+        const queryPlan = searchParams.get('plan')
+        const storagePlan = localStorage.getItem('pendingPlan')
+        const planToActivate = queryPlan || storagePlan
+
+        if (planToActivate === "Free Trial" && !hasSubscriptionHistory) {
+            localStorage.removeItem('pendingPlan')
+            toast.info("Activating your free trial...")
+            handleActivateSubscription("Free Trial")
+        }
+    }, [isLoaded, userLoaded, organization, hasSubscriptionHistory])
 
     const displayPlans = hasSubscriptionHistory
         ? plans.filter(p => p.name !== "Free Trial")

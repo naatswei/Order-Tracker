@@ -160,7 +160,15 @@ export function LandingPricing() {
                                     ))}
                                 </ul>
 
-                                <Link href="/sign-up" className="mt-auto">
+                                <Link 
+                                    href={`/sign-up?plan=${encodeURIComponent(plan.name)}`} 
+                                    className="mt-auto"
+                                    onClick={() => {
+                                        if (typeof window !== 'undefined') {
+                                            localStorage.setItem('pendingPlan', plan.name)
+                                        }
+                                    }}
+                                >
                                     <Button className={cn(
                                         "w-full h-14 rounded-2xl font-bold text-base transition-all active:scale-95",
                                         plan.popular

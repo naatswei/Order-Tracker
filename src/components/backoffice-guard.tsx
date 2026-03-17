@@ -27,12 +27,18 @@ export function BackofficeGuard({ children }: { children: React.ReactNode }) {
                     return
                 }
 
+                // CRITICAL: LocalStorage fallback to bridge Clerk sync delay
+                const lastActivation = localStorage.getItem('lastActivation')
+                const isRecentlyActivated = lastActivation && (Date.now() - parseInt(lastActivation) < 30000)
+
                 if (!metadata.subscriptionStatus || (metadata.subscriptionStatus !== 'active' && metadata.subscriptionStatus !== 'trialing')) {
-                    router.replace("/onboarding/subscription")
-                    return
+                    if (!isRecentlyActivated) {
+                        router.replace("/onboarding/subscription")
+                        return
+                    }
                 }
 
-                if (metadata.subscriptionExpiry) {
+                if (metadata.subscriptionExpiry && !isRecentlyActivated) {
                     const expiryDate = new Date(metadata.subscriptionExpiry)
                     if (new Date() > expiryDate) {
                         router.replace("/onboarding/subscription")
@@ -40,7 +46,7 @@ export function BackofficeGuard({ children }: { children: React.ReactNode }) {
                     }
                 }
 
-                // If we have an organization and its metadata is configured, let them in.
+                // If we have an organization and its metadata is configured (or we just activated), let them in.
                 setIsChecking(false)
                 return
             }
