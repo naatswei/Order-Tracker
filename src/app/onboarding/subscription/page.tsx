@@ -319,12 +319,6 @@ export default function SubscriptionPage() {
                     </div>
 
                     <div className="pt-10 flex flex-col items-center space-y-4">
-                        <Link 
-                            href="/onboarding/organization?restart=true"
-                            className="text-sm font-medium text-slate-400 hover:text-slate-600 transition-colors underline underline-offset-4"
-                        >
-                            Switch to another workspace
-                        </Link>
                         <p className="text-[12px] font-medium text-slate-300 flex items-center gap-2">
                             Payments secured by
                             <img

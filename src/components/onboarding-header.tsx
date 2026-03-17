@@ -42,18 +42,6 @@ export function OnboardingHeader() {
                         />
                     </div>
                     
-                    <Button
-                        asChild
-                        variant="ghost"
-                        size="sm"
-                        className="text-slate-500 hover:text-slate-900 font-medium gap-2"
-                    >
-                        <Link href="/onboarding/organization?restart=true">
-                            <LayoutDashboard className="w-4 h-4" />
-                            <span className="hidden sm:inline">Switch Workspace</span>
-                        </Link>
-                    </Button>
-
                     <UserButton afterSignOutUrl="/" />
                 </div>
             </div>
