@@ -17,6 +17,7 @@ import { OrderCard } from "@/components/order-card"
 import { getBusinessConfig } from "@/lib/business-configs"
 import { BackofficeHeader } from "@/components/backoffice-header"
 import { RenewalBanner } from "@/components/renewal-banner"
+import { cn } from "@/lib/utils"
 import {
     DropdownMenu,
     DropdownMenuContent,
