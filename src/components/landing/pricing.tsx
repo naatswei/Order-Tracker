@@ -156,7 +156,3 @@ export function LandingPricing() {
         </section>
     )
 }
-            </div>
-        </section>
-    )
-}
