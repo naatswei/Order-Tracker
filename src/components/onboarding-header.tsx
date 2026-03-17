@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { OrganizationSwitcher, UserButton, useOrganizationList } from "@clerk/nextjs"
+import { OrganizationSwitcher, UserButton, useOrganizationList, ClerkLoading } from "@clerk/nextjs"
 import { Button } from "@/components/ui/button"
 import { LogOut, LayoutDashboard } from "lucide-react"
 
@@ -22,7 +22,10 @@ export function OnboardingHeader() {
                     <span className="text-[#191A43]">Tracker</span>
                 </Link>
 
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-4 min-w-[120px] justify-end">
+                    <ClerkLoading>
+                         <div className="h-8 w-8 rounded-full bg-slate-100 animate-pulse" />
+                    </ClerkLoading>
                     <div className="flex items-center gap-3 bg-slate-50 border border-slate-200 rounded-full py-1 pr-1 pl-3 transition-colors hover:border-slate-300">
                         <OrganizationSwitcher
                             hidePersonal={true}

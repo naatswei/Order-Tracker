@@ -3,7 +3,7 @@
 import { useOrganization, useOrganizationList } from "@clerk/nextjs"
 import { useRouter, usePathname } from "next/navigation"
 import { useEffect, useState } from "react"
-import { AppLoader } from "@/components/app-loader"
+import { DashboardSkeleton } from "@/components/dashboard-skeleton"
 
 export function BackofficeGuard({ children }: { children: React.ReactNode }) {
     const { organization, isLoaded } = useOrganization()
@@ -77,7 +77,7 @@ export function BackofficeGuard({ children }: { children: React.ReactNode }) {
     }, [isLoaded, organization?.id, membershipsLoaded, router, pathname])
 
     if (!isLoaded || isChecking) {
-        return <AppLoader message="Preparing your dashboard..." />
+        return <DashboardSkeleton />
     }
 
     return <>{children}</>

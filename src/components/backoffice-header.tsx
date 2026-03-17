@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Package, Mail, Menu, X, LayoutDashboard, ClipboardList, Settings, ChevronRight } from "lucide-react"
-import { OrganizationSwitcher, UserButton, useOrganization } from "@clerk/nextjs"
+import { OrganizationSwitcher, UserButton, useOrganization, ClerkLoading } from "@clerk/nextjs"
 import { Button } from "@/components/ui/button"
 import { motion, AnimatePresence } from "framer-motion"
 import { getUnreadCount } from "@/app/actions/messages"
@@ -88,7 +88,13 @@ export function BackofficeHeader({ config }: BackofficeHeaderProps) {
                     <div className="w-[1px] h-6 bg-slate-200" />
 
                     {/* Identity & Workspace */}
-                    <div className="flex items-center gap-3 bg-white border border-slate-200 shadow-sm rounded-full py-1 pr-1 pl-3 transition-colors hover:border-slate-300">
+                    <div className="flex items-center gap-3 bg-white border border-slate-200 shadow-sm rounded-full py-1 pr-1 pl-3 transition-colors hover:border-slate-300 min-w-[200px] justify-end">
+                        <ClerkLoading>
+                            <div className="flex items-center gap-2 pr-2">
+                                <div className="w-24 h-4 bg-slate-50 animate-pulse rounded-full" />
+                                <div className="w-8 h-8 rounded-full bg-slate-50 animate-pulse" />
+                            </div>
+                        </ClerkLoading>
                         <OrganizationSwitcher
                             hidePersonal={true}
                             afterCreateOrganizationUrl="/onboarding/business-type"
