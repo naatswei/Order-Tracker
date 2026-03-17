@@ -59,10 +59,13 @@ export default function BackofficePage() {
     
     const isSubscriptionActive = subscriptionStatus === 'active' || subscriptionStatus === 'trialing'
     const isExpired = subscriptionExpiry ? new Date() > new Date(subscriptionExpiry) : false
-    const needsRenewal = !isSubscriptionActive || isExpired
+    const hasPlan = !!metadata?.subscriptionPlan
+    const needsRenewal = !isSubscriptionActive || isExpired || !hasPlan
 
-    const renewalStatus = isExpired ? 'expired' : 
-                         (subscriptionStatus === 'trialing' ? 'trial_ended' : 'inactive')
+    const renewalStatus: 'expired' | 'trial_ended' | 'inactive' | 'no_plan' = 
+                        !hasPlan ? 'no_plan' :
+                        isExpired ? 'expired' : 
+                        (subscriptionStatus === 'trialing' ? 'trial_ended' : 'inactive')
 
     // Load business type from organization metadata
     useEffect(() => {

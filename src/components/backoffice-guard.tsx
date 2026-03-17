@@ -29,20 +29,8 @@ export function BackofficeGuard({ children }: { children: React.ReactNode }) {
                     return
                 }
 
-                // 2. Check Subscription/Plan
-                // If they have NO subscription status AND NO plan name, they are brand new and MUST subscribe
-                if (!metadata.subscriptionStatus || (metadata.subscriptionStatus !== 'active' && metadata.subscriptionStatus !== 'trialing')) {
-                    if (!metadata.subscriptionPlan) {
-                        router.replace("/onboarding/subscription")
-                        return
-                    }
-                    
-                    // If they have a plan but it's inactive/expired, let them through (dashboard shows banner)
-                    setValidatedOrgId(organization.id)
-                    return
-                }
-
-                // Passed all checks!
+                // 2. Allow dashboard exploration even without subscription
+                // The dashboard itself will show a banner and lock 'create' actions
                 setValidatedOrgId(organization.id)
                 return
             }

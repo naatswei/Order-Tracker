@@ -6,15 +6,18 @@ import Link from "next/link"
 import { motion } from "framer-motion"
 
 interface RenewalBannerProps {
-    status: 'inactive' | 'expired' | 'trial_ended'
+    status: 'inactive' | 'expired' | 'trial_ended' | 'no_plan'
 }
 
 export function RenewalBanner({ status }: RenewalBannerProps) {
     const messages = {
         inactive: "Your organization needs an active plan to continue creating orders.",
         expired: "Your subscription has expired. Please renew to restore full access.",
-        trial_ended: "Your free trial has ended. Choose a plan to continue growing."
+        trial_ended: "Your free trial has ended. Choose a plan to continue growing.",
+        no_plan: "Welcome! Explore your dashboard. Ready to start? Choose a plan to create your first order."
     }
+
+    const buttonText = status === 'no_plan' ? "Choose Plan" : "Renew Now"
 
     return (
         <motion.div 
@@ -34,7 +37,7 @@ export function RenewalBanner({ status }: RenewalBannerProps) {
                 
                 <Link href="/onboarding/subscription">
                     <Button size="sm" className="bg-[#CE0003] hover:bg-[#CE0003]/90 text-white border-none rounded-full px-6 h-9 font-bold shadow-lg transition-all active:scale-95">
-                        Renew Now <ArrowRight className="w-3.5 h-3.5 ml-2" />
+                        {buttonText} <ArrowRight className="w-3.5 h-3.5 ml-2" />
                     </Button>
                 </Link>
             </div>
