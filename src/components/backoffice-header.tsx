@@ -106,7 +106,7 @@ export function BackofficeHeader({ config }: BackofficeHeaderProps) {
                             afterSignOutUrl="/"
                             appearance={{
                                 elements: {
-                                    userButtonAvatarBox: "w-7 h-7 shadow-sm hover:scale-105 transition-all"
+                                    userButtonAvatarBox: "w-8 h-8 shadow-sm hover:scale-105 transition-all outline-[3px] outline-white/50"
                                 }
                             }}
                         />
@@ -209,7 +209,7 @@ export function BackofficeHeader({ config }: BackofficeHeaderProps) {
                                     afterSignOutUrl="/"
                                     appearance={{
                                         elements: {
-                                            userButtonAvatarBox: "w-10 h-10 border-2 border-slate-200 shadow-sm"
+                                            userButtonAvatarBox: "w-10 h-10 border-2 border-white shadow-md transition-transform hover:scale-105"
                                         }
                                     }}
                                 />
