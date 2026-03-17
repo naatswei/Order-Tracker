@@ -99,17 +99,9 @@ export function LandingPricing() {
                             transition={{ delay: index * 0.1 }}
                             className="relative group h-full"
                         >
-                            {plan.popular && (
-                                <div className="absolute -top-12 left-0 right-0 bg-[#191A43] h-24 rounded-t-[2rem] -z-10 flex justify-center pt-3">
-                                    <div className="bg-white text-[#191A43] text-[10px] font-bold uppercase tracking-widest px-6 py-1.5 rounded-full h-fit">
-                                        Most Popular
-                                    </div>
-                                </div>
-                            )}
-                            
                             <div className={cn(
-                                "p-8 md:p-10 rounded-[2rem] border relative bg-white h-full flex flex-col transition-all duration-300 hover:shadow-2xl hover:-translate-y-1",
-                                plan.popular ? "border-[#191A43]/10 shadow-xl" : "border-slate-100 shadow-sm"
+                                "p-8 md:p-10 rounded-[2rem] border relative h-full flex flex-col transition-all duration-300 hover:shadow-2xl hover:-translate-y-1",
+                                plan.popular ? "bg-[#161931] border-[#161931] text-white shadow-xl" : "bg-white border-slate-100 text-[#191A43] shadow-sm"
                             )}>
                                 {plan.name === "Yearly" && (
                                     <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#00B171] text-white text-[10px] font-bold uppercase tracking-widest px-4 py-1.5 rounded-full shadow-sm whitespace-nowrap z-20">
@@ -117,23 +109,48 @@ export function LandingPricing() {
                                     </div>
                                 )}
 
-                                <div className="mb-8">
-                                    <h3 className="text-2xl font-extrabold tracking-tight text-[#191A43] mb-1">{plan.name}</h3>
-                                    <p className="text-[14px] font-medium text-slate-400">{plan.description}</p>
+                                <div className="mb-0">
+                                    <h3 className={cn(
+                                        "text-2xl font-extrabold tracking-tight mb-1",
+                                        plan.popular ? "text-white" : "text-[#191A43]"
+                                    )}>
+                                        {plan.name}
+                                    </h3>
+                                    <p className={cn(
+                                        "text-[14px] font-medium",
+                                        plan.popular ? "text-slate-300" : "text-slate-400"
+                                    )}>
+                                        {plan.description}
+                                    </p>
                                 </div>
 
-                                <div className="mb-10 items-baseline flex gap-2">
-                                    <span className="text-3xl font-black tracking-tight text-[#191A43]">GHS {plan.price.replace("GHS ", "")}</span>
-                                    <span className="text-[14px] font-medium text-slate-400 uppercase tracking-wider">{plan.duration.replace("/", "")}</span>
+                                <div className="mt-8 mb-10 items-baseline flex gap-2">
+                                    <span className={cn(
+                                        "text-3xl font-black tracking-tight",
+                                        plan.popular ? "text-white" : "text-[#191A43]"
+                                    )}>
+                                        GHS {plan.price.replace("GHS ", "")}
+                                    </span>
+                                    <span className={cn(
+                                        "text-[14px] font-medium uppercase tracking-wider",
+                                        plan.popular ? "text-slate-300" : "text-slate-400"
+                                    )}>
+                                        {plan.duration.replace("/", "")}
+                                    </span>
                                 </div>
 
                                 <ul className="space-y-4 flex-1">
                                     {plan.features.map((feature) => (
-                                        <li key={feature} className="flex items-center gap-2.5 text-[13px] font-medium text-[#191A43]/90">
-                                            <div className="w-4.5 h-4.5 rounded-full bg-indigo-50 text-indigo-500 flex items-center justify-center shrink-0">
-                                                <Check className="w-2.5 h-2.5" strokeWidth={3} />
+                                        <li key={feature} className="flex items-center gap-3 text-[13px] font-medium">
+                                            <div className={cn(
+                                                "w-5 h-5 rounded-full flex items-center justify-center shrink-0",
+                                                plan.popular ? "bg-white/10 text-white" : "bg-indigo-50 text-indigo-500"
+                                            )}>
+                                                <Check className="w-3 h-3" strokeWidth={3} />
                                             </div>
-                                            <span className="whitespace-nowrap">{feature}</span>
+                                            <span className={plan.popular ? "text-slate-100" : "text-[#191A43]/90"}>
+                                                {feature}
+                                            </span>
                                         </li>
                                     ))}
                                 </ul>
