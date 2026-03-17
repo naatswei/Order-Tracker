@@ -16,6 +16,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { OrderCard } from "@/components/order-card"
 import { getBusinessConfig } from "@/lib/business-configs"
 import { BackofficeHeader } from "@/components/backoffice-header"
+import { RenewalBanner } from "@/components/renewal-banner"
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -49,6 +50,18 @@ export default function BackofficePage() {
     const [searchQuery, setSearchQuery] = useState("")
     // Filter state
     const [statusFilter, setStatusFilter] = useState("All")
+
+    // Subscription check
+    const metadata = organization?.publicMetadata as any
+    const subscriptionStatus = metadata?.subscriptionStatus as string
+    const subscriptionExpiry = metadata?.subscriptionExpiry as string
+    
+    const isSubscriptionActive = subscriptionStatus === 'active' || subscriptionStatus === 'trialing'
+    const isExpired = subscriptionExpiry ? new Date() > new Date(subscriptionExpiry) : false
+    const needsRenewal = !isSubscriptionActive || isExpired
+
+    const renewalStatus = isExpired ? 'expired' : 
+                         (subscriptionStatus === 'trialing' ? 'trial_ended' : 'inactive')
 
     // Load business type from organization metadata
     useEffect(() => {
@@ -115,6 +128,9 @@ export default function BackofficePage() {
             {/* Header */}
             <BackofficeHeader config={config} />
 
+            {/* Renewal Banner */}
+            {needsRenewal && <RenewalBanner status={renewalStatus} />}
+
             <div className="container mx-auto px-4 pt-10 sm:pt-12 pb-6 sm:pb-8 max-w-[1400px] space-y-8 sm:space-y-[70px]">
                 {/* Actions Bar */}
                 <div className="space-y-3">
@@ -164,22 +180,40 @@ export default function BackofficePage() {
                                 </DropdownMenuContent>
                             </DropdownMenu>
                             <Button
-                                asChild
-                                className="flex-1 md:flex-none h-10 sm:h-12 rounded-xl text-white gap-2 px-4 sm:px-5 shadow-[0_4px_20px_rgb(0,0,0,0.04)] text-sm sm:text-base font-medium border-0 transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] hover:-translate-y-0.5 active:scale-[0.98]"
-                                style={{ backgroundColor: config.theme.primary }}
+                                asChild={!needsRenewal}
+                                disabled={needsRenewal}
+                                className={cn(
+                                    "flex-1 md:flex-none h-10 sm:h-12 rounded-xl text-white gap-2 px-4 sm:px-5 shadow-[0_4px_20px_rgb(0,0,0,0.04)] text-sm sm:text-base font-medium border-0 transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] hover:-translate-y-0.5 active:scale-[0.98]",
+                                    needsRenewal && "opacity-50 cursor-not-allowed"
+                                )}
+                                style={{ backgroundColor: !needsRenewal ? config.theme.primary : "#94a3b8" }}
                             >
-                                <Link href={searchQuery ? `/backoffice/bulk?search=${encodeURIComponent(searchQuery)}` : "/backoffice/bulk"}>
-                                    Bulk Update
-                                </Link>
+                                {needsRenewal ? (
+                                    <span>Bulk Update</span>
+                                ) : (
+                                    <Link href={searchQuery ? `/backoffice/bulk?search=${encodeURIComponent(searchQuery)}` : "/backoffice/bulk"}>
+                                        Bulk Update
+                                    </Link>
+                                )}
                             </Button>
                             <Button
-                                asChild
-                                className="flex-1 md:flex-none h-10 sm:h-12 rounded-xl shadow-[0_4px_20px_rgb(0,0,0,0.04)] gap-2 px-4 sm:px-6 text-sm sm:text-base font-medium text-white border-0 transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] hover:-translate-y-0.5 active:scale-[0.98]"
-                                style={{ backgroundColor: config.theme.secondary }}
+                                asChild={!needsRenewal}
+                                disabled={needsRenewal}
+                                className={cn(
+                                    "flex-1 md:flex-none h-10 sm:h-12 rounded-xl shadow-[0_4px_20px_rgb(0,0,0,0.04)] gap-2 px-4 sm:px-6 text-sm sm:text-base font-medium text-white border-0 transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] hover:-translate-y-0.5 active:scale-[0.98]",
+                                    needsRenewal && "opacity-50 cursor-not-allowed"
+                                )}
+                                style={{ backgroundColor: !needsRenewal ? config.theme.secondary : "#94a3b8" }}
                             >
-                                <Link href="/backoffice/create">
-                                    <Plus className="w-4 h-4" /> Create New Order
-                                </Link>
+                                {needsRenewal ? (
+                                    <>
+                                        <Plus className="w-4 h-4" /> Create New Order
+                                    </>
+                                ) : (
+                                    <Link href="/backoffice/create">
+                                        <Plus className="w-4 h-4" /> Create New Order
+                                    </Link>
+                                )}
                             </Button>
                         </div>
                     </div>

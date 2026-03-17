@@ -32,21 +32,18 @@ export function BackofficeGuard({ children }: { children: React.ReactNode }) {
                 const isRecentlyActivated = lastActivation && (Date.now() - parseInt(lastActivation) < 30000)
 
                 if (!metadata.subscriptionStatus || (metadata.subscriptionStatus !== 'active' && metadata.subscriptionStatus !== 'trialing')) {
-                    if (!isRecentlyActivated) {
-                        router.replace("/onboarding/subscription")
-                        return
-                    }
+                    // Allow them through, the dashboard/actions will handle the 'inactive' state
+                    setIsChecking(false)
+                    return
                 }
 
-                if (metadata.subscriptionExpiry && !isRecentlyActivated) {
-                    const expiryDate = new Date(metadata.subscriptionExpiry)
-                    if (new Date() > expiryDate) {
-                        router.replace("/onboarding/subscription")
-                        return
-                    }
+                if (metadata.subscriptionExpiry) {
+                    // Allow them through, the dashboard/actions will handle the 'expired' state
+                    setIsChecking(false)
+                    return
                 }
 
-                // If we have an organization and its metadata is configured (or we just activated), let them in.
+                // If we have an organization and its metadata is configured, let them in.
                 setIsChecking(false)
                 return
             }

@@ -13,6 +13,7 @@ import Link from "next/link"
 import { OrganizationSwitcher, useOrganization } from "@clerk/nextjs"
 import { BackofficeHeader } from "@/components/backoffice-header"
 import { Package, ArrowLeft, Loader2, AlertCircle } from "lucide-react"
+import { RenewalBanner } from "@/components/renewal-banner"
 import { toast } from "sonner"
 import { useSearchParams, useRouter } from "next/navigation"
 import { getBusinessConfig } from "@/lib/business-configs"
@@ -153,6 +154,13 @@ function CreateOrderContent() {
         <div className="min-h-screen bg-background font-sans selection:bg-primary/20">
             {/* Header */}
             <BackofficeHeader config={config} />
+
+            {/* Renewal Banner */}
+            {!canCreateOrder && (
+                <RenewalBanner 
+                    status={isExpired ? 'expired' : (organization?.publicMetadata?.subscriptionStatus === 'trialing' ? 'trial_ended' : 'inactive')} 
+                />
+            )}
 
             <div className="container mx-auto px-4 py-8 max-w-[1400px] space-y-6">
                 <div>

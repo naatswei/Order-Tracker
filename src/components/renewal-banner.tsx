@@ -1,68 +1,46 @@
 "use client"
 
-import { useOrganization } from "@clerk/nextjs"
+import { Button } from "@/components/ui/button"
 import { AlertCircle, ArrowRight } from "lucide-react"
 import Link from "next/link"
-import { useEffect, useState } from "react"
+import { motion } from "framer-motion"
 
-export function RenewalBanner() {
-    const { organization, isLoaded } = useOrganization()
-    const [daysLeft, setDaysLeft] = useState<number | null>(null)
-    const [isFreeTrial, setIsFreeTrial] = useState(false)
+interface RenewalBannerProps {
+    status: 'inactive' | 'expired' | 'trial_ended'
+}
 
-    useEffect(() => {
-        if (!isLoaded || !organization) return
-
-        const planName = organization.publicMetadata?.subscriptionPlan as string
-        setIsFreeTrial(planName === "Free Trial")
-
-        const expiryDateStr = organization.publicMetadata?.subscriptionExpiry as string
-        if (!expiryDateStr) return
-
-        const expiryDate = expiryDateStr ? new Date(expiryDateStr) : null
-        const now = new Date()
-
-        if (expiryDate) {
-            const diffTime = expiryDate.getTime() - now.getTime()
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-
-            if (diffDays <= 3) {
-                setDaysLeft(diffDays)
-            } else {
-                setDaysLeft(null)
-            }
-        } else {
-            // No expiry date means no subscription ever started or setup error
-            setDaysLeft(-1) // Special value for 'No Subscription'
-        }
-    }, [isLoaded, organization])
-
-    if (daysLeft === null && isLoaded) return null
+export function RenewalBanner({ status }: RenewalBannerProps) {
+    const messages = {
+        inactive: "Your organization needs an active plan to continue creating orders.",
+        expired: "Your subscription has expired. Please renew to restore full access.",
+        trial_ended: "Your free trial has ended. Choose a plan to continue growing."
+    }
 
     return (
-        <div className="bg-amber-50 border-b border-amber-200 py-2 px-4 sticky top-0 z-[60]">
-            <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
-                <div className="flex items-center gap-2 text-amber-800 text-sm font-medium">
-                    <AlertCircle className="w-4 h-4 shrink-0" />
-                    <span>
-                        {daysLeft === null 
-                            ? "Loading subscription status..."
-                            : daysLeft === -1 
-                                ? "An active subscription is required to use all OTracker features." 
-                                : daysLeft < 0 
-                                    ? (isFreeTrial ? "Your free trial has expired." : "Your subscription has expired.")
-                                    : isFreeTrial
-                                        ? (daysLeft === 0 ? "Your free trial expires today!" : `Your free trial expires in ${daysLeft} ${daysLeft === 1 ? 'day' : 'days'}.`)
-                                        : (daysLeft === 0 ? "Your subscription expires today!" : `Your subscription expires in ${daysLeft} ${daysLeft === 1 ? 'day' : 'days'}.`)
-                        }
-                    </span>
+        <motion.div 
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-[#191A43] text-white py-3 px-4 sm:px-6 relative overflow-hidden"
+        >
+            <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 relative z-10">
+                <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center shrink-0">
+                        <AlertCircle className="w-4 h-4 text-white" />
+                    </div>
+                    <p className="text-sm font-medium text-white/90">
+                        {messages[status]}
+                    </p>
                 </div>
+                
                 <Link href="/onboarding/subscription">
-                    <button className="flex items-center gap-1 text-xs font-bold text-amber-900 hover:text-amber-950 transition-colors tracking-wider uppercase">
-                        {isFreeTrial ? "Upgrade Now" : "Renew Now"} <ArrowRight className="w-3 h-3" />
-                    </button>
+                    <Button size="sm" className="bg-[#CE0003] hover:bg-[#CE0003]/90 text-white border-none rounded-full px-6 h-9 font-bold shadow-lg transition-all active:scale-95">
+                        Renew Now <ArrowRight className="w-3.5 h-3.5 ml-2" />
+                    </Button>
                 </Link>
             </div>
-        </div>
+            
+            {/* Ambient Background Element */}
+            <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-white/5 to-transparent pointer-events-none" />
+        </motion.div>
     )
 }

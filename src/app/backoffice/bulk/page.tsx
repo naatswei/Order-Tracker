@@ -17,6 +17,7 @@ import { OrganizationSwitcher, UserButton, useOrganization } from "@clerk/nextjs
 import { getBusinessConfig } from "@/lib/business-configs"
 import { BackofficeHeader } from "@/components/backoffice-header"
 import { getPlanLimits } from "@/lib/plan-config"
+import { RenewalBanner } from "@/components/renewal-banner"
 
 
 export default function BulkUpdatePage() {
@@ -90,6 +91,12 @@ function BulkUpdateContent() {
     // Plan-based feature check
     const planName = organization?.publicMetadata?.subscriptionPlan as string | undefined
     const planLimits = getPlanLimits(planName)
+
+    // Subscription status
+    const subscriptionStatus = organization?.publicMetadata?.subscriptionStatus as string
+    const subscriptionExpiry = organization?.publicMetadata?.subscriptionExpiry as string
+    const isSubscriptionActive = subscriptionStatus === 'active' || subscriptionStatus === 'trialing'
+    const isExpired = subscriptionExpiry ? new Date() > new Date(subscriptionExpiry) : false
 
     if (!planLimits.bulkUpdates) {
         return (
@@ -265,6 +272,13 @@ function BulkUpdateContent() {
         <div className="min-h-screen bg-background font-sans selection:bg-primary/20">
             {/* Header */}
             <BackofficeHeader config={config} />
+
+            {/* Renewal Banner */}
+            {(!isSubscriptionActive || isExpired) && (
+                <RenewalBanner 
+                    status={isExpired ? 'expired' : (organization?.publicMetadata?.subscriptionStatus === 'trialing' ? 'trial_ended' : 'inactive')} 
+                />
+            )}
 
             <div className="container mx-auto px-4 py-8 max-w-[1400px] space-y-6">
 
