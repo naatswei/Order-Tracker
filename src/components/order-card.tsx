@@ -13,6 +13,7 @@ interface OrderCardProps {
     copiedId: string | null
     onCopy: (id: string) => void
     businessType: string | null
+    needsRenewal?: boolean
 }
 
 export function OrderCard({ order, copiedId, onCopy, businessType }: OrderCardProps) {
@@ -75,14 +76,24 @@ export function OrderCard({ order, copiedId, onCopy, businessType }: OrderCardPr
 
                             {/* Actions */}
                             <div className="flex flex-col gap-3 w-full md:w-48 shrink-0">
-                                <Link href={`/backoffice/order/${order.id}`}>
+                                {needsRenewal ? (
                                     <Button
-                                        className="w-full text-white rounded-lg h-11 shadow-[0_4px_20px_rgb(0,0,0,0.04)] font-medium border-0 transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] hover:-translate-y-0.5 active:scale-[0.98]"
-                                        style={{ backgroundColor: config.theme.secondary }}
+                                        disabled
+                                        className="w-full text-white rounded-lg h-11 font-medium border-0 opacity-50 cursor-not-allowed"
+                                        style={{ backgroundColor: "#94a3b8" }}
                                     >
                                         Update Status
                                     </Button>
-                                </Link>
+                                ) : (
+                                    <Link href={`/backoffice/order/${order.id}`}>
+                                        <Button
+                                            className="w-full text-white rounded-lg h-11 shadow-[0_4px_20px_rgb(0,0,0,0.04)] font-medium border-0 transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] hover:-translate-y-0.5 active:scale-[0.98]"
+                                            style={{ backgroundColor: config.theme.secondary }}
+                                        >
+                                            Update Status
+                                        </Button>
+                                    </Link>
+                                )}
 
                                 <Button
                                     variant="outline"
@@ -92,14 +103,24 @@ export function OrderCard({ order, copiedId, onCopy, businessType }: OrderCardPr
                                     {copiedId === order.id ? "Copied!" : "Copy Link"}
                                 </Button>
 
-                                <Link href={`/backoffice/create?edit=${order.id}`}>
+                                {needsRenewal ? (
                                     <Button
-                                        className="w-full text-white rounded-lg h-11 shadow-[0_4px_20px_rgb(0,0,0,0.04)] font-medium mt-1 border-0 transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] hover:-translate-y-0.5 active:scale-[0.98]"
-                                        style={{ backgroundColor: config.theme.primary }}
+                                        disabled
+                                        className="w-full text-white rounded-lg h-11 font-medium mt-1 border-0 opacity-50 cursor-not-allowed"
+                                        style={{ backgroundColor: "#94a3b8" }}
                                     >
                                         Edit Order
                                     </Button>
-                                </Link>
+                                ) : (
+                                    <Link href={`/backoffice/create?edit=${order.id}`}>
+                                        <Button
+                                            className="w-full text-white rounded-lg h-11 shadow-[0_4px_20px_rgb(0,0,0,0.04)] font-medium mt-1 border-0 transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] hover:-translate-y-0.5 active:scale-[0.98]"
+                                            style={{ backgroundColor: config.theme.primary }}
+                                        >
+                                            Edit Order
+                                        </Button>
+                                    </Link>
+                                )}
                             </div>
                         </div>
                     </CardContent>

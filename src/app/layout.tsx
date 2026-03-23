@@ -18,6 +18,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "OTracker",
   description: "Track your tailoring, hair, and logistics orders in real-time.",
+  icons: {
+    icon: "/logo-o.svg",
+  },
 };
 
 export default function RootLayout({
@@ -29,8 +32,8 @@ export default function RootLayout({
     <ClerkProvider
       signInUrl="/sign-in"
       signUpUrl="/sign-up"
-      fallbackRedirectUrl="/backoffice"
-      forceRedirectUrl="/backoffice"
+      signInFallbackRedirectUrl="/backoffice"
+      signUpFallbackRedirectUrl="/backoffice"
       afterSignOutUrl="/"
 
       appearance={{

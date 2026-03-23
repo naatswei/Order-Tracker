@@ -94,8 +94,12 @@ export default function HomePage() {
         transition={{ duration: 0.2 }}
       >
         <LandingHero />
-        <LandingFeatures />
-        <LandingPricing />
+        <div id="features">
+          <LandingFeatures />
+        </div>
+        <div id="pricing">
+          <LandingPricing />
+        </div>
         <LandingCTA />
         <LandingFooter />
       </motion.div>

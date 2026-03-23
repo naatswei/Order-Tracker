@@ -267,6 +267,7 @@ export default function BackofficePage() {
                                         copiedId={copiedId}
                                         onCopy={copyTrackingLink}
                                         businessType={businessType}
+                                        needsRenewal={needsRenewal}
                                     />
                                 ))}
                             </div>

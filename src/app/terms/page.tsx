@@ -3,6 +3,8 @@
 import { LandingNavbar } from "@/components/landing/navbar"
 import { LandingFooter } from "@/components/landing/footer"
 import { motion } from "framer-motion"
+import { ArrowLeft } from "lucide-react"
+import Link from "next/link"
 
 export default function TermsPage() {
     return (
@@ -14,6 +16,13 @@ export default function TermsPage() {
                     animate={{ opacity: 1, y: 0 }}
                     className="bg-white rounded-[2.5rem] p-8 md:p-16 shadow-sm border border-slate-100"
                 >
+                    <Link 
+                        href="/" 
+                        className="inline-flex items-center gap-2 text-sm font-bold text-slate-600 hover:text-[#CE0003] transition-all mb-6 group bg-slate-50 hover:bg-slate-100 px-4 py-2 rounded-full w-fit"
+                    >
+                        <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+                        Back to Home
+                    </Link>
                     <h1 className="text-4xl font-black text-[#191A43] mb-8">Terms of Service</h1>
                     <div className="prose prose-slate max-w-none space-y-6 text-slate-600 leading-relaxed">
                         <p>Welcome to OTracker. By using our services, you agree to these terms.</p>

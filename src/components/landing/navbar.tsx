@@ -19,6 +19,12 @@ export function LandingNavbar() {
                     <span className="text-[#191A43] font-bold text-lg sm:text-2xl tracking-tighter">Tracker</span>
                 </Link>
 
+                <div className="hidden lg:flex items-center gap-10 bg-slate-50/50 px-8 py-2.5 rounded-full border border-slate-100/50">
+                    <Link href="/" className="text-sm font-bold text-slate-500 hover:text-[#191A43] transition-colors">Home</Link>
+                    <Link href="/#features" className="text-sm font-bold text-slate-500 hover:text-[#191A43] transition-colors">Features</Link>
+                    <Link href="/#pricing" className="text-sm font-bold text-slate-500 hover:text-[#191A43] transition-colors">Pricing</Link>
+                </div>
+
                 <div className="flex items-center gap-2 sm:gap-4 min-w-[140px] justify-end">
                     <ClerkLoading>
                         <div className="h-10 sm:h-12 w-32 bg-slate-50 animate-pulse rounded-full" />

@@ -54,8 +54,8 @@ export function BackofficeHeader({ config }: BackofficeHeaderProps) {
             <div className="w-full px-4 sm:px-8 py-4 flex items-center justify-between">
                 {/* Logo */}
                 <Link href="/backoffice" className="flex items-center gap-3 group">
-                    <div className="w-8 h-8 rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center shadow-sm group-hover:shadow-md transition-all">
-                        <Package className="w-4 h-4 text-slate-800 transition-transform group-hover:scale-110" />
+                    <div className="w-8 h-8 rounded-full bg-red-50/50 border border-red-100 flex items-center justify-center shadow-sm group-hover:shadow-md transition-all">
+                        <span className="text-[#CE0003] font-black text-lg transition-transform group-hover:scale-110">O</span>
                     </div>
                     <div className="flex flex-col">
                         <h1 className="text-xl font-bold tracking-tight flex items-center">
