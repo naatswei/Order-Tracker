@@ -2,7 +2,7 @@
 
 import { useOrganization, useOrganizationList } from "@clerk/nextjs"
 import { useRouter, usePathname } from "next/navigation"
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect } from "react"
 import { DashboardSkeleton } from "@/components/dashboard-skeleton"
 
 export function BackofficeGuard({ children }: { children: React.ReactNode }) {

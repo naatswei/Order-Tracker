@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
 import { Package, Mail, Menu, X, LayoutDashboard, ClipboardList, Settings, ChevronRight } from "lucide-react"
 import { OrganizationSwitcher, UserButton, useOrganization, ClerkLoading } from "@clerk/nextjs"
@@ -18,6 +18,7 @@ interface BackofficeHeaderProps {
 
 export function BackofficeHeader({ config }: BackofficeHeaderProps) {
     const [isMenuOpen, setIsMenuOpen] = useState(false)
+    const [unreadCount, setUnreadCount] = useState(0)
     const { organization } = useOrganization()
     const prevCountRef = useRef(0)
 
