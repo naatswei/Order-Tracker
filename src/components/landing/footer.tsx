@@ -1,8 +1,15 @@
 "use client"
 
 import Link from "next/link"
+import { useState, useEffect } from "react"
 
 export function LandingFooter() {
+    const [year, setYear] = useState<number | null>(null)
+
+    useEffect(() => {
+        setYear(new Date().getFullYear())
+    }, [])
+
     return (
         <footer className="bg-white border-t border-slate-100 py-12">
             <div className="max-w-7xl mx-auto px-6">
@@ -14,7 +21,7 @@ export function LandingFooter() {
                     </div>
 
                     <div className="text-sm text-slate-400">
-                        © {new Date().getFullYear()} OTracker. All rights reserved.
+                        © {year} OTracker. All rights reserved.
                     </div>
                 </div>
             </div>

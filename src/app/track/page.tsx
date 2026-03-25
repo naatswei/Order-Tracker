@@ -34,6 +34,12 @@ export default function TrackPage() {
         }
     }
 
+    const [year, setYear] = useState<number | null>(null)
+
+    useEffect(() => {
+        setYear(new Date().getFullYear())
+    }, [])
+
     return (
         <div className="min-h-screen bg-[#0A0B14] text-white selection:bg-[#3B82F6]/30 overflow-hidden relative">
             {/* Ambient Background Elements */}
@@ -133,7 +139,7 @@ export default function TrackPage() {
                 </div>
 
                 <footer className="mt-auto py-8 text-center opacity-50 text-[10px] tracking-[0.3em] font-light">
-                    &copy; {new Date().getFullYear()} OTracker
+                    &copy; {year} OTracker
                 </footer>
             </div>
 
