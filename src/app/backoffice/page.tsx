@@ -168,23 +168,22 @@ export default function BackofficePage() {
                                 <DropdownMenuContent align="end" className="w-[200px] max-h-[300px] overflow-y-auto">
                                     <DropdownMenuLabel>Filter by Status</DropdownMenuLabel>
                                     <DropdownMenuSeparator />
-                                    <Link href="/backoffice" className="w-full">
+                                    <DropdownMenuItem
+                                        className="cursor-pointer focus:bg-slate-50 focus:text-slate-900 transition-colors"
+                                        style={{ color: config.theme.primary }}
+                                        onSelect={() => router.push("/backoffice")}
+                                    >
+                                        All {config.dashboardTitle.split(" ").length > 1 ? config.dashboardTitle.split(" ")[1] : "Order"}s
+                                    </DropdownMenuItem>
+                                    {statusOptions.map((status) => (
                                         <DropdownMenuItem
+                                            key={status}
                                             className="cursor-pointer focus:bg-slate-50 focus:text-slate-900 transition-colors"
                                             style={{ color: config.theme.primary }}
+                                            onSelect={() => router.push(`/backoffice/status/${encodeURIComponent(status)}`)}
                                         >
-                                            All {config.dashboardTitle.split(" ")[1]}s
+                                            {status}
                                         </DropdownMenuItem>
-                                    </Link>
-                                    {statusOptions.map((status) => (
-                                        <Link key={status} href={`/backoffice/status/${encodeURIComponent(status)}`} className="w-full">
-                                            <DropdownMenuItem
-                                                className="cursor-pointer focus:bg-slate-50 focus:text-slate-900 transition-colors"
-                                                style={{ color: config.theme.primary }}
-                                            >
-                                                {status}
-                                            </DropdownMenuItem>
-                                        </Link>
                                     ))}
                                 </DropdownMenuContent>
                             </DropdownMenu>

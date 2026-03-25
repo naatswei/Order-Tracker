@@ -18,8 +18,8 @@ interface BackofficeHeaderProps {
 
 export function BackofficeHeader({ config }: BackofficeHeaderProps) {
     const [isMenuOpen, setIsMenuOpen] = useState(false)
-    const [unreadCount, setUnreadCount] = useState(0)
     const { organization } = useOrganization()
+    const prevCountRef = useRef(0)
 
     const toggleMenu = () => setIsMenuOpen(!isMenuOpen)
 
@@ -31,11 +31,12 @@ export function BackofficeHeader({ config }: BackofficeHeaderProps) {
                 const count = await getUnreadCount(organization.id)
 
                 // Play sound if count increased
-                if (count > unreadCount && unreadCount !== 0) {
+                if (count > prevCountRef.current && prevCountRef.current !== 0) {
                     const { notificationSound } = await import("@/lib/notifications")
                     notificationSound.play()
                 }
 
+                prevCountRef.current = count
                 setUnreadCount(count)
             } catch (error) {
                 console.error("Error polling messages:", error)
@@ -47,7 +48,7 @@ export function BackofficeHeader({ config }: BackofficeHeaderProps) {
         // Poll every 30 seconds for new messages
         const interval = setInterval(checkMessages, 30000)
         return () => clearInterval(interval)
-    }, [organization?.id, unreadCount])
+    }, [organization?.id])
 
     return (
         <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b-[0.5px] border-slate-100 shadow-[0_2px_20px_rgb(0,0,0,0.02)]">
