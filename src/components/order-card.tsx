@@ -19,11 +19,12 @@ interface OrderCardProps {
 export function OrderCard({ order, copiedId, onCopy, businessType }: OrderCardProps) {
     const config = getBusinessConfig(businessType)
 
-    const getStatusColor = (status: string) => {
-        if (status.toLowerCase().includes("delivered") || status.toLowerCase().includes("completed")) {
+    const getStatusColor = (status: string | null | undefined) => {
+        const s = (status || "").toLowerCase()
+        if (s.includes("delivered") || s.includes("completed")) {
             return "bg-green-100 text-green-700 hover:bg-green-100/80 border-green-200"
         }
-        if (status.toLowerCase().includes("ready") || status.toLowerCase().includes("picked") || status.toLowerCase().includes("dispatched")) {
+        if (s.includes("ready") || s.includes("picked") || s.includes("dispatched")) {
             return "bg-blue-100 text-blue-700 hover:bg-blue-100/80 border-blue-200"
         }
         return "bg-zinc-100 text-zinc-700 hover:bg-zinc-100/80 border-zinc-200"

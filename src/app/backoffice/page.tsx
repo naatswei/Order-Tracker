@@ -124,10 +124,17 @@ export default function BackofficePage() {
     }
 
     const filteredOrders = orders.filter(order => {
+        if (!order) return false
+        
+        const customerName = order.customerName || ""
+        const orderNumber = order.orderNumber || ""
+        const orderId = order.id || ""
+        const q = (searchQuery || "").toLowerCase()
+
         const matchesSearch =
-            order.customerName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            order.orderNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            order.id.toLowerCase().includes(searchQuery.toLowerCase())
+            customerName.toLowerCase().includes(q) ||
+            orderNumber.toLowerCase().includes(q) ||
+            orderId.toLowerCase().includes(q)
 
         return matchesSearch
     })
