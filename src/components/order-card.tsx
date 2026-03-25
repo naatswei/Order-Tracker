@@ -65,12 +65,12 @@ export function OrderCard({ order, copiedId, onCopy, businessType }: OrderCardPr
                                     </div>
                                     <div className="flex gap-2 items-center">
                                         <span className="text-slate-400 text-sm font-medium w-36 shrink-0 whitespace-nowrap">{config.orderLabel === "Tracking Number" ? "Delivery Date" : "Delivery Date"}:</span>
-                                        <span className="font-semibold text-red-500">{order.pickupDate ? new Date(order.pickupDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}</span>
+                                        <span className="font-semibold text-red-500" suppressHydrationWarning>{order.pickupDate ? new Date(order.pickupDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}</span>
                                     </div>
                                 </div>
 
                                 <div className="pt-2">
-                                    <div className="text-sm text-muted-foreground/60">Created: {new Date(order.createdAt).toLocaleString()}</div>
+                                    <div className="text-sm text-muted-foreground/60" suppressHydrationWarning>Created: {new Date(order.createdAt).toLocaleString()}</div>
                                 </div>
                             </div>
 

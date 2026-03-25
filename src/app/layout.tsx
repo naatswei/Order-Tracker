@@ -32,8 +32,6 @@ export default function RootLayout({
     <ClerkProvider
       signInUrl="/sign-in"
       signUpUrl="/sign-up"
-      signInFallbackRedirectUrl="/backoffice"
-      signUpFallbackRedirectUrl="/backoffice"
       afterSignOutUrl="/"
 
       appearance={{

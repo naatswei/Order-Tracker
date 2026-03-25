@@ -25,11 +25,13 @@ class NotificationService {
     init() {
         if (this.initialized) return;
 
-        // Create AudioContext to unlock mobile audio
         try {
-            this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-            if (this.audioContext.state === "suspended") {
-                this.audioContext.resume();
+            const AudioContextClass = (window.AudioContext || (window as any).webkitAudioContext);
+            if (AudioContextClass) {
+                this.audioContext = new AudioContextClass();
+                if (this.audioContext.state === "suspended") {
+                    this.audioContext.resume();
+                }
             }
         } catch (e) {
             // Fallback — no AudioContext

@@ -52,20 +52,9 @@ export default function BackofficePage() {
     // Filter state
     const [statusFilter, setStatusFilter] = useState("All")
 
-    // Subscription check
-    const metadata = organization?.publicMetadata as any
-    const subscriptionStatus = metadata?.subscriptionStatus as string
-    const subscriptionExpiry = metadata?.subscriptionExpiry as string
-    
-    const isSubscriptionActive = subscriptionStatus === 'active' || subscriptionStatus === 'trialing'
-    const isExpired = subscriptionExpiry ? new Date() > new Date(subscriptionExpiry) : false
-    const hasPlan = !!metadata?.subscriptionPlan
-    const needsRenewal = !isSubscriptionActive || isExpired || !hasPlan
-
-    const renewalStatus: 'expired' | 'trial_ended' | 'inactive' | 'no_plan' = 
-                        !hasPlan ? 'no_plan' :
-                        isExpired ? 'expired' : 
-                        (subscriptionStatus === 'trialing' ? 'trial_ended' : 'inactive')
+    // Subscription check state
+    const [needsRenewal, setNeedsRenewal] = useState(false)
+    const [renewalStatus, setRenewalStatus] = useState<'expired' | 'trial_ended' | 'inactive' | 'no_plan'>('inactive')
 
     // Load business type from organization metadata
     useEffect(() => {
@@ -75,9 +64,25 @@ export default function BackofficePage() {
         const orgBusinessType = organization.publicMetadata?.businessType as string
         if (orgBusinessType) {
             setBusinessType(orgBusinessType)
-            // Sync to localStorage for components that still rely on it
             localStorage.setItem("businessType", orgBusinessType)
         }
+
+        // Handle subscription metadata safely on client
+        const metadata = organization.publicMetadata as any
+        const subStatus = metadata?.subscriptionStatus as string
+        const subExpiry = metadata?.subscriptionExpiry as string
+        const hasPlan = !!metadata?.subscriptionPlan
+        
+        const isSubActive = subStatus === 'active' || subStatus === 'trialing'
+        const isExpired = subExpiry ? new Date() > new Date(subExpiry) : false
+        const needsRen = !isSubActive || isExpired || !hasPlan
+        
+        setNeedsRenewal(needsRen)
+        setRenewalStatus(
+            !hasPlan ? 'no_plan' :
+            isExpired ? 'expired' : 
+            (subStatus === 'trialing' ? 'trial_ended' : 'inactive')
+        )
         // Important: depend only on the ID so we don't reload orders on every state change (e.g. searching, copying links)
     }, [isLoaded, organization?.id])
 
