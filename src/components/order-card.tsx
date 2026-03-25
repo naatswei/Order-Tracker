@@ -16,7 +16,7 @@ interface OrderCardProps {
     needsRenewal?: boolean
 }
 
-export function OrderCard({ order, copiedId, onCopy, businessType }: OrderCardProps) {
+export function OrderCard({ order, copiedId, onCopy, businessType, needsRenewal }: OrderCardProps) {
     const config = getBusinessConfig(businessType)
 
     const getStatusColor = (status: string | null | undefined) => {

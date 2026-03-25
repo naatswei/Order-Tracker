@@ -10,6 +10,7 @@ import { type Order } from "@/lib/storage"
 import { getOrders } from "@/app/actions/orders"
 import Link from "next/link"
 import { OrganizationSwitcher, useOrganization } from "@clerk/nextjs"
+import { useRouter } from "next/navigation"
 import { Search, Plus, Filter, Package, Mail, ChevronRight, Copy, ExternalLink, Menu, X } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Card, CardContent } from "@/components/ui/card"
@@ -37,6 +38,7 @@ interface BusinessProfile {
 }
 
 export default function BackofficePage() {
+    const router = useRouter()
     const [orders, setOrders] = useState<Order[]>([])
     const [isLoading, setIsLoading] = useState(true)
     const [copiedId, setCopiedId] = useState<string | null>(null)
