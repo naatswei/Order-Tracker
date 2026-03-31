@@ -14,9 +14,14 @@ export function LandingNavbar() {
             className="fixed top-0 left-0 right-0 z-50 px-4 sm:px-6 py-4 sm:py-6"
         >
             <div className="max-w-7xl mx-auto flex items-center justify-between bg-white/90 backdrop-blur-xl border border-white/40 shadow-[0_20px_50px_rgba(0,0,0,0.1)] rounded-full px-4 sm:px-8 py-2.5 sm:py-3.5 box-border gap-2">
-                <Link href="/" className="flex items-center gap-0 group shrink-0 transition-all">
-                    <span className="text-[#CE0003] font-bold text-lg sm:text-2xl tracking-tighter">O</span>
-                    <span className="text-[#191A43] font-bold text-lg sm:text-2xl tracking-tighter">Tracker</span>
+                <Link href="/" className="flex items-center gap-3 group shrink-0 transition-all">
+                    <div className="w-10 h-10 rounded-full bg-red-50/50 border border-red-100 flex items-center justify-center shadow-sm group-hover:shadow-md transition-all">
+                        <span className="text-[#CE0003] font-black text-xl transition-transform group-hover:scale-110">O</span>
+                    </div>
+                    <div className="flex font-bold text-lg sm:text-2xl tracking-tighter">
+                        <span className="text-[#CE0003]">O</span>
+                        <span className="text-[#191A43]">Tracker</span>
+                    </div>
                 </Link>
 
                 <div className="hidden lg:flex items-center gap-10 bg-slate-50/50 px-8 py-2.5 rounded-full border border-slate-100/50">
