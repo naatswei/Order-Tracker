@@ -7,7 +7,7 @@ import { ArrowRight, CheckCircle2, MessageSquare, ShieldCheck, Zap } from "lucid
 import Image from "next/image"
 export function LandingHero() {
     return (
-        <section className="relative pt-32 pb-24 lg:pt-48 lg:pb-40 overflow-hidden bg-white bg-grid">
+        <section className="relative pt-32 pb-16 lg:pt-48 lg:pb-24 overflow-hidden bg-white bg-grid">
             <div className="max-w-7xl mx-auto px-6 relative z-10">
                 <div className="grid lg:grid-cols-2 gap-20 items-center">
                     <motion.div

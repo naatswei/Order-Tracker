@@ -44,7 +44,7 @@ const features = [
 
 export function LandingFeatures() {
     return (
-        <section id="features" className="py-32 md:py-48 bg-white relative overflow-hidden scroll-mt-32">
+        <section id="features" className="pt-16 pb-32 md:pt-24 md:pb-48 bg-white relative overflow-hidden scroll-mt-32">
             <div className="max-w-7xl mx-auto px-6">
                 <div className="text-center mb-24">
                     <motion.h2
