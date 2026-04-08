@@ -16,10 +16,45 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "OTracker",
-  description: "Track your tailoring, hair, and logistics orders in real-time.",
+  title: {
+    default: "OTracker",
+    template: "%s | OTracker",
+  },
+  description: "Track your tailoring, hair, and logistics orders in real-time. Secure, professional, and reliable.",
+  metadataBase: new URL("https://www.otracker.net"),
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    title: "OTracker - The International Dashboard",
+    description: "Build radical trust with your customers through automated order tracking and professional oversight.",
+    url: "https://www.otracker.net",
+    siteName: "OTracker",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "OTracker Platform",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "OTracker",
+    description: "Professional tracking for tailoring and logistics.",
+    images: ["/og-image.png"],
+  },
   icons: {
-    icon: "/logo-o.svg",
+    icon: [
+      { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/og-image.png", sizes: "32x32", type: "image/png" },
+    ],
+    apple: [
+      { url: "/apple-icon.png", sizes: "180x180", type: "image/png" },
+    ],
   },
 };
 
