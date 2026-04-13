@@ -17,17 +17,17 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "OTracker",
+    default: "OTracker | The Command Center for Modern Businesses",
     template: "%s | OTracker",
   },
-  description: "Track your tailoring, hair, and logistics orders in real-time. Secure, professional, and reliable.",
+  description: "The ultimate management portal for tailoring, hair, and logistics brands. Oversee your operations remotely, manage orders, and build radical trust with real-time tracking.",
   metadataBase: new URL("https://www.otracker.net"),
   alternates: {
     canonical: "/",
   },
   openGraph: {
-    title: "OTracker - The International Dashboard",
-    description: "Build radical trust with your customers through automated order tracking and professional oversight.",
+    title: "OTracker - The International Business Dashboard",
+    description: "Empowering vendors to manage production and shipments from anywhere. The #1 tool for business oversight and customer transparency.",
     url: "https://www.otracker.net",
     siteName: "OTracker",
     images: [
@@ -35,7 +35,7 @@ export const metadata: Metadata = {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "OTracker Platform",
+        alt: "OTracker Business Platform",
       },
     ],
     locale: "en_US",
@@ -43,8 +43,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "OTracker",
-    description: "Professional tracking for tailoring and logistics.",
+    title: "OTracker - Business Command Center",
+    description: "Professional management and tracking for modern global brands.",
     images: ["/og-image.png"],
   },
   icons: {
@@ -75,6 +75,41 @@ export default function RootLayout({
     >
       <html lang="en">
         <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify({
+                "@context": "https://schema.org",
+                "@graph": [
+                  {
+                    "@type": "Person",
+                    "@id": "https://www.otracker.net/#person",
+                    "name": "Angela Adjei",
+                    "jobTitle": "Founder & Full-stack Developer",
+                    "url": "https://www.otracker.net",
+                    "worksFor": { "@id": "https://www.otracker.net/#organization" },
+                    "sameAs": [
+                      "https://www.linkedin.com/in/angela-adjei-otracker",
+                      "https://github.com/naatswei"
+                    ]
+                  },
+                  {
+                    "@type": "Organization",
+                    "@id": "https://www.otracker.net/#organization",
+                    "name": "OTracker",
+                    "url": "https://www.otracker.net",
+                    "logo": "https://www.otracker.net/og-image.png",
+                    "contactPoint": {
+                      "@type": "ContactPoint",
+                      "contactType": "customer service",
+                      "email": "support@otracker.net"
+                    },
+                    "founder": { "@id": "https://www.otracker.net/#person" }
+                  }
+                ]
+              })
+            }}
+          />
           <Providers>
             {children}
           </Providers>
