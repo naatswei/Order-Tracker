@@ -90,7 +90,8 @@ export default function RootLayout({
                     "worksFor": { "@id": "https://www.otracker.net/#organization" },
                     "sameAs": [
                       "https://www.linkedin.com/in/angela-adjei-otracker",
-                      "https://github.com/naatswei"
+                      "https://github.com/naatswei",
+                      "https://www.instagram.com/iam.angie_aa"
                     ]
                   },
                   {
