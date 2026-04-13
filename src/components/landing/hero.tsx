@@ -55,11 +55,11 @@ export function LandingHero() {
                         transition={{ duration: 1, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
                         className="relative hidden lg:block"
                     >
-                        <div className="relative z-10 rounded-[2rem] overflow-hidden shadow-[0_40px_80px_rgba(0,0,0,0.12)] border-[1px] border-slate-200 bg-white">
-                            <div className="aspect-video bg-slate-50 relative group">
+                        <div className="relative z-10 rounded-2xl overflow-hidden shadow-2xl border border-slate-200 bg-white">
+                            <div className="aspect-[3/4] bg-slate-50 relative group">
                                 <Image
-                                    src="/otracker-dashboard-premium.png"
-                                    alt="OTracker Platform"
+                                    src="/founder-hero.png"
+                                    alt="Angela Adjei - Founder of OTracker"
                                     fill
                                     className="object-cover"
                                     priority
