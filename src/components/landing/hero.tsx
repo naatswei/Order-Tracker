@@ -58,10 +58,10 @@ export function LandingHero() {
                         <div className="relative z-10 rounded-2xl overflow-hidden shadow-2xl border border-slate-200 bg-white">
                             <div className="aspect-[3/4] bg-slate-50 relative group">
                                 <Image
-                                    src="/founder-fullbody-excited.png"
+                                    src="/founder-fullbody-wide.png"
                                     alt="Angela Adjei - Founder of OTracker"
                                     fill
-                                    className="object-cover"
+                                    className="object-contain p-4"
                                     priority
                                     quality={100}
                                 />
