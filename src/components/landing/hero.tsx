@@ -58,7 +58,7 @@ export function LandingHero() {
                         <div className="relative z-10 rounded-[3rem] overflow-hidden shadow-[0_40px_80px_rgba(0,0,0,0.06)] border-[12px] border-white bg-white">
                             <div className="aspect-[4/5] bg-slate-50 relative group">
                                 <Image
-                                    src="/hero-image.png"
+                                    src="/hero-product-shot.png"
                                     alt="OTracker Platform"
                                     fill
                                     className="object-cover"
