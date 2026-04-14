@@ -56,12 +56,12 @@ export function LandingHero() {
                         className="relative hidden lg:block"
                     >
                         <div className="relative z-10 rounded-2xl overflow-hidden shadow-2xl border border-slate-200 bg-white">
-                            <div className="aspect-[3/4] bg-slate-50 relative group">
+                            <div className="aspect-video bg-slate-50 relative group">
                                 <Image
-                                    src="/founder-fullbody-wide.png"
-                                    alt="Angela Adjei - Founder of OTracker"
+                                    src="/ecosystem-hero.png"
+                                    alt="Angela Adjei - The Global OTracker Ecosystem"
                                     fill
-                                    className="object-contain p-4"
+                                    className="object-cover"
                                     priority
                                     quality={100}
                                 />
