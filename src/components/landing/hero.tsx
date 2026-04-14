@@ -61,7 +61,7 @@ export function LandingHero() {
                                     src="/ecosystem-hero.png"
                                     alt="Angela Adjei - The Global OTracker Ecosystem"
                                     fill
-                                    className="object-cover"
+                                    className="object-contain"
                                     priority
                                     quality={100}
                                 />
