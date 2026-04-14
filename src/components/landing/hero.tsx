@@ -50,65 +50,64 @@ export function LandingHero() {
                     </motion.div>
 
                     <motion.div
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
                         transition={{ duration: 1, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-                        className="relative hidden lg:block"
+                        className="relative hidden lg:flex items-center justify-center min-h-[500px]"
                     >
-                        <div className="relative">
-                            <div className="relative z-10 rounded-2xl overflow-hidden shadow-2xl border border-slate-200 bg-white">
-                                <div className="aspect-[3/4] bg-slate-50 relative group">
-                                    <Image
-                                        src="/founder-hero-authentic-FINAL.jpg"
-                                        alt="Angela Adjei - Founder of OTracker"
-                                        fill
-                                        className="object-cover"
-                                        priority
-                                        quality={100}
-                                    />
-                                </div>
-                            </div>
+                        {/* Central Brand Anchor */}
+                        <motion.div 
+                            animate={{ 
+                                scale: [1, 1.05, 1],
+                                transition: { duration: 4, repeat: Infinity, ease: "easeInOut" }
+                            }}
+                            className="relative z-10 w-48 h-48 rounded-full bg-white shadow-[0_20px_50px_rgba(0,0,0,0.1)] border border-slate-100 flex items-center justify-center group"
+                        >
+                            <div className="absolute inset-0 rounded-full bg-red-500/5 blur-2xl group-hover:bg-red-500/10 transition-colors" />
+                            <span className="text-8xl font-black text-[#CE0003] drop-shadow-sm select-none">O</span>
+                        </motion.div>
 
-                            {/* Industry Ecosystem Satellites */}
-                            <motion.div
-                                animate={{ y: [0, -10, 0] }}
-                                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                                className="absolute -top-12 -left-12 z-20 w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-xl bg-white"
-                            >
-                                <Image src="/industry-tailor.png" alt="Tailoring Industry" fill className="object-cover" />
-                                <div className="absolute inset-x-0 bottom-0 bg-black/40 backdrop-blur-sm py-1 px-2 text-[10px] text-white font-medium text-center">Tailoring</div>
-                            </motion.div>
+                        {/* Industry Ecosystem Satellites (Orbits) */}
+                        <motion.div
+                            animate={{ y: [0, -20, 0] }}
+                            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                            className="absolute top-0 left-10 z-20 w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-xl bg-white"
+                        >
+                            <Image src="/industry-tailor.png" alt="Tailoring Industry" fill className="object-cover" />
+                            <div className="absolute inset-x-0 bottom-0 bg-black/40 backdrop-blur-sm py-1.5 px-2 text-[10px] text-white font-bold text-center">Tailoring</div>
+                        </motion.div>
 
-                            <motion.div
-                                animate={{ y: [0, 15, 0] }}
-                                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-                                className="absolute top-10 -right-16 z-20 w-28 h-28 rounded-full overflow-hidden border-4 border-white shadow-xl bg-white"
-                            >
-                                <Image src="/industry-hair.png" alt="Hair Retail" fill className="object-cover" />
-                                <div className="absolute inset-x-0 bottom-0 bg-black/40 backdrop-blur-sm py-1 px-2 text-[10px] text-white font-medium text-center">Hair Retail</div>
-                            </motion.div>
+                        <motion.div
+                            animate={{ y: [0, 25, 0] }}
+                            transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+                            className="absolute top-10 right-10 z-20 w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-xl bg-white"
+                        >
+                            <Image src="/industry-hair.png" alt="Hair Retail" fill className="object-cover" />
+                            <div className="absolute inset-x-0 bottom-0 bg-black/40 backdrop-blur-sm py-1.5 px-2 text-[10px] text-white font-bold text-center">Hair Retail</div>
+                        </motion.div>
 
-                            <motion.div
-                                animate={{ y: [0, -12, 0] }}
-                                transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-                                className="absolute bottom-20 -left-20 z-20 w-28 h-28 rounded-full overflow-hidden border-4 border-white shadow-xl bg-white"
-                            >
-                                <Image src="/industry-logistics.png" alt="Logistics" fill className="object-cover" />
-                                <div className="absolute inset-x-0 bottom-0 bg-black/40 backdrop-blur-sm py-1 px-2 text-[10px] text-white font-medium text-center">Logistics</div>
-                            </motion.div>
+                        <motion.div
+                            animate={{ y: [0, -15, 0] }}
+                            transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+                            className="absolute bottom-10 left-10 z-20 w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-xl bg-white"
+                        >
+                            <Image src="/industry-logistics.png" alt="Logistics" fill className="object-cover" />
+                            <div className="absolute inset-x-0 bottom-0 bg-black/40 backdrop-blur-sm py-1.5 px-2 text-[10px] text-white font-bold text-center">Logistics</div>
+                        </motion.div>
 
-                            <motion.div
-                                animate={{ y: [0, 10, 0] }}
-                                transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
-                                className="absolute -bottom-8 -right-8 z-20 w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-xl bg-white"
-                            >
-                                <Image src="/industry-vendor.png" alt="Online Stores" fill className="object-cover" />
-                                <div className="absolute inset-x-0 bottom-0 bg-black/40 backdrop-blur-sm py-1 px-2 text-[10px] text-white font-medium text-center">Online Stores</div>
-                            </motion.div>
+                        <motion.div
+                            animate={{ y: [0, 20, 0] }}
+                            transition={{ duration: 5.5, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
+                            className="absolute bottom-0 right-10 z-20 w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-xl bg-white"
+                        >
+                            <Image src="/industry-vendor.png" alt="Online Stores" fill className="object-cover" />
+                            <div className="absolute inset-x-0 bottom-0 bg-black/40 backdrop-blur-sm py-1.5 px-2 text-[10px] text-white font-bold text-center">Online Stores</div>
+                        </motion.div>
 
-                            {/* Decorative background blur */}
-                            <div className="absolute -top-20 -right-20 w-96 h-96 bg-[#7C3AED]/10 rounded-full blur-[100px] -z-10" />
-                        </div>
+                        {/* Background Decorative Elements */}
+                        <div className="absolute w-[400px] h-[400px] border border-slate-100 rounded-full -z-10 opacity-50" />
+                        <div className="absolute w-[600px] h-[600px] border border-slate-50 rounded-full -z-10 opacity-30" />
+                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-[#7C3AED]/5 rounded-full blur-[100px] -z-10" />
                     </motion.div>
                 </div>
             </div>
