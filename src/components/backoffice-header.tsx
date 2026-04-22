@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
-import { Package, Mail, Menu, X, LayoutDashboard, ClipboardList, Settings, ChevronRight } from "lucide-react"
+import { Package, Mail, Menu, X, LayoutDashboard, ClipboardList, Settings, ChevronRight, Users } from "lucide-react"
 import { OrganizationSwitcher, UserButton, useOrganization, ClerkLoading } from "@clerk/nextjs"
 import { Button } from "@/components/ui/button"
 import { motion, AnimatePresence } from "framer-motion"
@@ -68,7 +68,23 @@ export function BackofficeHeader({ config }: BackofficeHeaderProps) {
                 </Link>
 
                 {/* Desktop Navigation */}
-                <div className="hidden md:flex items-center gap-3 lg:gap-5">
+                <div className="hidden md:flex items-center gap-6">
+                    <nav className="flex items-center gap-4">
+                        <Link href="/backoffice" className="text-sm font-medium text-slate-600 hover:text-[#191A43] transition-colors">Dashboard</Link>
+                        <Link href="/backoffice/operations" className="text-sm font-medium text-slate-600 hover:text-[#191A43] transition-colors flex items-center gap-1.5">
+                            <ClipboardList className="w-4 h-4" />
+                            Operations
+                        </Link>
+                        <Link href="/backoffice/staff" className="text-sm font-medium text-slate-600 hover:text-[#191A43] transition-colors flex items-center gap-1.5">
+                            <Users className="w-4 h-4" />
+                            Team
+                        </Link>
+                    </nav>
+
+                    {/* Divider */}
+                    <div className="w-[1px] h-4 bg-slate-200" />
+
+                    <div className="flex items-center gap-3 lg:gap-5">
                     {/* Action Items */}
                     <div className="flex items-center gap-2">
                         <Link href="/backoffice/inbox">
@@ -166,6 +182,36 @@ export function BackofficeHeader({ config }: BackofficeHeaderProps) {
                                     <div className="flex-1">
                                         <p className="text-sm font-semibold text-slate-800">Dashboard</p>
                                         <p className="text-[11px] text-slate-400">Overview & analytics</p>
+                                    </div>
+                                    <ChevronRight className="w-4 h-4 text-slate-300" />
+                                </Link>
+
+                                <Link
+                                    href="/backoffice/operations"
+                                    onClick={() => setIsMenuOpen(false)}
+                                    className="flex items-center gap-3 px-3 py-3 rounded-xl text-slate-700 hover:bg-slate-50 transition-colors group"
+                                >
+                                    <div className="w-9 h-9 rounded-lg bg-slate-100 flex items-center justify-center group-hover:bg-[#191A43]/10 transition-colors">
+                                        <ClipboardList className="w-4 h-4 text-slate-500 group-hover:text-[#191A43] transition-colors" />
+                                    </div>
+                                    <div className="flex-1">
+                                        <p className="text-sm font-semibold text-slate-800">Operations</p>
+                                        <p className="text-[11px] text-slate-400">Production line & staging</p>
+                                    </div>
+                                    <ChevronRight className="w-4 h-4 text-slate-300" />
+                                </Link>
+
+                                <Link
+                                    href="/backoffice/staff"
+                                    onClick={() => setIsMenuOpen(false)}
+                                    className="flex items-center gap-3 px-3 py-3 rounded-xl text-slate-700 hover:bg-slate-50 transition-colors group"
+                                >
+                                    <div className="w-9 h-9 rounded-lg bg-slate-100 flex items-center justify-center group-hover:bg-[#191A43]/10 transition-colors">
+                                        <Users className="w-4 h-4 text-slate-500 group-hover:text-[#191A43] transition-colors" />
+                                    </div>
+                                    <div className="flex-1">
+                                        <p className="text-sm font-semibold text-slate-800">Team</p>
+                                        <p className="text-[11px] text-slate-400">Staff & assignments</p>
                                     </div>
                                     <ChevronRight className="w-4 h-4 text-slate-300" />
                                 </Link>

@@ -15,12 +15,38 @@ export const orders = pgTable("orders", {
     currentStatus: text("current_status").notNull(),
     clerkOrgId: text("clerk_org_id"), // To scope orders to organizations
     userId: text("user_id"), // To track who created it
+    assignedStaffId: text("assigned_staff_id").references(() => staff.id, { onDelete: "set null" }),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
-export const ordersRelations = relations(orders, ({ many }) => ({
+export const staff = pgTable("staff", {
+    id: text("id").primaryKey(),
+    name: text("name").notNull(),
+    role: text("role"),
+    email: text("email"),
+    clerkOrgId: text("clerk_org_id").notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const workflows = pgTable("workflows", {
+    id: text("id").primaryKey(),
+    name: text("name").notNull(),
+    position: text("position").notNull(), // Order of the stage
+    clerkOrgId: text("clerk_org_id").notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const ordersRelations = relations(orders, ({ many, one }) => ({
     statusHistory: many(statusHistory),
+    assignedStaff: one(staff, {
+        fields: [orders.assignedStaffId],
+        references: [staff.id],
+    }),
+}));
+
+export const staffRelations = relations(staff, ({ many }) => ({
+    assignedOrders: many(orders),
 }));
 
 export const statusHistory = pgTable("status_history", {
