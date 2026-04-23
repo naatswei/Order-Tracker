@@ -105,6 +105,15 @@ function CreateOrderContent() {
         // Prevent extremely rapid double-clicks
         if (isSaving) return
 
+        // Validate pickup date is not in the past
+        const today = new Date()
+        today.setHours(0, 0, 0, 0)
+        if (pickupDate && pickupDate < today) {
+            toast.error("Delivery date cannot be in the past.")
+            setIsSaving(false)
+            return
+        }
+
         setIsSaving(true)
 
         try {
