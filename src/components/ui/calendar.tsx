@@ -20,8 +20,8 @@ function Calendar({
         <DayPicker
             showOutsideDays={showOutsideDays}
             className={cn("p-3", className)}
-            disabled={disabled}
-            hidden={disabled}
+            disabled={disabled || { before: new Date(new Date().setHours(0, 0, 0, 0)) }}
+            hidden={disabled || { before: new Date(new Date().setHours(0, 0, 0, 0)) }}
             classNames={{
                 months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
                 month: "space-y-4 relative",
