@@ -245,7 +245,7 @@ function CreateOrderContent() {
                                         setDate={setPickupDate}
                                         placeholder="Select a date"
                                         disabled={!canCreateOrder}
-                                        fromDate={new Date()}
+                                        fromDate={new Date(new Date().setHours(0, 0, 0, 0))}
                                     />
                                 </div>
 

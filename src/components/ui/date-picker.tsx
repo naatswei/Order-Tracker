@@ -53,7 +53,11 @@ export function DatePicker({ date, setDate, placeholder = "Pick a date", classNa
                     }}
                     fromDate={fromDate}
                     toDate={toDate}
-                    disabled={fromDate ? { before: fromDate } : (toDate ? { after: toDate } : undefined)}
+                    disabled={(date) => {
+                        if (fromDate && date < fromDate) return true;
+                        if (toDate && date > toDate) return true;
+                        return false;
+                    }}
                     initialFocus
                 />
             </PopoverContent>
