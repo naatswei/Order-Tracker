@@ -19,10 +19,11 @@ interface DatePickerProps {
     placeholder?: string
     className?: string
     disabled?: boolean
-    disabledDates?: any // react-day-picker matcher
+    fromDate?: Date
+    toDate?: Date
 }
 
-export function DatePicker({ date, setDate, placeholder = "Pick a date", className, disabled, disabledDates }: DatePickerProps) {
+export function DatePicker({ date, setDate, placeholder = "Pick a date", className, disabled, fromDate, toDate }: DatePickerProps) {
     const [open, setOpen] = React.useState(false)
 
     return (
@@ -50,7 +51,9 @@ export function DatePicker({ date, setDate, placeholder = "Pick a date", classNa
                         setDate(selectedDate)
                         setOpen(false)
                     }}
-                    disabled={disabledDates}
+                    fromDate={fromDate}
+                    toDate={toDate}
+                    disabled={fromDate ? { before: fromDate } : (toDate ? { after: toDate } : undefined)}
                     initialFocus
                 />
             </PopoverContent>
