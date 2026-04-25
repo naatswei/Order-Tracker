@@ -17,6 +17,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { OrderCard } from "@/components/order-card"
 import { getBusinessConfig } from "@/lib/business-configs"
 import { BackofficeHeader } from "@/components/backoffice-header"
+import { SignatureLoader } from "@/components/signature-loader"
 import { RenewalBanner } from "@/components/renewal-banner"
 import { cn } from "@/lib/utils"
 import {
@@ -244,18 +245,8 @@ export default function BackofficePage() {
 
                     <AnimatePresence mode="popLayout">
                         {isLoading ? (
-                            <div className="grid gap-4">
-                                {[1, 2, 3].map((i) => (
-                                    <div key={i} className="w-full h-[180px] bg-white rounded-3xl shadow-[0_4px_30px_rgb(0,0,0,0.02)] animate-pulse border border-slate-100 flex items-center justify-center">
-                                        <div className="flex flex-col items-center gap-3 opacity-30">
-                                            <div className="w-12 h-12 bg-slate-200 rounded-2xl" />
-                                            <div className="w-32 h-4 bg-slate-200 rounded-full" />
-                                            <div className="w-48 h-3 bg-slate-200 rounded-full" />
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        ) : filteredOrders.length === 0 ? (
+                        <SignatureLoader message="Syncing Order Board" />
+                    ) : filteredOrders.length === 0 ? (
                             <motion.div
                                 key="empty"
                                 initial={{ opacity: 0 }}

@@ -20,6 +20,7 @@ import {
 import { toast } from "sonner";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
+import { SignatureLoader } from "@/components/signature-loader";
 
 export default function StaffPage() {
     const [staffList, setStaffList] = useState<any[]>([]);
@@ -207,10 +208,7 @@ export default function StaffPage() {
                     </div>
 
                     {isInitialLoad ? (
-                         <div className="flex flex-col items-center justify-center py-20 space-y-4">
-                            <div className="w-10 h-10 border-4 border-slate-100 border-t-[#191A43] rounded-full animate-spin" />
-                            <p className="text-xs font-black text-slate-400 uppercase tracking-widest animate-pulse">Syncing Team Profiles...</p>
-                        </div>
+                        <SignatureLoader message="Syncing Team Profiles" />
                     ) : (
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                             <AnimatePresence>

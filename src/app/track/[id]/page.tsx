@@ -15,6 +15,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Loader2, Package, CheckCircle2, Clock, Truck, MapPin, Search, Send, MessageSquare, MessageSquareMore, X, ArrowRight, User, Building2, ChevronRight, ExternalLink, Calendar, Zap } from "lucide-react"
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion"
+import { SignatureLoader } from "@/components/signature-loader"
 
 export default function TrackingDetailsPage() {
     const params = useParams()
@@ -215,15 +216,8 @@ export default function TrackingDetailsPage() {
             </div>
 
             {loading ? (
-                <div className="flex flex-col items-center justify-center min-h-screen">
-                    <motion.div
-                        animate={{ opacity: [0.3, 1, 0.3] }}
-                        transition={{ duration: 2, repeat: Infinity }}
-                        className="text-center"
-                    >
-                        <div className="w-16 h-[2px] bg-gradient-to-r from-transparent via-[#3B82F6] to-transparent mx-auto mb-4" />
-                        <p className="text-white/70 text-xs font-light tracking-[0.2em] uppercase">Refining Experience</p>
-                    </motion.div>
+                <div className="min-h-screen flex items-center justify-center">
+                    <SignatureLoader message="Refining Experience" />
                 </div>
             ) : !order ? (
                 <div className="flex items-center justify-center min-h-screen p-4">
