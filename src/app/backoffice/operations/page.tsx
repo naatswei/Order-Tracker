@@ -198,7 +198,7 @@ export default function OperationsPage() {
             </div>
 
             {/* Kanban Board Container */}
-            <div className="px-4 sm:px-8 py-10">
+            <div className="px-4 sm:px-8 pt-20 pb-10">
                 {isLoading ? (
                     <div className="flex flex-col items-center justify-center min-h-[40vh] space-y-4">
                         <div className="w-10 h-10 border-4 border-slate-200 border-t-primary rounded-full animate-spin" />
