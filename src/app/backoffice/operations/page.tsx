@@ -111,7 +111,7 @@ export default function OperationsPage() {
     );
 
     return (
-        <div className="p-4 sm:p-8 space-y-10 bg-[#FBFBFF] min-h-screen">
+        <div className="pt-10 pb-10 px-4 sm:pt-16 sm:px-8 space-y-12 bg-[#FBFBFF] min-h-screen">
             {/* Header Section */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
                 <div className="space-y-2">
