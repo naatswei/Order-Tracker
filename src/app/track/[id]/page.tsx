@@ -600,7 +600,7 @@ export default function TrackingDetailsPage() {
                                 <div className="relative z-10 space-y-6">
                                     <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#3B82F6]/10 border border-[#3B82F6]/20 mb-2">
                                         <Zap className="w-3 h-3 text-[#3B82F6]" />
-                                        <span className="text-[10px] font-black text-[#3B82F6] uppercase tracking-[0.2em]">Partner Network</span>
+                                        <span className="text-[10px] font-black text-[#3B82F6] uppercase tracking-[0.2em]">Partner with OTracker</span>
                                     </div>
 
                                     <h2 className="text-3xl sm:text-4xl font-light text-white tracking-tight leading-tight">
