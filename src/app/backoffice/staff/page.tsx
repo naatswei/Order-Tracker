@@ -73,6 +73,23 @@ export default function StaffPage() {
     const totalStaff = staffList.length;
     const uniqueRoles = new Set(staffList.map(s => s.role).filter(Boolean)).size;
 
+    // Staff Color Palette
+    const staffColors = [
+        { bg: "bg-blue-50/50", text: "text-blue-600", border: "border-blue-100", accent: "bg-blue-600", light: "bg-blue-500" },
+        { bg: "bg-emerald-50/50", text: "text-emerald-600", border: "border-emerald-100", accent: "bg-emerald-600", light: "bg-emerald-500" },
+        { bg: "bg-rose-50/50", text: "text-rose-600", border: "border-rose-100", accent: "bg-rose-600", light: "bg-rose-500" },
+        { bg: "bg-amber-50/50", text: "text-amber-600", border: "border-amber-100", accent: "bg-amber-600", light: "bg-amber-500" },
+        { bg: "bg-indigo-50/50", text: "text-indigo-600", border: "border-indigo-100", accent: "bg-indigo-600", light: "bg-indigo-500" },
+        { bg: "bg-teal-50/50", text: "text-teal-600", border: "border-teal-100", accent: "bg-teal-600", light: "bg-teal-500" },
+        { bg: "bg-violet-50/50", text: "text-violet-600", border: "border-violet-100", accent: "bg-violet-600", light: "bg-violet-500" },
+        { bg: "bg-cyan-50/50", text: "text-cyan-600", border: "border-cyan-100", accent: "bg-cyan-600", light: "bg-cyan-500" },
+    ];
+
+    const getStaffColor = (name: string) => {
+        const hash = name.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+        return staffColors[hash % staffColors.length];
+    };
+
     return (
         <div className="bg-[#FBFBFF] min-h-screen">
             {/* Pro-HUD Header */}
@@ -200,56 +217,59 @@ export default function StaffPage() {
                     ) : (
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                             <AnimatePresence>
-                                {staffList.map((person, index) => (
-                                    <motion.div
-                                        key={person.id}
-                                        initial={{ opacity: 0, y: 20 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        transition={{ delay: index * 0.05 }}
-                                    >
-                                        <Card className="group relative border-slate-100 bg-white hover:border-[#191A43]/20 hover:shadow-2xl hover:shadow-[#191A43]/5 transition-all rounded-[2rem] overflow-hidden">
-                                            <CardContent className="p-8">
-                                                <div className="flex items-start justify-between">
-                                                    <div className="flex flex-col gap-5">
-                                                        <div className="w-14 h-14 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center group-hover:bg-[#191A43] group-hover:border-[#191A43] transition-all duration-500 shadow-sm">
-                                                            <User className="w-6 h-6 text-slate-400 group-hover:text-white transition-colors duration-500" strokeWidth={1.5} />
-                                                        </div>
-                                                        <div className="space-y-1">
-                                                            <h3 className="text-xl font-black text-[#191A43] tracking-tight group-hover:translate-x-1 transition-transform duration-500">
-                                                                {person.name}
-                                                            </h3>
-                                                            <div className="flex items-center gap-2">
-                                                                <span className="w-1 h-1 rounded-full bg-indigo-400" />
-                                                                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest leading-none">
-                                                                    {person.role || "Operator"}
-                                                                </p>
+                                {staffList.map((person, index) => {
+                                    const color = getStaffColor(person.name);
+                                    return (
+                                        <motion.div
+                                            key={person.id}
+                                            initial={{ opacity: 0, y: 20 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            transition={{ delay: index * 0.05 }}
+                                        >
+                                            <Card className="group relative border-slate-100 bg-white hover:border-[#191A43]/20 hover:shadow-2xl hover:shadow-[#191A43]/5 transition-all rounded-[2rem] overflow-hidden">
+                                                <CardContent className="p-8">
+                                                    <div className="flex items-start justify-between">
+                                                        <div className="flex flex-col gap-5">
+                                                            <div className={`w-14 h-14 rounded-2xl ${color.bg} border ${color.border} flex items-center justify-center group-hover:bg-[#191A43] group-hover:border-[#191A43] transition-all duration-500 shadow-sm`}>
+                                                                <User className={`w-6 h-6 ${color.text} group-hover:text-white transition-colors duration-500`} strokeWidth={1.5} />
+                                                            </div>
+                                                            <div className="space-y-1">
+                                                                <h3 className="text-xl font-black text-[#191A43] tracking-tight group-hover:translate-x-1 transition-transform duration-500">
+                                                                    {person.name}
+                                                                </h3>
+                                                                <div className="flex items-center gap-2">
+                                                                    <span className={`w-1 h-1 rounded-full ${color.light}`} />
+                                                                    <p className="text-xs font-bold text-slate-400 uppercase tracking-widest leading-none">
+                                                                        {person.role || "Operator"}
+                                                                    </p>
+                                                                </div>
                                                             </div>
                                                         </div>
+                                                        
+                                                        <Button 
+                                                            variant="ghost" 
+                                                            size="icon" 
+                                                            onClick={() => handleRemoveStaff(person.id)}
+                                                            className="text-slate-200 hover:text-red-500 hover:bg-red-50 h-10 w-10 rounded-xl transition-all"
+                                                            title="Remove Member"
+                                                        >
+                                                            <Trash2 className="w-4 h-4" />
+                                                        </Button>
                                                     </div>
                                                     
-                                                    <Button 
-                                                        variant="ghost" 
-                                                        size="icon" 
-                                                        onClick={() => handleRemoveStaff(person.id)}
-                                                        className="text-slate-200 hover:text-red-500 hover:bg-red-50 h-10 w-10 rounded-xl transition-all"
-                                                        title="Remove Member"
-                                                    >
-                                                        <Trash2 className="w-4 h-4" />
-                                                    </Button>
-                                                </div>
-                                                
-                                                {/* Card Footer Decoration */}
-                                                <div className="mt-8 pt-6 border-t border-slate-50 flex items-center justify-between">
-                                                    <div className="flex items-center gap-1.5">
-                                                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                                                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Active</span>
+                                                    {/* Card Footer Decoration */}
+                                                    <div className="mt-8 pt-6 border-t border-slate-50 flex items-center justify-between">
+                                                        <div className="flex items-center gap-1.5">
+                                                            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                                                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Active</span>
+                                                        </div>
+                                                        <div className="text-[10px] text-slate-300 font-medium">#{person.id.slice(-4).toUpperCase()}</div>
                                                     </div>
-                                                    <div className="text-[10px] text-slate-300 font-medium">#{person.id.slice(-4).toUpperCase()}</div>
-                                                </div>
-                                            </CardContent>
-                                        </Card>
-                                    </motion.div>
-                                ))}
+                                                </CardContent>
+                                            </Card>
+                                        </motion.div>
+                                    );
+                                })}
                             </AnimatePresence>
 
                             {staffList.length === 0 && (
