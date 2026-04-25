@@ -17,7 +17,9 @@ import {
     Target,
     Zap,
     CheckCircle2,
-    Truck
+    Truck,
+    Search,
+    Filter
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -38,6 +40,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { StageConfig } from "@/components/operations/stage-config";
 import Link from "next/link";
+import { Input } from "@/components/ui/input";
 
 const STAGE_THEMES: Record<string, { color: string, icon: any, bg: string, border: string }> = {
     "Order Received": { color: "text-blue-600", icon: Target, bg: "bg-blue-50/50", border: "border-blue-100" },
@@ -52,6 +55,7 @@ export default function OperationsPage() {
     const [staff, setStaff] = useState<any[]>([]);
     const [stages, setStages] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [searchQuery, setSearchQuery] = useState("");
 
     useEffect(() => {
         loadData();
@@ -103,6 +107,12 @@ export default function OperationsPage() {
         }
     }
 
+    const filteredOrders = orders.filter(order => 
+        order.customerName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        order.orderNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        order.itemType.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
     if (isLoading) return (
         <div className="p-12 flex flex-col items-center justify-center min-h-[60vh] space-y-4">
             <div className="w-12 h-12 border-4 border-slate-200 border-t-primary rounded-full animate-spin" />
@@ -111,67 +121,92 @@ export default function OperationsPage() {
     );
 
     return (
-        <div className="pt-10 pb-10 px-4 sm:pt-16 sm:px-8 space-y-12 bg-[#FBFBFF] min-h-screen">
-            {/* Header Section */}
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-                <div className="space-y-2">
-                    <div className="flex items-center gap-2 mb-1">
-                        <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Live Production Status</span>
+        <div className="bg-[#FBFBFF] min-h-screen">
+            {/* Pro-HUD Header */}
+            <div className="sticky top-[73px] z-40 bg-white/80 backdrop-blur-xl border-b border-slate-100 shadow-[0_4px_30px_rgb(0,0,0,0.02)]">
+                <div className="w-full px-4 sm:px-8 py-4 flex flex-col lg:flex-row items-center justify-between gap-6">
+                    {/* Title Area */}
+                    <div className="flex items-center gap-5 w-full lg:w-auto">
+                        <div className="hidden sm:flex flex-col">
+                            <div className="flex items-center gap-2 mb-1">
+                                <div className="w-2 h-2 rounded-full bg-[#CE0003] animate-pulse" />
+                                <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Live System</span>
+                            </div>
+                            <h1 className="text-2xl font-black text-[#191A43] tracking-tight whitespace-nowrap">Command Center</h1>
+                        </div>
+
+                        <div className="h-10 w-px bg-slate-100 hidden sm:block mx-2" />
+
+                        {/* Quick Search */}
+                        <div className="relative flex-1 lg:w-64">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                            <Input 
+                                placeholder="Find order or customer..." 
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="h-11 pl-10 pr-4 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all w-full text-sm font-medium"
+                            />
+                        </div>
                     </div>
-                    <h1 className="text-4xl font-black text-[#191A43] tracking-tight">Command Center</h1>
-                    <p className="text-slate-500 text-sm font-medium">Manage your shop floor operations with precision.</p>
-                </div>
-                
-                <div className="flex items-center gap-3">
-                    <div className="hidden lg:flex items-center gap-6 px-6 py-3 bg-white border border-slate-100 rounded-2xl shadow-sm mr-4">
-                        <div className="flex flex-col">
-                            <span className="text-[10px] font-bold text-slate-400 uppercase">Active Orders</span>
+
+                    {/* Stats Hub */}
+                    <div className="flex items-center justify-around flex-1 bg-slate-50/50 rounded-2xl border border-slate-100/50 px-8 py-2 gap-8 min-w-[300px]">
+                        <div className="flex flex-col items-center">
+                            <span className="text-[9px] font-black text-slate-400 uppercase">Live Orders</span>
                             <span className="text-xl font-black text-[#191A43]">{orders.length}</span>
                         </div>
-                        <div className="w-px h-8 bg-slate-100" />
-                        <div className="flex flex-col">
-                            <span className="text-[10px] font-bold text-slate-400 uppercase">Team Members</span>
-                            <span className="text-xl font-black text-[#191A43]">{staff.length}</span>
+                        <div className="w-px h-6 bg-slate-200/50" />
+                        <div className="flex flex-col items-center">
+                            <span className="text-[9px] font-black text-slate-400 uppercase">Team Active</span>
+                            <span className="text-xl font-black text-indigo-600">{staff.length}</span>
+                        </div>
+                        <div className="w-px h-6 bg-slate-200/50" />
+                        <div className="flex flex-col items-center">
+                            <span className="text-[9px] font-black text-slate-400 uppercase">Throughput</span>
+                            <span className="text-xl font-black text-emerald-500">98%</span>
                         </div>
                     </div>
 
-                    <Dialog>
-                        <DialogTrigger asChild>
-                            <Button variant="outline" className="h-12 px-6 rounded-2xl border-slate-200 bg-white hover:bg-slate-50 text-slate-600 font-bold transition-all shadow-sm">
-                                <Settings2 className="w-4 h-4 mr-2" />
-                                Configure Stages
-                            </Button>
-                        </DialogTrigger>
-                        <DialogContent className="sm:max-w-[425px] rounded-[2.5rem] border-none shadow-2xl p-8">
-                            <DialogHeader className="mb-6">
-                                <DialogTitle className="text-2xl font-black text-[#191A43]">Workflow Designer</DialogTitle>
-                                <DialogDescription className="text-slate-500 font-medium">
-                                    Customize your production stages to match your unique business process.
-                                </DialogDescription>
-                            </DialogHeader>
-                            <StageConfig initialStages={stages} onUpdate={loadData} />
-                        </DialogContent>
-                    </Dialog>
+                    {/* Actions Hub */}
+                    <div className="flex items-center gap-3 w-full lg:w-auto">
+                        <Dialog>
+                            <DialogTrigger asChild>
+                                <Button variant="ghost" className="h-11 px-4 rounded-2xl text-slate-500 hover:bg-slate-50 font-bold transition-all">
+                                    <Settings2 className="w-4 h-4 mr-2" />
+                                    Configure
+                                </Button>
+                            </DialogTrigger>
+                            <DialogContent className="sm:max-w-[425px] rounded-[2.5rem] border-none shadow-2xl p-8">
+                                <DialogHeader className="mb-6">
+                                    <DialogTitle className="text-2xl font-black text-[#191A43]">Workflow Designer</DialogTitle>
+                                    <DialogDescription className="text-slate-500 font-medium">
+                                        Customize your production stages to match your unique business process.
+                                    </DialogDescription>
+                                </DialogHeader>
+                                <StageConfig initialStages={stages} onUpdate={loadData} />
+                            </DialogContent>
+                        </Dialog>
 
-                    <Link href="/backoffice/create">
-                        <Button className="h-12 px-6 rounded-2xl bg-[#191A43] hover:bg-[#191A43]/90 text-white font-bold transition-all shadow-lg shadow-[#191A43]/10">
-                            <Plus className="w-4 h-4 mr-2" />
-                            New Order
-                        </Button>
-                    </Link>
+                        <Link href="/backoffice/create" className="flex-1 lg:flex-none">
+                            <Button className="w-full h-11 px-8 rounded-2xl bg-[#191A43] hover:bg-[#191A43]/90 text-white font-bold transition-all shadow-lg shadow-[#191A43]/10">
+                                <Plus className="w-4 h-4 mr-2" />
+                                New Order
+                            </Button>
+                        </Link>
+                    </div>
                 </div>
             </div>
 
-            {/* Kanban Board */}
-            <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 overflow-x-auto pb-8">
-                {stages.map((stage) => {
-                    const theme = STAGE_THEMES[stage.name] || { color: "text-slate-600", icon: LayoutGrid, bg: "bg-slate-50/50", border: "border-slate-100" };
-                    const stageOrders = orders.filter(o => o.currentStatus === stage.name);
-                    const Icon = theme.icon;
+            {/* Kanban Board Container */}
+            <div className="px-4 sm:px-8 py-10">
+                <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 overflow-x-auto pb-8">
+                    {stages.map((stage) => {
+                        const theme = STAGE_THEMES[stage.name] || { color: "text-slate-600", icon: LayoutGrid, bg: "bg-slate-50/50", border: "border-slate-100" };
+                        const stageOrders = filteredOrders.filter(o => o.currentStatus === stage.name);
+                        const Icon = theme.icon;
 
-                    return (
-                        <div key={stage.name} className="flex flex-col min-w-[300px] space-y-6">
+                        return (
+                            <div key={stage.name} className="flex flex-col min-w-[300px] space-y-6">
                             {/* Column Header */}
                             <div className="flex items-center justify-between px-2">
                                 <div className="flex items-center gap-3">
