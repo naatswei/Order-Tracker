@@ -23,7 +23,7 @@ interface DatePickerProps {
     toDate?: Date
 }
 
-export function DatePicker({ date, setDate, placeholder = "Select delivery date", className, disabled, fromDate, toDate }: DatePickerProps) {
+export function DatePicker({ date, setDate, placeholder = "Pick a delivery date", className, disabled, fromDate, toDate }: DatePickerProps) {
     const [open, setOpen] = React.useState(false)
 
     return (
