@@ -84,13 +84,13 @@ export default function OperationsPage() {
     }
 
     async function handleAssign(orderId: string, staffId: string) {
-        try {
+        if (staffId === "none") {
+            await assignOrder(orderId, null);
+        } else {
             await assignOrder(orderId, staffId);
-            toast.success("Staff assigned");
-            loadData();
-        } catch (error) {
-            toast.error("Failed to assign staff");
         }
+        toast.success("Staff updated");
+        loadData();
     }
 
     async function handleMoveStage(orderId: string, currentStageName: string) {
@@ -207,111 +207,107 @@ export default function OperationsPage() {
 
                         return (
                             <div key={stage.name} className="flex flex-col min-w-[300px] space-y-6">
-                            {/* Column Header */}
-                            <div className="flex items-center justify-between px-2">
-                                <div className="flex items-center gap-3">
-                                    <div className={`p-2 rounded-xl ${theme.bg} ${theme.color} border ${theme.border} shadow-sm`}>
-                                        <Icon className="w-4 h-4" />
+                                {/* Column Header */}
+                                <div className="flex items-center justify-between px-2">
+                                    <div className="flex items-center gap-3">
+                                        <div className={`p-2 rounded-xl ${theme.bg} ${theme.color} border ${theme.border} shadow-sm`}>
+                                            <Icon className="w-4 h-4" />
+                                        </div>
+                                        <div>
+                                            <h2 className="text-xs font-black text-slate-700 uppercase tracking-widest">{stage.name}</h2>
+                                            <p className="text-[10px] font-bold text-slate-400">{stageOrders.length} {stageOrders.length === 1 ? 'Order' : 'Orders'}</p>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <h2 className="text-xs font-black text-slate-700 uppercase tracking-widest">{stage.name}</h2>
-                                        <p className="text-[10px] font-bold text-slate-400">{stageOrders.length} {stageOrders.length === 1 ? 'Order' : 'Orders'}</p>
-                                    </div>
+                                    <button className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 transition-colors">
+                                        <MoreHorizontal className="w-4 h-4" />
+                                    </button>
                                 </div>
-                                <button className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 transition-colors">
-                                    <MoreHorizontal className="w-4 h-4" />
-                                </button>
-                            </div>
 
-                            {/* Column Body */}
-                            <div className="flex-1 space-y-5 p-3 rounded-[2rem] bg-slate-50/30 border border-slate-100/50 min-h-[600px] relative">
-                                <AnimatePresence mode="popLayout">
-                                    {stageOrders.length === 0 ? (
-                                        <motion.div 
-                                            initial={{ opacity: 0 }}
-                                            animate={{ opacity: 1 }}
-                                            className="absolute inset-0 flex flex-col items-center justify-center p-8 text-center"
-                                        >
-                                            <div className="w-12 h-12 rounded-full border-2 border-dashed border-slate-200 flex items-center justify-center mb-4">
-                                                <Plus className="w-4 h-4 text-slate-300" />
-                                            </div>
-                                            <p className="text-[11px] font-bold text-slate-300 uppercase tracking-wider">No active orders</p>
-                                        </motion.div>
-                                    ) : (
-                                        stageOrders.map((order) => (
-                                            <motion.div
-                                                key={order.id}
-                                                layout
-                                                initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                                                animate={{ opacity: 1, y: 0, scale: 1 }}
-                                                exit={{ opacity: 0, scale: 0.95 }}
-                                                transition={{ duration: 0.2 }}
+                                {/* Column Body */}
+                                <div className="flex-1 space-y-5 p-3 rounded-[2rem] bg-slate-50/30 border border-slate-100/50 min-h-[600px] relative">
+                                    <AnimatePresence mode="popLayout">
+                                        {stageOrders.length === 0 ? (
+                                            <motion.div 
+                                                key="empty"
+                                                initial={{ opacity: 0 }}
+                                                animate={{ opacity: 1 }}
+                                                className="absolute inset-0 flex flex-col items-center justify-center p-8 text-center"
                                             >
-                                                <Card className="border-none shadow-[0_4px_20px_rgb(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] transition-all group overflow-hidden bg-white rounded-3xl">
-                                                    <div className={`h-1 w-full ${theme.bg.replace('/50', '')} ${theme.color.replace('text', 'bg')}`} />
-                                                    <CardContent className="p-5 space-y-5">
-                                                        <div className="flex justify-between items-start">
-                                                            <div>
-                                                                <div className="flex items-center gap-2 mb-1">
-                                                                    <span className="text-[9px] font-black text-slate-400 uppercase tracking-tighter bg-slate-50 px-1.5 py-0.5 rounded-md border border-slate-100">
-                                                                        #{order.orderNumber}
-                                                                    </span>
-                                                                </div>
-                                                                <h3 className="font-bold text-[#191A43] text-sm group-hover:text-[#CE0003] transition-colors">{order.customerName}</h3>
-                                                            </div>
-                                                            <div className="text-right">
-                                                                <p className="text-[10px] font-black text-[#CE0003] uppercase tracking-wider">{order.itemType}</p>
-                                                                <div className="flex items-center gap-1 justify-end text-[9px] font-bold text-slate-400 mt-1">
-                                                                    <span className="w-1 h-1 rounded-full bg-slate-300" />
-                                                                    High Priority
-                                                                </div>
-                                                            </div>
-                                                        </div>
-
-                                                        <div className="flex items-center justify-between p-3 rounded-2xl bg-slate-50/80 border border-slate-100/50">
-                                                            <div className="flex items-center gap-3 overflow-hidden">
-                                                                <div className="w-8 h-8 rounded-xl bg-white border border-slate-100 flex items-center justify-center text-slate-400 shadow-sm shrink-0">
-                                                                    <User className="w-4 h-4" />
-                                                                </div>
-                                                                <div className="min-w-0">
-                                                                    <p className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Assigned Staff</p>
-                                                                    <Select 
-                                                                        value={order.assignedStaffId || "none"} 
-                                                                        onValueChange={(val) => handleAssign(order.id, val)}
-                                                                    >
-                                                                        <SelectTrigger className="h-5 border-none bg-transparent p-0 focus:ring-0 text-xs font-bold text-slate-700 w-full">
-                                                                            <SelectValue placeholder="Assign now" />
-                                                                        </SelectTrigger>
-                                                                        <SelectContent className="rounded-2xl border-slate-100 shadow-xl">
-                                                                            <SelectItem value="none">Unassigned</SelectItem>
-                                                                            {staff.map(s => (
-                                                                                <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
-                                                                            ))}
-                                                                        </SelectContent>
-                                                                    </Select>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-
-                                                        <Button 
-                                                            onClick={() => handleMoveStage(order.id, order.currentStatus)}
-                                                            className="w-full h-11 rounded-2xl bg-white text-[#191A43] border border-slate-100 hover:border-slate-300 hover:bg-slate-50 shadow-sm font-bold text-xs group/btn relative overflow-hidden"
-                                                        >
-                                                            <span className="relative z-10 flex items-center justify-center">
-                                                                Progress Stage
-                                                                <ChevronRight className="w-3.5 h-3.5 ml-2 transition-transform group-hover/btn:translate-x-1" />
-                                                            </span>
-                                                        </Button>
-                                                    </CardContent>
-                                                </Card>
+                                                <div className="w-12 h-12 rounded-full border-2 border-dashed border-slate-200 flex items-center justify-center mb-4">
+                                                    <Plus className="w-4 h-4 text-slate-300" />
+                                                </div>
+                                                <p className="text-[11px] font-bold text-slate-300 uppercase tracking-wider">No active orders</p>
                                             </motion.div>
-                                        ))
-                                    )}
-                                </AnimatePresence>
+                                        ) : (
+                                            stageOrders.map((order) => (
+                                                <motion.div
+                                                    key={order.id}
+                                                    layout
+                                                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                                                    exit={{ opacity: 0, scale: 0.95 }}
+                                                    transition={{ duration: 0.2 }}
+                                                >
+                                                    <Card className="border-none shadow-[0_4px_20px_rgb(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] transition-all group overflow-hidden bg-white rounded-3xl">
+                                                        <CardContent className="p-5 space-y-4">
+                                                            <div className="flex items-start justify-between">
+                                                                <div className="space-y-1">
+                                                                    <p className="text-[10px] font-black text-[#CE0003] uppercase tracking-wider">{order.orderNumber}</p>
+                                                                    <h3 className="font-black text-[#191A43] leading-tight">{order.customerName}</h3>
+                                                                    <p className="text-xs text-slate-500 font-medium">{order.itemType}</p>
+                                                                </div>
+                                                                <Badge variant="outline" className="bg-slate-50 border-slate-100 text-[10px] font-bold text-slate-500 rounded-lg">
+                                                                    {new Date(order.deliveryDate).toLocaleDateString()}
+                                                                </Badge>
+                                                            </div>
+
+                                                            <div className="pt-2 space-y-3">
+                                                                <div className="flex items-center justify-between p-3 rounded-2xl bg-slate-50/80 border border-slate-100/50">
+                                                                    <div className="flex items-center gap-3 overflow-hidden">
+                                                                        <div className="w-8 h-8 rounded-xl bg-white border border-slate-100 flex items-center justify-center text-slate-400 shadow-sm shrink-0">
+                                                                            <User className="w-4 h-4" />
+                                                                        </div>
+                                                                        <div className="min-w-0">
+                                                                            <p className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Assigned Staff</p>
+                                                                            <Select 
+                                                                                value={order.assignedStaffId || "none"} 
+                                                                                onValueChange={(val) => handleAssign(order.id, val)}
+                                                                            >
+                                                                                <SelectTrigger className="h-5 border-none bg-transparent p-0 focus:ring-0 text-xs font-bold text-slate-700 w-full">
+                                                                                    <SelectValue placeholder="Assign now" />
+                                                                                </SelectTrigger>
+                                                                                <SelectContent className="rounded-2xl border-slate-100 shadow-xl">
+                                                                                    <SelectItem value="none">Unassigned</SelectItem>
+                                                                                    {staff.map(s => (
+                                                                                        <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
+                                                                                    ))}
+                                                                                </SelectContent>
+                                                                            </Select>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                                <Button 
+                                                                    onClick={() => handleMoveStage(order.id, order.currentStatus)}
+                                                                    className="w-full h-11 rounded-2xl bg-white text-[#191A43] border border-slate-100 hover:border-slate-300 hover:bg-slate-50 shadow-sm font-bold text-xs group/btn relative overflow-hidden"
+                                                                >
+                                                                    <span className="relative z-10 flex items-center justify-center">
+                                                                        Progress Stage
+                                                                        <ChevronRight className="w-3.5 h-3.5 ml-2 transition-transform group-hover/btn:translate-x-1" />
+                                                                    </span>
+                                                                </Button>
+                                                            </div>
+                                                        </CardContent>
+                                                    </Card>
+                                                </motion.div>
+                                            ))
+                                        )}
+                                    </AnimatePresence>
+                                </div>
                             </div>
-                        </div>
-                    );
-                })}
+                        );
+                    })}
+                </div>
             </div>
         </div>
     );
