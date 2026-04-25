@@ -13,7 +13,7 @@ import { getBusinessConfig } from "@/lib/business-configs"
 import { toast } from "sonner"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
-import { Loader2, Package, CheckCircle2, Clock, Truck, MapPin, Search, Send, MessageSquare, MessageSquareMore, X, ArrowRight, User, Building2, ChevronRight, ExternalLink, Calendar } from "lucide-react"
+import { Loader2, Package, CheckCircle2, Clock, Truck, MapPin, Search, Send, MessageSquare, MessageSquareMore, X, ArrowRight, User, Building2, ChevronRight, ExternalLink, Calendar, Zap } from "lucide-react"
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion"
 
 export default function TrackingDetailsPage() {
