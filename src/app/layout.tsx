@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     default: "OTracker | The Command Center for Modern Businesses",
     template: "%s | OTracker",
   },
-  description: "The ultimate management portal for tailoring, hair, and logistics brands. Oversee your operations remotely, manage orders, and build radical trust with real-time tracking.",
+  description: "The ultimate management portal for tailoring, hair retails, and logistics brands. Oversee your operations remotely, manage orders, and build radical trust with real-time tracking.",
   metadataBase: new URL("https://www.otracker.net"),
   alternates: {
     canonical: "/",
