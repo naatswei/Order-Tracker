@@ -263,7 +263,9 @@ export default function OperationsPage() {
                                                                         <p className="text-xs text-slate-500 font-medium">{order.itemType}</p>
                                                                     </div>
                                                                     <Badge variant="outline" className="bg-slate-50 border-slate-100 text-[10px] font-bold text-slate-500 rounded-lg">
-                                                                        {new Date(order.deliveryDate).toLocaleDateString()}
+                                                                        {order.deliveryDate && !isNaN(new Date(order.deliveryDate).getTime()) 
+                                                                            ? new Date(order.deliveryDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) 
+                                                                            : "TBD"}
                                                                     </Badge>
                                                                 </div>
 
