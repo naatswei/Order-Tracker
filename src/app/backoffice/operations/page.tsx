@@ -27,7 +27,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
 import { motion, AnimatePresence } from "framer-motion";
+import { StageConfig } from "@/components/operations/stage-config";
+import Link from "next/link";
 
 const STAGE_THEMES: Record<string, { color: string, icon: any, bg: string, border: string }> = {
     "Order Received": { color: "text-blue-600", icon: Target, bg: "bg-blue-50/50", border: "border-blue-100" },
@@ -125,14 +135,31 @@ export default function OperationsPage() {
                             <span className="text-xl font-black text-[#191A43]">{staff.length}</span>
                         </div>
                     </div>
-                    <Button variant="outline" className="h-12 px-6 rounded-2xl border-slate-200 bg-white hover:bg-slate-50 text-slate-600 font-bold transition-all shadow-sm">
-                        <Settings2 className="w-4 h-4 mr-2" />
-                        Configure Stages
-                    </Button>
-                    <Button className="h-12 px-6 rounded-2xl bg-[#191A43] hover:bg-[#191A43]/90 text-white font-bold transition-all shadow-lg shadow-[#191A43]/10">
-                        <Plus className="w-4 h-4 mr-2" />
-                        New Order
-                    </Button>
+
+                    <Dialog>
+                        <DialogTrigger asChild>
+                            <Button variant="outline" className="h-12 px-6 rounded-2xl border-slate-200 bg-white hover:bg-slate-50 text-slate-600 font-bold transition-all shadow-sm">
+                                <Settings2 className="w-4 h-4 mr-2" />
+                                Configure Stages
+                            </Button>
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-[425px] rounded-[2.5rem] border-none shadow-2xl p-8">
+                            <DialogHeader className="mb-6">
+                                <DialogTitle className="text-2xl font-black text-[#191A43]">Workflow Designer</DialogTitle>
+                                <DialogDescription className="text-slate-500 font-medium">
+                                    Customize your production stages to match your unique business process.
+                                </DialogDescription>
+                            </DialogHeader>
+                            <StageConfig initialStages={stages} onUpdate={loadData} />
+                        </DialogContent>
+                    </Dialog>
+
+                    <Link href="/backoffice/create">
+                        <Button className="h-12 px-6 rounded-2xl bg-[#191A43] hover:bg-[#191A43]/90 text-white font-bold transition-all shadow-lg shadow-[#191A43]/10">
+                            <Plus className="w-4 h-4 mr-2" />
+                            New Order
+                        </Button>
+                    </Link>
                 </div>
             </div>
 
