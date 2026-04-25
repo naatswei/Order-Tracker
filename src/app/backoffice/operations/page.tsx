@@ -19,7 +19,8 @@ import {
     CheckCircle2,
     Truck,
     Search,
-    Filter
+    Filter,
+    ArrowLeft
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -119,7 +120,13 @@ export default function OperationsPage() {
             <div className="bg-white border-b border-slate-100 shadow-[0_4px_30px_rgb(0,0,0,0.02)] relative z-30">
                 <div className="w-full px-4 sm:px-8 py-6 flex flex-col lg:flex-row items-center justify-between gap-6">
                     {/* Title Area */}
-                    <div className="flex items-center gap-5 w-full lg:w-auto">
+                    <div className="flex items-center gap-6 w-full lg:w-auto">
+                        <Link href="/backoffice">
+                            <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl border border-slate-100 bg-white hover:bg-slate-50 shadow-sm transition-all text-slate-400 hover:text-[#191A43]" title="Back to Dashboard">
+                                <ArrowLeft className="w-5 h-5" />
+                            </Button>
+                        </Link>
+
                         <div className="hidden sm:flex flex-col">
                             <div className="flex items-center gap-2 mb-1">
                                 <div className="w-2 h-2 rounded-full bg-[#CE0003] animate-pulse" />
