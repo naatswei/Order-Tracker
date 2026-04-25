@@ -7,6 +7,7 @@ import { OrganizationSwitcher, UserButton, useOrganization, ClerkLoading } from 
 import { Button } from "@/components/ui/button"
 import { motion, AnimatePresence } from "framer-motion"
 import { getUnreadCount } from "@/app/actions/messages"
+import { usePathname } from "next/navigation"
 
 interface BackofficeHeaderProps {
     config: {
@@ -21,6 +22,7 @@ export function BackofficeHeader({ config }: BackofficeHeaderProps) {
     const [unreadCount, setUnreadCount] = useState(0)
     const { organization } = useOrganization()
     const prevCountRef = useRef(0)
+    const pathname = usePathname()
 
     const toggleMenu = () => setIsMenuOpen(!isMenuOpen)
 
@@ -51,6 +53,12 @@ export function BackofficeHeader({ config }: BackofficeHeaderProps) {
         return () => clearInterval(interval)
     }, [organization?.id])
 
+    const navLinks = [
+        { href: "/backoffice", label: "Dashboard", icon: LayoutDashboard },
+        { href: "/backoffice/operations", label: "Operations", icon: ClipboardList },
+        { href: "/backoffice/staff", label: "Team", icon: Users },
+    ]
+
     return (
         <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b-[0.5px] border-slate-100 shadow-[0_2px_20px_rgb(0,0,0,0.02)]">
             <div className="w-full px-4 sm:px-8 py-4 flex items-center justify-between">
@@ -69,16 +77,27 @@ export function BackofficeHeader({ config }: BackofficeHeaderProps) {
 
                 {/* Desktop Navigation */}
                 <div className="hidden md:flex items-center gap-6">
-                    <nav className="flex items-center gap-4">
-                        <Link href="/backoffice" className="text-sm font-medium text-slate-600 hover:text-[#191A43] transition-colors">Dashboard</Link>
-                        <Link href="/backoffice/operations" className="text-sm font-medium text-slate-600 hover:text-[#191A43] transition-colors flex items-center gap-1.5">
-                            <ClipboardList className="w-4 h-4" />
-                            Operations
-                        </Link>
-                        <Link href="/backoffice/staff" className="text-sm font-medium text-slate-600 hover:text-[#191A43] transition-colors flex items-center gap-1.5">
-                            <Users className="w-4 h-4" />
-                            Team
-                        </Link>
+                    <nav className="flex items-center gap-1 bg-slate-50/50 p-1 rounded-xl border border-slate-100/50">
+                        {navLinks.map((link) => {
+                            const isActive = pathname === link.href;
+                            const Icon = link.icon;
+                            return (
+                                <Link 
+                                    key={link.href}
+                                    href={link.href} 
+                                    className={`
+                                        text-sm font-bold px-4 py-2 rounded-lg transition-all flex items-center gap-2
+                                        ${isActive 
+                                            ? "bg-white text-[#191A43] shadow-sm border border-slate-100" 
+                                            : "text-slate-500 hover:text-slate-900 hover:bg-white/50"
+                                        }
+                                    `}
+                                >
+                                    <Icon className={`w-4 h-4 ${isActive ? "text-[#CE0003]" : "text-slate-400"}`} />
+                                    {link.label}
+                                </Link>
+                            )
+                        })}
                     </nav>
 
                     {/* Divider */}
