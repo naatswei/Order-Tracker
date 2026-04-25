@@ -232,15 +232,6 @@ export default function OperationsPage() {
                                     <span className="text-[#CE0003] font-black text-2xl tracking-tighter">O</span>
                                 </motion.div>
                             </div>
-
-                            {/* Orbiting Particles */}
-                            <motion.div 
-                                animate={{ rotate: -360 }}
-                                transition={{ duration: 12, repeat: Infinity, ease: "linear" }}
-                                className="absolute inset-0"
-                            >
-                                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-[#191A43] shadow-lg" />
-                            </motion.div>
                         </div>
 
                         <div className="flex flex-col items-center gap-4">
