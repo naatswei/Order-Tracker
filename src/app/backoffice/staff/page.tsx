@@ -157,7 +157,7 @@ export default function StaffPage() {
                                 <div className="flex-1 w-full space-y-2">
                                     <div className="flex items-center gap-2 mb-2 ml-1">
                                         <UserPlus className="w-3.5 h-3.5 text-[#191A43]" />
-                                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Enroll New Member</span>
+                                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Enroll New Staff Members</span>
                                     </div>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <Input 
