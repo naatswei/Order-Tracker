@@ -136,6 +136,7 @@ export function BackofficeHeader({ config }: BackofficeHeaderProps) {
                         />
                     </div>
                 </div>
+            </div>
 
                 {/* Mobile Menu Button */}
                 <div className="md:hidden flex items-center gap-2">
