@@ -424,28 +424,32 @@ export default function TrackingDetailsPage() {
                         </div>
 
                         {/* Customer Details Section */}
-                        <Card className="bg-white/5 border border-white/20 rounded-[2.5rem] mb-16 shadow-2xl overflow-hidden">
-                            <CardContent className="p-0">
-                                <div className="bg-white/[0.03] px-8 py-4 border-b border-white/10 text-center">
-                                    <h3 className="text-[10px] font-bold uppercase tracking-[0.4em] text-white/40">Details</h3>
-                                </div>
-                                <div className="p-8 sm:p-12 grid grid-cols-1 sm:grid-cols-2 gap-12 text-center sm:text-left">
-                                    <div className="space-y-3">
-                                        <Label className="text-[10px] uppercase tracking-[0.2em] text-[#3B82F6] font-bold block">Client</Label>
-                                        <p className="text-2xl font-light text-white leading-none">{order.customerName}</p>
+                        <Card className="bg-white/5 border border-white/20 rounded-[2rem] mb-16 shadow-2xl overflow-hidden backdrop-blur-md">
+                            <CardContent className="p-6 sm:p-8">
+                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 items-start">
+                                    <div className="space-y-2">
+                                        <Label className="text-[9px] uppercase tracking-[0.2em] text-[#3B82F6]/80 font-black block">Client</Label>
+                                        <p className="text-xl font-light text-white leading-none truncate">{order.customerName}</p>
                                     </div>
-                                    <div className="space-y-3">
-                                        <Label className="text-[10px] uppercase tracking-[0.2em] text-[#3B82F6] font-bold block">Contact</Label>
-                                        <p className="text-base font-light text-white/80 whitespace-nowrap overflow-hidden text-ellipsis leading-none">
+                                    <div className="space-y-2">
+                                        <Label className="text-[9px] uppercase tracking-[0.2em] text-[#3B82F6]/80 font-black block">Contact</Label>
+                                        <p className="text-sm font-light text-white/70 leading-none truncate tabular-nums">
                                             {order.customerPhone || order.customerEmail || "N/A"}
                                         </p>
                                     </div>
+                                    <div className="space-y-2">
+                                        <Label className="text-[9px] uppercase tracking-[0.2em] text-[#3B82F6]/80 font-black block">Tracing Item</Label>
+                                        <p className="text-sm font-light text-white/70 leading-none truncate">
+                                            {order.garmentType || "Custom Item"}
+                                        </p>
+                                    </div>
+                                    
                                     {order.measurements && (
-                                        <div className="col-span-full space-y-3 pt-6 border-t border-white/10">
-                                            <Label className="text-[10px] uppercase tracking-[0.2em] text-[#3B82F6] font-bold block">
-                                                {order.businessType === "tailoring" ? "Notes / Measurements" : "Special Instructions"}
+                                        <div className="col-span-full pt-6 border-t border-white/10 space-y-2">
+                                            <Label className="text-[9px] uppercase tracking-[0.2em] text-[#3B82F6]/80 font-black block">
+                                                {order.businessType === "tailoring" ? "Specifications & Notes" : "Special Instructions"}
                                             </Label>
-                                            <p className="text-sm font-light text-white/70 leading-relaxed whitespace-pre-wrap">
+                                            <p className="text-xs font-light text-white/50 leading-relaxed italic max-w-2xl">
                                                 "{order.measurements}"
                                             </p>
                                         </div>
