@@ -232,7 +232,7 @@ export default function TrackingDetailsPage() {
                                     <Package className="w-10 h-10 text-[#3B82F6]" strokeWidth={1} />
                                 </div>
                                 <div className="space-y-2">
-                                    <h2 className="text-2xl font-light text-white tracking-tight">Trace Not Found</h2>
+                                    <h2 className="text-2xl font-light text-white tracking-tight">Order Not Found</h2>
                                     <p className="text-white/60 font-light text-sm">
                                         Reference <span className="text-white/80 font-medium">{trackingId}</span> is invalid.
                                     </p>
@@ -438,7 +438,7 @@ export default function TrackingDetailsPage() {
                                         </p>
                                     </div>
                                     <div className="space-y-2">
-                                        <Label className="text-[9px] uppercase tracking-[0.2em] text-[#3B82F6]/80 font-black block">Tracing Item</Label>
+                                        <Label className="text-[9px] uppercase tracking-[0.2em] text-[#3B82F6]/80 font-black block">Tracking Item</Label>
                                         <p className="text-sm font-light text-white/70 leading-none truncate">
                                             {order.garmentType || "Custom Item"}
                                         </p>
