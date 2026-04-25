@@ -210,7 +210,7 @@ export default function StaffPage() {
                     {isInitialLoad ? (
                         <SignatureLoader message="Syncing Team Profiles" />
                     ) : (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                             <AnimatePresence>
                                 {staffList.map((person, index) => (
                                     <motion.div
@@ -219,44 +219,37 @@ export default function StaffPage() {
                                         animate={{ opacity: 1, y: 0 }}
                                         transition={{ delay: index * 0.05 }}
                                     >
-                                        <Card className="group relative border-slate-100 bg-white hover:border-[#191A43]/20 hover:shadow-2xl hover:shadow-[#191A43]/5 transition-all rounded-[2rem] overflow-hidden">
-                                            <CardContent className="p-8">
-                                                <div className="flex items-start justify-between">
-                                                    <div className="flex flex-col gap-5">
-                                                        <div className={`w-14 h-14 rounded-2xl border border-slate-100 flex items-center justify-center transition-all duration-500 shadow-sm ${getAvatarColor(person.name)}`}>
-                                                            <User className="w-6 h-6 text-white" strokeWidth={1.5} />
-                                                        </div>
-                                                        <div className="space-y-1">
-                                                            <h3 className="text-xl font-black text-[#191A43] tracking-tight group-hover:translate-x-1 transition-transform duration-500">
-                                                                {person.name}
-                                                            </h3>
-                                                            <div className="flex items-center gap-2">
-                                                                <span className="w-1 h-1 rounded-full bg-indigo-400" />
-                                                                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest leading-none">
-                                                                    {person.role || "Operator"}
-                                                                </p>
-                                                            </div>
-                                                        </div>
+                                        <Card className="group relative border-slate-100 bg-white hover:border-[#191A43]/20 hover:shadow-xl hover:shadow-[#191A43]/5 transition-all rounded-2xl overflow-hidden">
+                                            <CardContent className="p-4">
+                                                <div className="flex items-center gap-4">
+                                                    {/* Avatar */}
+                                                    <div className={`w-12 h-12 rounded-xl border border-slate-100 flex items-center justify-center shrink-0 shadow-sm transition-transform group-hover:scale-105 duration-500 ${getAvatarColor(person.name)}`}>
+                                                        <User className="w-5 h-5 text-white" strokeWidth={2} />
                                                     </div>
                                                     
+                                                    {/* Details */}
+                                                    <div className="flex-1 min-w-0">
+                                                        <div className="flex items-center gap-1.5 mb-0.5">
+                                                            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]" />
+                                                            <h3 className="text-sm font-black text-[#191A43] truncate">
+                                                                {person.name}
+                                                            </h3>
+                                                        </div>
+                                                        <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest truncate leading-none">
+                                                            {person.role || "Operator"}
+                                                        </p>
+                                                    </div>
+
+                                                    {/* Remove Action */}
                                                     <Button 
                                                         variant="ghost" 
                                                         size="icon" 
                                                         onClick={() => handleRemoveStaff(person.id)}
-                                                        className="text-slate-200 hover:text-red-500 hover:bg-red-50 h-10 w-10 rounded-xl transition-all"
+                                                        className="opacity-0 group-hover:opacity-100 text-slate-300 hover:text-red-500 hover:bg-red-50 h-8 w-8 rounded-lg transition-all shrink-0"
                                                         title="Remove Member"
                                                     >
-                                                        <Trash2 className="w-4 h-4" />
+                                                        <Trash2 className="w-3.5 h-3.5" />
                                                     </Button>
-                                                </div>
-                                                
-                                                {/* Card Footer Decoration */}
-                                                <div className="mt-8 pt-6 border-t border-slate-50 flex items-center justify-between">
-                                                    <div className="flex items-center gap-1.5">
-                                                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                                                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Active</span>
-                                                    </div>
-                                                    <div className="text-[10px] text-slate-300 font-medium">#{person.id.slice(-4).toUpperCase()}</div>
                                                 </div>
                                             </CardContent>
                                         </Card>
