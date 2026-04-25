@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { useOrganization } from "@clerk/nextjs"
 import { getInboxMessages, markThreadAsRead, submitBusinessReply, updateTypingStatus, getTypingStatus } from "@/app/actions/messages"
 import { Card, CardContent } from "@/components/ui/card"
@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Loader2, Mail, MailOpen, ArrowLeft, Send, MessageSquare, MessageSquareMore, User, Building2, Lock } from "lucide-react"
 import { getBusinessConfig } from "@/lib/business-configs"
+import { SignatureLoader } from "@/components/signature-loader"
 import Link from "next/link"
 import { toast } from "sonner"
 import { motion, AnimatePresence } from "framer-motion"
@@ -78,7 +79,7 @@ export default function InboxPage() {
     const [isSending, setIsSending] = useState(false)
     const [isCustomerTyping, setIsCustomerTyping] = useState(false)
 
-    const threads = groupByThread(messages)
+    const threads = useMemo(() => groupByThread(messages), [messages])
     const config = getBusinessConfig(businessType)
 
     useEffect(() => {
@@ -169,10 +170,7 @@ export default function InboxPage() {
         }
 
         const pollTyping = async () => {
-            const thread = threads.find(t => t.key === expandedThread)
-            if (!thread) return
-
-            const result = await getTypingStatus(thread.key)
+            const result = await getTypingStatus(expandedThread)
             if (result.statuses) {
                 const customerStatus = result.statuses.find(s => s.userType === "customer")
                 setIsCustomerTyping(!!customerStatus)
@@ -180,9 +178,9 @@ export default function InboxPage() {
         }
 
         pollTyping()
-        const interval = setInterval(pollTyping, 3000)
+        const interval = setInterval(pollTyping, 4000)
         return () => clearInterval(interval)
-    }, [expandedThread, threads])
+    }, [expandedThread])
 
     const handleSendReply = async (thread: ReturnType<typeof groupByThread>[0]) => {
         if (!replyText.trim()) return
@@ -231,8 +229,7 @@ export default function InboxPage() {
     if (!isLoaded) {
         return (
             <div className="flex flex-col items-center justify-center min-h-screen">
-                <Loader2 className="w-8 h-8 animate-spin text-primary opacity-50 mb-4" />
-                <p className="text-muted-foreground">Loading inbox...</p>
+                <SignatureLoader message="Syncing Inbox" />
             </div>
         )
     }
@@ -257,8 +254,7 @@ export default function InboxPage() {
                 <AnimatePresence mode="wait">
                     {messagesLoading ? (
                         <div className="flex flex-col items-center justify-center py-20">
-                            <Loader2 className="w-8 h-8 animate-spin text-primary opacity-50 mb-4" />
-                            <p className="text-muted-foreground">Loading messages...</p>
+                            <SignatureLoader message="Syncing Messages" />
                         </div>
                     ) : threads.length === 0 ? (
                         <Card className="bg-transparent border-dashed border-2 border-slate-200 shadow-none rounded-3xl">
