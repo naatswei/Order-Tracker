@@ -54,7 +54,6 @@ export function BackofficeHeader({ config }: BackofficeHeaderProps) {
     }, [organization?.id])
 
     const navLinks = [
-        { href: "/backoffice", label: "Dashboard", icon: LayoutDashboard },
         { href: "/backoffice/operations", label: "Operations", icon: ClipboardList },
         { href: "/backoffice/staff", label: "Team", icon: Users },
     ]
