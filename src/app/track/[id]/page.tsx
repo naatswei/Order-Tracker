@@ -587,7 +587,14 @@ export default function TrackingDetailsPage() {
                             </div>
                         )}
 
-                        <div className="pt-24 text-center">
+                        {/* Visual Divider */}
+                        <div className="pt-20 pb-12 flex items-center gap-4 px-4">
+                            <div className="h-px flex-1 bg-white/[0.08]" />
+                            <div className="w-1.5 h-1.5 rounded-full bg-white/[0.15]" />
+                            <div className="h-px flex-1 bg-white/[0.08]" />
+                        </div>
+
+                        <div className="text-center">
                             <motion.div
                                 initial={{ opacity: 0, scale: 0.95 }}
                                 whileInView={{ opacity: 1, scale: 1 }}
