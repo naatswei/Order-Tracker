@@ -113,18 +113,11 @@ export default function OperationsPage() {
         order.itemType.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
-    if (isLoading) return (
-        <div className="p-12 flex flex-col items-center justify-center min-h-[60vh] space-y-4">
-            <div className="w-12 h-12 border-4 border-slate-200 border-t-primary rounded-full animate-spin" />
-            <p className="text-slate-500 font-medium animate-pulse">Initializing Production Command...</p>
-        </div>
-    );
-
     return (
         <div className="bg-[#FBFBFF] min-h-screen">
-            {/* Pro-HUD Header */}
-            <div className="sticky top-[73px] z-40 bg-white/80 backdrop-blur-xl border-b border-slate-100 shadow-[0_4px_30px_rgb(0,0,0,0.02)]">
-                <div className="w-full px-4 sm:px-8 py-4 flex flex-col lg:flex-row items-center justify-between gap-6">
+            {/* Pro-HUD Header - Fixed the sticky issue and z-index overlap */}
+            <div className="bg-white border-b border-slate-100 shadow-[0_4px_30px_rgb(0,0,0,0.02)] relative z-30">
+                <div className="w-full px-4 sm:px-8 py-6 flex flex-col lg:flex-row items-center justify-between gap-6">
                     {/* Title Area */}
                     <div className="flex items-center gap-5 w-full lg:w-auto">
                         <div className="hidden sm:flex flex-col">
@@ -150,15 +143,15 @@ export default function OperationsPage() {
                     </div>
 
                     {/* Stats Hub */}
-                    <div className="flex items-center justify-around flex-1 bg-slate-50/50 rounded-2xl border border-slate-100/50 px-8 py-2 gap-8 min-w-[300px]">
+                    <div className="flex items-center justify-around flex-1 bg-slate-50/50 rounded-2xl border border-slate-100/50 px-8 py-3 gap-8 min-w-[300px]">
                         <div className="flex flex-col items-center">
                             <span className="text-[9px] font-black text-slate-400 uppercase">Live Orders</span>
-                            <span className="text-xl font-black text-[#191A43]">{orders.length}</span>
+                            <span className="text-xl font-black text-[#191A43]">{isLoading ? "..." : orders.length}</span>
                         </div>
                         <div className="w-px h-6 bg-slate-200/50" />
                         <div className="flex flex-col items-center">
                             <span className="text-[9px] font-black text-slate-400 uppercase">Team Active</span>
-                            <span className="text-xl font-black text-indigo-600">{staff.length}</span>
+                            <span className="text-xl font-black text-indigo-600">{isLoading ? "..." : staff.length}</span>
                         </div>
                         <div className="w-px h-6 bg-slate-200/50" />
                         <div className="flex flex-col items-center">
@@ -199,115 +192,122 @@ export default function OperationsPage() {
 
             {/* Kanban Board Container */}
             <div className="px-4 sm:px-8 py-10">
-                <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 overflow-x-auto pb-8">
-                    {stages.map((stage) => {
-                        const theme = STAGE_THEMES[stage.name] || { color: "text-slate-600", icon: LayoutGrid, bg: "bg-slate-50/50", border: "border-slate-100" };
-                        const stageOrders = filteredOrders.filter(o => o.currentStatus === stage.name);
-                        const Icon = theme.icon;
+                {isLoading ? (
+                    <div className="flex flex-col items-center justify-center min-h-[40vh] space-y-4">
+                        <div className="w-10 h-10 border-4 border-slate-200 border-t-primary rounded-full animate-spin" />
+                        <p className="text-xs font-bold text-slate-400 uppercase tracking-widest animate-pulse">Syncing Production Board...</p>
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 overflow-x-auto pb-8">
+                        {stages.map((stage) => {
+                            const theme = STAGE_THEMES[stage.name] || { color: "text-slate-600", icon: LayoutGrid, bg: "bg-slate-50/50", border: "border-slate-100" };
+                            const stageOrders = filteredOrders.filter(o => o.currentStatus === stage.name);
+                            const Icon = theme.icon;
 
-                        return (
-                            <div key={stage.name} className="flex flex-col min-w-[300px] space-y-6">
-                                {/* Column Header */}
-                                <div className="flex items-center justify-between px-2">
-                                    <div className="flex items-center gap-3">
-                                        <div className={`p-2 rounded-xl ${theme.bg} ${theme.color} border ${theme.border} shadow-sm`}>
-                                            <Icon className="w-4 h-4" />
+                            return (
+                                <div key={stage.name} className="flex flex-col min-w-[300px] space-y-6">
+                                    {/* Column Header */}
+                                    <div className="flex items-center justify-between px-2">
+                                        <div className="flex items-center gap-3">
+                                            <div className={`p-2 rounded-xl ${theme.bg} ${theme.color} border ${theme.border} shadow-sm`}>
+                                                <Icon className="w-4 h-4" />
+                                            </div>
+                                            <div>
+                                                <h2 className="text-xs font-black text-slate-700 uppercase tracking-widest">{stage.name}</h2>
+                                                <p className="text-[10px] font-bold text-slate-400">{stageOrders.length} {stageOrders.length === 1 ? 'Order' : 'Orders'}</p>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <h2 className="text-xs font-black text-slate-700 uppercase tracking-widest">{stage.name}</h2>
-                                            <p className="text-[10px] font-bold text-slate-400">{stageOrders.length} {stageOrders.length === 1 ? 'Order' : 'Orders'}</p>
-                                        </div>
+                                        <button className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 transition-colors">
+                                            <MoreHorizontal className="w-4 h-4" />
+                                        </button>
                                     </div>
-                                    <button className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 transition-colors">
-                                        <MoreHorizontal className="w-4 h-4" />
-                                    </button>
-                                </div>
 
-                                {/* Column Body */}
-                                <div className="flex-1 space-y-5 p-3 rounded-[2rem] bg-slate-50/30 border border-slate-100/50 min-h-[600px] relative">
-                                    <AnimatePresence mode="popLayout">
-                                        {stageOrders.length === 0 ? (
-                                            <motion.div 
-                                                key="empty"
-                                                initial={{ opacity: 0 }}
-                                                animate={{ opacity: 1 }}
-                                                className="absolute inset-0 flex flex-col items-center justify-center p-8 text-center"
-                                            >
-                                                <div className="w-12 h-12 rounded-full border-2 border-dashed border-slate-200 flex items-center justify-center mb-4">
-                                                    <Plus className="w-4 h-4 text-slate-300" />
-                                                </div>
-                                                <p className="text-[11px] font-bold text-slate-300 uppercase tracking-wider">No active orders</p>
-                                            </motion.div>
-                                        ) : (
-                                            stageOrders.map((order) => (
-                                                <motion.div
-                                                    key={order.id}
-                                                    layout
-                                                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                                                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                                                    exit={{ opacity: 0, scale: 0.95 }}
-                                                    transition={{ duration: 0.2 }}
+                                    {/* Column Body */}
+                                    <div className="flex-1 space-y-5 p-3 rounded-[2rem] bg-slate-50/30 border border-slate-100/50 min-h-[600px] relative">
+                                        <AnimatePresence mode="popLayout">
+                                            {stageOrders.length === 0 ? (
+                                                <motion.div 
+                                                    key="empty"
+                                                    initial={{ opacity: 0 }}
+                                                    animate={{ opacity: 1 }}
+                                                    className="absolute inset-0 flex flex-col items-center justify-center p-8 text-center"
                                                 >
-                                                    <Card className="border-none shadow-[0_4px_20px_rgb(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] transition-all group overflow-hidden bg-white rounded-3xl">
-                                                        <CardContent className="p-5 space-y-4">
-                                                            <div className="flex items-start justify-between">
-                                                                <div className="space-y-1">
-                                                                    <p className="text-[10px] font-black text-[#CE0003] uppercase tracking-wider">{order.orderNumber}</p>
-                                                                    <h3 className="font-black text-[#191A43] leading-tight">{order.customerName}</h3>
-                                                                    <p className="text-xs text-slate-500 font-medium">{order.itemType}</p>
+                                                    <div className="w-12 h-12 rounded-full border-2 border-dashed border-slate-200 flex items-center justify-center mb-4">
+                                                        <Plus className="w-4 h-4 text-slate-300" />
+                                                    </div>
+                                                    <p className="text-[11px] font-bold text-slate-300 uppercase tracking-wider">No active orders</p>
+                                                </motion.div>
+                                            ) : (
+                                                stageOrders.map((order) => (
+                                                    <motion.div
+                                                        key={order.id}
+                                                        layout
+                                                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                                                        exit={{ opacity: 0, scale: 0.95 }}
+                                                        transition={{ duration: 0.2 }}
+                                                    >
+                                                        <Card className="border-none shadow-[0_4px_20px_rgb(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] transition-all group overflow-hidden bg-white rounded-3xl">
+                                                            <CardContent className="p-5 space-y-4">
+                                                                <div className="flex items-start justify-between">
+                                                                    <div className="space-y-1">
+                                                                        <p className="text-[10px] font-black text-[#CE0003] uppercase tracking-wider">{order.orderNumber}</p>
+                                                                        <h3 className="font-black text-[#191A43] leading-tight">{order.customerName}</h3>
+                                                                        <p className="text-xs text-slate-500 font-medium">{order.itemType}</p>
+                                                                    </div>
+                                                                    <Badge variant="outline" className="bg-slate-50 border-slate-100 text-[10px] font-bold text-slate-500 rounded-lg">
+                                                                        {new Date(order.deliveryDate).toLocaleDateString()}
+                                                                    </Badge>
                                                                 </div>
-                                                                <Badge variant="outline" className="bg-slate-50 border-slate-100 text-[10px] font-bold text-slate-500 rounded-lg">
-                                                                    {new Date(order.deliveryDate).toLocaleDateString()}
-                                                                </Badge>
-                                                            </div>
 
-                                                            <div className="pt-2 space-y-3">
-                                                                <div className="flex items-center justify-between p-3 rounded-2xl bg-slate-50/80 border border-slate-100/50">
-                                                                    <div className="flex items-center gap-3 overflow-hidden">
-                                                                        <div className="w-8 h-8 rounded-xl bg-white border border-slate-100 flex items-center justify-center text-slate-400 shadow-sm shrink-0">
-                                                                            <User className="w-4 h-4" />
-                                                                        </div>
-                                                                        <div className="min-w-0">
-                                                                            <p className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Assigned Staff</p>
-                                                                            <Select 
-                                                                                value={order.assignedStaffId || "none"} 
-                                                                                onValueChange={(val) => handleAssign(order.id, val)}
-                                                                            >
-                                                                                <SelectTrigger className="h-5 border-none bg-transparent p-0 focus:ring-0 text-xs font-bold text-slate-700 w-full">
-                                                                                    <SelectValue placeholder="Assign now" />
-                                                                                </SelectTrigger>
-                                                                                <SelectContent className="rounded-2xl border-slate-100 shadow-xl">
-                                                                                    <SelectItem value="none">Unassigned</SelectItem>
-                                                                                    {staff.map(s => (
-                                                                                        <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
-                                                                                    ))}
-                                                                                </SelectContent>
-                                                                            </Select>
+                                                                <div className="pt-2 space-y-3">
+                                                                    <div className="flex items-center justify-between p-3 rounded-2xl bg-slate-50/80 border border-slate-100/50">
+                                                                        <div className="flex items-center gap-3 overflow-hidden">
+                                                                            <div className="w-8 h-8 rounded-xl bg-white border border-slate-100 flex items-center justify-center text-slate-400 shadow-sm shrink-0">
+                                                                                <User className="w-4 h-4" />
+                                                                            </div>
+                                                                            <div className="min-w-0">
+                                                                                <p className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Assigned Staff</p>
+                                                                                <Select 
+                                                                                    value={order.assignedStaffId || "none"} 
+                                                                                    onValueChange={(val) => handleAssign(order.id, val)}
+                                                                                >
+                                                                                    <SelectTrigger className="h-5 border-none bg-transparent p-0 focus:ring-0 text-xs font-bold text-slate-700 w-full">
+                                                                                        <SelectValue placeholder="Assign now" />
+                                                                                    </SelectTrigger>
+                                                                                    <SelectContent className="rounded-2xl border-slate-100 shadow-xl">
+                                                                                        <SelectItem value="none">Unassigned</SelectItem>
+                                                                                        {staff.map(s => (
+                                                                                            <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
+                                                                                        ))}
+                                                                                    </SelectContent>
+                                                                                </Select>
+                                                                            </div>
                                                                         </div>
                                                                     </div>
-                                                                </div>
 
-                                                                <Button 
-                                                                    onClick={() => handleMoveStage(order.id, order.currentStatus)}
-                                                                    className="w-full h-11 rounded-2xl bg-white text-[#191A43] border border-slate-100 hover:border-slate-300 hover:bg-slate-50 shadow-sm font-bold text-xs group/btn relative overflow-hidden"
-                                                                >
-                                                                    <span className="relative z-10 flex items-center justify-center">
-                                                                        Progress Stage
-                                                                        <ChevronRight className="w-3.5 h-3.5 ml-2 transition-transform group-hover/btn:translate-x-1" />
-                                                                    </span>
-                                                                </Button>
-                                                            </div>
-                                                        </CardContent>
-                                                    </Card>
-                                                </motion.div>
-                                            ))
-                                        )}
-                                    </AnimatePresence>
+                                                                    <Button 
+                                                                        onClick={() => handleMoveStage(order.id, order.currentStatus)}
+                                                                        className="w-full h-11 rounded-2xl bg-white text-[#191A43] border border-slate-100 hover:border-slate-300 hover:bg-slate-50 shadow-sm font-bold text-xs group/btn relative overflow-hidden"
+                                                                    >
+                                                                        <span className="relative z-10 flex items-center justify-center">
+                                                                            Progress Stage
+                                                                            <ChevronRight className="w-3.5 h-3.5 ml-2 transition-transform group-hover/btn:translate-x-1" />
+                                                                        </span>
+                                                                    </Button>
+                                                                </div>
+                                                            </CardContent>
+                                                        </Card>
+                                                    </motion.div>
+                                                ))
+                                            )}
+                                        </AnimatePresence>
+                                    </div>
                                 </div>
-                            </div>
-                        );
-                    })}
-                </div>
+                            );
+                        })}
+                    </div>
+                )}
             </div>
         </div>
     );
