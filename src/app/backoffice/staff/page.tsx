@@ -71,7 +71,7 @@ export default function StaffPage() {
 
     // Calculate Stats
     const totalStaff = staffList.length;
-    const uniqueRoles = new Set(staffList.map(s => s.role).filter(Boolean)).size;
+    const uniqueRoles = new Set(staffList.map(s => s.role?.toLowerCase().trim()).filter(Boolean)).size;
 
     // Helper to get deterministic color for avatar
     const getAvatarColor = (name: string) => {
@@ -126,7 +126,7 @@ export default function StaffPage() {
                                 <Briefcase className="w-4 h-4 text-indigo-500" />
                             </div>
                             <div>
-                                <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Specializations</p>
+                                <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Active Roles</p>
                                 <p className="text-lg font-black text-[#191A43] leading-none">{uniqueRoles}</p>
                             </div>
                         </div>
