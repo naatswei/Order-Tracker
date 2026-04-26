@@ -202,7 +202,7 @@ export default function StaffPage() {
                     <div className="flex items-center justify-between px-2">
                         <div className="flex items-center gap-3">
                             <div className="w-1.5 h-1.5 rounded-full bg-[#191A43]" />
-                            <h3 className="text-xs font-black uppercase tracking-[0.3em] text-slate-400">Deployed Personnel</h3>
+                            <h3 className="text-xs font-black uppercase tracking-[0.3em] text-slate-400">Your Team</h3>
                         </div>
                         <span className="text-[10px] text-slate-400 font-bold">{totalStaff} Members Active</span>
                     </div>
