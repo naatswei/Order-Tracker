@@ -20,7 +20,14 @@ import {
     Truck,
     Search,
     Filter,
-    ArrowLeft
+    ArrowLeft,
+    Package,
+    Scissors,
+    Hammer,
+    UserPlus,
+    Ruler,
+    ShoppingBag,
+    FlaskConical
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -45,11 +52,17 @@ import { Input } from "@/components/ui/input";
 import { SignatureLoader } from "@/components/signature-loader";
 
 const STAGE_THEMES: Record<string, { color: string, icon: any, bg: string, border: string }> = {
-    "Order Received": { color: "text-blue-600", icon: Target, bg: "bg-blue-50/50", border: "border-blue-100" },
-    "Cutting": { color: "text-amber-600", icon: Activity, bg: "bg-amber-50/50", border: "border-amber-100" },
+    "Order Received": { color: "text-blue-600", icon: Package, bg: "bg-blue-50/50", border: "border-blue-100" },
+    "Cutting": { color: "text-amber-600", icon: Scissors, bg: "bg-amber-50/50", border: "border-amber-100" },
     "Sewing": { color: "text-indigo-600", icon: Zap, bg: "bg-indigo-50/50", border: "border-indigo-100" },
-    "Ready for Pickup": { color: "text-emerald-600", icon: CheckCircle2, bg: "bg-emerald-50/50", border: "border-emerald-100" },
+    "Production": { color: "text-orange-600", icon: Hammer, bg: "bg-orange-50/50", border: "border-orange-100" },
+    "First Fitting": { color: "text-purple-600", icon: User, bg: "bg-purple-50/50", border: "border-purple-100" },
+    "Second Fitting": { color: "text-fuchsia-600", icon: UserPlus, bg: "bg-fuchsia-50/50", border: "border-fuchsia-100" },
+    "Measurement": { color: "text-cyan-600", icon: Ruler, bg: "bg-cyan-50/50", border: "border-cyan-100" },
+    "Quality Check": { color: "text-emerald-600", icon: FlaskConical, bg: "bg-emerald-50/50", border: "border-emerald-100" },
+    "Ready for Pickup": { color: "text-emerald-600", icon: ShoppingBag, bg: "bg-emerald-50/50", border: "border-emerald-100" },
     "Shipped": { color: "text-rose-600", icon: Truck, bg: "bg-rose-50/50", border: "border-rose-100" },
+    "Delivered": { color: "text-emerald-600", icon: CheckCircle2, bg: "bg-emerald-50/50", border: "border-emerald-100" },
 };
 
 export default function OperationsPage() {
