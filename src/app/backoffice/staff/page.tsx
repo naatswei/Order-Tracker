@@ -17,7 +17,9 @@ import {
     ShieldCheck,
     Briefcase,
     Network,
-    GitGraph
+    GitGraph,
+    ChevronDown,
+    ChevronUp
 } from "lucide-react";
 import {
   Select,
@@ -128,42 +130,95 @@ export default function StaffPage() {
         return roots;
     };
 
-    const StaffNode = ({ person, level = 0 }: { person: any, level?: number }) => (
-        <motion.div 
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="space-y-4"
-        >
-            <div className={`flex items-center gap-4 p-4 bg-white border border-slate-100 rounded-2xl shadow-sm hover:border-[#191A43]/20 transition-all relative ${level > 0 ? 'ml-12' : ''}`}>
-                {level > 0 && (
-                    <div className="absolute -left-8 top-1/2 w-8 h-px bg-slate-200" />
-                )}
-                <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 shadow-inner ${getAvatarColor(person.name)}`}>
-                    <User className="w-4 h-4 text-white" />
-                </div>
-                <div className="flex-1 min-w-0">
-                    <h4 className="text-sm font-bold text-slate-800 truncate">{person.name}</h4>
-                    <div className="flex items-center gap-2 mt-0.5">
-                        <span className="text-[10px] text-slate-400 font-black uppercase tracking-wider">{person.role || "Staff Member"}</span>
-                        {person.department && (
-                            <>
-                                <div className="w-1 h-1 rounded-full bg-slate-200" />
-                                <span className="text-[10px] text-[#191A43] font-black uppercase tracking-wider">{person.department}</span>
-                            </>
-                        )}
+    const OrgChartNode = ({ person }: { person: any }) => {
+        const [isExpanded, setIsExpanded] = useState(true);
+        const hasChildren = person.subordinates?.length > 0;
+
+        return (
+            <div className="flex flex-col items-center flex-1 min-w-[240px]">
+                {/* Card */}
+                <motion.div 
+                    layout
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="relative bg-white border border-slate-100 rounded-2xl shadow-sm p-6 w-56 group hover:border-[#C5A059]/40 hover:shadow-xl transition-all z-10"
+                >
+                    {/* Top Accent Bar */}
+                    <div className={`absolute top-0 left-0 right-0 h-1.5 rounded-t-2xl ${hasChildren ? 'bg-gradient-to-r from-[#191A43] to-[#C5A059]' : 'bg-slate-100'}`} />
+                    
+                    {/* Avatar with Ring */}
+                    <div className="absolute -top-10 left-1/2 -translate-x-1/2 w-20 h-20 rounded-3xl border-8 border-white shadow-2xl overflow-hidden flex items-center justify-center bg-white group-hover:scale-110 transition-transform duration-500">
+                        <div className={`w-full h-full flex items-center justify-center ${getAvatarColor(person.name)}`}>
+                            <User className="w-10 h-10 text-white/90" strokeWidth={1.5} />
+                        </div>
                     </div>
-                </div>
+
+                    <div className="mt-10 text-center space-y-2">
+                        <h4 className="text-sm font-black text-slate-800 uppercase tracking-tight truncate">{person.name}</h4>
+                        <div className="flex flex-col items-center gap-1">
+                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{person.role || "Staff Member"}</span>
+                            {person.department && (
+                                <span className="px-3 py-1 bg-slate-50 rounded-full text-[9px] font-black text-[#191A43]/60 uppercase tracking-tighter">
+                                    {person.department}
+                                </span >
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Hierarchy Stats & Controls */}
+                    {hasChildren && (
+                        <div className="flex items-center justify-between mt-6 pt-4 border-t border-slate-50">
+                            <div className="flex items-center gap-1.5">
+                                <Users className="w-3.5 h-3.5 text-slate-300" />
+                                <span className="text-[10px] font-black text-slate-400">{person.subordinates.length} <span className="text-[8px] opacity-50">SUB</span></span>
+                            </div>
+                            <button 
+                                onClick={() => setIsExpanded(!isExpanded)}
+                                className="w-8 h-8 rounded-xl bg-[#191A43]/5 flex items-center justify-center hover:bg-[#191A43] hover:text-white transition-all transform active:scale-90"
+                            >
+                                {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                            </button>
+                        </div>
+                    )}
+                </motion.div>
+
+                {/* Recursive Children with Connecting Lines */}
+                <AnimatePresence>
+                    {isExpanded && hasChildren && (
+                        <motion.div 
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: "auto" }}
+                            exit={{ opacity: 0, height: 0 }}
+                            className="flex flex-col items-center w-full mt-12 relative"
+                        >
+                            {/* Vertical Line from Parent Bottom to Horizontal Connector */}
+                            <div className="w-px h-12 bg-gradient-to-b from-slate-200 to-slate-200" />
+                            
+                            {/* Horizontal Connector and Children */}
+                            <div className="flex justify-center w-full relative">
+                                {person.subordinates.length > 1 && (
+                                    <div className="absolute top-0 h-px bg-slate-200" 
+                                         style={{ 
+                                             left: `calc(100% / ${person.subordinates.length} / 2)`, 
+                                             right: `calc(100% / ${person.subordinates.length} / 2)` 
+                                         }} 
+                                    />
+                                )}
+                                
+                                {person.subordinates.map((sub: any) => (
+                                    <div key={sub.id} className="flex flex-col items-center flex-1 relative pt-12">
+                                        {/* Vertical Line from Horizontal Connector to Child Top */}
+                                        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-px h-12 bg-slate-200" />
+                                        <OrgChartNode person={sub} />
+                                    </div>
+                                ))}
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </div>
-            {person.subordinates?.length > 0 && (
-                <div className="space-y-4 relative">
-                    <div className="absolute left-[2.5rem] top-0 bottom-4 w-px bg-slate-100" />
-                    {person.subordinates.map((sub: any) => (
-                        <StaffNode key={sub.id} person={sub} level={level + 1} />
-                    ))}
-                </div>
-            )}
-        </motion.div>
-    );
+        );
+    };
 
     if (isInitialLoad) {
         return <SignatureLoader fullScreen message="Syncing Team Intelligence" />;
@@ -359,10 +414,14 @@ export default function StaffPage() {
                             </AnimatePresence>
                         </div>
                     ) : (
-                        <div className="max-w-4xl mx-auto space-y-12 bg-white/50 p-12 rounded-[3rem] border border-slate-100 shadow-inner">
-                            {buildHierarchy(staffList).map((root: any) => (
-                                <StaffNode key={root.id} person={root} />
-                            ))}
+                        <div className="w-full overflow-x-auto pb-20 pt-10 scrollbar-hide">
+                            <div className="min-w-max flex justify-center px-20">
+                                <div className="flex gap-20">
+                                    {buildHierarchy(staffList).map((root: any) => (
+                                        <OrgChartNode key={root.id} person={root} />
+                                    ))}
+                                </div>
+                            </div>
                             {staffList.length === 0 && (
                                 <div className="text-center py-20 flex flex-col items-center">
                                     <div className="w-20 h-20 rounded-3xl bg-slate-50 flex items-center justify-center mb-6">
