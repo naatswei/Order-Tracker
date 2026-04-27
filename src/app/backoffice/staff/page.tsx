@@ -42,12 +42,31 @@ export default function StaffPage() {
     const [viewMode, setViewMode] = useState<"grid" | "hierarchy">("grid");
 
     useEffect(() => {
-        loadStaff().then(() => setIsInitialLoad(false));
+        let isMounted = true;
+        const timeout = setTimeout(() => {
+            if (isMounted) setIsInitialLoad(false);
+        }, 5000); // 5s Safety Timeout
+
+        async function init() {
+            try {
+                await loadStaff();
+            } catch (error) {
+                console.error("Team sync failed:", error);
+            } finally {
+                if (isMounted) {
+                    setIsInitialLoad(false);
+                    clearTimeout(timeout);
+                }
+            }
+        }
+
+        init();
+        return () => { isMounted = false; clearTimeout(timeout); };
     }, []);
 
     async function loadStaff() {
         const data = await getStaff();
-        setStaffList(data);
+        setStaffList(data || []);
     }
 
     async function handleAddStaff(e: React.FormEvent) {
