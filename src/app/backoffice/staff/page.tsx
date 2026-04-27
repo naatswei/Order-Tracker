@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react";
-import { addStaff, getStaff, removeStaff, updateStaff } from "@/app/actions/operations";
+import { addStaff, getStaff, removeStaff } from "@/app/actions/operations";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
@@ -17,7 +17,7 @@ import {
     ShieldCheck,
     Briefcase,
     Network,
-    Hierarchy
+    GitGraph
 } from "lucide-react";
 import {
   Select,
@@ -196,7 +196,7 @@ export default function StaffPage() {
                                 onClick={() => setViewMode("hierarchy")}
                                 className={`flex items-center gap-2 px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all ${viewMode === "hierarchy" ? "bg-white text-[#191A43] shadow-md" : "text-slate-400 hover:text-slate-600"}`}
                             >
-                                <Hierarchy className="w-3.5 h-3.5" />
+                                <GitGraph className="w-3.5 h-3.5" />
                                 Hierarchy
                             </button>
                         </div>
