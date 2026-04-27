@@ -219,7 +219,24 @@ export default function OperationsPage() {
                 ) : (
                     <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 overflow-x-auto pb-8">
                         {stages.map((stage) => {
-                            const theme = STAGE_THEMES[stage.name] || { color: "text-slate-600", icon: LayoutGrid, bg: "bg-slate-50/50", border: "border-slate-100" };
+                            const getStatusTheme = (name: string) => {
+                                const lower = name.toLowerCase();
+                                if (lower.includes("received")) return STAGE_THEMES["Order Received"];
+                                if (lower.includes("cutting")) return STAGE_THEMES["Cutting"];
+                                if (lower.includes("sewing")) return STAGE_THEMES["Sewing"];
+                                if (lower.includes("production")) return STAGE_THEMES["Production"];
+                                if (lower.includes("first fitting")) return STAGE_THEMES["First Fitting"];
+                                if (lower.includes("second fitting")) return STAGE_THEMES["Second Fitting"];
+                                if (lower.includes("fitting")) return STAGE_THEMES["First Fitting"];
+                                if (lower.includes("measurement")) return STAGE_THEMES["Measurement"];
+                                if (lower.includes("quality") || lower.includes("check")) return STAGE_THEMES["Quality Check"];
+                                if (lower.includes("pickup") || lower.includes("ready")) return STAGE_THEMES["Ready for Pickup"];
+                                if (lower.includes("shipped") || lower.includes("dispatch")) return STAGE_THEMES["Shipped"];
+                                if (lower.includes("delivered") || lower.includes("done")) return STAGE_THEMES["Delivered"];
+                                return { color: "text-slate-600", icon: LayoutGrid, bg: "bg-slate-50/50", border: "border-slate-100" };
+                            };
+
+                            const theme = getStatusTheme(stage.name);
                             const stageOrders = filteredOrders.filter(o => o.currentStatus === stage.name);
                             const Icon = theme.icon;
 
