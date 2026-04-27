@@ -128,8 +128,8 @@ export default function StaffPage() {
         });
 
         // Sort roots by seniority keywords
-        const getWeight = (role: string = "") => {
-            const r = role.toLowerCase();
+        const getWeight = (role: string | null = "") => {
+            const r = (role || "").toLowerCase();
             if (r.includes("ceo")) return 100;
             if (r.includes("founder")) return 90;
             if (r.includes("director")) return 80;
