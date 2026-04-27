@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react";
-import { addStaff, getStaff, removeStaff } from "@/app/actions/operations";
+import { addStaff, getStaff, removeStaff, updateStaff } from "@/app/actions/operations";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
@@ -15,8 +15,17 @@ import {
     Target, 
     Activity,
     ShieldCheck,
-    Briefcase
+    Briefcase,
+    Network,
+    Hierarchy
 } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { toast } from "sonner";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
@@ -26,8 +35,11 @@ export default function StaffPage() {
     const [staffList, setStaffList] = useState<any[]>([]);
     const [name, setName] = useState("");
     const [role, setRole] = useState("");
+    const [department, setDepartment] = useState("");
+    const [reportsToId, setReportsToId] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [isInitialLoad, setIsInitialLoad] = useState(true);
+    const [viewMode, setViewMode] = useState<"grid" | "hierarchy">("grid");
 
     useEffect(() => {
         loadStaff().then(() => setIsInitialLoad(false));
@@ -44,15 +56,22 @@ export default function StaffPage() {
 
         setIsLoading(true);
         try {
-            await addStaff(name, role);
+            await addStaff({ 
+                name, 
+                role, 
+                department: department || undefined, 
+                reportsToId: reportsToId === "none" ? undefined : reportsToId 
+            });
             toast.success("New team member deployed!", {
                 style: { background: "#191A43", color: "#fff", border: "none" }
             });
             setName("");
             setRole("");
+            setDepartment("");
+            setReportsToId("");
             loadStaff();
         } catch (error) {
-            toast.error("Deployment failed");
+            toast.error("Failed to enroll staff");
         } finally {
             setIsLoading(false);
         }
@@ -159,58 +178,121 @@ export default function StaffPage() {
                                         <UserPlus className="w-3.5 h-3.5 text-[#191A43]" />
                                         <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Enroll New Staff Members</span>
                                     </div>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                        <div className="space-y-1.5">
+                                            <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Full Name</p>
+                                            <Input 
+                                                placeholder="e.g. Kofi Mensah" 
+                                                value={name} 
+                                                onChange={(e) => setName(e.target.value)}
+                                                className="h-11 rounded-xl bg-slate-50 border-slate-100 focus:ring-[#191A43] focus:border-[#191A43] text-xs font-bold"
+                                                required
+                                            />
+                                        </div>
+                                        <div className="space-y-1.5">
+                                            <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Core Role</p>
+                                            <Input 
+                                                placeholder="e.g. Senior Tailor" 
+                                                value={role} 
+                                                onChange={(e) => setRole(e.target.value)}
+                                                className="h-11 rounded-xl bg-slate-50 border-slate-100 focus:ring-[#191A43] focus:border-[#191A43] text-xs font-bold"
+                                            />
+                                        </div>
+                                        <div className="space-y-1.5">
+                                            <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Department</p>
+                                            <Input 
+                                                placeholder="e.g. Couture" 
+                                                value={department} 
+                                                onChange={(e) => setDepartment(e.target.value)}
+                                                className="h-11 rounded-xl bg-slate-50 border-slate-100 focus:ring-[#191A43] focus:border-[#191A43] text-xs font-bold"
+                                            />
+                                        </div>
+                                        <div className="space-y-1.5">
+                                            <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Reports To</p>
+                                            <Select value={reportsToId} onValueChange={setReportsToId}>
+                                                <SelectTrigger className="h-11 rounded-xl bg-slate-50 border-slate-100 focus:ring-[#191A43] focus:border-[#191A43] text-xs font-bold">
+                                                    <SelectValue placeholder="Select Manager" />
+                                                </SelectTrigger>
+                                                <SelectContent className="rounded-xl border-slate-100 shadow-2xl">
+                                                    <SelectItem value="none" className="text-xs font-bold">No Manager (Lead)</SelectItem>
+                            <form onSubmit={handleAddStaff} className="space-y-8">
+                                <div className="flex items-center gap-2 ml-1">
+                                    <UserPlus className="w-4 h-4 text-[#191A43]" />
+                                    <span className="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">Enroll New Staff Members</span>
+                                </div>
+                                
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                                    <div className="space-y-2">
+                                        <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Full Name</label>
                                         <Input 
-                                            placeholder="Full Name (e.g., Kofi Mensah)" 
+                                            placeholder="e.g. Kofi Mensah" 
                                             value={name} 
                                             onChange={(e) => setName(e.target.value)}
-                                            className="h-12 rounded-xl bg-slate-50 border-slate-100 focus:ring-[#191A43] focus:border-[#191A43] text-sm font-medium"
+                                            className="h-12 rounded-xl bg-slate-50 border-slate-100 focus:ring-[#191A43] focus:border-[#191A43] text-sm font-bold"
                                             required
                                         />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Core Role</label>
                                         <Input 
-                                            placeholder="Core Role (e.g., Senior Tailor)" 
+                                            placeholder="e.g. Senior Tailor" 
                                             value={role} 
                                             onChange={(e) => setRole(e.target.value)}
-                                            className="h-12 rounded-xl bg-slate-50 border-slate-100 focus:ring-[#191A43] focus:border-[#191A43] text-sm font-medium"
+                                            className="h-12 rounded-xl bg-slate-50 border-slate-100 focus:ring-[#191A43] focus:border-[#191A43] text-sm font-bold"
                                         />
                                     </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Department</label>
+                                        <Input 
+                                            placeholder="e.g. Couture" 
+                                            value={department} 
+                                            onChange={(e) => setDepartment(e.target.value)}
+                                            className="h-12 rounded-xl bg-slate-50 border-slate-100 focus:ring-[#191A43] focus:border-[#191A43] text-sm font-bold"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Reports To</label>
+                                        <Select value={reportsToId} onValueChange={setReportsToId}>
+                                            <SelectTrigger className="h-12 rounded-xl bg-slate-50 border-slate-100 focus:ring-[#191A43] focus:border-[#191A43] text-sm font-bold">
+                                                <SelectValue placeholder="Select Manager" />
+                                            </SelectTrigger>
+                                            <SelectContent className="rounded-xl border-slate-100 shadow-2xl">
+                                                <SelectItem value="none" className="text-xs font-bold">No Manager (Lead)</SelectItem>
+                                                {staffList.map((s) => (
+                                                    <SelectItem key={s.id} value={s.id} className="text-xs font-bold">{s.name}</SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
                                 </div>
-                                <Button 
-                                    type="submit" 
-                                    disabled={isLoading} 
-                                    className="w-full lg:w-auto h-12 px-10 rounded-xl bg-[#191A43] text-white hover:bg-[#191A43]/90 font-bold transition-all shadow-xl shadow-indigo-500/10 active:scale-95 shrink-0"
-                                >
-                                    {isLoading ? (
-                                        <div className="flex items-center gap-2">
-                                            <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                                            <span>Deploying...</span>
-                                        </div>
-                                    ) : (
-                                        <div className="flex items-center gap-2">
-                                            <Plus className="w-4 h-4" />
-                                            <span>Add Member</span>
-                                        </div>
-                                    )}
-                                </Button>
+
+                                <div className="flex justify-end pt-4">
+                                    <Button 
+                                        type="submit" 
+                                        disabled={isLoading} 
+                                        className="h-14 px-12 rounded-2xl bg-[#191A43] text-white hover:bg-[#191A43]/90 font-black uppercase tracking-widest transition-all shadow-2xl shadow-[#191A43]/20 active:scale-95"
+                                    >
+                                        {isLoading ? (
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                                <span>Deploying...</span>
+                                            </div>
+                                        ) : (
+                                            <div className="flex items-center gap-3">
+                                                <Plus className="w-5 h-5" />
+                                                <span>Enroll Member</span>
+                                            </div>
+                                        )}
+                                    </Button>
+                                </div>
                             </form>
                         </CardContent>
                     </Card>
                 </div>
 
-                {/* Team Grid */}
-                <div className="space-y-6">
-                    <div className="flex items-center justify-between px-2">
-                        <div className="flex items-center gap-3">
-                            <div className="w-1.5 h-1.5 rounded-full bg-[#191A43]" />
-                            <h3 className="text-xs font-black uppercase tracking-[0.3em] text-slate-400">Your Team</h3>
-                        </div>
-                        <span className="text-[10px] text-slate-400 font-bold">{totalStaff} Members Active</span>
-                    </div>
-
-                    {isInitialLoad ? (
-                        <SignatureLoader message="Syncing Team Profiles" />
-                    ) : (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                <div className="space-y-8">
+                    {viewMode === "grid" ? (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                             <AnimatePresence>
                                 {staffList.map((person, index) => (
                                     <motion.div
@@ -219,58 +301,62 @@ export default function StaffPage() {
                                         animate={{ opacity: 1, y: 0 }}
                                         transition={{ delay: index * 0.05 }}
                                     >
-                                        <Card className="group relative border-slate-100 bg-white hover:border-[#191A43]/20 hover:shadow-xl hover:shadow-[#191A43]/5 transition-all rounded-2xl overflow-hidden">
-                                            <CardContent className="p-4">
-                                                <div className="flex items-center gap-4">
-                                                    {/* Avatar */}
-                                                    <div className={`w-12 h-12 rounded-xl border border-slate-100 flex items-center justify-center shrink-0 shadow-sm transition-transform group-hover:scale-105 duration-500 ${getAvatarColor(person.name)}`}>
-                                                        <User className="w-5 h-5 text-white" strokeWidth={2} />
+                                        <Card className="group relative border-slate-100 bg-white hover:border-[#191A43]/20 hover:shadow-2xl hover:shadow-[#191A43]/5 transition-all rounded-[2rem] overflow-hidden border">
+                                            <CardContent className="p-6">
+                                                <div className="flex flex-col items-center text-center space-y-4">
+                                                    <div className={`w-20 h-20 rounded-[2rem] border-4 border-white flex items-center justify-center shrink-0 shadow-xl transition-transform group-hover:scale-110 duration-500 ${getAvatarColor(person.name)}`}>
+                                                        <User className="w-8 h-8 text-white" strokeWidth={2.5} />
                                                     </div>
                                                     
-                                                    {/* Details */}
-                                                    <div className="flex-1 min-w-0">
-                                                        <div className="flex items-center gap-1.5 mb-0.5">
-                                                            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]" />
-                                                            <h3 className="text-sm font-black text-[#191A43] truncate">
-                                                                {person.name}
-                                                            </h3>
+                                                    <div className="space-y-1 w-full">
+                                                        <h3 className="text-base font-black text-slate-800 truncate">{person.name}</h3>
+                                                        <div className="flex flex-wrap items-center justify-center gap-2">
+                                                            <span className="px-3 py-1 bg-slate-100 rounded-full text-[10px] font-black text-slate-500 uppercase tracking-wider">{person.role || "Team Member"}</span>
+                                                            {person.department && (
+                                                                <span className="px-3 py-1 bg-[#191A43]/5 rounded-full text-[10px] font-black text-[#191A43] uppercase tracking-wider">{person.department}</span>
+                                                            )}
                                                         </div>
-                                                        <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest truncate leading-none">
-                                                            {person.role || "Operator"}
-                                                        </p>
+                                                        {person.reportsToId && (
+                                                            <div className="flex items-center justify-center gap-1.5 pt-2">
+                                                                <Network className="w-3 h-3 text-slate-300" />
+                                                                <span className="text-[10px] text-slate-400 font-bold">Reports to {staffList.find(s => s.id === person.reportsToId)?.name}</span>
+                                                            </div>
+                                                        )}
                                                     </div>
 
-                                                    {/* Remove Action */}
-                                                    <Button 
-                                                        variant="ghost" 
-                                                        size="icon" 
-                                                        onClick={() => handleRemoveStaff(person.id)}
-                                                        className="opacity-0 group-hover:opacity-100 text-slate-300 hover:text-red-500 hover:bg-red-50 h-8 w-8 rounded-lg transition-all shrink-0"
-                                                        title="Remove Member"
-                                                    >
-                                                        <Trash2 className="w-3.5 h-3.5" />
-                                                    </Button>
+                                                    <div className="pt-4 w-full flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-all transform translate-y-2 group-hover:translate-y-0">
+                                                        <Button 
+                                                            variant="ghost" 
+                                                            size="sm" 
+                                                            onClick={() => handleRemoveStaff(person.id)}
+                                                            className="text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl px-4 font-bold text-[10px] uppercase tracking-wider"
+                                                        >
+                                                            <Trash2 className="w-3.5 h-3.5 mr-2" />
+                                                            Offboard
+                                                        </Button>
+                                                    </div>
                                                 </div>
                                             </CardContent>
                                         </Card>
                                     </motion.div>
                                 ))}
                             </AnimatePresence>
-
+                        </div>
+                    ) : (
+                        <div className="max-w-4xl mx-auto space-y-12 bg-white/50 p-12 rounded-[3rem] border border-slate-100 shadow-inner">
+                            {buildHierarchy(staffList).map((root: any) => (
+                                <StaffNode key={root.id} person={root} />
+                            ))}
                             {staffList.length === 0 && (
-                                <motion.div 
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    className="col-span-full py-32 flex flex-col items-center justify-center bg-white/50 border-2 border-dashed border-slate-100 rounded-[3rem] text-center"
-                                >
+                                <div className="text-center py-20 flex flex-col items-center">
                                     <div className="w-20 h-20 rounded-3xl bg-slate-50 flex items-center justify-center mb-6">
                                         <Users className="w-10 h-10 text-slate-200" strokeWidth={1} />
                                     </div>
-                                    <h3 className="text-xl font-light text-slate-900 mb-2">The team is currently empty</h3>
+                                    <h3 className="text-xl font-light text-slate-900 mb-2">No hierarchy established yet</h3>
                                     <p className="text-sm text-slate-400 max-w-xs mx-auto font-light">
-                                        Start by enrolling your first team member using the deployment module above.
+                                        Enroll your team members and assign reporting lines to build your org chart.
                                     </p>
-                                </motion.div>
+                                </div>
                             )}
                         </div>
                     )}
@@ -278,4 +364,20 @@ export default function StaffPage() {
             </div>
         </div>
     );
+}
+
+function getAvatarColor(name: string) {
+    const colors = [
+        "bg-[#191A43]", 
+        "bg-[#C5A059]", 
+        "bg-[#CE0003]", 
+        "bg-indigo-500", 
+        "bg-emerald-500", 
+        "bg-amber-500"
+    ];
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) {
+        hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    return colors[Math.abs(hash) % colors.length];
 }

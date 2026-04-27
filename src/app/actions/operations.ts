@@ -9,17 +9,31 @@ import { nanoid } from "nanoid";
 
 // --- Staff Management ---
 
-export async function addStaff(name: string, role?: string, email?: string) {
+export async function addStaff(data: { name: string, role?: string, email?: string, department?: string, reportsToId?: string }) {
     const { userId, orgId } = await auth();
     if (!userId || !orgId) throw new Error("Unauthorized");
 
     await db.insert(staff).values({
         id: `staff_${nanoid(10)}`,
-        name,
-        role: role || null,
-        email: email || null,
+        name: data.name,
+        role: data.role || null,
+        email: data.email || null,
+        department: data.department || null,
+        reportsToId: data.reportsToId || null,
         clerkOrgId: orgId,
     });
+
+    revalidatePath("/backoffice/staff");
+    return { success: true };
+}
+
+export async function updateStaff(id: string, data: Partial<{ name: string, role: string, email: string, department: string, reportsToId: string }>) {
+    const { orgId } = await auth();
+    if (!orgId) throw new Error("Unauthorized");
+
+    await db.update(staff)
+        .set({ ...data })
+        .where(and(eq(staff.id, id), eq(staff.clerkOrgId, orgId)));
 
     revalidatePath("/backoffice/staff");
     return { success: true };

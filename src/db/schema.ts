@@ -25,6 +25,8 @@ export const staff = pgTable("staff", {
     name: text("name").notNull(),
     role: text("role"),
     email: text("email"),
+    department: text("department"),
+    reportsToId: text("reports_to_id"), // Self-reference handled in relations
     clerkOrgId: text("clerk_org_id").notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
 });
@@ -45,8 +47,16 @@ export const ordersRelations = relations(orders, ({ many, one }) => ({
     }),
 }));
 
-export const staffRelations = relations(staff, ({ many }) => ({
+export const staffRelations = relations(staff, ({ many, one }) => ({
     assignedOrders: many(orders),
+    manager: one(staff, {
+        fields: [staff.reportsToId],
+        references: [staff.id],
+        relationName: "reporting",
+    }),
+    subordinates: many(staff, {
+        relationName: "reporting",
+    }),
 }));
 
 export const statusHistory = pgTable("status_history", {
