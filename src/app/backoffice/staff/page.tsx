@@ -135,62 +135,67 @@ export default function StaffPage() {
         const hasChildren = person.subordinates?.length > 0;
 
         return (
-            <div className="flex flex-col items-center flex-1 min-w-[280px]">
+            <div className="flex flex-col items-center flex-1 min-w-[300px]">
                 {/* Card Container */}
                 <motion.div 
                     layout
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="relative bg-white border border-slate-200 rounded-xl shadow-[0_2px_10px_rgba(0,0,0,0.03)] p-5 w-60 group hover:border-[#191A43]/30 hover:shadow-xl transition-all z-10"
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="relative bg-[#FCFDFF] border border-slate-200 rounded-xl shadow-sm p-5 w-64 group hover:border-[#191A43]/20 hover:shadow-md transition-all z-10"
                 >
-                    {/* Subtle Top Indicator */}
-                    <div className={`absolute top-0 left-0 right-0 h-0.5 rounded-t-xl ${hasChildren ? 'bg-[#191A43]' : 'bg-slate-200'}`} />
-                    
-                    {/* Circular Avatar */}
-                    <div className="absolute -top-7 left-1/2 -translate-x-1/2 w-14 h-14 rounded-full border-4 border-white shadow-lg overflow-hidden flex items-center justify-center bg-white group-hover:scale-105 transition-transform duration-300">
+                    {/* Top Right Expand/Collapse Toggle */}
+                    {hasChildren && (
+                        <button 
+                            onClick={() => setIsExpanded(!isExpanded)}
+                            className="absolute top-2 right-2 w-6 h-6 rounded-md flex items-center justify-center bg-slate-50 border border-slate-100 hover:bg-slate-100 transition-colors z-20"
+                        >
+                            <ChevronDown className={`w-3 h-3 text-slate-400 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
+                        </button>
+                    )}
+
+                    {/* Circular Avatar - Overlapping Top */}
+                    <div className="absolute -top-8 left-1/2 -translate-x-1/2 w-16 h-16 rounded-full border-4 border-white shadow-lg overflow-hidden flex items-center justify-center bg-white">
                         <div className={`w-full h-full flex items-center justify-center ${getAvatarColor(person.name)}`}>
-                            <User className="w-6 h-6 text-white/90" strokeWidth={2} />
+                            <User className="w-8 h-8 text-white/90" strokeWidth={1.5} />
                         </div>
                     </div>
 
-                    <div className="mt-8 text-center">
-                        <h4 className="text-xs font-black text-slate-900 uppercase tracking-tight truncate mb-0.5">{person.name}</h4>
-                        <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-2 leading-none">{person.role || "Staff Member"}</p>
+                    {/* Card Content - Centered */}
+                    <div className="mt-8 text-center space-y-1">
+                        <h4 className="text-[13px] font-black text-slate-800 tracking-tight">{person.name}</h4>
+                        <p className="text-[10px] font-medium text-slate-400 tracking-wide">{person.role || "Team Member"}</p>
                         {person.department && (
-                            <span className="inline-block px-2 py-0.5 bg-slate-50 border border-slate-100 rounded-md text-[8px] font-black text-slate-500 uppercase tracking-tighter">
-                                {person.department}
-                            </span>
+                            <div className="mt-2">
+                                <span className="px-2 py-0.5 bg-slate-50 border border-slate-100 rounded text-[8px] font-black text-[#191A43]/60 uppercase tracking-tighter">
+                                    {person.department}
+                                </span>
+                            </div>
                         )}
                     </div>
 
-                    {/* Subordinate Toggle */}
+                    {/* Bottom Right Subordinate Count */}
                     {hasChildren && (
-                        <div className="mt-4 pt-3 border-t border-slate-50 flex items-center justify-center relative">
-                            <button 
-                                onClick={() => setIsExpanded(!isExpanded)}
-                                className="flex items-center gap-2 px-3 py-1 rounded-full bg-slate-50 border border-slate-100 hover:bg-[#191A43] hover:text-white transition-all group/btn shadow-sm"
-                            >
-                                <span className="text-[8px] font-black uppercase tracking-widest">{person.subordinates.length} Reports</span>
-                                {isExpanded ? <ChevronUp className="w-2.5 h-2.5" /> : <ChevronDown className="w-2.5 h-2.5" />}
-                            </button>
+                        <div className="absolute bottom-2 right-3 flex items-center gap-1 opacity-60">
+                            <span className="text-[10px] font-black text-slate-400">{person.subordinates.length}</span>
+                            <ChevronDown className="w-2.5 h-2.5 text-slate-300" />
                         </div>
                     )}
                 </motion.div>
 
-                {/* Connection Line & Branches */}
+                {/* Connecting Lines */}
                 <AnimatePresence>
                     {isExpanded && hasChildren && (
                         <motion.div 
                             initial={{ opacity: 0, height: 0 }}
                             animate={{ opacity: 1, height: "auto" }}
                             exit={{ opacity: 0, height: 0 }}
-                            className="flex flex-col items-center w-full mt-10 relative"
+                            className="flex flex-col items-center w-full mt-12 relative"
                         >
                             {/* Stem from Parent */}
-                            <div className="w-0.5 h-10 bg-slate-200" />
+                            <div className="w-0.5 h-12 bg-slate-200" />
                             
                             <div className="flex justify-center w-full relative">
-                                {/* Horizontal Bar */}
+                                {/* Horizontal Connector Bar */}
                                 {person.subordinates.length > 1 && (
                                     <div className="absolute top-0 h-0.5 bg-slate-200" 
                                          style={{ 
@@ -201,9 +206,9 @@ export default function StaffPage() {
                                 )}
                                 
                                 {person.subordinates.map((sub: any) => (
-                                    <div key={sub.id} className="flex flex-col items-center flex-1 relative pt-10">
-                                        {/* Child Stem */}
-                                        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-0.5 h-10 bg-slate-200" />
+                                    <div key={sub.id} className="flex flex-col items-center flex-1 relative pt-12">
+                                        {/* Stem to Child */}
+                                        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-0.5 h-12 bg-slate-200" />
                                         <OrgChartNode person={sub} />
                                     </div>
                                 ))}
