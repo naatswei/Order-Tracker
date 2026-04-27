@@ -88,10 +88,11 @@ export default function OperationsPage() {
             setStaff(staffData);
             setStages(stagesData.length > 0 ? stagesData : [
                 { name: "Order Received", position: "1" },
-                { name: "Cutting", position: "2" },
-                { name: "Sewing", position: "3" },
-                { name: "Ready for Pickup", position: "4" },
-                { name: "Shipped", position: "5" }
+                { name: "Production", position: "2" },
+                { name: "First Fitting", position: "3" },
+                { name: "Second Fitting", position: "4" },
+                { name: "Ready for Pickup", position: "5" },
+                { name: "Shipped", position: "6" }
             ]);
         } finally {
             setIsLoading(false);
