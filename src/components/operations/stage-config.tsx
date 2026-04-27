@@ -28,7 +28,13 @@ export function StageConfig({ initialStages, onUpdate }: StageConfigProps) {
         setIsAdding(true)
         try {
             const nextPos = (initialStages.length + 1).toString()
-            await addWorkflowStage(newStageName, nextPos)
+            const result = await addWorkflowStage(newStageName, nextPos)
+            
+            if (result.error) {
+                toast.error(result.error)
+                return
+            }
+
             setNewStageName("")
             toast.success("Stage added")
             onUpdate()

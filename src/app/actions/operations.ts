@@ -47,9 +47,24 @@ export async function addWorkflowStage(name: string, position: string) {
     const { orgId } = await auth();
     if (!orgId) throw new Error("Unauthorized");
 
+    // Standardize name for comparison
+    const standardizedName = name.trim();
+
+    // Check for duplicates
+    const existing = await db.query.workflows.findFirst({
+        where: and(
+            eq(workflows.clerkOrgId, orgId), 
+            eq(workflows.name, standardizedName)
+        )
+    });
+
+    if (existing) {
+        return { error: `The stage "${standardizedName}" already exists in your workflow.` };
+    }
+
     await db.insert(workflows).values({
         id: `wf_${nanoid(10)}`,
-        name,
+        name: standardizedName,
         position,
         clerkOrgId: orgId,
     });
