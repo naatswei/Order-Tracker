@@ -89,8 +89,9 @@ export default function StaffPage() {
             setDepartment("");
             setReportsToId("");
             loadStaff();
-        } catch (error) {
-            toast.error("Failed to enroll staff");
+        } catch (error: any) {
+            console.error(error);
+            toast.error("Deployment Failed: " + (error.message || "Check network"));
         } finally {
             setIsLoading(false);
         }
@@ -199,7 +200,7 @@ export default function StaffPage() {
                             <div>
                                 <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Departments</p>
                                 <p className="text-lg font-black text-[#C5A059] leading-none">
-                                    {new Set(staffList.map(s => s.department).filter(Boolean)).size || 1}
+                                    {new Set(staffList.map(s => s.department).filter(Boolean)).size}
                                 </p>
                             </div>
                         </div>
