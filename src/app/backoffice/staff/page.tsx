@@ -135,69 +135,64 @@ export default function StaffPage() {
         const hasChildren = person.subordinates?.length > 0;
 
         return (
-            <div className="flex flex-col items-center flex-1 min-w-[240px]">
-                {/* Card */}
+            <div className="flex flex-col items-center flex-1 min-w-[280px]">
+                {/* Card Container */}
                 <motion.div 
                     layout
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="relative bg-white border border-slate-100 rounded-2xl shadow-sm p-6 w-56 group hover:border-[#C5A059]/40 hover:shadow-xl transition-all z-10"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="relative bg-white border border-slate-200 rounded-xl shadow-[0_2px_10px_rgba(0,0,0,0.03)] p-5 w-60 group hover:border-[#191A43]/30 hover:shadow-xl transition-all z-10"
                 >
-                    {/* Top Accent Bar */}
-                    <div className={`absolute top-0 left-0 right-0 h-1.5 rounded-t-2xl ${hasChildren ? 'bg-gradient-to-r from-[#191A43] to-[#C5A059]' : 'bg-slate-100'}`} />
+                    {/* Subtle Top Indicator */}
+                    <div className={`absolute top-0 left-0 right-0 h-0.5 rounded-t-xl ${hasChildren ? 'bg-[#191A43]' : 'bg-slate-200'}`} />
                     
-                    {/* Avatar with Ring */}
-                    <div className="absolute -top-10 left-1/2 -translate-x-1/2 w-20 h-20 rounded-3xl border-8 border-white shadow-2xl overflow-hidden flex items-center justify-center bg-white group-hover:scale-110 transition-transform duration-500">
+                    {/* Circular Avatar */}
+                    <div className="absolute -top-7 left-1/2 -translate-x-1/2 w-14 h-14 rounded-full border-4 border-white shadow-lg overflow-hidden flex items-center justify-center bg-white group-hover:scale-105 transition-transform duration-300">
                         <div className={`w-full h-full flex items-center justify-center ${getAvatarColor(person.name)}`}>
-                            <User className="w-10 h-10 text-white/90" strokeWidth={1.5} />
+                            <User className="w-6 h-6 text-white/90" strokeWidth={2} />
                         </div>
                     </div>
 
-                    <div className="mt-10 text-center space-y-2">
-                        <h4 className="text-sm font-black text-slate-800 uppercase tracking-tight truncate">{person.name}</h4>
-                        <div className="flex flex-col items-center gap-1">
-                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{person.role || "Staff Member"}</span>
-                            {person.department && (
-                                <span className="px-3 py-1 bg-slate-50 rounded-full text-[9px] font-black text-[#191A43]/60 uppercase tracking-tighter">
-                                    {person.department}
-                                </span >
-                            )}
-                        </div>
+                    <div className="mt-8 text-center">
+                        <h4 className="text-xs font-black text-slate-900 uppercase tracking-tight truncate mb-0.5">{person.name}</h4>
+                        <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-2 leading-none">{person.role || "Staff Member"}</p>
+                        {person.department && (
+                            <span className="inline-block px-2 py-0.5 bg-slate-50 border border-slate-100 rounded-md text-[8px] font-black text-slate-500 uppercase tracking-tighter">
+                                {person.department}
+                            </span>
+                        )}
                     </div>
 
-                    {/* Hierarchy Stats & Controls */}
+                    {/* Subordinate Toggle */}
                     {hasChildren && (
-                        <div className="flex items-center justify-between mt-6 pt-4 border-t border-slate-50">
-                            <div className="flex items-center gap-1.5">
-                                <Users className="w-3.5 h-3.5 text-slate-300" />
-                                <span className="text-[10px] font-black text-slate-400">{person.subordinates.length} <span className="text-[8px] opacity-50">SUB</span></span>
-                            </div>
+                        <div className="mt-4 pt-3 border-t border-slate-50 flex items-center justify-center relative">
                             <button 
                                 onClick={() => setIsExpanded(!isExpanded)}
-                                className="w-8 h-8 rounded-xl bg-[#191A43]/5 flex items-center justify-center hover:bg-[#191A43] hover:text-white transition-all transform active:scale-90"
+                                className="flex items-center gap-2 px-3 py-1 rounded-full bg-slate-50 border border-slate-100 hover:bg-[#191A43] hover:text-white transition-all group/btn shadow-sm"
                             >
-                                {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                                <span className="text-[8px] font-black uppercase tracking-widest">{person.subordinates.length} Reports</span>
+                                {isExpanded ? <ChevronUp className="w-2.5 h-2.5" /> : <ChevronDown className="w-2.5 h-2.5" />}
                             </button>
                         </div>
                     )}
                 </motion.div>
 
-                {/* Recursive Children with Connecting Lines */}
+                {/* Connection Line & Branches */}
                 <AnimatePresence>
                     {isExpanded && hasChildren && (
                         <motion.div 
                             initial={{ opacity: 0, height: 0 }}
                             animate={{ opacity: 1, height: "auto" }}
                             exit={{ opacity: 0, height: 0 }}
-                            className="flex flex-col items-center w-full mt-12 relative"
+                            className="flex flex-col items-center w-full mt-10 relative"
                         >
-                            {/* Vertical Line from Parent Bottom to Horizontal Connector */}
-                            <div className="w-px h-12 bg-gradient-to-b from-slate-200 to-slate-200" />
+                            {/* Stem from Parent */}
+                            <div className="w-0.5 h-10 bg-slate-200" />
                             
-                            {/* Horizontal Connector and Children */}
                             <div className="flex justify-center w-full relative">
+                                {/* Horizontal Bar */}
                                 {person.subordinates.length > 1 && (
-                                    <div className="absolute top-0 h-px bg-slate-200" 
+                                    <div className="absolute top-0 h-0.5 bg-slate-200" 
                                          style={{ 
                                              left: `calc(100% / ${person.subordinates.length} / 2)`, 
                                              right: `calc(100% / ${person.subordinates.length} / 2)` 
@@ -206,9 +201,9 @@ export default function StaffPage() {
                                 )}
                                 
                                 {person.subordinates.map((sub: any) => (
-                                    <div key={sub.id} className="flex flex-col items-center flex-1 relative pt-12">
-                                        {/* Vertical Line from Horizontal Connector to Child Top */}
-                                        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-px h-12 bg-slate-200" />
+                                    <div key={sub.id} className="flex flex-col items-center flex-1 relative pt-10">
+                                        {/* Child Stem */}
+                                        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-0.5 h-10 bg-slate-200" />
                                         <OrgChartNode person={sub} />
                                     </div>
                                 ))}
