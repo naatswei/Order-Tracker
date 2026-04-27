@@ -137,7 +137,30 @@ export default function StaffPage() {
             return 0;
         };
 
-        return roots.sort((a, b) => getWeight(b.role) - getWeight(a.role));
+        const sortedRoots = roots.sort((a, b) => getWeight(b.role) - getWeight(a.role));
+
+        // Smart Auto-Routing: If there is a clear CEO/Founder, make other independent staff report to them in the view
+        if (sortedRoots.length > 1) {
+            const grandMaster = sortedRoots[0];
+            const masterWeight = getWeight(grandMaster.role);
+            
+            // Only auto-route if the first person is a high-level leader (CEO/Founder)
+            if (masterWeight >= 90) {
+                const finalRoots = [grandMaster];
+                for (let i = 1; i < sortedRoots.length; i++) {
+                    const currentWeight = getWeight(sortedRoots[i].role);
+                    // If the other person isn't also a top-tier leader, move them under the Grand Master
+                    if (currentWeight < 90) {
+                        grandMaster.subordinates.push(sortedRoots[i]);
+                    } else {
+                        finalRoots.push(sortedRoots[i]);
+                    }
+                }
+                return finalRoots;
+            }
+        }
+
+        return sortedRoots;
     };
 
     const OrgChartNode = ({ person }: { person: any }) => {
