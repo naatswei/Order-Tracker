@@ -126,8 +126,18 @@ export default function StaffPage() {
                 roots.push(map[item.id]);
             }
         });
-        
-        return roots;
+
+        // Sort roots by seniority keywords
+        const getWeight = (role: string = "") => {
+            const r = role.toLowerCase();
+            if (r.includes("ceo")) return 100;
+            if (r.includes("founder")) return 90;
+            if (r.includes("director")) return 80;
+            if (r.includes("manager")) return 70;
+            return 0;
+        };
+
+        return roots.sort((a, b) => getWeight(b.role) - getWeight(a.role));
     };
 
     const OrgChartNode = ({ person }: { person: any }) => {
