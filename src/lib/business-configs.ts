@@ -133,10 +133,10 @@ export const BUSINESS_CONFIGS: Record<string, BusinessConfig> = {
         searchPlaceholder: "Search by order number, customer name",
         dashboardTitle: "Active Orders",
         theme: {
-            primary: "#C9A84C",   // Golden Mustard
-            secondary: "#8A9A84", // Sage Olive
-            accent: "#C9A84C",    // Golden Mustard
-            text: "#4A4A3A"
+            primary: "#1E293B",   // Deep Slate (Professional, Sleek)
+            secondary: "#2563EB", // Royal Blue (Trustworthy, Action-oriented)
+            accent: "#10B981",    // Emerald Green (Success/Growth)
+            text: "#0F172A"       // Dark Slate
         },
         extraFields: [
             { id: "quantity", label: "Quantity", placeholder: "1", type: "number" },

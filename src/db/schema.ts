@@ -27,6 +27,7 @@ export const staff = pgTable("staff", {
     email: text("email"),
     department: text("department"),
     reportsToId: text("reports_to_id"), // Self-reference handled in relations
+    photoUrl: text("photo_url"),
     clerkOrgId: text("clerk_org_id").notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
 });
