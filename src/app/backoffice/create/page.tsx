@@ -93,6 +93,33 @@ function CreateOrderContent() {
         getInventory().then(items => setAllInventory(items))
     }, [searchParams, organization])
 
+    // Auto-match inventory logic
+    useEffect(() => {
+        if (!itemType || editingId || allInventory.length === 0) return;
+        
+        const trimmedType = itemType.trim().toLowerCase();
+        const match = allInventory.find(inv => 
+            inv.name.toLowerCase() === trimmedType || 
+            inv.sku?.toLowerCase() === trimmedType
+        );
+
+        if (match) {
+            const alreadySelected = selectedInventory.find(s => s.id === match.id);
+            if (!alreadySelected) {
+                setSelectedInventory(prev => [...prev, { 
+                    id: match.id, 
+                    name: match.name, 
+                    quantity: "1",
+                    max: parseFloat(match.quantity) - parseFloat(match.reserved || "0")
+                }]);
+                toast.success(`Matched "${match.name}"`, {
+                    description: "Automatically reserved 1 unit from inventory.",
+                    duration: 3000,
+                });
+            }
+        }
+    }, [itemType, allInventory, editingId]);
+
     const isSubscriptionActive = 
         organization?.publicMetadata?.subscriptionStatus === "active" || 
         organization?.publicMetadata?.subscriptionStatus === "trialing"
