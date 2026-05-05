@@ -177,6 +177,7 @@ export default function OperationsPage() {
                     </div>
 
                     {/* Stats Hub */}
+                    <div className="flex items-center justify-around flex-1 bg-slate-50/50 rounded-xl border border-slate-100/50 px-6 py-2 gap-6 min-w-[280px]">
                         <div className="flex flex-col items-center">
                             <span className="text-[9px] font-black text-slate-400 uppercase">
                                 {isLogistics ? "Backlog" : "Active"}
@@ -191,7 +192,7 @@ export default function OperationsPage() {
                                 {isLogistics ? "Transit" : "Team"}
                             </span>
                             <span className="text-xl font-black text-indigo-600">
-                                {isLoading ? "..." : isLogistics ? orders.filter(o => o.currentStatus === "In Transit").length : staff.length}
+                                {isLoading ? "..." : isLogistics ? orders.filter((o: any) => o.currentStatus === "In Transit").length : staff.length}
                             </span>
                         </div>
                         <div className="w-px h-6 bg-slate-200/50" />
