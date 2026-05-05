@@ -269,8 +269,8 @@ export default function StaffPage() {
                             </Button>
                         </Link>
                         <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
-                            <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-[#191A43] flex items-center justify-center shadow-lg shadow-[#191A43]/20 shrink-0">
-                                <Users className="w-4 h-4 sm:w-6 sm:h-6 text-white" />
+                            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-[#191A43] flex items-center justify-center shadow-lg shadow-[#191A43]/20 shrink-0">
+                                <Users className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                             </div>
                             <div className="min-w-0">
                                 <h1 className="text-xs sm:text-sm font-black text-slate-800 uppercase tracking-widest leading-none mb-0.5 sm:mb-1 truncate">Team Hub</h1>
@@ -316,8 +316,8 @@ export default function StaffPage() {
                 {/* Enrollment Form */}
                 <div className="relative group">
                     <div className="absolute inset-0 bg-[#191A43]/5 rounded-[2.5rem] blur-2xl group-hover:bg-[#191A43]/10 transition-all" />
-                    <Card className="relative z-10 border-white/50 bg-white/80 backdrop-blur-xl rounded-[2.5rem] shadow-2xl overflow-hidden border border-slate-100">
-                        <CardContent className="p-8 sm:p-10">
+                    <Card className="relative z-10 border-white/50 bg-white/80 backdrop-blur-xl rounded-[1.5rem] shadow-xl overflow-hidden border border-slate-100">
+                        <CardContent className="p-6 sm:p-8">
                             <form onSubmit={handleAddStaff} className="space-y-8">
                                 <div className="flex items-center gap-2 ml-1">
                                     <UserPlus className="w-4 h-4 text-[#191A43]" />
@@ -373,7 +373,7 @@ export default function StaffPage() {
                                     <Button 
                                         type="submit" 
                                         disabled={isLoading} 
-                                        className="h-11 px-12 rounded-2xl bg-[#191A43] text-white hover:bg-[#191A43]/90 font-black uppercase tracking-widest transition-all shadow-2xl shadow-[#191A43]/20 active:scale-95"
+                                        className="h-10 px-8 rounded-xl bg-[#191A43] text-white hover:bg-[#191A43]/90 font-bold uppercase tracking-widest transition-all shadow-lg shadow-[#191A43]/10 active:scale-95 text-xs"
                                     >
                                         {isLoading ? (
                                             <div className="flex items-center gap-3">
@@ -405,11 +405,11 @@ export default function StaffPage() {
                                         animate={{ opacity: 1, y: 0 }}
                                         transition={{ delay: index * 0.05 }}
                                     >
-                                        <Card className="group relative border-slate-100 bg-white hover:border-[#191A43]/20 hover:shadow-xl hover:shadow-[#191A43]/5 transition-all rounded-[1.5rem] overflow-hidden border">
+                                        <Card className="group relative border-slate-100 bg-white hover:border-[#191A43]/20 hover:shadow-lg hover:shadow-[#191A43]/5 transition-all rounded-xl overflow-hidden border">
                                             <CardContent className="p-5">
                                                 <div className="flex flex-col items-center text-center space-y-3">
-                                                    <div className={`w-14 h-14 rounded-2xl border-[3px] border-white flex items-center justify-center shrink-0 shadow-lg transition-transform group-hover:scale-110 duration-500 ${getAvatarColor(person.name)}`}>
-                                                        <User className="w-6 h-6 text-white" strokeWidth={2.5} />
+                                                    <div className={`w-12 h-12 rounded-xl border-[2.5px] border-white flex items-center justify-center shrink-0 shadow-md transition-transform group-hover:scale-110 duration-500 ${getAvatarColor(person.name)}`}>
+                                                        <User className="w-5 h-5 text-white" strokeWidth={2.5} />
                                                     </div>
                                                     
                                                     <div className="space-y-0.5 w-full">

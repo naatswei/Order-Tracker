@@ -143,11 +143,11 @@ export default function OperationsPage() {
                         </Link>
 
                         <div className="hidden sm:flex flex-col">
-                            <div className="flex items-center gap-2 mb-1">
-                                <div className="w-2 h-2 rounded-full bg-[#CE0003] animate-pulse" />
-                                <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Live System</span>
+                            <div className="flex items-center gap-2 mb-0.5">
+                                <div className="w-1.5 h-1.5 rounded-full bg-[#CE0003] animate-pulse" />
+                                <span className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em]">Live System</span>
                             </div>
-                            <h1 className="text-2xl font-black text-[#191A43] tracking-tight whitespace-nowrap">Command Center</h1>
+                            <h1 className="text-xl font-black text-[#191A43] tracking-tight whitespace-nowrap">Command Center</h1>
                         </div>
 
                         <div className="h-10 w-px bg-slate-100 hidden sm:block mx-2" />
@@ -159,13 +159,13 @@ export default function OperationsPage() {
                                 placeholder="Find order or customer..." 
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className="h-10 pl-10 pr-4 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all w-full text-sm font-medium"
+                                className="h-10 pl-10 pr-4 rounded-xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all w-full text-sm font-medium"
                             />
                         </div>
                     </div>
 
                     {/* Stats Hub */}
-                    <div className="flex items-center justify-around flex-1 bg-slate-50/50 rounded-2xl border border-slate-100/50 px-8 py-3 gap-8 min-w-[300px]">
+                    <div className="flex items-center justify-around flex-1 bg-slate-50/50 rounded-xl border border-slate-100/50 px-6 py-2 gap-6 min-w-[280px]">
                         <div className="flex flex-col items-center">
                             <span className="text-[9px] font-black text-slate-400 uppercase">Live Orders</span>
                             <span className="text-xl font-black text-[#191A43]">{isLoading ? "..." : orders.length}</span>
@@ -203,7 +203,7 @@ export default function OperationsPage() {
                         </Dialog>
 
                         <Link href="/backoffice/create" className="flex-1 lg:flex-none">
-                            <Button className="w-full h-10 px-8 rounded-2xl bg-[#191A43] hover:bg-[#191A43]/90 text-white font-bold transition-all shadow-lg shadow-[#191A43]/10">
+                            <Button className="w-full h-10 px-6 rounded-xl bg-[#191A43] hover:bg-[#191A43]/90 text-white font-bold transition-all shadow-lg shadow-[#191A43]/10 text-xs">
                                 <Plus className="w-4 h-4 mr-2" />
                                 New Order
                             </Button>
