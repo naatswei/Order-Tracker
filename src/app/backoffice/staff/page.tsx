@@ -264,8 +264,8 @@ export default function StaffPage() {
                 <div className="max-w-7xl mx-auto px-4 sm:px-8 py-2 sm:py-0 sm:h-16 flex items-center justify-between gap-3">
                     <div className="flex items-center gap-2 sm:gap-4 overflow-hidden">
                         <Link href="/backoffice" className="shrink-0">
-                            <Button variant="ghost" size="icon" className="rounded-xl hover:bg-slate-50 h-8 w-8 sm:h-9 sm:w-9 -ml-2 sm:ml-0">
-                                <ArrowLeft className="w-4 h-4 text-slate-400" />
+                            <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl border border-slate-100 bg-white hover:bg-slate-50 shadow-sm transition-all text-slate-400 hover:text-[#191A43]" title="Back to Dashboard">
+                                <ArrowLeft className="w-5 h-5" />
                             </Button>
                         </Link>
                         <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">

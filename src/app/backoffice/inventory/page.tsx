@@ -12,6 +12,7 @@ import {
     Package, 
     Plus, 
     Minus, 
+    ArrowLeft,
     ArrowUpRight, 
     ArrowDownLeft, 
     AlertCircle, 
@@ -26,6 +27,7 @@ import {
     Trash2
 } from "lucide-react";
 import { toast } from "sonner";
+import Link from "next/link";
 import {
     Dialog,
     DialogContent,
@@ -99,8 +101,9 @@ export default function InventoryPage() {
             setIsAddModalOpen(false);
             setNewItem({ name: "", quantity: "0", sku: "", unit: "", category: "", minStock: "0" });
             loadData();
-        } catch (error) {
-            toast.error("Failed to add item");
+        } catch (error: any) {
+            console.error("Inventory Error:", error);
+            toast.error("Deployment Failed: " + (error.message || "Check connection"));
         }
     }
 
@@ -151,6 +154,11 @@ export default function InventoryPage() {
             <div className="bg-white border-b border-slate-100 sticky top-0 z-30 backdrop-blur-md bg-white/80">
                 <div className="max-w-7xl mx-auto px-4 sm:px-8 py-4 flex flex-col sm:flex-row items-center justify-between gap-4">
                     <div className="flex items-center gap-4 w-full sm:w-auto">
+                        <Link href="/backoffice" className="shrink-0">
+                            <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl border border-slate-100 bg-white hover:bg-slate-50 shadow-sm transition-all text-slate-400 hover:text-[#191A43]" title="Back to Dashboard">
+                                <ArrowLeft className="w-5 h-5" />
+                            </Button>
+                        </Link>
                         <div className="w-10 h-10 rounded-xl bg-[#191A43] flex items-center justify-center shadow-lg shadow-[#191A43]/20 shrink-0">
                             <Package className="w-5 h-5 text-white" />
                         </div>
