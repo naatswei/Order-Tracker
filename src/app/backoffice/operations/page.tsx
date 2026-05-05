@@ -133,7 +133,7 @@ export default function OperationsPage() {
         <div className="bg-[#FBFBFF] min-h-screen">
             {/* Pro-HUD Header - Fixed the sticky issue and z-index overlap */}
             <div className="bg-white border-b border-slate-100 shadow-[0_4px_30px_rgb(0,0,0,0.02)] relative z-30">
-                <div className="w-full px-4 sm:px-8 py-6 flex flex-col lg:flex-row items-center justify-between gap-6">
+                <div className="w-full px-4 sm:px-8 py-4 flex flex-col lg:flex-row items-center justify-between gap-6">
                     {/* Title Area */}
                     <div className="flex items-center gap-6 w-full lg:w-auto">
                         <Link href="/backoffice">
@@ -159,7 +159,7 @@ export default function OperationsPage() {
                                 placeholder="Find order or customer..." 
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className="h-11 pl-10 pr-4 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all w-full text-sm font-medium"
+                                className="h-10 pl-10 pr-4 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white transition-all w-full text-sm font-medium"
                             />
                         </div>
                     </div>
@@ -186,7 +186,7 @@ export default function OperationsPage() {
                     <div className="flex items-center gap-3 w-full lg:w-auto">
                         <Dialog>
                             <DialogTrigger asChild>
-                                <Button variant="ghost" className="h-11 px-4 rounded-2xl text-slate-500 hover:bg-slate-50 font-bold transition-all">
+                                <Button variant="ghost" className="h-10 px-4 rounded-2xl text-slate-500 hover:bg-slate-50 font-bold transition-all">
                                     <Settings2 className="w-4 h-4 mr-2" />
                                     Configure
                                 </Button>
@@ -203,7 +203,7 @@ export default function OperationsPage() {
                         </Dialog>
 
                         <Link href="/backoffice/create" className="flex-1 lg:flex-none">
-                            <Button className="w-full h-11 px-8 rounded-2xl bg-[#191A43] hover:bg-[#191A43]/90 text-white font-bold transition-all shadow-lg shadow-[#191A43]/10">
+                            <Button className="w-full h-10 px-8 rounded-2xl bg-[#191A43] hover:bg-[#191A43]/90 text-white font-bold transition-all shadow-lg shadow-[#191A43]/10">
                                 <Plus className="w-4 h-4 mr-2" />
                                 New Order
                             </Button>
@@ -326,7 +326,7 @@ export default function OperationsPage() {
 
                                                                     <Button 
                                                                         onClick={() => handleMoveStage(order.id, order.currentStatus)}
-                                                                        className="w-full h-11 rounded-2xl bg-white text-[#191A43] border border-slate-100 hover:border-slate-300 hover:bg-slate-50 shadow-sm font-bold text-xs group/btn relative overflow-hidden"
+                                                                        className="w-full h-9 rounded-2xl bg-white text-[#191A43] border border-slate-100 hover:border-slate-300 hover:bg-slate-50 shadow-sm font-bold text-xs group/btn relative overflow-hidden"
                                                                     >
                                                                         <span className="relative z-10 flex items-center justify-center">
                                                                             Progress Stage

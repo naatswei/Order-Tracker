@@ -60,7 +60,7 @@ export function BackofficeHeader({ config }: BackofficeHeaderProps) {
 
     return (
         <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b-[0.5px] border-slate-100 shadow-[0_2px_20px_rgb(0,0,0,0.02)]">
-            <div className="w-full px-4 sm:px-8 py-4 flex items-center justify-between">
+            <div className="w-full px-4 sm:px-8 py-3 flex items-center justify-between">
                 {/* Logo */}
                 <Link href="/backoffice" className="flex items-center gap-3 group">
                     <div className="w-8 h-8 rounded-full bg-red-50/50 border border-red-100 flex items-center justify-center shadow-sm group-hover:shadow-md transition-all">
@@ -106,7 +106,7 @@ export function BackofficeHeader({ config }: BackofficeHeaderProps) {
                     {/* Action Items */}
                     <div className="flex items-center gap-2">
                         <Link href="/backoffice/inbox">
-                            <Button variant="ghost" size="icon" className="relative h-9 w-9 rounded-full bg-white hover:bg-slate-50 border border-slate-200 shadow-sm transition-all text-slate-600 hover:text-slate-900" title="Inbox">
+                            <Button variant="ghost" size="icon" className="relative h-8 w-8 rounded-full bg-white hover:bg-slate-50 border border-slate-200 shadow-sm transition-all text-slate-600 hover:text-slate-900" title="Inbox">
                                 <Mail className="w-4 h-4" />
                                 {unreadCount > 0 && (
                                     <span className="absolute top-[5px] right-[5px] w-2 h-2 bg-red-500 rounded-full border border-white animate-pulse" />
@@ -114,7 +114,7 @@ export function BackofficeHeader({ config }: BackofficeHeaderProps) {
                             </Button>
                         </Link>
                         <Link href="/backoffice/profile">
-                            <Button variant="ghost" size="icon" className="relative h-9 w-9 rounded-full bg-white hover:bg-slate-50 border border-slate-200 shadow-sm transition-all text-slate-600 hover:text-slate-900" title="Settings">
+                            <Button variant="ghost" size="icon" className="relative h-8 w-8 rounded-full bg-white hover:bg-slate-50 border border-slate-200 shadow-sm transition-all text-slate-600 hover:text-slate-900" title="Settings">
                                 <Settings className="w-4 h-4" />
                             </Button>
                         </Link>

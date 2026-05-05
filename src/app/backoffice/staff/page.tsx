@@ -261,10 +261,10 @@ export default function StaffPage() {
         <div className="min-h-screen bg-[#F8FAFC]">
             {/* Header Strip */}
             <div className="bg-white border-b border-slate-100 sticky top-0 z-30 backdrop-blur-md bg-white/80">
-                <div className="max-w-7xl mx-auto px-4 sm:px-8 py-3 sm:py-0 sm:h-20 flex items-center justify-between gap-3">
+                <div className="max-w-7xl mx-auto px-4 sm:px-8 py-2 sm:py-0 sm:h-16 flex items-center justify-between gap-3">
                     <div className="flex items-center gap-2 sm:gap-4 overflow-hidden">
                         <Link href="/backoffice" className="shrink-0">
-                            <Button variant="ghost" size="icon" className="rounded-xl hover:bg-slate-50 h-8 w-8 sm:h-10 sm:w-10 -ml-2 sm:ml-0">
+                            <Button variant="ghost" size="icon" className="rounded-xl hover:bg-slate-50 h-8 w-8 sm:h-9 sm:w-9 -ml-2 sm:ml-0">
                                 <ArrowLeft className="w-4 h-4 text-slate-400" />
                             </Button>
                         </Link>
@@ -331,7 +331,7 @@ export default function StaffPage() {
                                             placeholder="e.g. Kofi Mensah" 
                                             value={name} 
                                             onChange={(e) => setName(e.target.value)}
-                                            className="h-12 rounded-xl bg-slate-50 border-slate-100 focus:ring-[#191A43] focus:border-[#191A43] text-sm font-bold"
+                                            className="h-10 rounded-xl bg-slate-50 border-slate-100 focus:ring-[#191A43] focus:border-[#191A43] text-sm font-bold"
                                             required
                                         />
                                     </div>
@@ -356,7 +356,7 @@ export default function StaffPage() {
                                     <div className="space-y-2">
                                         <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Reports To</label>
                                         <Select value={reportsToId} onValueChange={setReportsToId}>
-                                            <SelectTrigger className="h-12 rounded-xl bg-slate-50 border-slate-100 focus:ring-[#191A43] focus:border-[#191A43] text-sm font-bold">
+                                            <SelectTrigger className="h-10 rounded-xl bg-slate-50 border-slate-100 focus:ring-[#191A43] focus:border-[#191A43] text-sm font-bold">
                                                 <SelectValue placeholder="Select Manager" />
                                             </SelectTrigger>
                                             <SelectContent className="rounded-xl border-slate-100 shadow-2xl">
@@ -373,7 +373,7 @@ export default function StaffPage() {
                                     <Button 
                                         type="submit" 
                                         disabled={isLoading} 
-                                        className="h-14 px-12 rounded-2xl bg-[#191A43] text-white hover:bg-[#191A43]/90 font-black uppercase tracking-widest transition-all shadow-2xl shadow-[#191A43]/20 active:scale-95"
+                                        className="h-11 px-12 rounded-2xl bg-[#191A43] text-white hover:bg-[#191A43]/90 font-black uppercase tracking-widest transition-all shadow-2xl shadow-[#191A43]/20 active:scale-95"
                                     >
                                         {isLoading ? (
                                             <div className="flex items-center gap-3">
@@ -405,15 +405,15 @@ export default function StaffPage() {
                                         animate={{ opacity: 1, y: 0 }}
                                         transition={{ delay: index * 0.05 }}
                                     >
-                                        <Card className="group relative border-slate-100 bg-white hover:border-[#191A43]/20 hover:shadow-2xl hover:shadow-[#191A43]/5 transition-all rounded-[2.5rem] overflow-hidden border">
-                                            <CardContent className="p-6">
-                                                <div className="flex flex-col items-center text-center space-y-4">
-                                                    <div className={`w-20 h-20 rounded-[2rem] border-4 border-white flex items-center justify-center shrink-0 shadow-xl transition-transform group-hover:scale-110 duration-500 ${getAvatarColor(person.name)}`}>
-                                                        <User className="w-8 h-8 text-white" strokeWidth={2.5} />
+                                        <Card className="group relative border-slate-100 bg-white hover:border-[#191A43]/20 hover:shadow-xl hover:shadow-[#191A43]/5 transition-all rounded-[1.5rem] overflow-hidden border">
+                                            <CardContent className="p-5">
+                                                <div className="flex flex-col items-center text-center space-y-3">
+                                                    <div className={`w-14 h-14 rounded-2xl border-[3px] border-white flex items-center justify-center shrink-0 shadow-lg transition-transform group-hover:scale-110 duration-500 ${getAvatarColor(person.name)}`}>
+                                                        <User className="w-6 h-6 text-white" strokeWidth={2.5} />
                                                     </div>
                                                     
-                                                    <div className="space-y-1 w-full">
-                                                        <h3 className="text-base font-black text-slate-800 truncate">{person.name}</h3>
+                                                    <div className="space-y-0.5 w-full">
+                                                        <h3 className="text-[15px] font-black text-slate-800 truncate">{person.name}</h3>
                                                         <div className="flex flex-wrap items-center justify-center gap-2">
                                                             <span className="px-3 py-1 bg-slate-100 rounded-full text-[10px] font-black text-slate-500 uppercase tracking-wider">{person.role || "Team Member"}</span>
                                                             {person.department && (
