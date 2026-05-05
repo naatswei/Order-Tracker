@@ -141,8 +141,8 @@ export default function InventoryPage() {
 
     const stats = {
         totalItems: items.reduce((acc, item) => acc + parseFloat(item.quantity), 0),
-        lowStock: items.filter(item => parseFloat(item.quantity) <= parseFloat(item.minStock || "0")).length,
-        pendingDelivery: orders.filter(o => o.currentStatus !== "Delivered" && o.currentStatus !== "Completed").length,
+        totalReserved: items.reduce((acc, item) => acc + parseFloat(item.reserved || "0"), 0),
+        lowStock: items.filter(item => (parseFloat(item.quantity) - parseFloat(item.reserved || "0")) <= parseFloat(item.minStock || "0")).length,
         receivedToday: orders.filter(o => new Date(o.createdAt).toDateString() === new Date().toDateString()).length
     };
 
@@ -279,14 +279,14 @@ export default function InventoryPage() {
                     <Card className="border-none shadow-sm bg-white rounded-2xl overflow-hidden group">
                         <CardContent className="p-5 flex items-center gap-4">
                             <div className="w-10 h-10 rounded-xl bg-orange-50 text-orange-600 flex items-center justify-center transition-transform group-hover:scale-110">
-                                <AlertCircle className="w-5 h-5" />
+                                <History className="w-5 h-5" />
                             </div>
                             <div>
                                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider">
-                                    {isLogistics ? "Pending Delivery" : "Low Stock Alerts"}
+                                    Items Reserved
                                 </p>
                                 <p className="text-xl font-black text-[#191A43]">
-                                    {isLogistics ? stats.pendingDelivery : stats.lowStock}
+                                    {stats.totalReserved}
                                 </p>
                             </div>
                         </CardContent>
@@ -334,8 +334,9 @@ export default function InventoryPage() {
                                 <thead>
                                     <tr className="border-b border-slate-50 bg-slate-50/30">
                                         <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Asset Details</th>
-                                        <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">In Stock</th>
-                                        <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Min Level</th>
+                                        <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Physical</th>
+                                        <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Reserved</th>
+                                        <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Available</th>
                                         <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Actions</th>
                                     </tr>
                                 </thead>
@@ -363,16 +364,25 @@ export default function InventoryPage() {
                                                 </td>
                                                 <td className="px-6 py-5 text-center">
                                                     <div className="flex flex-col items-center">
-                                                        <span className={`text-base font-black ${parseFloat(item.quantity) <= parseFloat(item.minStock || "0") ? "text-orange-500" : "text-[#191A43]"}`}>
+                                                        <span className="text-sm font-black text-slate-600">
                                                             {item.quantity}
                                                         </span>
-                                                        <span className="text-[10px] text-slate-400 font-bold uppercase tracking-tighter">{item.unit || "Units"}</span>
+                                                        <span className="text-[9px] text-slate-400 font-bold uppercase tracking-tighter">{item.unit || "Units"}</span>
                                                     </div>
                                                 </td>
                                                 <td className="px-6 py-5 text-center">
-                                                    <Badge variant="outline" className="bg-slate-50 border-slate-100 text-slate-400 font-bold text-[10px] rounded-lg">
-                                                        {item.minStock || "0"}
-                                                    </Badge>
+                                                    <div className="flex flex-col items-center">
+                                                        <span className="text-sm font-black text-orange-400">
+                                                            {item.reserved || "0"}
+                                                        </span>
+                                                    </div>
+                                                </td>
+                                                <td className="px-6 py-5 text-center">
+                                                    <div className="flex flex-col items-center">
+                                                        <span className={`text-base font-black ${(parseFloat(item.quantity) - parseFloat(item.reserved || "0")) <= parseFloat(item.minStock || "0") ? "text-red-500" : "text-emerald-500"}`}>
+                                                            {parseFloat(item.quantity) - parseFloat(item.reserved || "0")}
+                                                        </span>
+                                                    </div>
                                                 </td>
                                                 <td className="px-6 py-5 text-right">
                                                     <div className="flex items-center justify-end gap-2">

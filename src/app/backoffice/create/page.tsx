@@ -9,10 +9,11 @@ import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { generateTrackingId, type Order } from "@/lib/storage"
 import { createOrder, getOrderById, updateOrder } from "@/app/actions/orders"
+import { getInventory } from "@/app/actions/operations"
 import Link from "next/link"
 import { OrganizationSwitcher, useOrganization } from "@clerk/nextjs"
 import { BackofficeHeader } from "@/components/backoffice-header"
-import { Package, ArrowLeft, Loader2, AlertCircle } from "lucide-react"
+import { Package, ArrowLeft, Loader2, AlertCircle, Plus, Trash2, Search, Boxes } from "lucide-react"
 import { RenewalBanner } from "@/components/renewal-banner"
 import { toast } from "sonner"
 import { useSearchParams, useRouter } from "next/navigation"
@@ -36,6 +37,11 @@ function CreateOrderContent() {
     const [measurements, setMeasurements] = useState("")
     const [metadata, setMetadata] = useState<Record<string, unknown>>({})
     const [isSaving, setIsSaving] = useState(false)
+    
+    // Inventory state
+    const [allInventory, setAllInventory] = useState<any[]>([])
+    const [selectedInventory, setSelectedInventory] = useState<{ id: string, name: string, quantity: string, max: number }[]>([])
+    const [inventorySearch, setInventorySearch] = useState("")
 
     // Business Config
     const { organization } = useOrganization()
@@ -82,6 +88,9 @@ function CreateOrderContent() {
                 }
             })
         }
+
+        // Fetch inventory
+        getInventory().then(items => setAllInventory(items))
     }, [searchParams, organization])
 
     const isSubscriptionActive = 
@@ -141,6 +150,7 @@ function CreateOrderContent() {
                     metadata,
                     businessType: localStorage.getItem("businessType") || "tailoring",
                     currentStatus: config.defaultStatus,
+                    inventoryItems: selectedInventory.map(item => ({ id: item.id, quantity: item.quantity })),
                 })
                 toast.success("New order created")
             }
@@ -298,6 +308,92 @@ function CreateOrderContent() {
                                     disabled={!canCreateOrder}
                                     className="rounded-xl bg-white/50 border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80 resize-none p-4"
                                 />
+                            </div>
+
+                            {/* Inventory Selection */}
+                            <div className="space-y-4 pt-4 border-t border-slate-100">
+                                <div className="flex items-center justify-between">
+                                    <Label className="ml-1 text-sm font-black text-[#191A43] uppercase tracking-widest flex items-center gap-2">
+                                        <Boxes className="w-4 h-4" />
+                                        Stock Usage
+                                    </Label>
+                                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Items from Inventory</span>
+                                </div>
+
+                                <div className="relative">
+                                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                                    <Input 
+                                        placeholder="Search inventory to add items..."
+                                        value={inventorySearch}
+                                        onChange={(e) => setInventorySearch(e.target.value)}
+                                        className="pl-10 rounded-xl bg-slate-50 border-slate-100 h-11 text-sm"
+                                    />
+                                    {inventorySearch && (
+                                        <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-100 rounded-xl shadow-xl z-50 max-h-48 overflow-auto">
+                                            {allInventory
+                                                .filter(item => item.name.toLowerCase().includes(inventorySearch.toLowerCase()))
+                                                .map(item => (
+                                                    <button
+                                                        key={item.id}
+                                                        type="button"
+                                                        onClick={() => {
+                                                            if (!selectedInventory.find(s => s.id === item.id)) {
+                                                                setSelectedInventory([...selectedInventory, { 
+                                                                    id: item.id, 
+                                                                    name: item.name, 
+                                                                    quantity: "1",
+                                                                    max: parseFloat(item.quantity) - parseFloat(item.reserved || "0")
+                                                                }]);
+                                                            }
+                                                            setInventorySearch("");
+                                                        }}
+                                                        className="w-full px-4 py-3 text-left hover:bg-slate-50 flex items-center justify-between border-b border-slate-50 last:border-0"
+                                                    >
+                                                        <div>
+                                                            <p className="text-sm font-black text-slate-700">{item.name}</p>
+                                                            <p className="text-[10px] text-slate-400 font-bold uppercase">{item.sku || "No SKU"}</p>
+                                                        </div>
+                                                        <p className="text-[10px] font-black text-emerald-500 uppercase">{parseFloat(item.quantity) - parseFloat(item.reserved || "0")} Available</p>
+                                                    </button>
+                                                ))}
+                                        </div>
+                                    )}
+                                </div>
+
+                                {selectedInventory.length > 0 && (
+                                    <div className="space-y-2">
+                                        {selectedInventory.map((item, index) => (
+                                            <div key={item.id} className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
+                                                <div className="flex-1">
+                                                    <p className="text-sm font-black text-slate-700">{item.name}</p>
+                                                </div>
+                                                <div className="flex items-center gap-2">
+                                                    <Label className="text-[10px] font-bold text-slate-400 uppercase">Qty:</Label>
+                                                    <Input 
+                                                        type="number"
+                                                        value={item.quantity}
+                                                        max={item.max}
+                                                        onChange={(e) => {
+                                                            const newItems = [...selectedInventory];
+                                                            newItems[index].quantity = e.target.value;
+                                                            setSelectedInventory(newItems);
+                                                        }}
+                                                        className="w-20 h-8 rounded-lg bg-white border-slate-100 text-xs font-bold text-center"
+                                                    />
+                                                </div>
+                                                <Button
+                                                    type="button"
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    onClick={() => setSelectedInventory(selectedInventory.filter((_, i) => i !== index))}
+                                                    className="w-8 h-8 rounded-lg hover:bg-red-50 hover:text-red-600 transition-all"
+                                                >
+                                                    <Trash2 className="w-4 h-4" />
+                                                </Button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
 
                             <div className="pt-2 flex flex-col items-end gap-3">

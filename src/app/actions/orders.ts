@@ -6,6 +6,7 @@ import { eq, desc, and, or, count } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { auth, clerkClient } from "@clerk/nextjs/server";
 import { getPlanLimits } from "@/lib/plan-config";
+import { linkOrderToInventory, consumeReservedStock, releaseReservedStock } from "./operations";
 
 interface OrderInput {
     id?: string;
@@ -20,6 +21,7 @@ interface OrderInput {
     metadata?: Record<string, unknown> | null;
     businessType: string;
     currentStatus?: string;
+    inventoryItems?: { id: string, quantity: string }[];
 }
 
 async function validateSubscription(orgId: string) {
@@ -114,6 +116,10 @@ export async function createOrder(data: OrderInput) {
         location: "Main Office",
         message: "Order created successfully",
     });
+    // Link inventory items if any
+    if (data.inventoryItems && data.inventoryItems.length > 0) {
+        await linkOrderToInventory(orderId, data.inventoryItems);
+    }
 
     revalidatePath("/backoffice");
     return { success: true, orderId };
@@ -145,6 +151,14 @@ export async function updateOrderStatus(orderId: string, status: string, locatio
             location: location,
             message: message,
         });
+
+        // Trigger inventory logic based on status
+        const lowerStatus = status.toLowerCase();
+        if (lowerStatus === "delivered" || lowerStatus === "completed" || lowerStatus === "collected") {
+            await consumeReservedStock(orderId);
+        } else if (lowerStatus === "cancelled" || lowerStatus === "voided") {
+            await releaseReservedStock(orderId);
+        }
     });
 
     revalidatePath("/backoffice");
@@ -275,6 +289,13 @@ export async function bulkUpdateOrderStatus(orderIds: string[], status: string, 
                 location: location,
                 message: message,
             });
+            // Trigger inventory logic based on status
+            const lowerStatus = status.toLowerCase();
+            if (lowerStatus === "delivered" || lowerStatus === "completed" || lowerStatus === "collected") {
+                await consumeReservedStock(orderId);
+            } else if (lowerStatus === "cancelled" || lowerStatus === "voided") {
+                await releaseReservedStock(orderId);
+            }
         }
     });
 

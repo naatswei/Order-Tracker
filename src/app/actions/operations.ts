@@ -1,7 +1,7 @@
 "use server"
 
 import { db } from "@/db";
-import { orders, staff, workflows, statusHistory, inventory, inventoryTransactions } from "@/db/schema";
+import { orders, staff, workflows, statusHistory, inventory, inventoryTransactions, orderInventoryLinks } from "@/db/schema";
 import { eq, desc, and, asc, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { auth } from "@clerk/nextjs/server";
@@ -165,6 +165,7 @@ export async function addInventoryItem(data: { name: string, quantity: string, c
             unit: data.unit || null,
             sku: data.sku || null,
             minStock: data.minStock || "0",
+            reserved: "0",
             clerkOrgId: orgId,
             businessType: data.businessType,
         });
@@ -230,6 +231,119 @@ export async function removeInventoryItem(id: string) {
     if (!orgId) throw new Error("Unauthorized");
 
     await db.delete(inventory).where(and(eq(inventory.id, id), eq(inventory.clerkOrgId, orgId)));
+    revalidatePath("/backoffice/inventory");
+    return { success: true };
+}
+
+// --- Order & Inventory Linking ---
+
+export async function linkOrderToInventory(orderId: string, inventoryItems: { id: string, quantity: string }[]) {
+    const { orgId } = await auth();
+    if (!orgId) throw new Error("Unauthorized");
+
+    await db.transaction(async (tx) => {
+        for (const item of inventoryItems) {
+            // 1. Create the link
+            await tx.insert(orderInventoryLinks).values({
+                id: `link_${nanoid(10)}`,
+                orderId,
+                inventoryId: item.id,
+                quantity: item.quantity,
+                clerkOrgId: orgId,
+            });
+
+            // 2. Increment reserved count in inventory
+            await tx.update(inventory)
+                .set({ 
+                    reserved: sql`${inventory.reserved}::float + ${parseFloat(item.quantity)}`,
+                    updatedAt: new Date() 
+                })
+                .where(and(eq(inventory.id, item.id), eq(inventory.clerkOrgId, orgId)));
+            
+            // 3. Log transaction
+            await tx.insert(inventoryTransactions).values({
+                id: `tr_${nanoid(10)}`,
+                inventoryId: item.id,
+                type: "adjustment",
+                quantity: item.quantity,
+                note: `Reserved for Order #${orderId}`,
+                clerkOrgId: orgId,
+            });
+        }
+    });
+
+    revalidatePath("/backoffice/inventory");
+    return { success: true };
+}
+
+export async function consumeReservedStock(orderId: string) {
+    const { orgId } = await auth();
+    if (!orgId) throw new Error("Unauthorized");
+
+    await db.transaction(async (tx) => {
+        // 1. Find all linked inventory items for this order
+        const links = await tx.select().from(orderInventoryLinks).where(and(eq(orderInventoryLinks.orderId, orderId), eq(orderInventoryLinks.clerkOrgId, orgId)));
+        
+        for (const link of links) {
+            const qty = parseFloat(link.quantity);
+
+            // 2. Decrement physical quantity AND reserved count
+            await tx.update(inventory)
+                .set({ 
+                    quantity: sql`${inventory.quantity}::float - ${qty}`,
+                    reserved: sql`${inventory.reserved}::float - ${qty}`,
+                    updatedAt: new Date()
+                })
+                .where(and(eq(inventory.id, link.inventoryId), eq(inventory.clerkOrgId, orgId)));
+
+            // 3. Log the official consumption
+            await tx.insert(inventoryTransactions).values({
+                id: `tr_${nanoid(10)}`,
+                inventoryId: link.inventoryId,
+                type: "out",
+                quantity: link.quantity,
+                note: `Consumed by fulfilled Order #${orderId}`,
+                clerkOrgId: orgId,
+            });
+        }
+
+        // 4. Optionally clear links? (Maybe keep for history?)
+        // Let's keep them for now but mark them as processed if we add a status field later.
+    });
+
+    revalidatePath("/backoffice/inventory");
+    return { success: true };
+}
+
+export async function releaseReservedStock(orderId: string) {
+    const { orgId } = await auth();
+    if (!orgId) throw new Error("Unauthorized");
+
+    await db.transaction(async (tx) => {
+        const links = await tx.select().from(orderInventoryLinks).where(and(eq(orderInventoryLinks.orderId, orderId), eq(orderInventoryLinks.clerkOrgId, orgId)));
+        
+        for (const link of links) {
+            const qty = parseFloat(link.quantity);
+
+            // Decrement reserved count ONLY (return to Available)
+            await tx.update(inventory)
+                .set({ 
+                    reserved: sql`${inventory.reserved}::float - ${qty}`,
+                    updatedAt: new Date()
+                })
+                .where(and(eq(inventory.id, link.inventoryId), eq(inventory.clerkOrgId, orgId)));
+
+            await tx.insert(inventoryTransactions).values({
+                id: `tr_${nanoid(10)}`,
+                inventoryId: link.inventoryId,
+                type: "adjustment",
+                quantity: link.quantity,
+                note: `Released from cancelled Order #${orderId}`,
+                clerkOrgId: orgId,
+            });
+        }
+    });
+
     revalidatePath("/backoffice/inventory");
     return { success: true };
 }

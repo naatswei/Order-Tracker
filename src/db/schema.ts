@@ -48,10 +48,20 @@ export const inventory = pgTable("inventory", {
     unit: text("unit"),
     sku: text("sku"),
     minStock: text("min_stock").default("0"),
+    reserved: text("reserved").notNull().default("0"),
     clerkOrgId: text("clerk_org_id").notNull(),
     businessType: text("business_type").notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const orderInventoryLinks = pgTable("order_inventory_links", {
+    id: text("id").primaryKey(),
+    orderId: text("order_id").references(() => orders.id, { onDelete: "cascade" }).notNull(),
+    inventoryId: text("inventory_id").references(() => inventory.id, { onDelete: "cascade" }).notNull(),
+    quantity: text("quantity").notNull(), // Amount of inventory item used in this order
+    clerkOrgId: text("clerk_org_id").notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
 export const inventoryTransactions = pgTable("inventory_transactions", {
@@ -72,6 +82,7 @@ export const ordersRelations = relations(orders, ({ many, one }) => ({
         fields: [orders.assignedStaffId],
         references: [staff.id],
     }),
+    inventoryLinks: many(orderInventoryLinks),
 }));
 
 export const staffRelations = relations(staff, ({ many, one }) => ({
@@ -88,6 +99,18 @@ export const staffRelations = relations(staff, ({ many, one }) => ({
 
 export const inventoryRelations = relations(inventory, ({ many }) => ({
     transactions: many(inventoryTransactions),
+    orderLinks: many(orderInventoryLinks),
+}));
+
+export const orderInventoryLinksRelations = relations(orderInventoryLinks, ({ one }) => ({
+    order: one(orders, {
+        fields: [orderInventoryLinks.orderId],
+        references: [orders.id],
+    }),
+    inventoryItem: one(inventory, {
+        fields: [orderInventoryLinks.inventoryId],
+        references: [inventory.id],
+    }),
 }));
 
 export const inventoryTransactionsRelations = relations(inventoryTransactions, ({ one }) => ({
