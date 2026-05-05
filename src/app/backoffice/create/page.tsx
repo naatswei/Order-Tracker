@@ -259,18 +259,62 @@ function CreateOrderContent() {
                                     />
                                 </div>
 
-                                <div className="space-y-2">
+                                <div className="space-y-2 relative">
                                     <Label htmlFor={`${businessType}-itemType`} className="ml-1 text-xs font-semibold text-muted-foreground tracking-wider">{config.itemLabel} <span className="text-red-500">*</span></Label>
-                                    <Input
-                                        id={`${businessType}-itemType`}
-                                        value={itemType}
-                                        onChange={(e) => setItemType(e.target.value)}
-                                        placeholder={config.itemPlaceholder}
-                                        required
-                                        autoComplete="off"
-                                        disabled={!canCreateOrder}
-                                        className="h-12 rounded-xl bg-white/50 border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80"
-                                    />
+                                    <div className="relative">
+                                        <Input
+                                            id={`${businessType}-itemType`}
+                                            value={itemType}
+                                            onChange={(e) => setItemType(e.target.value)}
+                                            placeholder={config.itemPlaceholder}
+                                            required
+                                            autoComplete="off"
+                                            disabled={!canCreateOrder}
+                                            className="h-12 rounded-xl bg-white/50 border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80"
+                                        />
+                                        {itemType && !editingId && allInventory.some(inv => inv.name.toLowerCase().includes(itemType.toLowerCase())) && !selectedInventory.some(s => s.name.toLowerCase() === itemType.toLowerCase()) && (
+                                            <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-100 rounded-xl shadow-xl z-50 max-h-48 overflow-auto">
+                                                {allInventory
+                                                    .filter(item => item.name.toLowerCase().includes(itemType.toLowerCase()))
+                                                    .map(item => (
+                                                        <button
+                                                            key={item.id}
+                                                            type="button"
+                                                            onClick={() => {
+                                                                setItemType(item.name);
+                                                                if (!selectedInventory.find(s => s.id === item.id)) {
+                                                                    setSelectedInventory([...selectedInventory, { 
+                                                                        id: item.id, 
+                                                                        name: item.name, 
+                                                                        quantity: "1",
+                                                                        max: parseFloat(item.quantity) - parseFloat(item.reserved || "0")
+                                                                    }]);
+                                                                }
+                                                            }}
+                                                            className="w-full px-4 py-3 text-left hover:bg-slate-50 flex items-center justify-between border-b border-slate-50 last:border-0"
+                                                        >
+                                                            <div>
+                                                                <p className="text-sm font-black text-slate-700">{item.name}</p>
+                                                                <p className="text-[10px] text-slate-400 font-bold uppercase">{item.sku || "No SKU"}</p>
+                                                            </div>
+                                                            <div className="text-right">
+                                                                <p className="text-[10px] font-black text-emerald-500 uppercase">Link to Stock</p>
+                                                                <p className="text-[9px] text-slate-400 font-bold">{(parseFloat(item.quantity) - parseFloat(item.reserved || "0"))} left</p>
+                                                            </div>
+                                                        </button>
+                                                    ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                    {selectedInventory.some(s => s.name.toLowerCase() === itemType.toLowerCase()) && (
+                                        <div className="flex items-center gap-1.5 mt-1.5 ml-1">
+                                            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                                            <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider flex items-center gap-1">
+                                                <Boxes className="w-3 h-3" />
+                                                Linked to Inventory Stock
+                                            </span>
+                                        </div>
+                                    )}
                                 </div>
 
                                 <div className="space-y-2">

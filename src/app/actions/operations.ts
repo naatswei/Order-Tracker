@@ -255,11 +255,10 @@ export async function linkOrderToInventory(orderId: string, inventoryItems: { id
             // 2. Increment reserved count in inventory
             await tx.update(inventory)
                 .set({ 
-                    reserved: sql`${inventory.reserved}::float + ${parseFloat(item.quantity)}`,
+                    reserved: sql`(${inventory.reserved}::float + ${parseFloat(item.quantity)})::text`,
                     updatedAt: new Date() 
                 })
                 .where(and(eq(inventory.id, item.id), eq(inventory.clerkOrgId, orgId)));
-            
             // 3. Log transaction
             await tx.insert(inventoryTransactions).values({
                 id: `tr_${nanoid(10)}`,
