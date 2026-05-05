@@ -1,8 +1,8 @@
 "use server"
 
 import { db } from "@/db";
-import { orders, staff, workflows, statusHistory } from "@/db/schema";
-import { eq, desc, and, asc } from "drizzle-orm";
+import { orders, staff, workflows, statusHistory, inventory, inventoryTransactions } from "@/db/schema";
+import { eq, desc, and, asc, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { auth } from "@clerk/nextjs/server";
 import { nanoid } from "nanoid";
@@ -145,5 +145,91 @@ export async function updateOrderStage(orderId: string, stageName: string, messa
     revalidatePath("/backoffice");
     revalidatePath("/backoffice/operations");
     revalidatePath(`/track/${orderId}`);
+    return { success: true };
+}
+
+// --- Inventory Management ---
+
+export async function addInventoryItem(data: { name: string, quantity: string, category?: string, unit?: string, sku?: string, minStock?: string, businessType: string }) {
+    const { orgId } = await auth();
+    if (!orgId) throw new Error("Unauthorized");
+
+    const itemId = `inv_${nanoid(10)}`;
+
+    await db.transaction(async (tx) => {
+        await tx.insert(inventory).values({
+            id: itemId,
+            name: data.name,
+            quantity: data.quantity,
+            category: data.category || null,
+            unit: data.unit || null,
+            sku: data.sku || null,
+            minStock: data.minStock || "0",
+            clerkOrgId: orgId,
+            businessType: data.businessType,
+        });
+
+        // Add initial transaction
+        await tx.insert(inventoryTransactions).values({
+            id: `tr_${nanoid(10)}`,
+            inventoryId: itemId,
+            type: "in",
+            quantity: data.quantity,
+            note: "Initial stock entry",
+            clerkOrgId: orgId,
+        });
+    });
+
+    revalidatePath("/backoffice/inventory");
+    return { success: true };
+}
+
+export async function getInventory() {
+    const { orgId } = await auth();
+    if (!orgId) return [];
+
+    return await db.select().from(inventory).where(eq(inventory.clerkOrgId, orgId)).orderBy(desc(inventory.updatedAt));
+}
+
+export async function updateStock(itemId: string, type: "in" | "out" | "adjustment", quantity: string, note?: string) {
+    const { orgId } = await auth();
+    if (!orgId) throw new Error("Unauthorized");
+
+    await db.transaction(async (tx) => {
+        const items = await tx.select().from(inventory).where(and(eq(inventory.id, itemId), eq(inventory.clerkOrgId, orgId)));
+        if (items.length === 0) throw new Error("Item not found");
+        
+        const currentQty = parseFloat(items[0].quantity);
+        const changeQty = parseFloat(quantity);
+        let newQty = currentQty;
+
+        if (type === "in") newQty += changeQty;
+        else if (type === "out") newQty -= changeQty;
+        else if (type === "adjustment") newQty = changeQty;
+
+        await tx.update(inventory)
+            .set({ quantity: newQty.toString(), updatedAt: new Date() })
+            .where(eq(inventory.id, itemId));
+
+        await tx.insert(inventoryTransactions).values({
+            id: `tr_${nanoid(10)}`,
+            inventoryId: itemId,
+            type,
+            quantity,
+            note: note || `Stock ${type}`,
+            clerkOrgId: orgId,
+        });
+    });
+
+    revalidatePath("/backoffice/inventory");
+    return { success: true };
+}
+
+export async function removeInventoryItem(id: string) {
+    const { orgId } = await auth();
+    if (!orgId) throw new Error("Unauthorized");
+
+    await db.delete(inventory).where(and(eq(inventory.id, id), eq(inventory.clerkOrgId, orgId)));
+    revalidatePath("/backoffice/inventory");
     return { success: true };
 }

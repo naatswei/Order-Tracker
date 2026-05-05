@@ -55,6 +55,7 @@ export function BackofficeHeader({ config }: BackofficeHeaderProps) {
 
     const navLinks = [
         { href: "/backoffice/operations", label: "Operations", icon: ClipboardList },
+        { href: "/backoffice/inventory", label: "Inventory", icon: Package },
         { href: "/backoffice/staff", label: "Team", icon: Users },
     ]
 
@@ -216,6 +217,21 @@ export function BackofficeHeader({ config }: BackofficeHeaderProps) {
                                     <div className="flex-1">
                                         <p className="text-sm font-semibold text-slate-800">Operations</p>
                                         <p className="text-[11px] text-slate-400">Production line & staging</p>
+                                    </div>
+                                    <ChevronRight className="w-4 h-4 text-slate-300" />
+                                </Link>
+
+                                <Link
+                                    href="/backoffice/inventory"
+                                    onClick={() => setIsMenuOpen(false)}
+                                    className="flex items-center gap-3 px-3 py-3 rounded-xl text-slate-700 hover:bg-slate-50 transition-colors group"
+                                >
+                                    <div className="w-9 h-9 rounded-lg bg-slate-100 flex items-center justify-center group-hover:bg-[#191A43]/10 transition-colors">
+                                        <Package className="w-4 h-4 text-slate-500 group-hover:text-[#191A43] transition-colors" />
+                                    </div>
+                                    <div className="flex-1">
+                                        <p className="text-sm font-semibold text-slate-800">Inventory</p>
+                                        <p className="text-[11px] text-slate-400">Stock & pipeline</p>
                                     </div>
                                     <ChevronRight className="w-4 h-4 text-slate-300" />
                                 </Link>

@@ -40,6 +40,32 @@ export const workflows = pgTable("workflows", {
     createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+export const inventory = pgTable("inventory", {
+    id: text("id").primaryKey(),
+    name: text("name").notNull(),
+    quantity: text("quantity").notNull().default("0"),
+    category: text("category"),
+    unit: text("unit"),
+    sku: text("sku"),
+    minStock: text("min_stock").default("0"),
+    clerkOrgId: text("clerk_org_id").notNull(),
+    businessType: text("business_type").notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const inventoryTransactions = pgTable("inventory_transactions", {
+    id: text("id").primaryKey(),
+    inventoryId: text("inventory_id")
+        .references(() => inventory.id, { onDelete: "cascade" })
+        .notNull(),
+    type: text("type").notNull(), // "in", "out", "adjustment"
+    quantity: text("quantity").notNull(),
+    note: text("note"),
+    clerkOrgId: text("clerk_org_id").notNull(),
+    timestamp: timestamp("timestamp").defaultNow().notNull(),
+});
+
 export const ordersRelations = relations(orders, ({ many, one }) => ({
     statusHistory: many(statusHistory),
     assignedStaff: one(staff, {
@@ -57,6 +83,17 @@ export const staffRelations = relations(staff, ({ many, one }) => ({
     }),
     subordinates: many(staff, {
         relationName: "reporting",
+    }),
+}));
+
+export const inventoryRelations = relations(inventory, ({ many }) => ({
+    transactions: many(inventoryTransactions),
+}));
+
+export const inventoryTransactionsRelations = relations(inventoryTransactions, ({ one }) => ({
+    item: one(inventory, {
+        fields: [inventoryTransactions.inventoryId],
+        references: [inventory.id],
     }),
 }));
 

@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react";
+import { useOrganization } from "@clerk/nextjs";
 import { getOrders } from "@/app/actions/orders";
 import { getStaff, assignOrder, updateOrderStage, getWorkflowStages } from "@/app/actions/operations";
 import { Card, CardContent } from "@/components/ui/card";
@@ -71,6 +72,17 @@ export default function OperationsPage() {
     const [stages, setStages] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState("");
+    const { organization } = useOrganization();
+
+    // Business Logic
+    const businessType = organization?.publicMetadata?.businessType as string || "tailoring";
+    const isLogistics = businessType === "logistics";
+    const isTailoring = businessType === "tailoring";
+
+    const backlogCount = orders.filter(o => 
+        isLogistics ? (o.currentStatus !== "Delivered" && o.currentStatus !== "Returned") : 
+        (o.currentStatus !== "Completed" && o.currentStatus !== "Delivered")
+    ).length;
 
     useEffect(() => {
         loadData();
@@ -165,19 +177,26 @@ export default function OperationsPage() {
                     </div>
 
                     {/* Stats Hub */}
-                    <div className="flex items-center justify-around flex-1 bg-slate-50/50 rounded-xl border border-slate-100/50 px-6 py-2 gap-6 min-w-[280px]">
                         <div className="flex flex-col items-center">
-                            <span className="text-[9px] font-black text-slate-400 uppercase">Live Orders</span>
-                            <span className="text-xl font-black text-[#191A43]">{isLoading ? "..." : orders.length}</span>
+                            <span className="text-[9px] font-black text-slate-400 uppercase">
+                                {isLogistics ? "Backlog" : "Active"}
+                            </span>
+                            <span className={`text-xl font-black ${backlogCount > 10 ? "text-red-500" : "text-[#191A43]"}`}>
+                                {isLoading ? "..." : backlogCount}
+                            </span>
                         </div>
                         <div className="w-px h-6 bg-slate-200/50" />
                         <div className="flex flex-col items-center">
-                            <span className="text-[9px] font-black text-slate-400 uppercase">Team Active</span>
-                            <span className="text-xl font-black text-indigo-600">{isLoading ? "..." : staff.length}</span>
+                            <span className="text-[9px] font-black text-slate-400 uppercase">
+                                {isLogistics ? "Transit" : "Team"}
+                            </span>
+                            <span className="text-xl font-black text-indigo-600">
+                                {isLoading ? "..." : isLogistics ? orders.filter(o => o.currentStatus === "In Transit").length : staff.length}
+                            </span>
                         </div>
                         <div className="w-px h-6 bg-slate-200/50" />
                         <div className="flex flex-col items-center">
-                            <span className="text-[9px] font-black text-slate-400 uppercase">Throughput</span>
+                            <span className="text-[9px] font-black text-slate-400 uppercase">Efficiency</span>
                             <span className="text-xl font-black text-emerald-500">98%</span>
                         </div>
                     </div>
