@@ -42,6 +42,7 @@ function CreateOrderContent() {
     const [allInventory, setAllInventory] = useState<any[]>([])
     const [selectedInventory, setSelectedInventory] = useState<{ id: string, name: string, quantity: string, max: number }[]>([])
     const [inventorySearch, setInventorySearch] = useState("")
+    const [showManualInventory, setShowManualInventory] = useState(false)
 
     // Business Config
     const { organization } = useOrganization()
@@ -388,48 +389,63 @@ function CreateOrderContent() {
                                         <Boxes className="w-4 h-4" />
                                         Stock Usage
                                     </Label>
-                                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Items from Inventory</span>
-                                </div>
-
-                                <div className="relative">
-                                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                                    <Input 
-                                        placeholder="Search inventory to add items..."
-                                        value={inventorySearch}
-                                        onChange={(e) => setInventorySearch(e.target.value)}
-                                        className="pl-10 rounded-xl bg-slate-50 border-slate-100 h-11 text-sm"
-                                    />
-                                    {inventorySearch && (
-                                        <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-100 rounded-xl shadow-xl z-50 max-h-48 overflow-auto">
-                                            {allInventory
-                                                .filter(item => item.name.toLowerCase().includes(inventorySearch.toLowerCase()))
-                                                .map(item => (
-                                                    <button
-                                                        key={item.id}
-                                                        type="button"
-                                                        onClick={() => {
-                                                            if (!selectedInventory.find(s => s.id === item.id)) {
-                                                                setSelectedInventory([...selectedInventory, { 
-                                                                    id: item.id, 
-                                                                    name: item.name, 
-                                                                    quantity: "1",
-                                                                    max: parseFloat(item.quantity) - parseFloat(item.reserved || "0")
-                                                                }]);
-                                                            }
-                                                            setInventorySearch("");
-                                                        }}
-                                                        className="w-full px-4 py-3 text-left hover:bg-slate-50 flex items-center justify-between border-b border-slate-50 last:border-0"
-                                                    >
-                                                        <div>
-                                                            <p className="text-sm font-black text-slate-700">{item.name}</p>
-                                                            <p className="text-[10px] text-slate-400 font-bold uppercase">{item.sku || "No SKU"}</p>
-                                                        </div>
-                                                        <p className="text-[10px] font-black text-emerald-500 uppercase">{parseFloat(item.quantity) - parseFloat(item.reserved || "0")} Available</p>
-                                                    </button>
-                                                ))}
-                                        </div>
+                                    {!showManualInventory && selectedInventory.length === 0 && (
+                                        <Button 
+                                            type="button" 
+                                            variant="ghost" 
+                                            onClick={() => setShowManualInventory(true)}
+                                            className="h-7 px-2 text-[10px] font-black text-blue-600 hover:text-blue-700 hover:bg-blue-50 uppercase tracking-wider rounded-lg border border-blue-100 transition-all"
+                                        >
+                                            <Plus className="w-3 h-3 mr-1" />
+                                            Link Materials
+                                        </Button>
+                                    )}
+                                    {(showManualInventory || selectedInventory.length > 0) && (
+                                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Items from Inventory</span>
                                     )}
                                 </div>
+
+                                {(showManualInventory || selectedInventory.length > 0) && (
+                                    <div className="relative">
+                                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                                        <Input 
+                                            placeholder="Search inventory to add items..."
+                                            value={inventorySearch}
+                                            onChange={(e) => setInventorySearch(e.target.value)}
+                                            className="pl-10 rounded-xl bg-slate-50 border-slate-100 h-11 text-sm"
+                                        />
+                                        {inventorySearch && (
+                                            <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-100 rounded-xl shadow-xl z-50 max-h-48 overflow-auto">
+                                                {allInventory
+                                                    .filter(item => item.name.toLowerCase().includes(inventorySearch.toLowerCase()))
+                                                    .map(item => (
+                                                        <button
+                                                            key={item.id}
+                                                            type="button"
+                                                            onClick={() => {
+                                                                if (!selectedInventory.find(s => s.id === item.id)) {
+                                                                    setSelectedInventory([...selectedInventory, { 
+                                                                        id: item.id, 
+                                                                        name: item.name, 
+                                                                        quantity: "1",
+                                                                        max: parseFloat(item.quantity) - parseFloat(item.reserved || "0")
+                                                                    }]);
+                                                                }
+                                                                setInventorySearch("");
+                                                            }}
+                                                            className="w-full px-4 py-3 text-left hover:bg-slate-50 flex items-center justify-between border-b border-slate-50 last:border-0"
+                                                        >
+                                                            <div>
+                                                                <p className="text-sm font-black text-slate-700">{item.name}</p>
+                                                                <p className="text-[10px] text-slate-400 font-bold uppercase">{item.sku || "No SKU"}</p>
+                                                            </div>
+                                                            <p className="text-[10px] font-black text-emerald-500 uppercase">{parseFloat(item.quantity) - parseFloat(item.reserved || "0")} Available</p>
+                                                        </button>
+                                                    ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
 
                                 {selectedInventory.length > 0 && (
                                     <div className="space-y-2">
