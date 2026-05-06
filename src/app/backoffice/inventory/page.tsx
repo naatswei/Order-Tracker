@@ -232,13 +232,13 @@ export default function InventoryPage() {
                                     </div>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="space-y-2">
-                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Unit Cost (Purchase)</label>
+                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Unit Cost</label>
                                             <Input 
                                                 type="number"
                                                 placeholder="0.00"
                                                 value={newItem.unitCost}
                                                 onChange={e => setNewItem({...newItem, unitCost: e.target.value})}
-                                                className="h-11 rounded-xl bg-emerald-50 border-emerald-100 font-bold text-emerald-700"
+                                                className="h-11 rounded-xl bg-slate-50 border-slate-100 font-bold"
                                             />
                                         </div>
                                         <div className="space-y-2">
@@ -248,7 +248,7 @@ export default function InventoryPage() {
                                                 placeholder="0.00"
                                                 value={newItem.sellingPrice}
                                                 onChange={e => setNewItem({...newItem, sellingPrice: e.target.value})}
-                                                className="h-11 rounded-xl bg-blue-50 border-blue-100 font-bold text-blue-700"
+                                                className="h-11 rounded-xl bg-slate-50 border-slate-100 font-bold"
                                             />
                                         </div>
                                     </div>
@@ -360,7 +360,7 @@ export default function InventoryPage() {
                                     <tr className="border-b border-slate-50 bg-slate-50/30">
                                         <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Asset Details</th>
                                         <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Physical</th>
-                                        <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Cost/Price (GHS)</th>
+                                        <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Value/Cost (GHS)</th>
                                         <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Available</th>
                                         <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Actions</th>
                                     </tr>
@@ -397,11 +397,11 @@ export default function InventoryPage() {
                                                 </td>
                                                 <td className="px-6 py-5 text-center">
                                                     <div className="flex flex-col items-center">
-                                                        <span className="text-[11px] font-black text-emerald-600">
-                                                            Cost: {item.unitCost || "0"}
+                                                        <span className="text-sm font-black text-[#191A43]">
+                                                            V: {(parseFloat(item.quantity) * parseFloat(item.unitCost || "0")).toLocaleString()}
                                                         </span>
-                                                        <span className="text-[11px] font-black text-blue-600 mt-0.5">
-                                                            Price: {item.sellingPrice || "0"}
+                                                        <span className="text-[9px] text-slate-400 font-bold uppercase tracking-tight mt-0.5">
+                                                            Unit Cost: {item.unitCost || "0"}
                                                         </span>
                                                     </div>
                                                 </td>
