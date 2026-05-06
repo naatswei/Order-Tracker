@@ -264,12 +264,14 @@ function CreateOrderContent() {
                                     <Label htmlFor={`${businessType}-itemType`} className="ml-1 text-xs font-semibold text-muted-foreground tracking-wider">{config.itemLabel} <span className="text-red-500">*</span></Label>
                                     <div className="relative">
                                         <Input
+                                            name="order-item-type-search"
                                             id={`${businessType}-itemType`}
                                             value={itemType}
                                             onChange={(e) => setItemType(e.target.value)}
                                             placeholder={config.itemPlaceholder}
                                             required
                                             autoComplete="off"
+                                            spellCheck="false"
                                             disabled={!canCreateOrder}
                                             className="h-12 rounded-xl bg-white/50 border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80"
                                         />
