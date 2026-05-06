@@ -166,6 +166,8 @@ export async function addInventoryItem(data: { name: string, quantity: string, c
             sku: data.sku || null,
             minStock: data.minStock || "0",
             reserved: "0",
+            unitCost: (data as any).unitCost || "0",
+            sellingPrice: (data as any).sellingPrice || "0",
             clerkOrgId: orgId,
             businessType: data.businessType,
         });
@@ -210,7 +212,7 @@ export async function updateStock(itemId: string, type: "in" | "out" | "adjustme
 
         await tx.update(inventory)
             .set({ quantity: newQty.toString(), updatedAt: new Date() })
-            .where(eq(inventory.id, itemId));
+            .where(and(eq(inventory.id, itemId), eq(inventory.clerkOrgId, orgId)));
 
         await tx.insert(inventoryTransactions).values({
             id: `tr_${nanoid(10)}`,
@@ -289,8 +291,8 @@ export async function consumeReservedStock(orderId: string) {
             // 2. Decrement physical quantity AND reserved count
             await tx.update(inventory)
                 .set({ 
-                    quantity: sql`${inventory.quantity}::float - ${qty}`,
-                    reserved: sql`${inventory.reserved}::float - ${qty}`,
+                    quantity: sql`(${inventory.quantity}::float - ${qty})::text`,
+                    reserved: sql`(${inventory.reserved}::float - ${qty})::text`,
                     updatedAt: new Date()
                 })
                 .where(and(eq(inventory.id, link.inventoryId), eq(inventory.clerkOrgId, orgId)));
@@ -327,7 +329,7 @@ export async function releaseReservedStock(orderId: string) {
             // Decrement reserved count ONLY (return to Available)
             await tx.update(inventory)
                 .set({ 
-                    reserved: sql`${inventory.reserved}::float - ${qty}`,
+                    reserved: sql`(${inventory.reserved}::float - ${qty})::text`,
                     updatedAt: new Date()
                 })
                 .where(and(eq(inventory.id, link.inventoryId), eq(inventory.clerkOrgId, orgId)));

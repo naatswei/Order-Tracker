@@ -49,6 +49,8 @@ export const inventory = pgTable("inventory", {
     sku: text("sku"),
     minStock: text("min_stock").default("0"),
     reserved: text("reserved").notNull().default("0"),
+    unitCost: text("unit_cost").default("0"),
+    sellingPrice: text("selling_price").default("0"),
     clerkOrgId: text("clerk_org_id").notNull(),
     businessType: text("business_type").notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),

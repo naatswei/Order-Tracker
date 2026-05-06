@@ -63,7 +63,9 @@ export default function InventoryPage() {
         sku: "",
         unit: "",
         category: "",
-        minStock: "0"
+        minStock: "0",
+        unitCost: "0",
+        sellingPrice: "0"
     });
 
     useEffect(() => {
@@ -99,7 +101,7 @@ export default function InventoryPage() {
             });
             toast.success("Item added to inventory");
             setIsAddModalOpen(false);
-            setNewItem({ name: "", quantity: "0", sku: "", unit: "", category: "", minStock: "0" });
+            setNewItem({ name: "", quantity: "0", sku: "", unit: "", category: "", minStock: "0", unitCost: "0", sellingPrice: "0" });
             loadData();
         } catch (error: any) {
             console.error("Inventory Error:", error);
@@ -143,7 +145,8 @@ export default function InventoryPage() {
         totalItems: items.reduce((acc, item) => acc + parseFloat(item.quantity), 0),
         totalReserved: items.reduce((acc, item) => acc + parseFloat(item.reserved || "0"), 0),
         lowStock: items.filter(item => (parseFloat(item.quantity) - parseFloat(item.reserved || "0")) <= parseFloat(item.minStock || "0")).length,
-        receivedToday: orders.filter(o => new Date(o.createdAt).toDateString() === new Date().toDateString()).length
+        receivedToday: orders.filter(o => new Date(o.createdAt).toDateString() === new Date().toDateString()).length,
+        totalStockValue: items.reduce((acc, item) => acc + (parseFloat(item.quantity) * parseFloat(item.unitCost || "0")), 0)
     };
 
     if (isLoading) return <SignatureLoader fullScreen message="Loading Inventory Hub" />;
@@ -198,9 +201,9 @@ export default function InventoryPage() {
                                 </DialogHeader>
                                 <form onSubmit={handleAddItem} className="space-y-4 mt-4">
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Item Name</label>
+                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">{config.itemLabel}</label>
                                         <Input 
-                                            placeholder={isTailoring ? "e.g. Mens Suit" : "e.g. Bone Straight Wig"}
+                                            placeholder={config.itemPlaceholder}
                                             value={newItem.name}
                                             onChange={e => setNewItem({...newItem, name: e.target.value})}
                                             required
@@ -224,6 +227,28 @@ export default function InventoryPage() {
                                                 value={newItem.sku}
                                                 onChange={e => setNewItem({...newItem, sku: e.target.value})}
                                                 className="h-11 rounded-xl bg-slate-50 border-slate-100 font-bold"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Unit Cost (Purchase)</label>
+                                            <Input 
+                                                type="number"
+                                                placeholder="0.00"
+                                                value={newItem.unitCost}
+                                                onChange={e => setNewItem({...newItem, unitCost: e.target.value})}
+                                                className="h-11 rounded-xl bg-emerald-50 border-emerald-100 font-bold text-emerald-700"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Selling Price</label>
+                                            <Input 
+                                                type="number"
+                                                placeholder="0.00"
+                                                value={newItem.sellingPrice}
+                                                onChange={e => setNewItem({...newItem, sellingPrice: e.target.value})}
+                                                className="h-11 rounded-xl bg-blue-50 border-blue-100 font-bold text-blue-700"
                                             />
                                         </div>
                                     </div>
@@ -315,10 +340,10 @@ export default function InventoryPage() {
                             </div>
                             <div>
                                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider">
-                                    {isLogistics ? "Active Flow" : "Stock Valuation"}
+                                    Total Stock Value
                                 </p>
                                 <p className="text-xl font-black text-[#191A43]">
-                                    {isLogistics ? "Stable" : "Live"}
+                                    GHS {stats.totalStockValue.toLocaleString()}
                                 </p>
                             </div>
                         </CardContent>
@@ -335,7 +360,7 @@ export default function InventoryPage() {
                                     <tr className="border-b border-slate-50 bg-slate-50/30">
                                         <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Asset Details</th>
                                         <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Physical</th>
-                                        <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Reserved</th>
+                                        <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Cost/Price (GHS)</th>
                                         <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Available</th>
                                         <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Actions</th>
                                     </tr>
@@ -372,8 +397,11 @@ export default function InventoryPage() {
                                                 </td>
                                                 <td className="px-6 py-5 text-center">
                                                     <div className="flex flex-col items-center">
-                                                        <span className="text-sm font-black text-orange-400">
-                                                            {item.reserved || "0"}
+                                                        <span className="text-[11px] font-black text-emerald-600">
+                                                            Cost: {item.unitCost || "0"}
+                                                        </span>
+                                                        <span className="text-[11px] font-black text-blue-600 mt-0.5">
+                                                            Price: {item.sellingPrice || "0"}
                                                         </span>
                                                     </div>
                                                 </td>
