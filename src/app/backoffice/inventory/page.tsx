@@ -360,8 +360,8 @@ export default function InventoryPage() {
                                     <tr className="border-b border-slate-50 bg-slate-50/30">
                                         <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Asset Details</th>
                                         <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Physical</th>
-                                        <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Value/Cost (GHS)</th>
                                         <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Available</th>
+                                        <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Value/Cost (GHS)</th>
                                         <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Actions</th>
                                     </tr>
                                 </thead>
@@ -397,18 +397,18 @@ export default function InventoryPage() {
                                                 </td>
                                                 <td className="px-6 py-5 text-center">
                                                     <div className="flex flex-col items-center">
-                                                        <span className="text-sm font-black text-[#191A43]">
-                                                            V: {(parseFloat(item.quantity) * parseFloat(item.unitCost || "0")).toLocaleString()}
-                                                        </span>
-                                                        <span className="text-[9px] text-slate-400 font-bold uppercase tracking-tight mt-0.5">
-                                                            Unit Cost: {item.unitCost || "0"}
+                                                        <span className={`text-base font-black ${(parseFloat(item.quantity) - parseFloat(item.reserved || "0")) <= parseFloat(item.minStock || "0") ? "text-red-500" : "text-emerald-500"}`}>
+                                                            {parseFloat(item.quantity) - parseFloat(item.reserved || "0")}
                                                         </span>
                                                     </div>
                                                 </td>
                                                 <td className="px-6 py-5 text-center">
                                                     <div className="flex flex-col items-center">
-                                                        <span className={`text-base font-black ${(parseFloat(item.quantity) - parseFloat(item.reserved || "0")) <= parseFloat(item.minStock || "0") ? "text-red-500" : "text-emerald-500"}`}>
-                                                            {parseFloat(item.quantity) - parseFloat(item.reserved || "0")}
+                                                        <span className="text-sm font-black text-[#191A43]">
+                                                            V: {(parseFloat(item.quantity) * parseFloat(item.unitCost || "0")).toLocaleString()}
+                                                        </span>
+                                                        <span className="text-[9px] text-slate-400 font-bold uppercase tracking-tight mt-0.5">
+                                                            Unit Cost: {item.unitCost || "0"}
                                                         </span>
                                                     </div>
                                                 </td>
