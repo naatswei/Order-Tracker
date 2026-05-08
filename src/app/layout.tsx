@@ -60,7 +60,11 @@ export const metadata: Metadata = {
     ],
   },
   verification: {
-    google: "YOUR_GOOGLE_VERIFICATION_CODE", // Replace with actual code from Google Search Console
+    google: "c8dc2732d1cfb512", // Matched with public/googlec8dc2732d1cfb512.html
+    other: {
+      me: ["support@otracker.net"],
+      "msvalidate.01": ["YOUR_BING_VERIFICATION_CODE"], // Add your code here from Bing Webmaster Tools
+    },
   },
 };
 
