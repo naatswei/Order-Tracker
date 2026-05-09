@@ -373,7 +373,11 @@ export default function StaffPage() {
                                 </p>
                             </div>
                         </div>
-                <div className="max-w-7xl mx-auto px-4 sm:px-8 py-4 flex flex-col sm:flex-row gap-4">
+                    </div>
+                </div>
+
+                {/* Search & Filter Bar - Also Sticky */}
+                <div className="max-w-7xl mx-auto px-4 sm:px-8 py-4 flex flex-col sm:flex-row gap-4 border-t border-slate-50">
                     <div className="relative flex-1 group">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-[#191A43] transition-colors" />
                         <Input 
