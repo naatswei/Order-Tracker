@@ -63,7 +63,8 @@ export const metadata: Metadata = {
     google: "c8dc2732d1cfb512", // Matched with public/googlec8dc2732d1cfb512.html
     other: {
       me: ["support@otracker.net"],
-      "msvalidate.01": ["YOUR_BING_VERIFICATION_CODE"], // Add your code here from Bing Webmaster Tools
+      "msvalidate.01": ["YOUR_BING_VERIFICATION_CODE"],
+      "google-merchant-verification": ["YOUR_MERCHANT_CENTER_CODE"], // Add your code here from Google Merchant Center
     },
   },
 };
@@ -104,23 +105,43 @@ export default function RootLayout({
                       "https://www.instagram.com/iam.angie_aa"
                     ]
                   },
-                  {
-                    "@type": "Organization",
-                    "@id": "https://www.otracker.net/#organization",
-                    "name": "OTracker",
-                    "url": "https://www.otracker.net",
-                    "logo": "https://www.otracker.net/og-image.png",
-                    "contactPoint": {
-                      "@type": "ContactPoint",
-                      "contactType": "customer service",
-                      "email": "support@otracker.net"
+                    {
+                      "@type": "Organization",
+                      "@id": "https://www.otracker.net/#organization",
+                      "name": "OTracker",
+                      "url": "https://www.otracker.net",
+                      "logo": "https://www.otracker.net/og-image.png",
+                      "contactPoint": {
+                        "@type": "ContactPoint",
+                        "contactType": "customer service",
+                        "email": "support@otracker.net"
+                      },
+                      "founder": { "@id": "https://www.otracker.net/#person" },
+                      "sameAs": [
+                        "https://www.instagram.com/otracker_net",
+                        "https://www.linkedin.com/company/otracker"
+                      ]
                     },
-                    "founder": { "@id": "https://www.otracker.net/#person" }
-                  }
-                ]
-              })
-            }}
-          />
+                    {
+                      "@type": "SoftwareApplication",
+                      "name": "OTracker",
+                      "operatingSystem": "All",
+                      "applicationCategory": "BusinessApplication",
+                      "offers": {
+                        "@type": "Offer",
+                        "price": "0",
+                        "priceCurrency": "GHS"
+                      },
+                      "aggregateRating": {
+                        "@type": "AggregateRating",
+                        "ratingValue": "5",
+                        "reviewCount": "24"
+                      }
+                    }
+                  ]
+                })
+              }}
+            />
           <Providers>
             {children}
           </Providers>
