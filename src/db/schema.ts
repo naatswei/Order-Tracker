@@ -25,6 +25,7 @@ export const staff = pgTable("staff", {
     name: text("name").notNull(),
     role: text("role"),
     email: text("email"),
+    phone: text("phone"),
     department: text("department"),
     reportsToId: text("reports_to_id"), // Self-reference handled in relations
     photoUrl: text("photo_url"),

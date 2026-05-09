@@ -63,7 +63,7 @@ export const metadata: Metadata = {
     google: "c8dc2732d1cfb512", // Matched with public/googlec8dc2732d1cfb512.html
     other: {
       me: ["support@otracker.net"],
-      "msvalidate.01": ["YOUR_BING_VERIFICATION_CODE"],
+      "msvalidate.01": ["7358BA483273947D2982C260D411B51E"],
       "google-merchant-verification": ["YOUR_MERCHANT_CENTER_CODE"], // Add your code here from Google Merchant Center
     },
   },

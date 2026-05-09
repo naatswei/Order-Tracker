@@ -19,7 +19,16 @@ import {
     Network,
     GitGraph,
     ChevronDown,
-    ChevronUp
+    ChevronUp,
+    Mail,
+    Edit2,
+    Save,
+    X,
+    AlertTriangle,
+    Phone,
+    MessageCircle,
+    Search,
+    Filter
 } from "lucide-react";
 import {
   Select,
@@ -28,6 +37,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogFooter,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { updateStaff } from "@/app/actions/operations";
 import { toast } from "sonner";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
@@ -37,11 +55,25 @@ export default function StaffPage() {
     const [staffList, setStaffList] = useState<any[]>([]);
     const [name, setName] = useState("");
     const [role, setRole] = useState("");
+    const [email, setEmail] = useState("");
     const [department, setDepartment] = useState("");
     const [reportsToId, setReportsToId] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [isInitialLoad, setIsInitialLoad] = useState(true);
     const [viewMode, setViewMode] = useState<"grid" | "hierarchy">("grid");
+    
+    // Edit State
+    const [editingStaff, setEditingStaff] = useState<any | null>(null);
+    const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+    
+    // Delete Confirmation State
+    const [staffToDelete, setStaffToDelete] = useState<any | null>(null);
+    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+    
+    // Search & Filter State
+    const [searchQuery, setSearchQuery] = useState("");
+    const [selectedDepartment, setSelectedDepartment] = useState("all");
+    const [phone, setPhone] = useState("");
 
     useEffect(() => {
         let isMounted = true;
@@ -80,6 +112,8 @@ export default function StaffPage() {
             await addStaff({ 
                 name, 
                 role, 
+                email: email || undefined,
+                phone: phone || undefined,
                 department: department || undefined, 
                 reportsToId: reportsToId === "none" ? undefined : reportsToId 
             });
@@ -88,6 +122,8 @@ export default function StaffPage() {
             });
             setName("");
             setRole("");
+            setEmail("");
+            setPhone("");
             setDepartment("");
             setReportsToId("");
             loadStaff();
@@ -99,15 +135,47 @@ export default function StaffPage() {
         }
     }
 
-    async function handleRemoveStaff(id: string) {
-        if (!confirm("Relieve this staff member of their duties?")) return;
+    async function handleUpdateStaff(e: React.FormEvent) {
+        e.preventDefault();
+        if (!editingStaff || !editingStaff.name) return;
 
+        setIsLoading(true);
+        try {
+            await updateStaff(editingStaff.id, {
+                name: editingStaff.name,
+                role: editingStaff.role,
+                email: editingStaff.email,
+                phone: editingStaff.phone,
+                department: editingStaff.department,
+                reportsToId: editingStaff.reportsToId === "none" ? null : editingStaff.reportsToId
+            });
+            toast.success("Profile updated successfully", {
+                style: { background: "#191A43", color: "#fff", border: "none" }
+            });
+            setIsEditDialogOpen(false);
+            setEditingStaff(null);
+            loadStaff();
+        } catch (error: any) {
+            toast.error("Update failed: " + (error.message || "Try again"));
+        } finally {
+            setIsLoading(false);
+        }
+    }
+
+    async function handleRemoveStaff(id: string) {
+        setIsLoading(true);
         try {
             await removeStaff(id);
-            toast.success("Staff profile archived");
+            toast.success("Staff profile archived", {
+                style: { background: "#191A43", color: "#fff", border: "none" }
+            });
+            setIsDeleteDialogOpen(false);
+            setStaffToDelete(null);
             loadStaff();
         } catch (error) {
             toast.error("Failed to remove staff");
+        } finally {
+            setIsLoading(false);
         }
     }
 
@@ -253,6 +321,19 @@ export default function StaffPage() {
         );
     };
 
+    const departments = Array.from(new Set(staffList.map(s => s.department).filter(Boolean)));
+
+    const filteredStaff = staffList.filter(person => {
+        const matchesSearch = 
+            person.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            (person.role || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
+            (person.email || "").toLowerCase().includes(searchQuery.toLowerCase());
+        
+        const matchesDept = selectedDepartment === "all" || person.department === selectedDepartment;
+        
+        return matchesSearch && matchesDept;
+    });
+
     if (isInitialLoad) {
         return <SignatureLoader fullScreen message="Syncing Team Intelligence" />;
     }
@@ -292,17 +373,42 @@ export default function StaffPage() {
                                 </p>
                             </div>
                         </div>
-                        <div className="flex items-center bg-slate-100/50 p-1 rounded-xl shrink-0">
+                <div className="max-w-7xl mx-auto px-4 sm:px-8 py-4 flex flex-col sm:flex-row gap-4">
+                    <div className="relative flex-1 group">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-[#191A43] transition-colors" />
+                        <Input 
+                            placeholder="Search by name, role, or email..." 
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="pl-10 h-10 rounded-xl bg-slate-50 border-slate-100 focus:ring-[#191A43] focus:border-[#191A43] text-xs font-bold w-full shadow-sm"
+                        />
+                    </div>
+                    <div className="flex items-center gap-3">
+                        <div className="relative group min-w-[160px]">
+                            <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 group-focus-within:text-[#191A43] transition-colors z-10" />
+                            <Select value={selectedDepartment} onValueChange={setSelectedDepartment}>
+                                <SelectTrigger className="pl-9 h-10 rounded-xl bg-slate-50 border-slate-100 focus:ring-[#191A43] focus:border-[#191A43] text-xs font-bold shadow-sm">
+                                    <SelectValue placeholder="All Departments" />
+                                </SelectTrigger>
+                                <SelectContent className="rounded-xl border-slate-100 shadow-2xl">
+                                    <SelectItem value="all" className="text-xs font-bold">All Departments</SelectItem>
+                                    {departments.map((dept: any) => (
+                                        <SelectItem key={dept} value={dept} className="text-xs font-bold">{dept}</SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div className="flex items-center bg-slate-100/50 p-1 rounded-xl shrink-0 h-10 border border-slate-100">
                             <button 
                                 onClick={() => setViewMode("grid")}
-                                className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-[9px] sm:text-[10px] font-black uppercase tracking-wider transition-all ${viewMode === "grid" ? "bg-white text-[#191A43] shadow-md" : "text-slate-400 hover:text-slate-600"}`}
+                                className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 rounded-lg text-[9px] sm:text-[10px] font-black uppercase tracking-wider transition-all h-full ${viewMode === "grid" ? "bg-white text-[#191A43] shadow-md" : "text-slate-400 hover:text-slate-600"}`}
                             >
                                 <Users className="w-3.5 h-3.5 shrink-0" />
                                 <span className="hidden sm:inline">Grid</span>
                             </button>
                             <button 
                                 onClick={() => setViewMode("hierarchy")}
-                                className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-[9px] sm:text-[10px] font-black uppercase tracking-wider transition-all ${viewMode === "hierarchy" ? "bg-white text-[#191A43] shadow-md" : "text-slate-400 hover:text-slate-600"}`}
+                                className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 rounded-lg text-[9px] sm:text-[10px] font-black uppercase tracking-wider transition-all h-full ${viewMode === "hierarchy" ? "bg-white text-[#191A43] shadow-md" : "text-slate-400 hover:text-slate-600"}`}
                             >
                                 <GitGraph className="w-3.5 h-3.5 shrink-0" />
                                 <span className="hidden sm:inline">Hierarchy</span>
@@ -336,12 +442,22 @@ export default function StaffPage() {
                                         />
                                     </div>
                                     <div className="space-y-2">
+                                        <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Email Address</label>
+                                        <Input 
+                                            placeholder="e.g. kofi@hubtel.com" 
+                                            type="email"
+                                            value={email} 
+                                            onChange={(e) => setEmail(e.target.value)}
+                                            className="h-10 rounded-xl bg-slate-50 border-slate-100 focus:ring-[#191A43] focus:border-[#191A43] text-sm font-bold"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
                                         <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Core Role</label>
                                         <Input 
                                             placeholder="e.g. Senior Tailor" 
                                             value={role} 
                                             onChange={(e) => setRole(e.target.value)}
-                                            className="h-12 rounded-xl bg-slate-50 border-slate-100 focus:ring-[#191A43] focus:border-[#191A43] text-sm font-bold"
+                                            className="h-10 rounded-xl bg-slate-50 border-slate-100 focus:ring-[#191A43] focus:border-[#191A43] text-sm font-bold"
                                         />
                                     </div>
                                     <div className="space-y-2">
@@ -350,7 +466,16 @@ export default function StaffPage() {
                                             placeholder="e.g. Couture" 
                                             value={department} 
                                             onChange={(e) => setDepartment(e.target.value)}
-                                            className="h-12 rounded-xl bg-slate-50 border-slate-100 focus:ring-[#191A43] focus:border-[#191A43] text-sm font-bold"
+                                            className="h-10 rounded-xl bg-slate-50 border-slate-100 focus:ring-[#191A43] focus:border-[#191A43] text-sm font-bold"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Phone Number</label>
+                                        <Input 
+                                            placeholder="e.g. 0541234567" 
+                                            value={phone} 
+                                            onChange={(e) => setPhone(e.target.value)}
+                                            className="h-10 rounded-xl bg-slate-50 border-slate-100 focus:ring-[#191A43] focus:border-[#191A43] text-sm font-bold"
                                         />
                                     </div>
                                     <div className="space-y-2">
@@ -398,7 +523,7 @@ export default function StaffPage() {
                     {viewMode === "grid" ? (
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                             <AnimatePresence>
-                                {staffList.map((person, index) => (
+                                {filteredStaff.map((person, index) => (
                                     <motion.div
                                         key={person.id}
                                         initial={{ opacity: 0, y: 20 }}
@@ -420,19 +545,62 @@ export default function StaffPage() {
                                                                 <span className="px-3 py-1 bg-[#191A43]/5 rounded-full text-[10px] font-black text-[#191A43] uppercase tracking-wider">{person.department}</span>
                                                             )}
                                                         </div>
+                                                        <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 pt-1.5 px-2">
+                                                            {person.email && (
+                                                                <div className="flex items-center gap-1.5 min-w-0">
+                                                                    <Mail className="w-2.5 h-2.5 text-slate-300" />
+                                                                    <span className="text-[9px] text-slate-400 font-bold truncate">{person.email}</span>
+                                                                </div>
+                                                            )}
+                                                            {person.phone && (
+                                                                <div className="flex items-center gap-1.5 min-w-0">
+                                                                    <Phone className="w-2.5 h-2.5 text-slate-300" />
+                                                                    <span className="text-[9px] text-slate-400 font-bold truncate">{person.phone}</span>
+                                                                </div>
+                                                            )}
+                                                        </div>
                                                         {person.reportsToId && (
-                                                            <div className="flex items-center justify-center gap-1.5 pt-2">
-                                                                <Network className="w-3 h-3 text-slate-300" />
-                                                                <span className="text-[10px] text-slate-400 font-bold">Reports to {staffList.find(s => s.id === person.reportsToId)?.name}</span>
+                                                            <div className="flex items-center justify-center gap-1.5 pt-1">
+                                                                <Network className="w-2.5 h-2.5 text-slate-200" />
+                                                                <span className="text-[9px] text-slate-400 font-bold">Reports to {staffList.find(s => s.id === person.reportsToId)?.name}</span>
                                                             </div>
                                                         )}
                                                     </div>
+                                                    
+                                                    {/* Communication Quick Actions */}
+                                                    {person.phone && (
+                                                        <div className="flex items-center gap-2 w-full pt-1">
+                                                            <a href={`tel:${person.phone}`} className="flex-1 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center gap-2 hover:bg-emerald-100 transition-colors border border-emerald-100">
+                                                                <Phone className="w-3 h-3" />
+                                                                <span className="text-[9px] font-black uppercase tracking-widest">Call</span>
+                                                            </a>
+                                                            <a href={`https://wa.me/${person.phone.replace(/\s+/g, '')}`} target="_blank" rel="noopener noreferrer" className="flex-1 h-8 rounded-lg bg-green-50 text-green-600 flex items-center justify-center gap-2 hover:bg-green-100 transition-colors border border-green-100">
+                                                                <MessageCircle className="w-3 h-3" />
+                                                                <span className="text-[9px] font-black uppercase tracking-widest">WhatsApp</span>
+                                                            </a>
+                                                        </div>
+                                                    )}
 
                                                     <div className="pt-4 w-full flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-all transform translate-y-2 group-hover:translate-y-0">
                                                         <Button 
                                                             variant="ghost" 
                                                             size="sm" 
-                                                            onClick={() => handleRemoveStaff(person.id)}
+                                                            onClick={() => {
+                                                                setEditingStaff({ ...person, reportsToId: person.reportsToId || "none" });
+                                                                setIsEditDialogOpen(true);
+                                                            }}
+                                                            className="text-slate-400 hover:text-[#191A43] hover:bg-slate-50 rounded-xl px-4 font-bold text-[10px] uppercase tracking-wider"
+                                                        >
+                                                            <Edit2 className="w-3.5 h-3.5 mr-2" />
+                                                            Edit
+                                                        </Button>
+                                                        <Button 
+                                                            variant="ghost" 
+                                                            size="sm" 
+                                                            onClick={() => {
+                                                                setStaffToDelete(person);
+                                                                setIsDeleteDialogOpen(true);
+                                                            }}
                                                             className="text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl px-4 font-bold text-[10px] uppercase tracking-wider"
                                                         >
                                                             <Trash2 className="w-3.5 h-3.5 mr-2" />
@@ -470,6 +638,141 @@ export default function StaffPage() {
                     )}
                 </div>
             </div>
+
+            {/* Edit Staff Dialog */}
+            <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+                <DialogContent className="max-w-lg rounded-[1.5rem] border-white/50 bg-white/90 backdrop-blur-xl shadow-2xl p-0 overflow-hidden">
+                    <DialogHeader className="p-6 pb-0">
+                        <div className="flex items-center gap-3 mb-2">
+                            <div className="w-10 h-10 rounded-xl bg-[#191A43] flex items-center justify-center shadow-lg shadow-[#191A43]/20">
+                                <Edit2 className="w-5 h-5 text-white" />
+                            </div>
+                            <div>
+                                <DialogTitle className="text-sm font-black text-slate-800 uppercase tracking-widest leading-none mb-1">Edit Profile</DialogTitle>
+                                <p className="text-[10px] text-slate-400 font-bold leading-none uppercase tracking-tighter">Modify personnel record</p>
+                            </div>
+                        </div>
+                    </DialogHeader>
+
+                    {editingStaff && (
+                        <form onSubmit={handleUpdateStaff} className="p-6 pt-8 space-y-6">
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Full Name</Label>
+                                    <Input 
+                                        value={editingStaff.name} 
+                                        onChange={(e) => setEditingStaff({...editingStaff, name: e.target.value})}
+                                        className="h-10 rounded-xl bg-slate-50 border-slate-100 font-bold"
+                                        required
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Email</Label>
+                                    <Input 
+                                        type="email"
+                                        value={editingStaff.email || ""} 
+                                        onChange={(e) => setEditingStaff({...editingStaff, email: e.target.value})}
+                                        className="h-10 rounded-xl bg-slate-50 border-slate-100 font-bold"
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Role</Label>
+                                    <Input 
+                                        value={editingStaff.role || ""} 
+                                        onChange={(e) => setEditingStaff({...editingStaff, role: e.target.value})}
+                                        className="h-10 rounded-xl bg-slate-50 border-slate-100 font-bold"
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Phone</Label>
+                                    <Input 
+                                        value={editingStaff.phone || ""} 
+                                        onChange={(e) => setEditingStaff({...editingStaff, phone: e.target.value})}
+                                        className="h-10 rounded-xl bg-slate-50 border-slate-100 font-bold"
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Department</Label>
+                                    <Input 
+                                        value={editingStaff.department || ""} 
+                                        onChange={(e) => setEditingStaff({...editingStaff, department: e.target.value})}
+                                        className="h-10 rounded-xl bg-slate-50 border-slate-100 font-bold"
+                                    />
+                                </div>
+                                <div className="col-span-2 space-y-2">
+                                    <Label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Reports To</Label>
+                                    <Select 
+                                        value={editingStaff.reportsToId || "none"} 
+                                        onValueChange={(val) => setEditingStaff({...editingStaff, reportsToId: val})}
+                                    >
+                                        <SelectTrigger className="h-10 rounded-xl bg-slate-50 border-slate-100 font-bold">
+                                            <SelectValue placeholder="Select Manager" />
+                                        </SelectTrigger>
+                                        <SelectContent className="rounded-xl">
+                                            <SelectItem value="none" className="text-xs font-bold">No Manager (Lead)</SelectItem>
+                                            {staffList.filter(s => s.id !== editingStaff.id).map((s) => (
+                                                <SelectItem key={s.id} value={s.id} className="text-xs font-bold">{s.name}</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            </div>
+
+                            <DialogFooter className="pt-4">
+                                <Button 
+                                    type="button" 
+                                    variant="ghost" 
+                                    onClick={() => setIsEditDialogOpen(false)}
+                                    className="rounded-xl font-bold text-[10px] uppercase tracking-widest"
+                                >
+                                    Cancel
+                                </Button>
+                                <Button 
+                                    type="submit" 
+                                    disabled={isLoading}
+                                    className="bg-[#191A43] hover:bg-[#191A43]/90 text-white rounded-xl px-6 font-bold text-[10px] uppercase tracking-widest"
+                                >
+                                    {isLoading ? "Saving..." : "Save Changes"}
+                                </Button>
+                            </DialogFooter>
+                        </form>
+                    )}
+                </DialogContent>
+            </Dialog>
+
+            {/* Delete Confirmation Dialog */}
+            <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+                <DialogContent className="max-w-md rounded-[1.5rem] border-white/50 bg-white/90 backdrop-blur-xl shadow-2xl p-6 text-center">
+                    <div className="flex flex-col items-center gap-4">
+                        <div className="w-16 h-16 rounded-3xl bg-red-50 flex items-center justify-center">
+                            <AlertTriangle className="w-8 h-8 text-[#CE0003]" />
+                        </div>
+                        <div>
+                            <DialogTitle className="text-base font-black text-slate-800 uppercase tracking-widest mb-2">Offboard Staff?</DialogTitle>
+                            <p className="text-xs text-slate-400 font-medium leading-relaxed">
+                                Are you sure you want to relieve <span className="font-black text-slate-600">{staffToDelete?.name}</span> of their duties? This action will archive their profile.
+                            </p>
+                        </div>
+                    </div>
+                    <div className="flex items-center justify-center gap-3 mt-8">
+                        <Button 
+                            variant="ghost" 
+                            onClick={() => setIsDeleteDialogOpen(false)}
+                            className="flex-1 rounded-xl font-bold text-[10px] uppercase tracking-widest h-11"
+                        >
+                            Keep Member
+                        </Button>
+                        <Button 
+                            variant="destructive" 
+                            onClick={() => staffToDelete && handleRemoveStaff(staffToDelete.id)}
+                            disabled={isLoading}
+                            className="flex-1 bg-[#CE0003] hover:bg-red-700 text-white rounded-xl font-bold text-[10px] uppercase tracking-widest h-11 shadow-lg shadow-red-500/20"
+                        >
+                            {isLoading ? "Archiving..." : "Yes, Offboard"}
+                        </Button>
+                    </div>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }

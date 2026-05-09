@@ -9,7 +9,7 @@ import { nanoid } from "nanoid";
 
 // --- Staff Management ---
 
-export async function addStaff(data: { name: string, role?: string, email?: string, department?: string, reportsToId?: string }) {
+export async function addStaff(data: { name: string, role?: string, email?: string, phone?: string, department?: string, reportsToId?: string }) {
     const { userId, orgId } = await auth();
     if (!userId || !orgId) throw new Error("Unauthorized");
 
@@ -18,6 +18,7 @@ export async function addStaff(data: { name: string, role?: string, email?: stri
         name: data.name,
         role: data.role || null,
         email: data.email || null,
+        phone: data.phone || null,
         department: data.department || null,
         reportsToId: data.reportsToId || null,
         clerkOrgId: orgId,
@@ -27,7 +28,7 @@ export async function addStaff(data: { name: string, role?: string, email?: stri
     return { success: true };
 }
 
-export async function updateStaff(id: string, data: Partial<{ name: string, role: string, email: string, department: string, reportsToId: string }>) {
+export async function updateStaff(id: string, data: Partial<{ name: string, role: string, email: string, phone: string, department: string, reportsToId: string }>) {
     const { orgId } = await auth();
     if (!orgId) throw new Error("Unauthorized");
 

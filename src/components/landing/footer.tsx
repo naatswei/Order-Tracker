@@ -15,9 +15,11 @@ export function LandingFooter() {
             <div className="max-w-7xl mx-auto px-6">
                 <div className="flex flex-col md:flex-row justify-between items-center gap-8">
 
-                    <div className="flex items-center gap-8 text-sm font-medium text-slate-500">
+                    <div className="flex flex-wrap items-center justify-center md:justify-start gap-x-8 gap-y-4 text-sm font-medium text-slate-500">
                         <Link href="/terms" className="hover:text-[#191A43] transition-colors">Terms</Link>
                         <Link href="/privacy" className="hover:text-[#191A43] transition-colors">Privacy</Link>
+                        <Link href="/return-policy" className="hover:text-[#191A43] transition-colors">Returns</Link>
+                        <Link href="/shipping-policy" className="hover:text-[#191A43] transition-colors">Shipping</Link>
                     </div>
 
                     <div className="text-sm text-slate-400">
