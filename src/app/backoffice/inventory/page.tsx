@@ -210,24 +210,47 @@ export default function InventoryPage() {
                                             className="h-11 rounded-xl bg-slate-50 border-slate-100 font-bold"
                                         />
                                     </div>
-                                    <div className="space-y-2">
-                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">SKU / ID</label>
-                                        <Input 
-                                            placeholder="Optional"
-                                            value={newItem.sku}
-                                            onChange={e => setNewItem({...newItem, sku: e.target.value})}
-                                            className="h-11 rounded-xl bg-slate-50 border-slate-100 font-bold"
-                                        />
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Initial Qty</label>
+                                            <Input 
+                                                type="number"
+                                                value={newItem.quantity}
+                                                onChange={e => setNewItem({...newItem, quantity: e.target.value})}
+                                                className="h-11 rounded-xl bg-slate-50 border-slate-100 font-bold"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">SKU / ID</label>
+                                            <Input 
+                                                placeholder="Optional"
+                                                value={newItem.sku}
+                                                onChange={e => setNewItem({...newItem, sku: e.target.value})}
+                                                className="h-11 rounded-xl bg-slate-50 border-slate-100 font-bold"
+                                            />
+                                        </div>
                                     </div>
-                                    <div className="space-y-2">
-                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Unit Cost</label>
-                                        <Input 
-                                            type="number"
-                                            placeholder="0.00"
-                                            value={newItem.unitCost}
-                                            onChange={e => setNewItem({...newItem, unitCost: e.target.value})}
-                                            className="h-11 rounded-xl bg-slate-50 border-slate-100 font-bold"
-                                        />
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Unit Cost</label>
+                                            <Input 
+                                                type="number"
+                                                placeholder="0.00"
+                                                value={newItem.unitCost}
+                                                onChange={e => setNewItem({...newItem, unitCost: e.target.value})}
+                                                className="h-11 rounded-xl bg-slate-50 border-slate-100 font-bold"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Selling Price</label>
+                                            <Input 
+                                                type="number"
+                                                placeholder="0.00"
+                                                value={newItem.sellingPrice}
+                                                onChange={e => setNewItem({...newItem, sellingPrice: e.target.value})}
+                                                className="h-11 rounded-xl bg-slate-50 border-slate-100 font-bold"
+                                            />
+                                        </div>
                                     </div>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="space-y-2">
@@ -281,14 +304,14 @@ export default function InventoryPage() {
                     <Card className="border-none shadow-sm bg-white rounded-2xl overflow-hidden group">
                         <CardContent className="p-5 flex items-center gap-4">
                             <div className="w-10 h-10 rounded-xl bg-orange-50 text-orange-600 flex items-center justify-center transition-transform group-hover:scale-110">
-                                <History className="w-5 h-5" />
+                                <TrendingUp className="w-5 h-5" />
                             </div>
                             <div>
                                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider">
-                                    Items Reserved
+                                    Active SKUs
                                 </p>
                                 <p className="text-xl font-black text-[#191A43]">
-                                    {stats.totalReserved}
+                                    {items.length}
                                 </p>
                             </div>
                         </CardContent>
@@ -297,14 +320,14 @@ export default function InventoryPage() {
                     <Card className="border-none shadow-sm bg-white rounded-2xl overflow-hidden group">
                         <CardContent className="p-5 flex items-center gap-4">
                             <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center transition-transform group-hover:scale-110">
-                                <TrendingUp className="w-5 h-5" />
+                                <AlertCircle className="w-5 h-5" />
                             </div>
                             <div>
                                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider">
-                                    {isLogistics ? "Success Rate" : "Active SKUs"}
+                                    Low Stock Alerts
                                 </p>
-                                <p className="text-xl font-black text-[#191A43]">
-                                    {isLogistics ? "98%" : items.length}
+                                <p className="text-xl font-black text-red-500">
+                                    {stats.lowStock}
                                 </p>
                             </div>
                         </CardContent>
@@ -336,8 +359,7 @@ export default function InventoryPage() {
                                 <thead>
                                     <tr className="border-b border-slate-50 bg-slate-50/30">
                                         <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Asset Details</th>
-                                        <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Physical</th>
-                                        <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Available</th>
+                                        <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Stock Level</th>
                                         <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Value/Cost (GHS)</th>
                                         <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Actions</th>
                                     </tr>
@@ -366,17 +388,10 @@ export default function InventoryPage() {
                                                 </td>
                                                 <td className="px-6 py-5 text-center">
                                                     <div className="flex flex-col items-center">
-                                                        <span className="text-sm font-black text-slate-600">
+                                                        <span className={`text-base font-black ${parseFloat(item.quantity) <= parseFloat(item.minStock || "0") ? "text-red-500" : "text-[#191A43]"}`}>
                                                             {item.quantity}
                                                         </span>
                                                         <span className="text-[9px] text-slate-400 font-bold uppercase tracking-tighter">{item.unit || "Units"}</span>
-                                                    </div>
-                                                </td>
-                                                <td className="px-6 py-5 text-center">
-                                                    <div className="flex flex-col items-center">
-                                                        <span className={`text-base font-black ${(parseFloat(item.quantity) - parseFloat(item.reserved || "0")) <= parseFloat(item.minStock || "0") ? "text-red-500" : "text-emerald-500"}`}>
-                                                            {parseFloat(item.quantity) - parseFloat(item.reserved || "0")}
-                                                        </span>
                                                     </div>
                                                 </td>
                                                 <td className="px-6 py-5 text-center">

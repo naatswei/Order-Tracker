@@ -267,20 +267,21 @@ export async function linkOrderToInventory(orderId: string, inventoryItems: { id
                 clerkOrgId: orgId,
             });
 
-            // 2. Increment reserved count in inventory
+            // 2. Subtract from physical quantity immediately (Simpler Logic)
             await tx.update(inventory)
                 .set({ 
-                    reserved: sql`(${inventory.reserved}::float + ${parseFloat(item.quantity)})::text`,
+                    quantity: sql`(${inventory.quantity}::float - ${parseFloat(item.quantity)})::text`,
                     updatedAt: new Date() 
                 })
                 .where(and(eq(inventory.id, item.id), eq(inventory.clerkOrgId, orgId)));
+
             // 3. Log transaction
             await tx.insert(inventoryTransactions).values({
                 id: `tr_${nanoid(10)}`,
                 inventoryId: item.id,
-                type: "adjustment",
+                type: "out",
                 quantity: item.quantity,
-                note: `Reserved for Order #${orderId}`,
+                note: `Direct deduction for Order #${orderId}`,
                 clerkOrgId: orgId,
             });
         }
@@ -294,36 +295,9 @@ export async function consumeReservedStock(orderId: string) {
     const { orgId } = await auth();
     if (!orgId) throw new Error("Unauthorized");
 
-    await db.transaction(async (tx) => {
-        // 1. Find all linked inventory items for this order
-        const links = await tx.select().from(orderInventoryLinks).where(and(eq(orderInventoryLinks.orderId, orderId), eq(orderInventoryLinks.clerkOrgId, orgId)));
-        
-        for (const link of links) {
-            const qty = parseFloat(link.quantity);
-
-            // 2. Decrement physical quantity AND reserved count
-            await tx.update(inventory)
-                .set({ 
-                    quantity: sql`(${inventory.quantity}::float - ${qty})::text`,
-                    reserved: sql`(${inventory.reserved}::float - ${qty})::text`,
-                    updatedAt: new Date()
-                })
-                .where(and(eq(inventory.id, link.inventoryId), eq(inventory.clerkOrgId, orgId)));
-
-            // 3. Log the official consumption
-            await tx.insert(inventoryTransactions).values({
-                id: `tr_${nanoid(10)}`,
-                inventoryId: link.inventoryId,
-                type: "out",
-                quantity: link.quantity,
-                note: `Consumed by fulfilled Order #${orderId}`,
-                clerkOrgId: orgId,
-            });
-        }
-
-        // 4. Optionally clear links? (Maybe keep for history?)
-        // Let's keep them for now but mark them as processed if we add a status field later.
-    });
+        // In the simpler model, stock is already subtracted at the "Link" stage.
+        // So we just leave this here for potential future status updates.
+        return { success: true };
 
     revalidatePath("/backoffice/inventory");
     return { success: true };
@@ -339,10 +313,10 @@ export async function releaseReservedStock(orderId: string) {
         for (const link of links) {
             const qty = parseFloat(link.quantity);
 
-            // Decrement reserved count ONLY (return to Available)
+            // Re-add to quantity (Return to Stock)
             await tx.update(inventory)
                 .set({ 
-                    reserved: sql`(${inventory.reserved}::float - ${qty})::text`,
+                    quantity: sql`(${inventory.quantity}::float + ${qty})::text`,
                     updatedAt: new Date()
                 })
                 .where(and(eq(inventory.id, link.inventoryId), eq(inventory.clerkOrgId, orgId)));
@@ -350,9 +324,9 @@ export async function releaseReservedStock(orderId: string) {
             await tx.insert(inventoryTransactions).values({
                 id: `tr_${nanoid(10)}`,
                 inventoryId: link.inventoryId,
-                type: "adjustment",
+                type: "in",
                 quantity: link.quantity,
-                note: `Released from cancelled Order #${orderId}`,
+                note: `Returned to stock from Order #${orderId}`,
                 clerkOrgId: orgId,
             });
         }
