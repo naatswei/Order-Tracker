@@ -394,25 +394,29 @@ export default function InventoryPage() {
                                                 </td>
                                                 <td className="px-8 py-6 text-center">
                                                     <div className="flex flex-col items-center">
-                                                        <span className={`text-xl font-black ${parseFloat(item.quantity) <= parseFloat(item.minStock || "0") ? "text-red-500" : "text-[#191A43]"}`}>
+                                                        <div className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Stock Level</div>
+                                                        <span className={`text-2xl font-black ${parseFloat(item.quantity) <= parseFloat(item.minStock || "0") ? "text-red-500" : "text-[#191A43]"}`}>
                                                             {item.quantity}
                                                         </span>
-                                                        <span className="text-[10px] text-slate-400 font-black uppercase tracking-widest mt-1 opacity-50">{item.unit || "Units"}</span>
+                                                        <span className="text-[10px] text-slate-400 font-bold uppercase tracking-tighter mt-1 opacity-50">{item.unit || "Units"}</span>
                                                     </div>
                                                 </td>
                                                 <td className="px-8 py-6 text-center">
                                                     <div className="flex flex-col items-center">
-                                                        <span className="text-base font-black text-[#191A43]">
+                                                        <div className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Total Assets</div>
+                                                        <span className="text-lg font-black text-[#191A43]">
                                                             GHS {(Math.max(0, parseFloat(item.quantity)) * parseFloat(item.unitCost || "0")).toLocaleString()}
                                                         </span>
-                                                        <div className="flex items-center gap-2 mt-1">
-                                                            <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest opacity-50">
-                                                                Cost: {item.unitCost || "0"}
-                                                            </span>
-                                                            <span className="text-[10px] text-slate-300">•</span>
-                                                            <span className="text-[10px] text-[#CE0003] font-black uppercase tracking-widest">
-                                                                Sell: {item.sellingPrice || "0"}
-                                                            </span>
+                                                        <div className="flex items-center gap-3 mt-2 pt-2 border-t border-slate-50">
+                                                            <div className="flex flex-col items-center">
+                                                                <span className="text-[8px] text-slate-400 font-black uppercase">Unit Cost</span>
+                                                                <span className="text-[11px] text-slate-600 font-black">GHS {item.unitCost || "0"}</span>
+                                                            </div>
+                                                            <div className="w-px h-4 bg-slate-100" />
+                                                            <div className="flex flex-col items-center">
+                                                                <span className="text-[8px] text-[#CE0003] font-black uppercase">Selling Price</span>
+                                                                <span className="text-[11px] text-[#CE0003] font-black">GHS {item.sellingPrice || "0"}</span>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </td>
