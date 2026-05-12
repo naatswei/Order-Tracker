@@ -146,7 +146,7 @@ export default function InventoryPage() {
         totalReserved: items.reduce((acc, item) => acc + parseFloat(item.reserved || "0"), 0),
         lowStock: items.filter(item => (parseFloat(item.quantity) - parseFloat(item.reserved || "0")) <= parseFloat(item.minStock || "0")).length,
         receivedToday: orders.filter(o => new Date(o.createdAt).toDateString() === new Date().toDateString()).length,
-        totalStockValue: items.reduce((acc, item) => acc + (parseFloat(item.quantity) * parseFloat(item.unitCost || "0")), 0)
+        totalStockValue: items.reduce((acc, item) => acc + (Math.max(0, parseFloat(item.quantity)) * parseFloat(item.unitCost || "0")), 0)
     };
 
     if (isLoading) return <SignatureLoader fullScreen message="Loading Inventory Hub" />;
@@ -405,7 +405,7 @@ export default function InventoryPage() {
                                                 <td className="px-6 py-5 text-center">
                                                     <div className="flex flex-col items-center">
                                                         <span className="text-sm font-black text-[#191A43]">
-                                                            V: {(parseFloat(item.quantity) * parseFloat(item.unitCost || "0")).toLocaleString()}
+                                                            V: {(Math.max(0, parseFloat(item.quantity)) * parseFloat(item.unitCost || "0")).toLocaleString()}
                                                         </span>
                                                         <span className="text-[9px] text-slate-400 font-bold uppercase tracking-tight mt-0.5">
                                                             Unit Cost: {item.unitCost || "0"}
