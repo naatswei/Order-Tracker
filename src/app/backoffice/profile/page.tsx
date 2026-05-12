@@ -25,29 +25,43 @@ const PlanButton = dynamic(() => import("@/components/paystack-button"), {
 
 const plans = [
     {
-        name: "2 weeks",
-        description: "For short-term sales",
-        price: "GHS 199",
-        period: "14 days",
+        name: "Starter",
+        description: "For startups",
+        price: "GHS 149",
+        period: "Monthly",
         features: [
             "Unlimited team members",
-            "Up to 100 orders",
-            "Bulk order updates",
-            "Customer messaging inbox"
+            "Up to 50 orders",
+            "Branded tracking page",
+            "Standard dashboard"
         ],
         buttonText: "Get Started",
     },
     {
-        name: "Month",
-        description: "The Best Seller",
-        price: "GHS 350",
+        name: "Growth",
+        description: "For professional brands",
+        price: "GHS 299",
         period: "Monthly",
         features: [
             "Unlimited team members",
             "Unlimited orders",
-            "Everything in 2 Weeks"
+            "Customer messaging inbox",
+            "Staff tracking"
         ],
         buttonText: "Most Popular",
+    },
+    {
+        name: "Scale",
+        description: "The Empire builder",
+        price: "GHS 599",
+        period: "Monthly",
+        features: [
+            "Unlimited everything",
+            "Multi-branch",
+            "Advanced analytics",
+            "Dedicated support"
+        ],
+        buttonText: "Go Scale",
     },
     {
         name: "Yearly",
@@ -55,10 +69,9 @@ const plans = [
         price: "GHS 1,500",
         period: "Yearly",
         features: [
-            "Unlimited team members",
+            "Everything in Growth",
             "Unlimited orders",
-            "Everything in Month",
-            "Save 64% annually"
+            "Save 58% annually"
         ],
         buttonText: "Get Maximum Value",
     },
@@ -159,8 +172,7 @@ export default function ProfilePage() {
             if (!organization) return
             const now = new Date()
             let expiryDays = 30
-            if (planName === "Free Trial") expiryDays = 7
-            if (planName === "2 weeks") expiryDays = 14
+            if (planName === "Free Trial") expiryDays = 14
             if (planName === "Yearly") expiryDays = 365
 
             const expiryDate = new Date(now.getTime() + expiryDays * 24 * 60 * 60 * 1000).toISOString()
@@ -408,10 +420,10 @@ export default function ProfilePage() {
                                     {plans.map((plan) => (
                                         <Card key={plan.name} className={cn(
                                             "relative flex flex-col border-slate-200 rounded-3xl p-6 shadow-sm flex-1",
-                                            plan.name === "Month" ? "border-slate-300 bg-slate-50/50" : "bg-white"
+                                            plan.name === "Growth" ? "border-slate-300 bg-slate-50/50" : "bg-white"
                                         )}>
                                             <CardHeader className="p-0 space-y-1">
-                                                {plan.name === "Month" && (
+                                                {plan.name === "Growth" && (
                                                     <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#CE0003] text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full shadow-sm whitespace-nowrap">
                                                         Most Popular
                                                     </div>

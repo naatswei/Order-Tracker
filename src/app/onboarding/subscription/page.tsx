@@ -24,46 +24,65 @@ const plans = [
         name: "Free Trial",
         description: "Perfect to get started",
         price: "GHS 0",
-        period: "/7 days",
+        period: "/14 days",
         features: [
             "Unlimited team members",
             "Up to 20 orders",
-            "Bulk order updates",
-            "Customer tracking page",
-            "Standard dashboard"
+            "Branded tracking page",
+            "Standard dashboard",
+            "Email support"
         ],
-        buttonText: "Start Free Trial",
+        buttonText: "Start 14-Day Free Trial",
         buttonVariant: "secondary",
         glowColor: "bg-pink-400/20",
     },
     {
-        name: "2 weeks",
-        description: "For short-term sales",
-        price: "GHS 199",
-        period: "14 days",
+        name: "Starter",
+        description: "For startups & side-hustles",
+        price: "GHS 149",
+        period: "Monthly",
         features: [
             "Unlimited team members",
-            "Up to 100 orders",
-            "Customer messaging inbox",
-            "Everything in Free Trial"
+            "Up to 50 orders",
+            "Branded tracking page",
+            "Standard dashboard",
+            "Email support"
         ],
         buttonText: "Get Started",
         buttonVariant: "secondary",
         glowColor: "bg-blue-400/20",
     },
     {
-        name: "Month",
-        description: "The Best Seller",
-        price: "GHS 350",
+        name: "Growth",
+        description: "For professional brands",
+        price: "GHS 299",
         period: "Monthly",
         features: [
             "Unlimited team members",
             "Unlimited orders",
-            "Everything in 2 Weeks"
+            "Customer messaging inbox",
+            "Staff performance tracking",
+            "Priority support"
         ],
         buttonText: "Most Popular",
         buttonVariant: "orange",
         glowColor: "bg-[#CE0003]/20",
+    },
+    {
+        name: "Scale",
+        description: "The Empire builder",
+        price: "GHS 599",
+        period: "Monthly",
+        features: [
+            "Unlimited team members",
+            "Unlimited orders",
+            "Multi-branch management",
+            "Advanced analytics",
+            "Dedicated account manager"
+        ],
+        buttonText: "Go Scale",
+        buttonVariant: "black",
+        glowColor: "bg-purple-400/20",
     },
     {
         name: "Yearly",
@@ -71,14 +90,14 @@ const plans = [
         price: "GHS 1,500",
         period: "Yearly",
         features: [
-            "Unlimited team members",
-            "Unlimited orders",
-            "Everything in Month",
-            "Save 64% annually"
+            "Everything in Growth",
+            "Unlimited everything",
+            "Save 58% annually",
+            "Best for large teams"
         ],
-        buttonText: "Get Maximum Value",
+        buttonText: "Save with Yearly",
         buttonVariant: "black",
-        glowColor: "bg-purple-400/20",
+        glowColor: "bg-emerald-400/20",
     },
 ]
 
@@ -131,8 +150,7 @@ export default function SubscriptionPage() {
             // Calculate expiry date
             const now = new Date()
             let expiryDays = 30
-            if (planName === "Free Trial") expiryDays = 7
-            if (planName === "2 weeks") expiryDays = 14
+            if (planName === "Free Trial") expiryDays = 14
             if (planName === "Yearly") expiryDays = 365
 
             const expiryDate = new Date(now.getTime() + expiryDays * 24 * 60 * 60 * 1000).toISOString()
@@ -239,7 +257,7 @@ export default function SubscriptionPage() {
                     <div className={cn("grid grid-cols-1 md:grid-cols-2 gap-6 pt-12", hasSubscriptionHistory ? "lg:grid-cols-3 max-w-5xl mx-auto" : "lg:grid-cols-4")}>
                         {displayPlans.map((plan) => (
                             <div key={plan.name} className="relative group">
-                                {plan.name === "Month" && (
+                                {plan.name === "Growth" && (
                                     <div className="absolute -top-12 left-0 right-0 bg-[#161931] h-24 rounded-t-[1.5rem] -z-10 flex justify-center pt-3">
                                         <div className="bg-white text-[#161931] text-[10px] font-bold uppercase tracking-widest px-6 py-1.5 rounded-full h-fit">
                                             Most Popular
@@ -249,7 +267,7 @@ export default function SubscriptionPage() {
                                 <Card
                                     className={cn(
                                         "relative flex flex-col border-0 rounded-[1.5rem] p-8 shadow-sm transition-all duration-300 hover:shadow-xl hover:-translate-y-1 h-full bg-white text-[#101323]",
-                                        plan.name === "Month" && "mt-0"
+                                        plan.name === "Growth" && "mt-0"
                                     )}
                                 >
                                     {plan.name === "Yearly" && (
