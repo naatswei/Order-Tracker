@@ -8,46 +8,49 @@ import { cn } from "@/lib/utils"
 
 const plans = [
     {
-        name: "Free Trial",
-        price: "GHS 0",
-        duration: "/7 days",
-        description: "Perfect to get started",
+        name: "Starter",
+        price: "GHS 149",
+        duration: "Monthly",
+        description: "Perfect for startups",
         features: [
             "Unlimited team members",
-            "Up to 20 orders",
-            "Bulk order updates",
-            "Customer tracking page",
-            "Standard dashboard"
+            "Up to 50 orders",
+            "Branded tracking page",
+            "Standard dashboard",
+            "Email support"
         ],
         cta: "Try For Free",
         popular: false
     },
     {
-        name: "2 weeks",
-        price: "GHS 199",
-        duration: "14 days",
-        description: "For short-term sales",
-        features: [
-            "Unlimited team members",
-            "Up to 100 orders",
-            "Customer messaging inbox",
-            "Everything in Free Trial"
-        ],
-        cta: "Get Started",
-        popular: false
-    },
-    {
-        name: "Month",
-        price: "GHS 350",
+        name: "Growth",
+        price: "GHS 299",
         duration: "Monthly",
-        description: "The Best Seller",
+        description: "For professional brands",
         features: [
             "Unlimited team members",
             "Unlimited orders",
-            "Everything in 2 Weeks"
+            "Customer messaging inbox",
+            "Staff performance tracking",
+            "Priority support"
         ],
-        cta: "Go Standard",
+        cta: "Get Started",
         popular: true
+    },
+    {
+        name: "Scale",
+        price: "GHS 599",
+        duration: "Monthly",
+        description: "The Empire builder",
+        features: [
+            "Unlimited team members",
+            "Unlimited orders",
+            "Multi-branch management",
+            "Advanced analytics",
+            "Dedicated account manager"
+        ],
+        cta: "Go Scale",
+        popular: false
     },
     {
         name: "Yearly",
@@ -55,10 +58,10 @@ const plans = [
         duration: "Yearly",
         description: "Maximum Value",
         features: [
-            "Unlimited team members",
-            "Unlimited orders",
-            "Everything in Month",
-            "Save 64% annually"
+            "Everything in Growth",
+            "Unlimited everything",
+            "Save 58% annually",
+            "Best for large teams"
         ],
         cta: "Go Yearly",
         popular: false
@@ -161,8 +164,9 @@ export function LandingPricing() {
 
                 <div className="mt-20 text-center">
                     <Link href="/sign-up">
-                        <Button className="h-16 px-12 rounded-2xl bg-[#191A43] text-white font-bold text-lg hover:bg-[#101323] shadow-xl hover:shadow-2xl transition-all active:scale-95">
-                            Start Your Free Journey
+                        <Button className="w-full sm:w-auto bg-white text-[#191A43] hover:bg-slate-50 rounded-2xl h-16 md:h-20 px-10 md:px-14 text-lg md:text-xl font-black shadow-[0_20px_40px_rgba(255,255,255,0.1)] transition-all active:scale-95 flex items-center justify-center gap-3 group/btn">
+                            Start Your 14-Day Free Trial
+                            <ArrowRight className="w-6 h-6 group-hover/btn:translate-x-1 transition-transform" />
                         </Button>
                     </Link>
                     <p className="mt-4 text-sm font-medium text-slate-400">

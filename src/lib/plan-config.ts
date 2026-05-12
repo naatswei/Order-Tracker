@@ -1,37 +1,49 @@
 // Central plan configuration with enforceable limits
-export type PlanName = "Free Trial" | "2 weeks" | "Month" | "Yearly"
+export type PlanName = "Free Trial" | "Starter" | "Growth" | "Scale" | "Yearly"
 
 export interface PlanLimits {
-    maxMembers: number     // 0 = solo only, Infinity = unlimited
     maxOrders: number      // Infinity = unlimited
     bulkUpdates: boolean
     messaging: boolean
+    performanceTracking: boolean
+    multiBranch: boolean
 }
 
 export const PLAN_LIMITS: Record<PlanName, PlanLimits> = {
     "Free Trial": {
-        maxMembers: Infinity,
         maxOrders: 20,
         bulkUpdates: true,
         messaging: true,
+        performanceTracking: true,
+        multiBranch: true,
     },
-    "2 weeks": {
-        maxMembers: Infinity,
-        maxOrders: 100,
+    "Starter": {
+        maxOrders: 50,
         bulkUpdates: true,
-        messaging: true,
+        messaging: false,
+        performanceTracking: false,
+        multiBranch: false,
     },
-    "Month": {
-        maxMembers: Infinity,
+    "Growth": {
         maxOrders: Infinity,
         bulkUpdates: true,
         messaging: true,
+        performanceTracking: true,
+        multiBranch: false,
+    },
+    "Scale": {
+        maxOrders: Infinity,
+        bulkUpdates: true,
+        messaging: true,
+        performanceTracking: true,
+        multiBranch: true,
     },
     "Yearly": {
-        maxMembers: Infinity,
         maxOrders: Infinity,
         bulkUpdates: true,
         messaging: true,
+        performanceTracking: true,
+        multiBranch: true,
     },
 }
 

@@ -2,19 +2,20 @@ import { pgTable, text, timestamp, uuid, jsonb } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
 export const orders = pgTable("orders", {
-    id: text("id").primaryKey(), // Using the existing string IDs for parity
+    id: text("id").primaryKey(),
     orderNumber: text("order_number").notNull(),
     customerName: text("customer_name").notNull(),
     customerEmail: text("customer_email"),
     customerPhone: text("customer_phone").notNull(),
-    itemType: text("item_type").notNull(), // formerly garmentType
+    itemType: text("item_type").notNull(),
     pickupDate: text("pickup_date"),
     measurements: text("measurements"),
     metadata: jsonb("metadata").default({}),
     businessType: text("business_type").notNull(),
     currentStatus: text("current_status").notNull(),
-    clerkOrgId: text("clerk_org_id"), // To scope orders to organizations
-    userId: text("user_id"), // To track who created it
+    clerkOrgId: text("clerk_org_id"),
+    branchId: text("branch_id").references(() => branches.id, { onDelete: "set null" }),
+    userId: text("user_id"),
     assignedStaffId: text("assigned_staff_id").references(() => staff.id, { onDelete: "set null" }),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
@@ -27,8 +28,18 @@ export const staff = pgTable("staff", {
     email: text("email"),
     phone: text("phone"),
     department: text("department"),
-    reportsToId: text("reports_to_id"), // Self-reference handled in relations
+    reportsToId: text("reports_to_id"),
     photoUrl: text("photo_url"),
+    clerkUserId: text("clerk_user_id"), // To link a logged-in user to their staff profile
+    clerkOrgId: text("clerk_org_id").notNull(),
+    branchId: text("branch_id").references(() => branches.id, { onDelete: "set null" }),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const branches = pgTable("branches", {
+    id: text("id").primaryKey(),
+    name: text("name").notNull(),
+    location: text("location"),
     clerkOrgId: text("clerk_org_id").notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
 });
@@ -53,6 +64,7 @@ export const inventory = pgTable("inventory", {
     unitCost: text("unit_cost").default("0"),
     sellingPrice: text("selling_price").default("0"),
     clerkOrgId: text("clerk_org_id").notNull(),
+    branchId: text("branch_id").references(() => branches.id, { onDelete: "set null" }),
     businessType: text("business_type").notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
@@ -131,6 +143,7 @@ export const statusHistory = pgTable("status_history", {
     status: text("status").notNull(),
     location: text("location"),
     message: text("message"),
+    staffId: text("staff_id").references(() => staff.id, { onDelete: "set null" }),
     timestamp: timestamp("timestamp").defaultNow().notNull(),
 });
 
@@ -138,6 +151,10 @@ export const statusHistoryRelations = relations(statusHistory, ({ one }) => ({
     order: one(orders, {
         fields: [statusHistory.orderId],
         references: [orders.id],
+    }),
+    performer: one(staff, {
+        fields: [statusHistory.staffId],
+        references: [staff.id],
     }),
 }));
 

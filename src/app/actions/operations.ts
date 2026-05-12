@@ -7,6 +7,15 @@ import { revalidatePath } from "next/cache";
 import { auth } from "@clerk/nextjs/server";
 import { nanoid } from "nanoid";
 
+// --- Helpers ---
+
+async function getCurrentStaffId(orgId: string, userId: string) {
+    const s = await db.query.staff.findFirst({
+        where: and(eq(staff.clerkOrgId, orgId), eq(staff.clerkUserId, userId))
+    });
+    return s?.id || null;
+}
+
 // --- Staff Management ---
 
 export async function addStaff(data: { name: string, role?: string, email?: string, phone?: string, department?: string, reportsToId?: string }) {
@@ -120,8 +129,10 @@ export async function assignOrder(orderId: string, staffId: string | null) {
 }
 
 export async function updateOrderStage(orderId: string, stageName: string, message?: string) {
-    const { orgId } = await auth();
-    if (!orgId) throw new Error("Unauthorized");
+    const { userId, orgId } = await auth();
+    if (!userId || !orgId) throw new Error("Unauthorized");
+
+    const staffId = await getCurrentStaffId(orgId, userId);
 
     await db.transaction(async (tx) => {
         // Update order current status
@@ -133,13 +144,14 @@ export async function updateOrderStage(orderId: string, stageName: string, messa
             })
             .where(and(eq(orders.id, orderId), eq(orders.clerkOrgId, orgId)));
 
-        // Add to history
+        // Add to history with staff attribution
         await tx.insert(statusHistory).values({
             id: `sh_${nanoid(10)}`,
             orderId: orderId,
             status: stageName,
             location: "Production Line",
             message: message || `Moved to ${stageName}`,
+            staffId: staffId, // Automatically attribute to the performing staff member
         });
     });
 

@@ -107,7 +107,7 @@ export default function InboxPage() {
                         <Lock className="w-8 h-8 text-slate-400" />
                     </div>
                     <h2 className="text-xl font-bold text-slate-900">Messaging Unavailable</h2>
-                    <p className="text-slate-500 text-sm">Customer messaging is available on the <strong>2 Weeks</strong> plan and above. Upgrade to unlock this feature.</p>
+                    <p className="text-slate-500 text-sm">Customer messaging is available on the <strong>Growth</strong> plan and above. Upgrade to unlock this feature.</p>
                     <Link href="/backoffice/profile?tab=subscription">
                         <Button className="bg-[#191A43] hover:bg-[#191A43]/90 text-white font-bold rounded-xl px-8 h-11">
                             Upgrade Plan
