@@ -386,9 +386,8 @@ export default function InventoryPage() {
                                                                 <Badge variant="outline" className="text-[9px] font-bold uppercase tracking-wider bg-slate-50 border-slate-100 text-slate-400 px-2 py-0">
                                                                     {item.category || "General"}
                                                                 </Badge>
-                                                                <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">{item.unit || "Units"}</span>
-                                                                <span className="text-[10px] text-slate-200 font-bold">|</span>
-                                                                <span className="text-[10px] text-[#CE0003] font-black uppercase tracking-widest">Sell: GHS {item.sellingPrice || "0"}</span>
+                                                                <span className="text-[10px] text-slate-300 font-bold uppercase tracking-widest">{item.sku || "No SKU"}</span>
+                                                                <span className="text-[10px] text-slate-300 font-bold uppercase tracking-widest">• {item.unit || "Units"}</span>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -406,9 +405,15 @@ export default function InventoryPage() {
                                                         <span className="text-base font-black text-[#191A43]">
                                                             GHS {(Math.max(0, parseFloat(item.quantity)) * parseFloat(item.unitCost || "0")).toLocaleString()}
                                                         </span>
-                                                        <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1 opacity-50">
-                                                            Cost: {item.unitCost || "0"}
-                                                        </span>
+                                                        <div className="flex items-center gap-2 mt-1">
+                                                            <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest opacity-50">
+                                                                Cost: {item.unitCost || "0"}
+                                                            </span>
+                                                            <span className="text-[10px] text-slate-300">•</span>
+                                                            <span className="text-[10px] text-[#CE0003] font-black uppercase tracking-widest">
+                                                                Sell: {item.sellingPrice || "0"}
+                                                            </span>
+                                                        </div>
                                                     </div>
                                                 </td>
                                                 <td className="px-8 py-6 text-right">
