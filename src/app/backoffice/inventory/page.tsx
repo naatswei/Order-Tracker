@@ -386,7 +386,9 @@ export default function InventoryPage() {
                                                                 <Badge variant="outline" className="text-[9px] font-bold uppercase tracking-wider bg-slate-50 border-slate-100 text-slate-400 px-2 py-0">
                                                                     {item.category || "General"}
                                                                 </Badge>
-                                                                <span className="text-[10px] text-slate-300 font-bold uppercase">{item.sku || "No SKU"}</span>
+                                                                <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">{item.unit || "Units"}</span>
+                                                                <span className="text-[10px] text-slate-200 font-bold">|</span>
+                                                                <span className="text-[10px] text-[#CE0003] font-black uppercase tracking-widest">Sell: GHS {item.sellingPrice || "0"}</span>
                                                             </div>
                                                         </div>
                                                     </div>
