@@ -339,53 +339,52 @@ export default function StaffPage() {
     }
 
     return (
-    return (
-        <div className="min-h-screen bg-[#FBFBFF] pb-20">
-            {/* Header Area */}
-            <div className="bg-white/80 border-b border-slate-100 sticky top-0 z-50 backdrop-blur-xl">
-                <div className="max-w-[1600px] mx-auto px-6 sm:px-12 py-5 flex flex-col lg:flex-row items-center justify-between gap-6">
-                    <div className="flex items-center gap-6">
+        <div className="min-h-screen bg-[#F8FAFC] pb-20">
+            {/* Premium Header Area */}
+            <div className="bg-[#191A43] border-b border-white/5 sticky top-0 z-50">
+                <div className="max-w-[1600px] mx-auto px-6 sm:px-12 py-6 flex flex-col lg:flex-row items-center justify-between gap-6">
+                    <div className="flex items-center gap-8">
                         <Link href="/backoffice">
-                            <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl border border-slate-100 bg-white hover:bg-slate-50 shadow-sm transition-all text-slate-400 hover:text-[#191A43]">
-                                <ArrowLeft className="w-5 h-5" />
+                            <Button variant="ghost" size="icon" className="h-12 w-12 rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 shadow-2xl transition-all text-white/50 hover:text-white">
+                                <ArrowLeft className="w-6 h-6" />
                             </Button>
                         </Link>
-                        <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 rounded-2xl bg-[#191A43] flex items-center justify-center shadow-xl shadow-[#191A43]/20">
-                                <Users className="w-6 h-6 text-white" />
+                        <div className="flex items-center gap-5">
+                            <div className="w-14 h-14 rounded-3xl bg-white/10 flex items-center justify-center shadow-inner">
+                                <Users className="w-7 h-7 text-white" />
                             </div>
                             <div>
-                                <h1 className="text-xl font-black text-slate-800 uppercase tracking-widest leading-none">Team Hub</h1>
-                                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-1">Personnel & Hierarchy</p>
+                                <h1 className="text-2xl font-black text-white uppercase tracking-[0.2em]">Team Hub</h1>
+                                <p className="text-[10px] text-white/40 font-bold uppercase tracking-widest mt-1">Global Personnel Management</p>
                             </div>
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-8">
-                        <div className="flex items-center gap-10 pr-8 border-r border-slate-100">
+                    <div className="flex items-center gap-10">
+                        <div className="flex items-center gap-12 pr-10 border-r border-white/10">
                             <div>
-                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 opacity-50">Total Force</p>
-                                <p className="text-2xl font-black text-[#191A43]">{staffList.length}</p>
+                                <p className="text-[10px] font-black text-white/30 uppercase tracking-widest mb-1">Total Force</p>
+                                <p className="text-3xl font-black text-white tracking-tighter">{staffList.length}</p>
                             </div>
                             <div>
-                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 opacity-50">Departments</p>
-                                <p className="text-2xl font-black text-[#C5A059]">
+                                <p className="text-[10px] font-black text-white/30 uppercase tracking-widest mb-1">Departments</p>
+                                <p className="text-3xl font-black text-[#C5A059] tracking-tighter">
                                     {new Set(staffList.map(s => s.department).filter(Boolean)).size}
                                 </p>
                             </div>
                         </div>
 
-                        <div className="bg-slate-100/50 p-1.5 rounded-2xl flex items-center gap-1 border border-slate-100/50">
+                        <div className="bg-white/5 p-1.5 rounded-[20px] flex items-center gap-1 border border-white/10 shadow-2xl">
                             <button 
                                 onClick={() => setViewMode("grid")}
-                                className={`px-5 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${viewMode === "grid" ? "bg-white text-[#191A43] shadow-lg" : "text-slate-400 hover:text-slate-600"}`}
+                                className={`px-8 py-3 rounded-[15px] text-[11px] font-black uppercase tracking-[0.15em] transition-all duration-300 ${viewMode === "grid" ? "bg-white text-[#191A43] shadow-xl scale-105" : "text-white/40 hover:text-white/70"}`}
                             >
                                 <Users className="w-4 h-4 inline-block mr-2" />
-                                Grid
+                                Grid View
                             </button>
                             <button 
                                 onClick={() => setViewMode("hierarchy")}
-                                className={`px-5 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${viewMode === "hierarchy" ? "bg-white text-[#191A43] shadow-lg" : "text-slate-400 hover:text-slate-600"}`}
+                                className={`px-8 py-3 rounded-[15px] text-[11px] font-black uppercase tracking-[0.15em] transition-all duration-300 ${viewMode === "hierarchy" ? "bg-white text-[#191A43] shadow-xl scale-105" : "text-white/40 hover:text-white/70"}`}
                             >
                                 <GitGraph className="w-4 h-4 inline-block mr-2" />
                                 Hierarchy
@@ -394,27 +393,27 @@ export default function StaffPage() {
                     </div>
                 </div>
 
-                {/* Search & Filter Bar */}
-                <div className="bg-white/50 border-t border-slate-50">
-                    <div className="max-w-[1600px] mx-auto px-6 sm:px-12 py-4 flex flex-col md:flex-row gap-4">
+                {/* Search & Filter Bar - Glassmorphism */}
+                <div className="bg-white/[0.02] border-t border-white/5 backdrop-blur-3xl">
+                    <div className="max-w-[1600px] mx-auto px-6 sm:px-12 py-5 flex flex-col md:flex-row gap-6">
                         <div className="relative flex-1 group">
-                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                            <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-white/20" />
                             <Input 
                                 placeholder="Search by name, role, or email..." 
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className="h-12 pl-12 pr-4 rounded-2xl border-slate-100 bg-white/50 focus:bg-white focus:ring-2 focus:ring-[#191A43]/5 transition-all text-sm font-semibold"
+                                className="h-14 pl-14 pr-6 rounded-2xl border-white/5 bg-white/[0.03] focus:bg-white/[0.08] focus:ring-0 text-white placeholder:text-white/20 text-sm font-bold transition-all shadow-inner"
                             />
                         </div>
-                        <div className="relative min-w-[200px]">
-                            <Filter className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 z-10" />
+                        <div className="relative min-w-[240px]">
+                            <Filter className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20 z-10" />
                             <Select value={selectedDepartment} onValueChange={setSelectedDepartment}>
-                                <SelectTrigger className="pl-12 h-12 rounded-2xl border-slate-100 bg-white/50 text-sm font-bold">
+                                <SelectTrigger className="pl-14 h-14 rounded-2xl border-white/5 bg-white/[0.03] text-white text-sm font-bold shadow-inner">
                                     <SelectValue placeholder="All Departments" />
                                 </SelectTrigger>
-                                <SelectContent className="rounded-2xl border-slate-100 shadow-2xl">
+                                <SelectContent className="rounded-2xl border-slate-100 shadow-2xl bg-white">
                                     <SelectItem value="all" className="text-sm font-bold">All Departments</SelectItem>
-                                    {departments.map((dept: any) => (
+                                    {Array.from(new Set(staffList.map(s => s.department).filter(Boolean))).map((dept: any) => (
                                         <SelectItem key={dept} value={dept} className="text-sm font-bold">{dept}</SelectItem>
                                     ))}
                                 </SelectContent>
@@ -424,7 +423,7 @@ export default function StaffPage() {
                 </div>
             </div>
 
-            <div className="max-w-[1600px] mx-auto px-6 sm:px-12 py-12 space-y-12">
+            <div className="max-w-[1600px] mx-auto px-6 sm:px-12 py-16 space-y-16">
                 {/* Enrollment Form */}
                 <div className="relative group">
                     <div className="absolute inset-0 bg-[#191A43]/5 rounded-[2.5rem] blur-2xl group-hover:bg-[#191A43]/10 transition-all" />
