@@ -405,12 +405,12 @@ export default function InventoryPage() {
                                                 </td>
                                                 <td className="px-4 py-6 text-center">
                                                     <span className="text-sm font-bold text-slate-600">
-                                                        {item.unitCost || "0"}
+                                                        GHS {item.unitCost || "0"}
                                                     </span>
                                                 </td>
                                                 <td className="px-4 py-6 text-center">
                                                     <span className="text-base font-black text-[#191A43]">
-                                                        {(parseFloat(item.totalEntered || "0") * parseFloat(item.unitCost || "0")).toLocaleString()}
+                                                        GHS {(parseFloat(item.totalEntered || "0") * parseFloat(item.unitCost || "0")).toLocaleString()}
                                                     </span>
                                                 </td>
                                                 <td className="px-4 py-6 text-center">
