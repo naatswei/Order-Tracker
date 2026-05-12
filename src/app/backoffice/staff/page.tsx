@@ -339,90 +339,92 @@ export default function StaffPage() {
     }
 
     return (
-        <div className="min-h-screen bg-[#F8FAFC]">
-            {/* Header Strip */}
-            <div className="bg-white border-b border-slate-100 sticky top-0 z-30 backdrop-blur-md bg-white/80">
-                <div className="max-w-7xl mx-auto px-4 sm:px-8 py-2 sm:py-0 sm:h-16 flex items-center justify-between gap-3">
-                    <div className="flex items-center gap-2 sm:gap-4 overflow-hidden">
-                        <Link href="/backoffice" className="shrink-0">
-                            <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl border border-slate-100 bg-white hover:bg-slate-50 shadow-sm transition-all text-slate-400 hover:text-[#191A43]" title="Back to Dashboard">
+    return (
+        <div className="min-h-screen bg-[#FBFBFF] pb-20">
+            {/* Header Area */}
+            <div className="bg-white/80 border-b border-slate-100 sticky top-0 z-50 backdrop-blur-xl">
+                <div className="max-w-[1600px] mx-auto px-6 sm:px-12 py-5 flex flex-col lg:flex-row items-center justify-between gap-6">
+                    <div className="flex items-center gap-6">
+                        <Link href="/backoffice">
+                            <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl border border-slate-100 bg-white hover:bg-slate-50 shadow-sm transition-all text-slate-400 hover:text-[#191A43]">
                                 <ArrowLeft className="w-5 h-5" />
                             </Button>
                         </Link>
-                        <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
-                            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-[#191A43] flex items-center justify-center shadow-lg shadow-[#191A43]/20 shrink-0">
-                                <Users className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                        <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 rounded-2xl bg-[#191A43] flex items-center justify-center shadow-xl shadow-[#191A43]/20">
+                                <Users className="w-6 h-6 text-white" />
                             </div>
-                            <div className="min-w-0">
-                                <h1 className="text-xs sm:text-sm font-black text-slate-800 uppercase tracking-widest leading-none mb-0.5 sm:mb-1 truncate">Team Hub</h1>
-                                <p className="text-[9px] sm:text-[10px] text-slate-400 font-bold leading-none truncate">Manage Personnel</p>
+                            <div>
+                                <h1 className="text-xl font-black text-slate-800 uppercase tracking-widest leading-none">Team Hub</h1>
+                                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-1">Personnel & Hierarchy</p>
                             </div>
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-4 sm:gap-6 shrink-0">
-                        <div className="hidden lg:flex items-center gap-8 pr-6 border-r border-slate-100">
+                    <div className="flex items-center gap-8">
+                        <div className="flex items-center gap-10 pr-8 border-r border-slate-100">
                             <div>
-                                <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Total Force</p>
-                                <p className="text-lg font-black text-[#191A43] leading-none">{staffList.length}</p>
+                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 opacity-50">Total Force</p>
+                                <p className="text-2xl font-black text-[#191A43]">{staffList.length}</p>
                             </div>
                             <div>
-                                <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Departments</p>
-                                <p className="text-lg font-black text-[#C5A059] leading-none">
+                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 opacity-50">Departments</p>
+                                <p className="text-2xl font-black text-[#C5A059]">
                                     {new Set(staffList.map(s => s.department).filter(Boolean)).size}
                                 </p>
                             </div>
                         </div>
-                    </div>
-                </div>
 
-                {/* Search & Filter Bar - Also Sticky */}
-                <div className="max-w-7xl mx-auto px-4 sm:px-8 py-4 flex flex-col sm:flex-row gap-4 border-t border-slate-50">
-                    <div className="relative flex-1 group">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-[#191A43] transition-colors" />
-                        <Input 
-                            placeholder="Search by name, role, or email..." 
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            className="pl-10 h-10 rounded-xl bg-slate-50 border-slate-100 focus:ring-[#191A43] focus:border-[#191A43] text-xs font-bold w-full shadow-sm"
-                        />
-                    </div>
-                    <div className="flex items-center gap-3">
-                        <div className="relative group min-w-[160px]">
-                            <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 group-focus-within:text-[#191A43] transition-colors z-10" />
-                            <Select value={selectedDepartment} onValueChange={setSelectedDepartment}>
-                                <SelectTrigger className="pl-9 h-10 rounded-xl bg-slate-50 border-slate-100 focus:ring-[#191A43] focus:border-[#191A43] text-xs font-bold shadow-sm">
-                                    <SelectValue placeholder="All Departments" />
-                                </SelectTrigger>
-                                <SelectContent className="rounded-xl border-slate-100 shadow-2xl">
-                                    <SelectItem value="all" className="text-xs font-bold">All Departments</SelectItem>
-                                    {departments.map((dept: any) => (
-                                        <SelectItem key={dept} value={dept} className="text-xs font-bold">{dept}</SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                        </div>
-                        <div className="flex items-center bg-slate-100/50 p-1 rounded-xl shrink-0 h-10 border border-slate-100">
+                        <div className="bg-slate-100/50 p-1.5 rounded-2xl flex items-center gap-1 border border-slate-100/50">
                             <button 
                                 onClick={() => setViewMode("grid")}
-                                className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 rounded-lg text-[9px] sm:text-[10px] font-black uppercase tracking-wider transition-all h-full ${viewMode === "grid" ? "bg-white text-[#191A43] shadow-md" : "text-slate-400 hover:text-slate-600"}`}
+                                className={`px-5 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${viewMode === "grid" ? "bg-white text-[#191A43] shadow-lg" : "text-slate-400 hover:text-slate-600"}`}
                             >
-                                <Users className="w-3.5 h-3.5 shrink-0" />
-                                <span className="hidden sm:inline">Grid</span>
+                                <Users className="w-4 h-4 inline-block mr-2" />
+                                Grid
                             </button>
                             <button 
                                 onClick={() => setViewMode("hierarchy")}
-                                className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 rounded-lg text-[9px] sm:text-[10px] font-black uppercase tracking-wider transition-all h-full ${viewMode === "hierarchy" ? "bg-white text-[#191A43] shadow-md" : "text-slate-400 hover:text-slate-600"}`}
+                                className={`px-5 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${viewMode === "hierarchy" ? "bg-white text-[#191A43] shadow-lg" : "text-slate-400 hover:text-slate-600"}`}
                             >
-                                <GitGraph className="w-3.5 h-3.5 shrink-0" />
-                                <span className="hidden sm:inline">Hierarchy</span>
+                                <GitGraph className="w-4 h-4 inline-block mr-2" />
+                                Hierarchy
                             </button>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Search & Filter Bar */}
+                <div className="bg-white/50 border-t border-slate-50">
+                    <div className="max-w-[1600px] mx-auto px-6 sm:px-12 py-4 flex flex-col md:flex-row gap-4">
+                        <div className="relative flex-1 group">
+                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                            <Input 
+                                placeholder="Search by name, role, or email..." 
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="h-12 pl-12 pr-4 rounded-2xl border-slate-100 bg-white/50 focus:bg-white focus:ring-2 focus:ring-[#191A43]/5 transition-all text-sm font-semibold"
+                            />
+                        </div>
+                        <div className="relative min-w-[200px]">
+                            <Filter className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 z-10" />
+                            <Select value={selectedDepartment} onValueChange={setSelectedDepartment}>
+                                <SelectTrigger className="pl-12 h-12 rounded-2xl border-slate-100 bg-white/50 text-sm font-bold">
+                                    <SelectValue placeholder="All Departments" />
+                                </SelectTrigger>
+                                <SelectContent className="rounded-2xl border-slate-100 shadow-2xl">
+                                    <SelectItem value="all" className="text-sm font-bold">All Departments</SelectItem>
+                                    {departments.map((dept: any) => (
+                                        <SelectItem key={dept} value={dept} className="text-sm font-bold">{dept}</SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div className="max-w-7xl mx-auto px-4 sm:px-8 py-12 space-y-12">
+            <div className="max-w-[1600px] mx-auto px-6 sm:px-12 py-12 space-y-12">
                 {/* Enrollment Form */}
                 <div className="relative group">
                     <div className="absolute inset-0 bg-[#191A43]/5 rounded-[2.5rem] blur-2xl group-hover:bg-[#191A43]/10 transition-all" />
