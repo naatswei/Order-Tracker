@@ -63,6 +63,8 @@ export const inventory = pgTable("inventory", {
     reserved: text("reserved").notNull().default("0"),
     unitCost: text("unit_cost").default("0"),
     sellingPrice: text("selling_price").default("0"),
+    totalEntered: text("total_entered").notNull().default("0"),
+    totalSold: text("total_sold").notNull().default("0"),
     clerkOrgId: text("clerk_org_id").notNull(),
     branchId: text("branch_id").references(() => branches.id, { onDelete: "set null" }),
     businessType: text("business_type").notNull(),

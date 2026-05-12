@@ -181,8 +181,11 @@ export async function addInventoryItem(data: { name: string, quantity: string, c
             reserved: "0",
             unitCost: (data as any).unitCost || "0",
             sellingPrice: (data as any).sellingPrice || "0",
+            totalEntered: data.quantity, // Initial entry
+            totalSold: "0",
             clerkOrgId: orgId,
             businessType: data.businessType,
+            branchId: data.branchId,
         });
 
         // Add initial transaction
@@ -217,14 +220,23 @@ export async function updateStock(itemId: string, type: "in" | "out" | "adjustme
         
         const currentQty = parseFloat(items[0].quantity);
         const changeQty = parseFloat(quantity);
+        const currentEntered = parseFloat(items[0].totalEntered || "0");
         let newQty = currentQty;
+        let newEntered = currentEntered;
 
-        if (type === "in") newQty += changeQty;
+        if (type === "in") {
+            newQty += changeQty;
+            newEntered += changeQty;
+        }
         else if (type === "out") newQty -= changeQty;
         else if (type === "adjustment") newQty = changeQty;
 
         await tx.update(inventory)
-            .set({ quantity: newQty.toString(), updatedAt: new Date() })
+            .set({ 
+                quantity: newQty.toString(), 
+                totalEntered: newEntered.toString(),
+                updatedAt: new Date() 
+            })
             .where(and(eq(inventory.id, itemId), eq(inventory.clerkOrgId, orgId)));
 
         await tx.insert(inventoryTransactions).values({
@@ -267,10 +279,11 @@ export async function linkOrderToInventory(orderId: string, inventoryItems: { id
                 clerkOrgId: orgId,
             });
 
-            // 2. Subtract from physical quantity immediately (Simpler Logic)
+            // 2. Subtract from physical quantity immediately AND increment totalSold
             await tx.update(inventory)
                 .set({ 
                     quantity: sql`(${inventory.quantity}::float - ${parseFloat(item.quantity)})::text`,
+                    totalSold: sql`(${inventory.totalSold}::float + ${parseFloat(item.quantity)})::text`,
                     updatedAt: new Date() 
                 })
                 .where(and(eq(inventory.id, item.id), eq(inventory.clerkOrgId, orgId)));
@@ -313,10 +326,11 @@ export async function releaseReservedStock(orderId: string) {
         for (const link of links) {
             const qty = parseFloat(link.quantity);
 
-            // Re-add to quantity (Return to Stock)
+            // Re-add to quantity AND decrement totalSold (Return to Stock)
             await tx.update(inventory)
                 .set({ 
                     quantity: sql`(${inventory.quantity}::float + ${qty})::text`,
+                    totalSold: sql`(${inventory.totalSold}::float - ${qty})::text`,
                     updatedAt: new Date()
                 })
                 .where(and(eq(inventory.id, link.inventoryId), eq(inventory.clerkOrgId, orgId)));

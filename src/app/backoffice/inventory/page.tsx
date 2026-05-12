@@ -359,8 +359,11 @@ export default function InventoryPage() {
                                 <thead>
                                     <tr className="border-b border-slate-50 bg-slate-50/50">
                                         <th className="px-8 py-6 text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">Asset Narrative</th>
-                                        <th className="px-8 py-6 text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] text-center">Volume</th>
-                                        <th className="px-8 py-6 text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] text-center">Business Value (GHS)</th>
+                                        <th className="px-4 py-6 text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] text-center">Physical Stock</th>
+                                        <th className="px-4 py-6 text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] text-center">Unit Cost</th>
+                                        <th className="px-4 py-6 text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] text-center">Value (GHS)</th>
+                                        <th className="px-4 py-6 text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] text-center">Sold</th>
+                                        <th className="px-4 py-6 text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] text-center">Available</th>
                                         <th className="px-8 py-6 text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] text-right">Control</th>
                                     </tr>
                                 </thead>
@@ -392,32 +395,34 @@ export default function InventoryPage() {
                                                         </div>
                                                     </div>
                                                 </td>
-                                                <td className="px-8 py-6 text-center">
+                                                <td className="px-4 py-6 text-center">
                                                     <div className="flex flex-col items-center">
-                                                        <div className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Stock Level</div>
-                                                        <span className={`text-2xl font-black ${parseFloat(item.quantity) <= parseFloat(item.minStock || "0") ? "text-red-500" : "text-[#191A43]"}`}>
-                                                            {item.quantity}
+                                                        <span className="text-base font-black text-[#191A43]">
+                                                            {item.totalEntered || "0"}
                                                         </span>
-                                                        <span className="text-[10px] text-slate-400 font-bold uppercase tracking-tighter mt-1 opacity-50">{item.unit || "Units"}</span>
+                                                        <span className="text-[10px] text-slate-400 font-black uppercase tracking-widest mt-0.5 opacity-50">{item.unit || "Units"}</span>
                                                     </div>
                                                 </td>
-                                                <td className="px-8 py-6 text-center">
+                                                <td className="px-4 py-6 text-center">
+                                                    <span className="text-sm font-bold text-slate-600">
+                                                        {item.unitCost || "0"}
+                                                    </span>
+                                                </td>
+                                                <td className="px-4 py-6 text-center">
+                                                    <span className="text-base font-black text-[#191A43]">
+                                                        {(parseFloat(item.totalEntered || "0") * parseFloat(item.unitCost || "0")).toLocaleString()}
+                                                    </span>
+                                                </td>
+                                                <td className="px-4 py-6 text-center">
+                                                    <span className="text-base font-black text-blue-600">
+                                                        {item.totalSold || "0"}
+                                                    </span>
+                                                </td>
+                                                <td className="px-4 py-6 text-center">
                                                     <div className="flex flex-col items-center">
-                                                        <div className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Total Assets</div>
-                                                        <span className="text-lg font-black text-[#191A43]">
-                                                            GHS {(Math.max(0, parseFloat(item.quantity)) * parseFloat(item.unitCost || "0")).toLocaleString()}
+                                                        <span className={`text-xl font-black ${parseFloat(item.quantity) <= parseFloat(item.minStock || "0") ? "text-red-500" : "text-emerald-600"}`}>
+                                                            {item.quantity}
                                                         </span>
-                                                        <div className="flex items-center gap-3 mt-2 pt-2 border-t border-slate-50">
-                                                            <div className="flex flex-col items-center">
-                                                                <span className="text-[8px] text-slate-400 font-black uppercase">Unit Cost</span>
-                                                                <span className="text-[11px] text-slate-600 font-black">GHS {item.unitCost || "0"}</span>
-                                                            </div>
-                                                            <div className="w-px h-4 bg-slate-100" />
-                                                            <div className="flex flex-col items-center">
-                                                                <span className="text-[8px] text-[#CE0003] font-black uppercase">Selling Price</span>
-                                                                <span className="text-[11px] text-[#CE0003] font-black">GHS {item.sellingPrice || "0"}</span>
-                                                            </div>
-                                                        </div>
                                                     </div>
                                                 </td>
                                                 <td className="px-8 py-6 text-right">
