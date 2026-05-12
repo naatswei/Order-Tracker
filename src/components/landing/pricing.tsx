@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import { motion } from "framer-motion"
-import { Check } from "lucide-react"
+import { Check, ArrowRight } from "lucide-react"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
 
