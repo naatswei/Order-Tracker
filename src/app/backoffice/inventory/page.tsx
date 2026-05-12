@@ -210,47 +210,24 @@ export default function InventoryPage() {
                                             className="h-11 rounded-xl bg-slate-50 border-slate-100 font-bold"
                                         />
                                     </div>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div className="space-y-2">
-                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Initial Qty</label>
-                                            <Input 
-                                                type="number"
-                                                value={newItem.quantity}
-                                                onChange={e => setNewItem({...newItem, quantity: e.target.value})}
-                                                className="h-11 rounded-xl bg-slate-50 border-slate-100 font-bold"
-                                            />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">SKU / ID</label>
-                                            <Input 
-                                                placeholder="Optional"
-                                                value={newItem.sku}
-                                                onChange={e => setNewItem({...newItem, sku: e.target.value})}
-                                                className="h-11 rounded-xl bg-slate-50 border-slate-100 font-bold"
-                                            />
-                                        </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">SKU / ID</label>
+                                        <Input 
+                                            placeholder="Optional"
+                                            value={newItem.sku}
+                                            onChange={e => setNewItem({...newItem, sku: e.target.value})}
+                                            className="h-11 rounded-xl bg-slate-50 border-slate-100 font-bold"
+                                        />
                                     </div>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div className="space-y-2">
-                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Unit Cost</label>
-                                            <Input 
-                                                type="number"
-                                                placeholder="0.00"
-                                                value={newItem.unitCost}
-                                                onChange={e => setNewItem({...newItem, unitCost: e.target.value})}
-                                                className="h-11 rounded-xl bg-slate-50 border-slate-100 font-bold"
-                                            />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Selling Price</label>
-                                            <Input 
-                                                type="number"
-                                                placeholder="0.00"
-                                                value={newItem.sellingPrice}
-                                                onChange={e => setNewItem({...newItem, sellingPrice: e.target.value})}
-                                                className="h-11 rounded-xl bg-slate-50 border-slate-100 font-bold"
-                                            />
-                                        </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Unit Cost</label>
+                                        <Input 
+                                            type="number"
+                                            placeholder="0.00"
+                                            value={newItem.unitCost}
+                                            onChange={e => setNewItem({...newItem, unitCost: e.target.value})}
+                                            className="h-11 rounded-xl bg-slate-50 border-slate-100 font-bold"
+                                        />
                                     </div>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="space-y-2">
