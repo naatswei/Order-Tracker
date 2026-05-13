@@ -5,70 +5,23 @@ import { motion } from "framer-motion"
 import { Check, ArrowRight } from "lucide-react"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
+import { useState } from "react"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { PRICING_PLANS } from "@/constants/pricing"
 
-const plans = [
-    {
-        name: "Starter",
-        price: "GHS 149",
-        duration: "Monthly",
-        description: "Perfect for startups",
-        features: [
-            "Unlimited team members",
-            "Up to 50 orders",
-            "Branded tracking page",
-            "Standard dashboard",
-            "Email support"
-        ],
-        cta: "Try For Free",
-        popular: false
-    },
-    {
-        name: "Growth",
-        price: "GHS 299",
-        duration: "Monthly",
-        description: "For professional brands",
-        features: [
-            "Unlimited team members",
-            "Unlimited orders",
-            "Customer messaging inbox",
-            "Staff performance tracking",
-            "Priority support"
-        ],
-        cta: "Get Started",
-        popular: true
-    },
-    {
-        name: "Scale",
-        price: "GHS 599",
-        duration: "Monthly",
-        description: "The Empire builder",
-        features: [
-            "Unlimited team members",
-            "Unlimited orders",
-            "Multi-branch management",
-            "Advanced analytics",
-            "Dedicated account manager"
-        ],
-        cta: "Go Scale",
-        popular: false
-    },
-    {
-        name: "Yearly",
-        price: "GHS 1,500",
-        duration: "Yearly",
-        description: "Maximum Value",
-        features: [
-            "Everything in Growth",
-            "Unlimited everything",
-            "Save 58% annually",
-            "Best for large teams"
-        ],
-        cta: "Go Yearly",
-        popular: false
-    }
-]
+const plans = PRICING_PLANS;
 
 export function LandingPricing() {
+    const getPlanPriceLabel = (plan: any) => {
+        return `GHS ${plan.price}`;
+    }
+
+    const getPlanPeriodLabel = (plan: any) => {
+        if (plan.id === '1-month') return "/month";
+        if (plan.id === '3-months') return "/3 months";
+        return "/year";
+    }
+
     return (
         <section id="pricing" className="py-32 md:py-48 bg-slate-50 scroll-mt-32">
             <div className="max-w-7xl mx-auto px-6">
@@ -88,11 +41,11 @@ export function LandingPricing() {
                         transition={{ delay: 0.1 }}
                         className="text-base md:text-lg text-slate-600 max-w-2xl mx-auto font-medium opacity-80"
                     >
-                        Choose the plan that fits your current business size. Upgrade as you scale.
+                        Choose the duration that fits your business. All plans include full application access.
                     </motion.p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 pt-12">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pt-12 max-w-6xl mx-auto">
                     {plans.map((plan, index) => (
                         <motion.div
                             key={plan.name}
@@ -132,13 +85,13 @@ export function LandingPricing() {
                                         "text-3xl font-black tracking-tight",
                                         plan.popular ? "text-white" : "text-[#191A43]"
                                     )}>
-                                        GHS {plan.price.replace("GHS ", "")}
+                                        {getPlanPriceLabel(plan)}
                                     </span>
                                     <span className={cn(
                                         "text-[14px] font-medium uppercase tracking-wider",
                                         plan.popular ? "text-slate-300" : "text-slate-400"
                                     )}>
-                                        {plan.duration.replace("/", "")}
+                                        {getPlanPeriodLabel(plan)}
                                     </span>
                                 </div>
 
@@ -157,6 +110,17 @@ export function LandingPricing() {
                                         </li>
                                     ))}
                                 </ul>
+
+                                <div className="mt-10">
+                                    <Link href="/sign-up">
+                                        <Button className={cn(
+                                            "w-full rounded-xl h-12 font-bold transition-all active:scale-95",
+                                            plan.popular ? "bg-white text-[#161931] hover:bg-white/90" : "bg-[#161931] text-white hover:bg-[#161931]/90"
+                                        )}>
+                                            {plan.buttonText}
+                                        </Button>
+                                    </Link>
+                                </div>
                             </div>
                         </motion.div>
                     ))}

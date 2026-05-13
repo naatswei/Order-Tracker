@@ -17,65 +17,14 @@ import { motion } from "framer-motion"
 import { BackofficeHeader } from "@/components/backoffice-header"
 import dynamic from "next/dynamic"
 import { cn } from "@/lib/utils"
+import { PRICING_PLANS } from "@/constants/pricing"
 
 const PlanButton = dynamic(() => import("@/components/paystack-button"), {
     ssr: false,
     loading: () => <Button disabled className="w-full h-11 bg-slate-100 text-slate-400">Loading...</Button>
 })
 
-const plans = [
-    {
-        name: "Starter",
-        description: "For startups",
-        price: "GHS 149",
-        period: "Monthly",
-        features: [
-            "Unlimited team members",
-            "Up to 50 orders",
-            "Branded tracking page",
-            "Standard dashboard"
-        ],
-        buttonText: "Get Started",
-    },
-    {
-        name: "Growth",
-        description: "For professional brands",
-        price: "GHS 299",
-        period: "Monthly",
-        features: [
-            "Unlimited team members",
-            "Unlimited orders",
-            "Customer messaging inbox",
-            "Staff tracking"
-        ],
-        buttonText: "Most Popular",
-    },
-    {
-        name: "Scale",
-        description: "The Empire builder",
-        price: "GHS 599",
-        period: "Monthly",
-        features: [
-            "Unlimited everything",
-            "Multi-branch",
-            "Advanced analytics",
-            "Dedicated support"
-        ],
-        buttonText: "Go Scale",
-    },
-    {
-        name: "Yearly",
-        description: "Maximum Value",
-        price: "GHS 1,500",
-        period: "Yearly",
-        features: [
-            "Everything in Growth",
-            "Unlimited orders",
-            "Save 58% annually"
-        ],
-        buttonText: "Get Maximum Value",
-    },
-]
+const plans = PRICING_PLANS;
 
 export default function ProfilePage() {
     const router = useRouter()
@@ -172,8 +121,11 @@ export default function ProfilePage() {
             if (!organization) return
             const now = new Date()
             let expiryDays = 30
-            if (planName === "Free Trial") expiryDays = 14
-            if (planName === "Yearly") expiryDays = 365
+            
+            const selectedPlan = [...plans, FREE_TRIAL_PLAN].find(p => p.name === planName)
+            if (selectedPlan) {
+                expiryDays = selectedPlan.durationDays
+            }
 
             const expiryDate = new Date(now.getTime() + expiryDays * 24 * 60 * 60 * 1000).toISOString()
             const isTrial = planName === "Free Trial"
@@ -208,6 +160,16 @@ export default function ProfilePage() {
 
     const expiryDateObj = subscriptionExpiry ? new Date(subscriptionExpiry) : null
     const isExpired = expiryDateObj ? new Date() > expiryDateObj : false
+
+    const getPlanPriceLabel = (plan: any) => {
+        return `GHS ${plan.price}`;
+    }
+
+    const getPlanPeriodLabel = (plan: any) => {
+        if (plan.id === '1-month') return "mo";
+        if (plan.id === '3-months') return "3mo";
+        return "yr";
+    }
 
     return (
         <div className="min-h-screen bg-slate-50/50 font-sans">
@@ -413,10 +375,12 @@ export default function ProfilePage() {
                                 </CardContent>
                             </Card>
 
-                            {/* Upgrade Plans Grid */}
+                             {/* Upgrade Plans Grid */}
                             <div>
-                                <h3 className="text-base sm:text-lg font-bold text-slate-900 mb-4 sm:mb-6">Upgrade your workspace</h3>
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                                    <h3 className="text-base sm:text-lg font-bold text-slate-900">Extend your access</h3>
+                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                     {plans.map((plan) => (
                                         <Card key={plan.name} className={cn(
                                             "relative flex flex-col border-slate-200 rounded-3xl p-6 shadow-sm flex-1",
@@ -428,18 +392,13 @@ export default function ProfilePage() {
                                                         Most Popular
                                                     </div>
                                                 )}
-                                                {plan.name === "Yearly" && (
-                                                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-emerald-500 text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full shadow-sm whitespace-nowrap">
-                                                        Save 64%
-                                                    </div>
-                                                )}
                                                 <h3 className="text-lg font-bold">{plan.name}</h3>
                                                 <p className="text-[11px] text-slate-500 font-medium">{plan.description}</p>
                                             </CardHeader>
                                             <CardContent className="p-0 pt-4 sm:pt-6 flex-1 flex flex-col">
                                                 <div className="mb-4 sm:mb-6">
-                                                    <span className="text-xl sm:text-2xl font-bold tracking-tight">{plan.price}</span>
-                                                    <span className="text-xs text-slate-500 font-medium ml-1">/{plan.period.replace(" Monthly", "mo").replace(" Yearly", "yr")}</span>
+                                                    <span className="text-xl sm:text-2xl font-bold tracking-tight">{getPlanPriceLabel(plan)}</span>
+                                                    <span className="text-xs text-slate-500 font-medium ml-1">/{getPlanPeriodLabel(plan)}</span>
                                                 </div>
                                                 <ul className="space-y-3 mb-8 flex-1">
                                                     {plan.features.map((feature, idx) => (

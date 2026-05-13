@@ -27,7 +27,7 @@ export default function PaystackButton({
 }: PaystackButtonProps) {
     const [isRedirecting, setIsRedirecting] = useState(false)
 
-    const amountInGHS = parseInt(plan.price.replace(/[^0-9]/g, ""))
+    const amountInGHS = plan.price
     const amountInKobo = amountInGHS * 100
 
     const config = {

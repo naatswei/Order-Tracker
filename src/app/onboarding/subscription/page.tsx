@@ -13,93 +13,16 @@ import { toast } from "sonner"
 import Link from "next/link"
 import dynamic from "next/dynamic"
 import { OnboardingHeader } from "@/components/onboarding-header"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { PRICING_PLANS, FREE_TRIAL_PLAN } from "@/constants/pricing"
 
 const PlanButton = dynamic(() => import("@/components/paystack-button"), {
     ssr: false,
     loading: () => <Button disabled className="w-full h-12 bg-slate-100 text-slate-400">Loading...</Button>
 })
 
-const plans = [
-    {
-        name: "Free Trial",
-        description: "Perfect to get started",
-        price: "GHS 0",
-        period: "/14 days",
-        features: [
-            "Unlimited team members",
-            "Up to 20 orders",
-            "Branded tracking page",
-            "Standard dashboard",
-            "Email support"
-        ],
-        buttonText: "Start 14-Day Free Trial",
-        buttonVariant: "secondary",
-        glowColor: "bg-pink-400/20",
-    },
-    {
-        name: "Starter",
-        description: "For startups & side-hustles",
-        price: "GHS 149",
-        period: "Monthly",
-        features: [
-            "Unlimited team members",
-            "Up to 50 orders",
-            "Branded tracking page",
-            "Standard dashboard",
-            "Email support"
-        ],
-        buttonText: "Get Started",
-        buttonVariant: "secondary",
-        glowColor: "bg-blue-400/20",
-    },
-    {
-        name: "Growth",
-        description: "For professional brands",
-        price: "GHS 299",
-        period: "Monthly",
-        features: [
-            "Unlimited team members",
-            "Unlimited orders",
-            "Customer messaging inbox",
-            "Staff performance tracking",
-            "Priority support"
-        ],
-        buttonText: "Most Popular",
-        buttonVariant: "orange",
-        glowColor: "bg-[#CE0003]/20",
-    },
-    {
-        name: "Scale",
-        description: "The Empire builder",
-        price: "GHS 599",
-        period: "Monthly",
-        features: [
-            "Unlimited team members",
-            "Unlimited orders",
-            "Multi-branch management",
-            "Advanced analytics",
-            "Dedicated account manager"
-        ],
-        buttonText: "Go Scale",
-        buttonVariant: "black",
-        glowColor: "bg-purple-400/20",
-    },
-    {
-        name: "Yearly",
-        description: "Maximum Value",
-        price: "GHS 1,500",
-        period: "Yearly",
-        features: [
-            "Everything in Growth",
-            "Unlimited everything",
-            "Save 58% annually",
-            "Best for large teams"
-        ],
-        buttonText: "Save with Yearly",
-        buttonVariant: "black",
-        glowColor: "bg-emerald-400/20",
-    },
-]
+
+const plans = PRICING_PLANS;
 
 export default function SubscriptionPage() {
     const router = useRouter()
@@ -150,8 +73,11 @@ export default function SubscriptionPage() {
             // Calculate expiry date
             const now = new Date()
             let expiryDays = 30
-            if (planName === "Free Trial") expiryDays = 14
-            if (planName === "Yearly") expiryDays = 365
+            
+            const selectedPlan = [...plans, FREE_TRIAL_PLAN].find(p => p.name === planName)
+            if (selectedPlan) {
+                expiryDays = selectedPlan.durationDays
+            }
 
             const expiryDate = new Date(now.getTime() + expiryDays * 24 * 60 * 60 * 1000).toISOString()
             const isTrial = planName === "Free Trial"
@@ -207,6 +133,18 @@ export default function SubscriptionPage() {
         }
     }
 
+    const getPlanPriceLabel = (plan: any) => {
+        if (plan.price === 0) return "Free";
+        return `GHS ${plan.price}`;
+    }
+
+    const getPlanPeriodLabel = (plan: any) => {
+        if (plan.id === 'free-trial') return "/14 days";
+        if (plan.id === '1-month') return "/month";
+        if (plan.id === '3-months') return "/3 months";
+        return "/year";
+    }
+
     // Prevent Free Trial reuse by checking trial flags explicitly
     const hasSubscriptionHistory = isLoading || 
         !!metadata?.subscriptionStatus || 
@@ -229,8 +167,8 @@ export default function SubscriptionPage() {
     }, [isLoaded, userLoaded, organization, hasSubscriptionHistory])
 
     const displayPlans = hasSubscriptionHistory
-        ? plans.filter(p => p.name !== "Free Trial")
-        : plans
+        ? plans
+        : [FREE_TRIAL_PLAN, ...plans]
 
     if (isLoading) {
         return <AppLoader message="Loading plans..." />
@@ -249,12 +187,12 @@ export default function SubscriptionPage() {
                             Ready to grow your business?
                         </h1>
                         <p className="text-sm font-medium text-slate-400 max-w-2xl mx-auto">
-                            Choose a plan that fits your business stage. No hidden fees.
+                            Choose the duration that fits your business. All plans include full application access.
                         </p>
                     </div>
 
                     {/* Cards Grid */}
-                    <div className={cn("grid grid-cols-1 md:grid-cols-2 gap-6 pt-12", hasSubscriptionHistory ? "lg:grid-cols-3 max-w-5xl mx-auto" : "lg:grid-cols-4")}>
+                    <div className={cn("grid grid-cols-1 md:grid-cols-2 gap-6 pt-6", displayPlans.length === 3 ? "lg:grid-cols-3 max-w-5xl mx-auto" : "lg:grid-cols-4")}>
                         {displayPlans.map((plan) => (
                             <div key={plan.name} className="relative group">
                                 {plan.name === "Growth" && (
@@ -282,8 +220,8 @@ export default function SubscriptionPage() {
 
                                     <CardContent className="flex-1 p-0 pt-12">
                                         <div className="mb-10 flex items-baseline gap-2">
-                                            <span className="text-3xl font-black tracking-tight text-[#101323]">GHS {plan.price.replace("GHS ", "")}</span>
-                                            <span className="text-[14px] font-medium text-slate-400">{plan.period}</span>
+                                            <span className="text-3xl font-black tracking-tight text-[#101323]">{getPlanPriceLabel(plan)}</span>
+                                            <span className="text-[14px] font-medium text-slate-400">{getPlanPeriodLabel(plan)}</span>
                                         </div>
 
                                         <ul className="space-y-5">
