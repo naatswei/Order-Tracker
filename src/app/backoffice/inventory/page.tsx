@@ -156,22 +156,24 @@ export default function InventoryPage() {
             {/* Header Area */}
             <div className="bg-white/80 border-b border-slate-100 sticky top-0 z-50 backdrop-blur-xl">
                 <div className="max-w-[1600px] mx-auto px-4 sm:px-12 py-4 sm:py-5 flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6">
-                    <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto">
-                        <Link href="/backoffice" className="shrink-0">
+                    <div className="relative flex items-center justify-center sm:justify-start w-full sm:w-auto">
+                        <Link href="/backoffice" className="absolute left-0 sm:relative sm:mr-6">
                             <Button variant="ghost" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 rounded-xl border border-slate-100 bg-white hover:bg-slate-50 shadow-sm transition-all text-slate-400 hover:text-[#191A43]" title="Back to Dashboard">
                                 <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
                             </Button>
                         </Link>
-                        <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-[#191A43] flex items-center justify-center shadow-lg shadow-[#191A43]/20 shrink-0">
-                            <Package className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
-                        </div>
-                        <div>
-                            <h1 className="text-lg sm:text-xl font-black text-[#191A43] tracking-tight">
-                                {isLogistics ? "Pipeline Control" : "Stock Intelligence"}
-                            </h1>
-                            <p className="text-[9px] sm:text-[10px] text-slate-400 font-bold uppercase tracking-widest leading-none mt-0.5 sm:mt-1">
-                                {isLogistics ? "Shipment Flow & Backlog" : "Inventory & Asset Management"}
-                            </p>
+                        <div className="flex items-center gap-3 sm:gap-4">
+                            <div className="hidden sm:flex w-10 h-10 rounded-xl bg-[#191A43] items-center justify-center shadow-lg shadow-[#191A43]/20 shrink-0">
+                                <Package className="w-5 h-5 text-white" />
+                            </div>
+                            <div className="text-center sm:text-left">
+                                <h1 className="text-lg sm:text-xl font-black text-[#191A43] tracking-tight">
+                                    {isLogistics ? "Pipeline Control" : "Stock Intelligence"}
+                                </h1>
+                                <p className="hidden sm:block text-[10px] text-slate-400 font-bold uppercase tracking-widest leading-none mt-1">
+                                    {isLogistics ? "Shipment Flow & Backlog" : "Inventory & Asset Management"}
+                                </p>
+                            </div>
                         </div>
                     </div>
 
@@ -185,13 +187,8 @@ export default function InventoryPage() {
                                 className="h-10 sm:h-12 pl-11 sm:pl-12 pr-4 rounded-xl sm:rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white focus:ring-2 focus:ring-[#191A43]/5 transition-all text-xs sm:text-sm font-semibold"
                             />
                         </div>
-                        <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
-                            <DialogTrigger asChild>
-                                <Button className="h-10 sm:h-12 w-full sm:w-auto px-6 rounded-xl sm:rounded-2xl bg-[#191A43] text-white font-bold hover:bg-[#191A43]/90 shadow-xl shadow-[#191A43]/10 text-xs sm:text-sm transition-all hover:scale-[1.02] active:scale-95">
-                                    <Plus className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
-                                    Register Asset
-                                </Button>
-                            </DialogTrigger>
+                    </div>
+                </div>
                             <DialogContent className="sm:max-w-[425px] rounded-2xl">
                                 <DialogHeader>
                                     <DialogTitle className="text-xl font-black text-[#191A43]">Register New Asset</DialogTitle>
@@ -540,7 +537,115 @@ export default function InventoryPage() {
                         )}
                     </Card>
                 </div>
-            </div>
+                <DialogContent className="max-w-2xl rounded-[2rem] border-none shadow-2xl p-0 overflow-hidden bg-white">
+                    <DialogHeader className="p-8 pb-4">
+                        <div className="flex items-center gap-4 mb-4">
+                            <div className="w-12 h-12 rounded-2xl bg-[#191A43] flex items-center justify-center shadow-lg shadow-[#191A43]/20">
+                                <Plus className="w-6 h-6 text-white" />
+                            </div>
+                            <div>
+                                <DialogTitle className="text-xl font-black text-[#191A43] tracking-tight">Register New Asset</DialogTitle>
+                                <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mt-1">Asset Intake & Categorization</p>
+                            </div>
+                        </div>
+                    </DialogHeader>
+
+                    <form onSubmit={handleAddItem} className="p-8 pt-0 space-y-6">
+                        <div className="grid grid-cols-2 gap-6">
+                            <div className="space-y-2">
+                                <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Asset Name</Label>
+                                <Input 
+                                    name="name" 
+                                    placeholder="e.g. Silk Thread" 
+                                    required 
+                                    className="h-12 rounded-2xl border-slate-100 bg-slate-50/50 font-semibold"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">SKU / Reference</Label>
+                                <Input 
+                                    name="sku" 
+                                    placeholder="e.g. SLK-001" 
+                                    className="h-12 rounded-2xl border-slate-100 bg-slate-50/50 font-semibold"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Category</Label>
+                                <Input 
+                                    name="category" 
+                                    placeholder="e.g. Raw Materials" 
+                                    className="h-12 rounded-2xl border-slate-100 bg-slate-50/50 font-semibold"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Measurement Unit</Label>
+                                <Input 
+                                    name="unit" 
+                                    placeholder="e.g. Rolls, Meters" 
+                                    className="h-12 rounded-2xl border-slate-100 bg-slate-50/50 font-semibold"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Physical Stock (Initial)</Label>
+                                <Input 
+                                    name="totalEntered" 
+                                    type="number" 
+                                    placeholder="0" 
+                                    className="h-12 rounded-2xl border-slate-100 bg-slate-50/50 font-semibold"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Unit Cost (GHS)</Label>
+                                <Input 
+                                    name="unitCost" 
+                                    type="number" 
+                                    placeholder="0.00" 
+                                    step="0.01" 
+                                    className="h-12 rounded-2xl border-slate-100 bg-slate-50/50 font-semibold"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Minimum Alert Threshold</Label>
+                                <Input 
+                                    name="minStock" 
+                                    type="number" 
+                                    placeholder="5" 
+                                    className="h-12 rounded-2xl border-slate-100 bg-slate-50/50 font-semibold"
+                                />
+                            </div>
+                        </div>
+
+                        <div className="flex justify-end gap-3 pt-4">
+                            <Button 
+                                type="button" 
+                                variant="ghost" 
+                                onClick={() => setIsAddModalOpen(false)}
+                                className="h-12 px-8 rounded-2xl font-bold text-slate-400 hover:text-[#191A43] text-xs uppercase tracking-widest"
+                            >
+                                Cancel
+                            </Button>
+                            <Button 
+                                type="submit" 
+                                className="h-12 px-10 rounded-2xl bg-[#191A43] text-white font-bold hover:bg-[#191A43]/90 shadow-xl shadow-[#191A43]/10 text-xs uppercase tracking-widest transition-all active:scale-95"
+                            >
+                                Deploy Asset
+                            </Button>
+                        </div>
+                    </form>
+                </DialogContent>
+            </Dialog>
+
+            {/* Floating Action Button */}
+            <motion.button 
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={() => setIsAddModalOpen(true)}
+                className="fixed bottom-6 right-6 sm:bottom-10 sm:right-10 w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-[#191A43] text-white shadow-2xl flex items-center justify-center hover:bg-[#191A43]/90 transition-all z-50 group border-4 border-white/10"
+            >
+                <Plus className="w-6 h-6 sm:w-8 sm:h-8 transition-transform group-hover:rotate-90" />
+            </motion.button>
         </div>
     );
 }
