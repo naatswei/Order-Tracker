@@ -146,7 +146,7 @@ export default function InventoryPage() {
         totalReserved: items.reduce((acc, item) => acc + parseFloat(item.reserved || "0"), 0),
         lowStock: items.filter(item => (parseFloat(item.quantity) - parseFloat(item.reserved || "0")) <= parseFloat(item.minStock || "0")).length,
         receivedToday: orders.filter(o => new Date(o.createdAt).toDateString() === new Date().toDateString()).length,
-        totalStockValue: items.reduce((acc, item) => acc + (Math.max(0, parseFloat(item.quantity)) * parseFloat(item.unitCost || "0")), 0)
+        totalStockValue: items.reduce((acc, item) => acc + (parseFloat(item.totalEntered || "0") * parseFloat(item.unitCost || "0")), 0)
     };
 
     if (isLoading) return <SignatureLoader fullScreen message="Loading Inventory Hub" />;
@@ -187,8 +187,13 @@ export default function InventoryPage() {
                                 className="h-10 sm:h-12 pl-11 sm:pl-12 pr-4 rounded-xl sm:rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white focus:ring-2 focus:ring-[#191A43]/5 transition-all text-xs sm:text-sm font-semibold"
                             />
                         </div>
-                    </div>
-                </div>
+                        <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
+                            <DialogTrigger asChild>
+                                <Button className="w-full sm:w-auto h-10 sm:h-12 bg-[#191A43] hover:bg-[#191A43]/90 text-white rounded-xl sm:rounded-2xl px-6 gap-2 font-black uppercase tracking-widest text-xs sm:text-sm shadow-xl shadow-[#191A43]/20">
+                                    <Plus className="w-4 h-4" />
+                                    Add Asset
+                                </Button>
+                            </DialogTrigger>
                             <DialogContent className="sm:max-w-[425px] rounded-2xl">
                                 <DialogHeader>
                                     <DialogTitle className="text-xl font-black text-[#191A43]">Register New Asset</DialogTitle>
@@ -337,7 +342,7 @@ export default function InventoryPage() {
                             </div>
                             <div>
                                 <p className="text-[9px] sm:text-[10px] font-black text-white/50 uppercase tracking-widest">
-                                    Total Asset Value
+                                    Total Asset Investment
                                 </p>
                                 <p className="text-xl sm:text-2xl font-black text-white">
                                     GHS {stats.totalStockValue.toLocaleString()}
