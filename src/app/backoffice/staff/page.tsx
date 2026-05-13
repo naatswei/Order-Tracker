@@ -343,14 +343,14 @@ export default function StaffPage() {
             {/* Premium Header Area */}
             <div className="bg-[#191A43] border-b border-white/5 sticky top-0 z-50">
                 <div className="max-w-[1600px] mx-auto px-4 sm:px-12 py-4 sm:py-6 flex flex-col lg:flex-row items-center justify-between gap-6">
-                    <div className="flex items-center gap-8">
-                        <Link href="/backoffice">
-                            <Button variant="ghost" size="icon" className="h-12 w-12 rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 shadow-2xl transition-all text-white/50 hover:text-white">
-                                <ArrowLeft className="w-6 h-6" />
+                    <div className="relative flex items-center justify-center sm:justify-start w-full lg:w-auto">
+                        <Link href="/backoffice" className="absolute left-0 sm:relative sm:mr-8">
+                            <Button variant="ghost" size="icon" className="h-9 w-9 sm:h-12 sm:w-12 rounded-xl sm:rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 shadow-2xl transition-all text-white/50 hover:text-white">
+                                <ArrowLeft className="w-5 h-5 sm:w-6 sm:h-6" />
                             </Button>
                         </Link>
                         <div className="flex items-center gap-4">
-                            <h1 className="text-xl sm:text-2xl font-black text-white uppercase tracking-[0.15em] sm:tracking-[0.2em]">Team Hub</h1>
+                            <h1 className="text-lg sm:text-2xl font-black text-white uppercase tracking-[0.15em] sm:tracking-[0.2em]">Team Hub</h1>
                             <div className="hidden sm:block">
                                 <p className="text-[10px] text-white/40 font-bold uppercase tracking-widest mt-1">Global Personnel Management</p>
                             </div>
