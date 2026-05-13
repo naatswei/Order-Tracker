@@ -65,6 +65,7 @@ export default function StaffPage() {
     // Edit State
     const [editingStaff, setEditingStaff] = useState<any | null>(null);
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+    const [isEnrollModalOpen, setIsEnrollModalOpen] = useState(false);
     
     // Delete Confirmation State
     const [staffToDelete, setStaffToDelete] = useState<any | null>(null);
@@ -127,6 +128,7 @@ export default function StaffPage() {
             setDepartment("");
             setReportsToId("");
             loadStaff();
+            setIsEnrollModalOpen(false);
         } catch (error: any) {
             console.error(error);
             toast.error("Deployment Failed: " + (error.message || "Check network"));
@@ -420,106 +422,7 @@ export default function StaffPage() {
                 </div>
             </div>
 
-            <div className="max-w-[1600px] mx-auto px-6 sm:px-12 py-16 space-y-16">
-                {/* Enrollment Form */}
-                <div className="relative group">
-                    <div className="absolute inset-0 bg-[#191A43]/5 rounded-[2.5rem] blur-2xl group-hover:bg-[#191A43]/10 transition-all" />
-                    <Card className="relative z-10 border-white/50 bg-white/80 backdrop-blur-xl rounded-[1.5rem] shadow-xl overflow-hidden border border-slate-100">
-                        <CardContent className="p-5 sm:p-8">
-                            <form onSubmit={handleAddStaff} className="space-y-6 sm:space-y-8">
-                                <div className="flex items-center gap-2 ml-1">
-                                    <UserPlus className="w-3.5 h-3.5 text-[#191A43]" />
-                                    <span className="text-[10px] sm:text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">Enroll New Staff Members</span>
-                                </div>
-                                
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-                                    <div className="space-y-1.5 sm:space-y-2">
-                                        <label className="text-[8px] sm:text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Full Name</label>
-                                        <Input 
-                                            placeholder="e.g. Kofi Mensah" 
-                                            value={name} 
-                                            onChange={(e) => setName(e.target.value)}
-                                            className="h-9 sm:h-10 rounded-xl bg-slate-50 border-slate-100 focus:ring-[#191A43] focus:border-[#191A43] text-xs sm:text-sm font-bold"
-                                            required
-                                        />
-                                    </div>
-                                    <div className="space-y-1.5 sm:space-y-2">
-                                        <label className="text-[8px] sm:text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Email Address</label>
-                                        <Input 
-                                            placeholder="e.g. kofi@hubtel.com" 
-                                            type="email"
-                                            value={email} 
-                                            onChange={(e) => setEmail(e.target.value)}
-                                            className="h-9 sm:h-10 rounded-xl bg-slate-50 border-slate-100 focus:ring-[#191A43] focus:border-[#191A43] text-xs sm:text-sm font-bold"
-                                        />
-                                    </div>
-                                    <div className="space-y-1.5 sm:space-y-2">
-                                        <label className="text-[8px] sm:text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Core Role</label>
-                                        <Input 
-                                            placeholder="e.g. Senior Tailor" 
-                                            value={role} 
-                                            onChange={(e) => setRole(e.target.value)}
-                                            className="h-9 sm:h-10 rounded-xl bg-slate-50 border-slate-100 focus:ring-[#191A43] focus:border-[#191A43] text-xs sm:text-sm font-bold"
-                                        />
-                                    </div>
-                                    <div className="space-y-1.5 sm:space-y-2">
-                                        <label className="text-[8px] sm:text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Department</label>
-                                        <Input 
-                                            placeholder="e.g. Couture" 
-                                            value={department} 
-                                            onChange={(e) => setDepartment(e.target.value)}
-                                            className="h-9 sm:h-10 rounded-xl bg-slate-50 border-slate-100 focus:ring-[#191A43] focus:border-[#191A43] text-xs sm:text-sm font-bold"
-                                        />
-                                    </div>
-                                    <div className="space-y-1.5 sm:space-y-2">
-                                        <label className="text-[8px] sm:text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Phone Number</label>
-                                        <Input 
-                                            placeholder="e.g. 0541234567" 
-                                            value={phone} 
-                                            onChange={(e) => setPhone(e.target.value)}
-                                            className="h-9 sm:h-10 rounded-xl bg-slate-50 border-slate-100 focus:ring-[#191A43] focus:border-[#191A43] text-xs sm:text-sm font-bold"
-                                        />
-                                    </div>
-                                    <div className="space-y-1.5 sm:space-y-2">
-                                        <label className="text-[8px] sm:text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Reports To</label>
-                                        <Select value={reportsToId} onValueChange={setReportsToId}>
-                                            <SelectTrigger className="h-9 sm:h-10 rounded-xl bg-slate-50 border-slate-100 focus:ring-[#191A43] focus:border-[#191A43] text-xs sm:text-sm font-bold">
-                                                <SelectValue placeholder="Select Manager" />
-                                            </SelectTrigger>
-                                            <SelectContent className="rounded-xl border-slate-100 shadow-2xl">
-                                                <SelectItem value="none" className="text-xs font-bold">No Manager (Lead)</SelectItem>
-                                                {staffList.map((s) => (
-                                                    <SelectItem key={s.id} value={s.id} className="text-xs font-bold">{s.name}</SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
-                                    </div>
-                                </div>
-
-                                <div className="flex justify-end pt-2 sm:pt-4">
-                                    <Button 
-                                        type="submit" 
-                                        disabled={isLoading} 
-                                        className="w-full sm:w-auto h-10 sm:h-11 px-8 rounded-xl bg-[#191A43] text-white hover:bg-[#191A43]/90 font-bold uppercase tracking-widest transition-all shadow-lg shadow-[#191A43]/10 active:scale-95 text-[10px] sm:text-xs"
-                                    >
-                                        {isLoading ? (
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                                                <span>Deploying...</span>
-                                            </div>
-                                        ) : (
-                                            <div className="flex items-center gap-3">
-                                                <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
-                                                <span>Enroll Member</span>
-                                            </div>
-                                        )}
-                                    </Button>
-                                </div>
-                            </form>
-                        </CardContent>
-                    </Card>
-                </div>
-
+            <div className="max-w-[1600px] mx-auto px-4 sm:px-12 py-10 sm:py-16 space-y-16">
                 {/* Team Content */}
                 <div className="space-y-8">
                     {viewMode === "grid" ? (
@@ -775,6 +678,119 @@ export default function StaffPage() {
                     </div>
                 </DialogContent>
             </Dialog>
+
+            {/* Enroll Staff Dialog */}
+            <Dialog open={isEnrollModalOpen} onOpenChange={setIsEnrollModalOpen}>
+                <DialogContent className="max-w-2xl rounded-[1.5rem] border-white/50 bg-white/90 backdrop-blur-xl shadow-2xl p-0 overflow-hidden">
+                    <DialogHeader className="p-6 pb-0">
+                        <div className="flex items-center gap-3 mb-2">
+                            <div className="w-10 h-10 rounded-xl bg-[#191A43] flex items-center justify-center shadow-lg shadow-[#191A43]/20">
+                                <UserPlus className="w-5 h-5 text-white" />
+                            </div>
+                            <div>
+                                <DialogTitle className="text-sm font-black text-slate-800 uppercase tracking-widest leading-none mb-1">Enroll Personnel</DialogTitle>
+                                <p className="text-[10px] text-slate-400 font-bold leading-none uppercase tracking-tighter">Add new member to the force</p>
+                            </div>
+                        </div>
+                    </DialogHeader>
+
+                    <form onSubmit={handleAddStaff} className="p-6 pt-8 space-y-6">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <Label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Full Name</Label>
+                                <Input 
+                                    placeholder="e.g. Kofi Mensah" 
+                                    value={name} 
+                                    onChange={(e) => setName(e.target.value)}
+                                    className="h-10 rounded-xl bg-slate-50 border-slate-100 font-bold"
+                                    required
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Email Address</Label>
+                                <Input 
+                                    placeholder="e.g. kofi@hubtel.com" 
+                                    type="email"
+                                    value={email} 
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    className="h-10 rounded-xl bg-slate-50 border-slate-100 font-bold"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Core Role</Label>
+                                <Input 
+                                    placeholder="e.g. Senior Tailor" 
+                                    value={role} 
+                                    onChange={(e) => setRole(e.target.value)}
+                                    className="h-10 rounded-xl bg-slate-50 border-slate-100 font-bold"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Department</Label>
+                                <Input 
+                                    placeholder="e.g. Couture" 
+                                    value={department} 
+                                    onChange={(e) => setDepartment(e.target.value)}
+                                    className="h-10 rounded-xl bg-slate-50 border-slate-100 font-bold"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Phone Number</Label>
+                                <Input 
+                                    placeholder="e.g. 0541234567" 
+                                    value={phone} 
+                                    onChange={(e) => setPhone(e.target.value)}
+                                    className="h-10 rounded-xl bg-slate-50 border-slate-100 font-bold"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Reports To</Label>
+                                <Select value={reportsToId} onValueChange={setReportsToId}>
+                                    <SelectTrigger className="h-10 rounded-xl bg-slate-50 border-slate-100 font-bold">
+                                        <SelectValue placeholder="Select Manager" />
+                                    </SelectTrigger>
+                                    <SelectContent className="rounded-xl border-slate-100 shadow-2xl">
+                                        <SelectItem value="none" className="text-xs font-bold">No Manager (Lead)</SelectItem>
+                                        {staffList.map((s) => (
+                                            <SelectItem key={s.id} value={s.id} className="text-xs font-bold">{s.name}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        </div>
+
+                        <DialogFooter className="pt-4">
+                            <Button 
+                                type="button" 
+                                variant="ghost" 
+                                onClick={() => setIsEnrollModalOpen(false)}
+                                className="rounded-xl font-bold text-[10px] uppercase tracking-widest"
+                            >
+                                Cancel
+                            </Button>
+                            <Button 
+                                type="submit" 
+                                disabled={isLoading}
+                                className="bg-[#191A43] hover:bg-[#191A43]/90 text-white rounded-xl px-8 font-bold text-[10px] uppercase tracking-widest shadow-lg shadow-[#191A43]/20 transition-all active:scale-95"
+                            >
+                                {isLoading ? "Deploying..." : "Enroll Member"}
+                            </Button>
+                        </DialogFooter>
+                    </form>
+                </DialogContent>
+            </Dialog>
+
+            {/* Floating Action Button */}
+            <motion.button 
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={() => setIsEnrollModalOpen(true)}
+                className="fixed bottom-6 right-6 sm:bottom-10 sm:right-10 w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-[#191A43] text-white shadow-2xl flex items-center justify-center hover:bg-[#191A43]/90 transition-all z-50 group border-4 border-white/10"
+            >
+                <Plus className="w-6 h-6 sm:w-8 sm:h-8 transition-transform group-hover:rotate-90" />
+            </motion.button>
         </div>
     );
 }
