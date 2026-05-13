@@ -342,7 +342,7 @@ export default function StaffPage() {
         <div className="min-h-screen bg-[#F8FAFC] pb-20">
             {/* Premium Header Area */}
             <div className="bg-[#191A43] border-b border-white/5 sticky top-0 z-50">
-                <div className="max-w-[1600px] mx-auto px-6 sm:px-12 py-6 flex flex-col lg:flex-row items-center justify-between gap-6">
+                <div className="max-w-[1600px] mx-auto px-4 sm:px-12 py-4 sm:py-6 flex flex-col lg:flex-row items-center justify-between gap-6">
                     <div className="flex items-center gap-8">
                         <Link href="/backoffice">
                             <Button variant="ghost" size="icon" className="h-12 w-12 rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 shadow-2xl transition-all text-white/50 hover:text-white">
@@ -354,39 +354,39 @@ export default function StaffPage() {
                                 <Users className="w-7 h-7 text-white" />
                             </div>
                             <div>
-                                <h1 className="text-2xl font-black text-white uppercase tracking-[0.2em]">Team Hub</h1>
-                                <p className="text-[10px] text-white/40 font-bold uppercase tracking-widest mt-1">Global Personnel Management</p>
+                                <h1 className="text-xl sm:text-2xl font-black text-white uppercase tracking-[0.15em] sm:tracking-[0.2em]">Team Hub</h1>
+                                <p className="text-[9px] sm:text-[10px] text-white/40 font-bold uppercase tracking-widest mt-0.5 sm:mt-1">Global Personnel Management</p>
                             </div>
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-10">
-                        <div className="flex items-center gap-12 pr-10 border-r border-white/10">
-                            <div>
-                                <p className="text-[10px] font-black text-white/30 uppercase tracking-widest mb-1">Total Force</p>
-                                <p className="text-3xl font-black text-white tracking-tighter">{staffList.length}</p>
+                    <div className="flex flex-col sm:flex-row items-center gap-6 sm:gap-10 w-full lg:w-auto">
+                        <div className="flex items-center gap-8 sm:gap-12 sm:pr-10 sm:border-r border-white/10 w-full sm:w-auto justify-center sm:justify-start">
+                            <div className="text-center sm:text-left">
+                                <p className="text-[9px] sm:text-[10px] font-black text-white/30 uppercase tracking-widest mb-0.5 sm:mb-1">Total Force</p>
+                                <p className="text-2xl sm:text-3xl font-black text-white tracking-tighter">{staffList.length}</p>
                             </div>
-                            <div>
-                                <p className="text-[10px] font-black text-white/30 uppercase tracking-widest mb-1">Departments</p>
-                                <p className="text-3xl font-black text-[#C5A059] tracking-tighter">
+                            <div className="text-center sm:text-left">
+                                <p className="text-[9px] sm:text-[10px] font-black text-white/30 uppercase tracking-widest mb-0.5 sm:mb-1">Departments</p>
+                                <p className="text-2xl sm:text-3xl font-black text-[#C5A059] tracking-tighter">
                                     {new Set(staffList.map(s => s.department).filter(Boolean)).size}
                                 </p>
                             </div>
                         </div>
 
-                        <div className="bg-white/5 p-1.5 rounded-[20px] flex items-center gap-1 border border-white/10 shadow-2xl">
+                        <div className="bg-white/5 p-1 rounded-2xl sm:rounded-[20px] flex items-center gap-1 border border-white/10 shadow-2xl w-full sm:w-auto">
                             <button 
                                 onClick={() => setViewMode("grid")}
-                                className={`px-8 py-3 rounded-[15px] text-[11px] font-black uppercase tracking-[0.15em] transition-all duration-300 ${viewMode === "grid" ? "bg-white text-[#191A43] shadow-xl scale-105" : "text-white/40 hover:text-white/70"}`}
+                                className={`flex-1 sm:flex-none px-4 sm:px-8 py-2.5 sm:py-3 rounded-xl sm:rounded-[15px] text-[10px] sm:text-[11px] font-black uppercase tracking-[0.1em] sm:tracking-[0.15em] transition-all duration-300 ${viewMode === "grid" ? "bg-white text-[#191A43] shadow-xl scale-[1.02] sm:scale-105" : "text-white/40 hover:text-white/70"}`}
                             >
-                                <Users className="w-4 h-4 inline-block mr-2" />
+                                <Users className="w-3.5 h-3.5 sm:w-4 sm:h-4 inline-block mr-2" />
                                 Grid View
                             </button>
                             <button 
                                 onClick={() => setViewMode("hierarchy")}
-                                className={`px-8 py-3 rounded-[15px] text-[11px] font-black uppercase tracking-[0.15em] transition-all duration-300 ${viewMode === "hierarchy" ? "bg-white text-[#191A43] shadow-xl scale-105" : "text-white/40 hover:text-white/70"}`}
+                                className={`flex-1 sm:flex-none px-4 sm:px-8 py-2.5 sm:py-3 rounded-xl sm:rounded-[15px] text-[10px] sm:text-[11px] font-black uppercase tracking-[0.1em] sm:tracking-[0.15em] transition-all duration-300 ${viewMode === "hierarchy" ? "bg-white text-[#191A43] shadow-xl scale-[1.02] sm:scale-105" : "text-white/40 hover:text-white/70"}`}
                             >
-                                <GitGraph className="w-4 h-4 inline-block mr-2" />
+                                <GitGraph className="w-3.5 h-3.5 sm:w-4 sm:h-4 inline-block mr-2" />
                                 Hierarchy
                             </button>
                         </div>
@@ -402,13 +402,13 @@ export default function StaffPage() {
                                 placeholder="Search by name, role, or email..." 
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className="h-14 pl-14 pr-6 rounded-2xl border-white/5 bg-white/[0.03] focus:bg-white/[0.08] focus:ring-0 text-white placeholder:text-white/20 text-sm font-bold transition-all shadow-inner"
+                                className="h-12 sm:h-14 pl-12 sm:pl-14 pr-6 rounded-xl sm:rounded-2xl border-white/5 bg-white/[0.03] focus:bg-white/[0.08] focus:ring-0 text-white placeholder:text-white/20 text-xs sm:text-sm font-bold transition-all shadow-inner"
                             />
                         </div>
-                        <div className="relative min-w-[240px]">
-                            <Filter className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20 z-10" />
+                        <div className="relative min-w-[200px] md:min-w-[240px]">
+                            <Filter className="absolute left-5 top-1/2 -translate-y-1/2 w-3.5 sm:w-4 h-3.5 sm:h-4 text-white/20 z-10" />
                             <Select value={selectedDepartment} onValueChange={setSelectedDepartment}>
-                                <SelectTrigger className="pl-14 h-14 rounded-2xl border-white/5 bg-white/[0.03] text-white text-sm font-bold shadow-inner">
+                                <SelectTrigger className="pl-12 sm:pl-14 h-12 sm:h-14 rounded-xl sm:rounded-2xl border-white/5 bg-white/[0.03] text-white text-xs sm:text-sm font-bold shadow-inner">
                                     <SelectValue placeholder="All Departments" />
                                 </SelectTrigger>
                                 <SelectContent className="rounded-2xl border-slate-100 shadow-2xl bg-white">
@@ -428,65 +428,65 @@ export default function StaffPage() {
                 <div className="relative group">
                     <div className="absolute inset-0 bg-[#191A43]/5 rounded-[2.5rem] blur-2xl group-hover:bg-[#191A43]/10 transition-all" />
                     <Card className="relative z-10 border-white/50 bg-white/80 backdrop-blur-xl rounded-[1.5rem] shadow-xl overflow-hidden border border-slate-100">
-                        <CardContent className="p-6 sm:p-8">
-                            <form onSubmit={handleAddStaff} className="space-y-8">
+                        <CardContent className="p-5 sm:p-8">
+                            <form onSubmit={handleAddStaff} className="space-y-6 sm:space-y-8">
                                 <div className="flex items-center gap-2 ml-1">
-                                    <UserPlus className="w-4 h-4 text-[#191A43]" />
-                                    <span className="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">Enroll New Staff Members</span>
+                                    <UserPlus className="w-3.5 h-3.5 text-[#191A43]" />
+                                    <span className="text-[10px] sm:text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">Enroll New Staff Members</span>
                                 </div>
                                 
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                                    <div className="space-y-2">
-                                        <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Full Name</label>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+                                    <div className="space-y-1.5 sm:space-y-2">
+                                        <label className="text-[8px] sm:text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Full Name</label>
                                         <Input 
                                             placeholder="e.g. Kofi Mensah" 
                                             value={name} 
                                             onChange={(e) => setName(e.target.value)}
-                                            className="h-10 rounded-xl bg-slate-50 border-slate-100 focus:ring-[#191A43] focus:border-[#191A43] text-sm font-bold"
+                                            className="h-9 sm:h-10 rounded-xl bg-slate-50 border-slate-100 focus:ring-[#191A43] focus:border-[#191A43] text-xs sm:text-sm font-bold"
                                             required
                                         />
                                     </div>
-                                    <div className="space-y-2">
-                                        <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Email Address</label>
+                                    <div className="space-y-1.5 sm:space-y-2">
+                                        <label className="text-[8px] sm:text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Email Address</label>
                                         <Input 
                                             placeholder="e.g. kofi@hubtel.com" 
                                             type="email"
                                             value={email} 
                                             onChange={(e) => setEmail(e.target.value)}
-                                            className="h-10 rounded-xl bg-slate-50 border-slate-100 focus:ring-[#191A43] focus:border-[#191A43] text-sm font-bold"
+                                            className="h-9 sm:h-10 rounded-xl bg-slate-50 border-slate-100 focus:ring-[#191A43] focus:border-[#191A43] text-xs sm:text-sm font-bold"
                                         />
                                     </div>
-                                    <div className="space-y-2">
-                                        <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Core Role</label>
+                                    <div className="space-y-1.5 sm:space-y-2">
+                                        <label className="text-[8px] sm:text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Core Role</label>
                                         <Input 
                                             placeholder="e.g. Senior Tailor" 
                                             value={role} 
                                             onChange={(e) => setRole(e.target.value)}
-                                            className="h-10 rounded-xl bg-slate-50 border-slate-100 focus:ring-[#191A43] focus:border-[#191A43] text-sm font-bold"
+                                            className="h-9 sm:h-10 rounded-xl bg-slate-50 border-slate-100 focus:ring-[#191A43] focus:border-[#191A43] text-xs sm:text-sm font-bold"
                                         />
                                     </div>
-                                    <div className="space-y-2">
-                                        <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Department</label>
+                                    <div className="space-y-1.5 sm:space-y-2">
+                                        <label className="text-[8px] sm:text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Department</label>
                                         <Input 
                                             placeholder="e.g. Couture" 
                                             value={department} 
                                             onChange={(e) => setDepartment(e.target.value)}
-                                            className="h-10 rounded-xl bg-slate-50 border-slate-100 focus:ring-[#191A43] focus:border-[#191A43] text-sm font-bold"
+                                            className="h-9 sm:h-10 rounded-xl bg-slate-50 border-slate-100 focus:ring-[#191A43] focus:border-[#191A43] text-xs sm:text-sm font-bold"
                                         />
                                     </div>
-                                    <div className="space-y-2">
-                                        <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Phone Number</label>
+                                    <div className="space-y-1.5 sm:space-y-2">
+                                        <label className="text-[8px] sm:text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Phone Number</label>
                                         <Input 
                                             placeholder="e.g. 0541234567" 
                                             value={phone} 
                                             onChange={(e) => setPhone(e.target.value)}
-                                            className="h-10 rounded-xl bg-slate-50 border-slate-100 focus:ring-[#191A43] focus:border-[#191A43] text-sm font-bold"
+                                            className="h-9 sm:h-10 rounded-xl bg-slate-50 border-slate-100 focus:ring-[#191A43] focus:border-[#191A43] text-xs sm:text-sm font-bold"
                                         />
                                     </div>
-                                    <div className="space-y-2">
-                                        <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Reports To</label>
+                                    <div className="space-y-1.5 sm:space-y-2">
+                                        <label className="text-[8px] sm:text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Reports To</label>
                                         <Select value={reportsToId} onValueChange={setReportsToId}>
-                                            <SelectTrigger className="h-10 rounded-xl bg-slate-50 border-slate-100 focus:ring-[#191A43] focus:border-[#191A43] text-sm font-bold">
+                                            <SelectTrigger className="h-9 sm:h-10 rounded-xl bg-slate-50 border-slate-100 focus:ring-[#191A43] focus:border-[#191A43] text-xs sm:text-sm font-bold">
                                                 <SelectValue placeholder="Select Manager" />
                                             </SelectTrigger>
                                             <SelectContent className="rounded-xl border-slate-100 shadow-2xl">
@@ -499,20 +499,20 @@ export default function StaffPage() {
                                     </div>
                                 </div>
 
-                                <div className="flex justify-end pt-4">
+                                <div className="flex justify-end pt-2 sm:pt-4">
                                     <Button 
                                         type="submit" 
                                         disabled={isLoading} 
-                                        className="h-10 px-8 rounded-xl bg-[#191A43] text-white hover:bg-[#191A43]/90 font-bold uppercase tracking-widest transition-all shadow-lg shadow-[#191A43]/10 active:scale-95 text-xs"
+                                        className="w-full sm:w-auto h-10 sm:h-11 px-8 rounded-xl bg-[#191A43] text-white hover:bg-[#191A43]/90 font-bold uppercase tracking-widest transition-all shadow-lg shadow-[#191A43]/10 active:scale-95 text-[10px] sm:text-xs"
                                     >
                                         {isLoading ? (
                                             <div className="flex items-center gap-3">
-                                                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                                <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                                                 <span>Deploying...</span>
                                             </div>
                                         ) : (
                                             <div className="flex items-center gap-3">
-                                                <Plus className="w-5 h-5" />
+                                                <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
                                                 <span>Enroll Member</span>
                                             </div>
                                         )}

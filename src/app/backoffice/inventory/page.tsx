@@ -155,40 +155,40 @@ export default function InventoryPage() {
         <div className="min-h-screen bg-[#FBFBFF] pb-20">
             {/* Header Area */}
             <div className="bg-white/80 border-b border-slate-100 sticky top-0 z-50 backdrop-blur-xl">
-                <div className="max-w-[1600px] mx-auto px-6 sm:px-12 py-5 flex flex-col sm:flex-row items-center justify-between gap-6">
-                    <div className="flex items-center gap-4 w-full sm:w-auto">
+                <div className="max-w-[1600px] mx-auto px-4 sm:px-12 py-4 sm:py-5 flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6">
+                    <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto">
                         <Link href="/backoffice" className="shrink-0">
-                            <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl border border-slate-100 bg-white hover:bg-slate-50 shadow-sm transition-all text-slate-400 hover:text-[#191A43]" title="Back to Dashboard">
-                                <ArrowLeft className="w-5 h-5" />
+                            <Button variant="ghost" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 rounded-xl border border-slate-100 bg-white hover:bg-slate-50 shadow-sm transition-all text-slate-400 hover:text-[#191A43]" title="Back to Dashboard">
+                                <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
                             </Button>
                         </Link>
-                        <div className="w-10 h-10 rounded-xl bg-[#191A43] flex items-center justify-center shadow-lg shadow-[#191A43]/20 shrink-0">
-                            <Package className="w-5 h-5 text-white" />
+                        <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-[#191A43] flex items-center justify-center shadow-lg shadow-[#191A43]/20 shrink-0">
+                            <Package className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                         </div>
                         <div>
-                            <h1 className="text-xl font-black text-[#191A43] tracking-tight">
+                            <h1 className="text-lg sm:text-xl font-black text-[#191A43] tracking-tight">
                                 {isLogistics ? "Pipeline Control" : "Stock Intelligence"}
                             </h1>
-                            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest leading-none mt-1">
+                            <p className="text-[9px] sm:text-[10px] text-slate-400 font-bold uppercase tracking-widest leading-none mt-0.5 sm:mt-1">
                                 {isLogistics ? "Shipment Flow & Backlog" : "Inventory & Asset Management"}
                             </p>
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-4 w-full sm:w-auto">
-                        <div className="relative flex-1 sm:w-80">
-                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                    <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 w-full sm:w-auto">
+                        <div className="relative w-full sm:w-80">
+                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-400" />
                             <Input 
-                                placeholder="Search assets, SKUs, or categories..." 
+                                placeholder="Search assets, SKUs..." 
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className="h-12 pl-12 pr-4 rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white focus:ring-2 focus:ring-[#191A43]/5 transition-all text-sm font-semibold"
+                                className="h-10 sm:h-12 pl-11 sm:pl-12 pr-4 rounded-xl sm:rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white focus:ring-2 focus:ring-[#191A43]/5 transition-all text-xs sm:text-sm font-semibold"
                             />
                         </div>
                         <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
                             <DialogTrigger asChild>
-                                <Button className="h-12 px-6 rounded-2xl bg-[#191A43] text-white font-bold hover:bg-[#191A43]/90 shadow-xl shadow-[#191A43]/10 text-sm transition-all hover:scale-[1.02] active:scale-95">
-                                    <Plus className="w-5 h-5 mr-2" />
+                                <Button className="h-10 sm:h-12 w-full sm:w-auto px-6 rounded-xl sm:rounded-2xl bg-[#191A43] text-white font-bold hover:bg-[#191A43]/90 shadow-xl shadow-[#191A43]/10 text-xs sm:text-sm transition-all hover:scale-[1.02] active:scale-95">
+                                    <Plus className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
                                     Register Asset
                                 </Button>
                             </DialogTrigger>
@@ -284,65 +284,65 @@ export default function InventoryPage() {
 
             <div className="max-w-[1600px] mx-auto px-6 sm:px-12 py-10">
                 {/* Metrics Bar */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-                    <Card className="border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white rounded-3xl overflow-hidden group hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all">
-                        <CardContent className="p-6 flex items-center gap-5">
-                            <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center transition-transform group-hover:scale-110">
-                                {isLogistics ? <Truck className="w-6 h-6" /> : <Boxes className="w-6 h-6" />}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8 sm:mb-12">
+                    <Card className="border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white rounded-2xl sm:rounded-3xl overflow-hidden group hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all">
+                        <CardContent className="p-4 sm:p-6 flex items-center gap-4 sm:gap-5">
+                            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center transition-transform group-hover:scale-110">
+                                {isLogistics ? <Truck className="w-5 h-5 sm:w-6 sm:h-6" /> : <Boxes className="w-5 h-5 sm:w-6 sm:h-6" />}
                             </div>
                             <div>
-                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                                <p className="text-[9px] sm:text-[10px] font-black text-slate-400 uppercase tracking-widest">
                                     {isLogistics ? "Shipments Today" : "Total Units"}
                                 </p>
-                                <p className="text-2xl font-black text-[#191A43]">
+                                <p className="text-xl sm:text-2xl font-black text-[#191A43]">
                                     {isLogistics ? stats.receivedToday : stats.totalItems}
                                 </p>
                             </div>
                         </CardContent>
                     </Card>
 
-                    <Card className="border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white rounded-3xl overflow-hidden group hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all">
-                        <CardContent className="p-6 flex items-center gap-5">
-                            <div className="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center transition-transform group-hover:scale-110">
-                                <TrendingUp className="w-6 h-6" />
+                    <Card className="border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white rounded-2xl sm:rounded-3xl overflow-hidden group hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all">
+                        <CardContent className="p-4 sm:p-6 flex items-center gap-4 sm:gap-5">
+                            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center transition-transform group-hover:scale-110">
+                                <TrendingUp className="w-5 h-5 sm:w-6 sm:h-6" />
                             </div>
                             <div>
-                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                                <p className="text-[9px] sm:text-[10px] font-black text-slate-400 uppercase tracking-widest">
                                     Active SKUs
                                 </p>
-                                <p className="text-2xl font-black text-[#191A43]">
+                                <p className="text-xl sm:text-2xl font-black text-[#191A43]">
                                     {items.length}
                                 </p>
                             </div>
                         </CardContent>
                     </Card>
 
-                    <Card className="border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white rounded-3xl overflow-hidden group hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all">
-                        <CardContent className="p-6 flex items-center gap-5">
-                            <div className="w-12 h-12 rounded-2xl bg-red-50 text-red-500 flex items-center justify-center transition-transform group-hover:scale-110">
-                                <AlertCircle className="w-6 h-6" />
+                    <Card className="border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white rounded-2xl sm:rounded-3xl overflow-hidden group hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all">
+                        <CardContent className="p-4 sm:p-6 flex items-center gap-4 sm:gap-5">
+                            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-red-50 text-red-500 flex items-center justify-center transition-transform group-hover:scale-110">
+                                <AlertCircle className="w-5 h-5 sm:w-6 sm:h-6" />
                             </div>
                             <div>
-                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                                <p className="text-[9px] sm:text-[10px] font-black text-slate-400 uppercase tracking-widest">
                                     Low Stock Alerts
                                 </p>
-                                <p className="text-2xl font-black text-red-600">
+                                <p className="text-xl sm:text-2xl font-black text-red-600">
                                     {stats.lowStock}
                                 </p>
                             </div>
                         </CardContent>
                     </Card>
 
-                    <Card className="border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-[#191A43] rounded-3xl overflow-hidden group hover:scale-[1.02] transition-all">
-                        <CardContent className="p-6 flex items-center gap-5">
-                            <div className="w-12 h-12 rounded-2xl bg-white/10 text-white flex items-center justify-center transition-transform group-hover:rotate-12">
-                                <ShoppingCart className="w-6 h-6" />
+                    <Card className="border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-[#191A43] rounded-2xl sm:rounded-3xl overflow-hidden group hover:scale-[1.02] transition-all">
+                        <CardContent className="p-4 sm:p-6 flex items-center gap-4 sm:gap-5">
+                            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-white/10 text-white flex items-center justify-center transition-transform group-hover:rotate-12">
+                                <ShoppingCart className="w-5 h-5 sm:w-6 sm:h-6" />
                             </div>
                             <div>
-                                <p className="text-[10px] font-black text-white/50 uppercase tracking-widest">
+                                <p className="text-[9px] sm:text-[10px] font-black text-white/50 uppercase tracking-widest">
                                     Total Asset Value
                                 </p>
-                                <p className="text-2xl font-black text-white">
+                                <p className="text-xl sm:text-2xl font-black text-white">
                                     GHS {stats.totalStockValue.toLocaleString()}
                                 </p>
                             </div>
@@ -353,8 +353,75 @@ export default function InventoryPage() {
                 {/* Main Content */}
                 <div className="grid grid-cols-1 gap-8">
                     {/* Stock Table */}
-                    <Card className="border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white rounded-[2.5rem] overflow-hidden">
-                        <div className="overflow-x-auto">
+                    <Card className="border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white rounded-[1.5rem] sm:rounded-[2.5rem] overflow-hidden">
+                        {/* Mobile Card View */}
+                        <div className="md:hidden divide-y divide-slate-50">
+                            {filteredItems.map((item) => (
+                                <div key={item.id} className="p-5 space-y-4">
+                                    <div className="flex items-center gap-4">
+                                        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-white font-black text-lg shadow-lg shrink-0 ${getAvatarColor(item.name)}`}>
+                                            {item.name[0]}
+                                        </div>
+                                        <div className="min-w-0 flex-1">
+                                            <h3 className="font-black text-[#191A43] text-base leading-tight truncate">{item.name}</h3>
+                                            <div className="flex flex-wrap items-center gap-2 mt-1">
+                                                <Badge variant="outline" className="text-[8px] font-bold uppercase tracking-wider bg-slate-50 border-slate-100 text-slate-400 px-1.5 py-0">
+                                                    {item.category || "General"}
+                                                </Badge>
+                                                <span className="text-[9px] text-slate-300 font-bold uppercase tracking-widest truncate">{item.sku || "No SKU"}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-4 py-2">
+                                        <div className="bg-slate-50/50 p-3 rounded-xl border border-slate-100/50">
+                                            <p className="text-[8px] font-black text-slate-400 uppercase tracking-[0.15em] mb-1">Available</p>
+                                            <p className={`text-xl font-black ${parseFloat(item.quantity) <= parseFloat(item.minStock || "0") ? "text-red-500" : "text-emerald-600"}`}>
+                                                {item.quantity} <span className="text-[10px] text-slate-400 opacity-50 ml-1">{item.unit || "Units"}</span>
+                                            </p>
+                                        </div>
+                                        <div className="bg-slate-50/50 p-3 rounded-xl border border-slate-100/50">
+                                            <p className="text-[8px] font-black text-slate-400 uppercase tracking-[0.15em] mb-1">Unit Cost</p>
+                                            <p className="text-lg font-black text-[#191A43]">
+                                                GHS {item.unitCost || "0"}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex items-center justify-between gap-3 pt-1">
+                                        <div className="flex items-center gap-2">
+                                            <Button 
+                                                size="sm" 
+                                                variant="outline" 
+                                                onClick={() => handleUpdateStock(item.id, "out", "1")}
+                                                className="h-9 px-3 rounded-lg border-slate-200 text-slate-600"
+                                            >
+                                                <Minus className="w-4 h-4" />
+                                            </Button>
+                                            <Button 
+                                                size="sm" 
+                                                variant="outline" 
+                                                onClick={() => handleUpdateStock(item.id, "in", "1")}
+                                                className="h-9 px-3 rounded-lg border-slate-200 text-slate-600"
+                                            >
+                                                <Plus className="w-4 h-4" />
+                                            </Button>
+                                        </div>
+                                        <Button 
+                                            size="sm" 
+                                            variant="ghost" 
+                                            onClick={() => handleRemove(item.id)}
+                                            className="h-9 w-9 rounded-lg text-slate-300 hover:text-red-500 hover:bg-red-50"
+                                        >
+                                            <Trash2 className="w-4 h-4" />
+                                        </Button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* Desktop Table View */}
+                        <div className="hidden md:block overflow-x-auto">
                             <table className="w-full text-left border-collapse min-w-[1000px]">
                                 <thead>
                                     <tr className="border-b border-slate-50 bg-slate-50/50">
@@ -459,18 +526,18 @@ export default function InventoryPage() {
                                     </AnimatePresence>
                                 </tbody>
                             </table>
-                            {filteredItems.length === 0 && (
-                                <div className="py-20 flex flex-col items-center justify-center text-center px-6">
-                                    <div className="w-16 h-16 rounded-full bg-slate-50 flex items-center justify-center mb-4">
-                                        <Boxes className="w-8 h-8 text-slate-200" />
-                                    </div>
-                                    <h3 className="text-base font-black text-[#191A43]">Inventory Empty</h3>
-                                    <p className="text-sm text-slate-400 max-w-xs mt-1">
-                                        Start tracking your {isLogistics ? "packages" : "products"} by adding your first item.
-                                    </p>
-                                </div>
-                            )}
                         </div>
+                        {filteredItems.length === 0 && (
+                            <div className="py-20 flex flex-col items-center justify-center text-center px-6">
+                                <div className="w-16 h-16 rounded-full bg-slate-50 flex items-center justify-center mb-4">
+                                    <Boxes className="w-8 h-8 text-slate-200" />
+                                </div>
+                                <h3 className="text-base font-black text-[#191A43]">Inventory Empty</h3>
+                                <p className="text-sm text-slate-400 max-w-xs mt-1">
+                                    Start tracking your {isLogistics ? "packages" : "products"} by adding your first item.
+                                </p>
+                            </div>
+                        )}
                     </Card>
                 </div>
             </div>
