@@ -26,6 +26,7 @@ import {
     History,
     Trash2
 } from "lucide-react";
+import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import Link from "next/link";
 import {
@@ -187,99 +188,13 @@ export default function InventoryPage() {
                                 className="h-10 sm:h-12 pl-11 sm:pl-12 pr-4 rounded-xl sm:rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white focus:ring-2 focus:ring-[#191A43]/5 transition-all text-xs sm:text-sm font-semibold"
                             />
                         </div>
-                        <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
-                            <DialogTrigger asChild>
-                                <Button className="w-full sm:w-auto h-10 sm:h-12 bg-[#191A43] hover:bg-[#191A43]/90 text-white rounded-xl sm:rounded-2xl px-6 gap-2 font-black uppercase tracking-widest text-xs sm:text-sm shadow-xl shadow-[#191A43]/20">
-                                    <Plus className="w-4 h-4" />
-                                    Add Asset
-                                </Button>
-                            </DialogTrigger>
-                            <DialogContent className="sm:max-w-[425px] rounded-2xl">
-                                <DialogHeader>
-                                    <DialogTitle className="text-xl font-black text-[#191A43]">Register New Asset</DialogTitle>
-                                    <DialogDescription className="text-slate-500 font-medium">
-                                        Add a new product or material to your tracked inventory.
-                                    </DialogDescription>
-                                </DialogHeader>
-                                <form onSubmit={handleAddItem} className="space-y-4 mt-4">
-                                    <div className="space-y-2">
-                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">{config.itemLabel}</label>
-                                        <Input 
-                                            placeholder={config.itemPlaceholder}
-                                            value={newItem.name}
-                                            onChange={e => setNewItem({...newItem, name: e.target.value})}
-                                            required
-                                            className="h-11 rounded-xl bg-slate-50 border-slate-100 font-bold"
-                                        />
-                                    </div>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div className="space-y-2">
-                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Initial Qty</label>
-                                            <Input 
-                                                type="number"
-                                                value={newItem.quantity}
-                                                onChange={e => setNewItem({...newItem, quantity: e.target.value})}
-                                                className="h-11 rounded-xl bg-slate-50 border-slate-100 font-bold"
-                                            />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">SKU / ID</label>
-                                            <Input 
-                                                placeholder="Optional"
-                                                value={newItem.sku}
-                                                onChange={e => setNewItem({...newItem, sku: e.target.value})}
-                                                className="h-11 rounded-xl bg-slate-50 border-slate-100 font-bold"
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div className="space-y-2">
-                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Unit Cost</label>
-                                            <Input 
-                                                type="number"
-                                                placeholder="0.00"
-                                                value={newItem.unitCost}
-                                                onChange={e => setNewItem({...newItem, unitCost: e.target.value})}
-                                                className="h-11 rounded-xl bg-slate-50 border-slate-100 font-bold"
-                                            />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Selling Price</label>
-                                            <Input 
-                                                type="number"
-                                                placeholder="0.00"
-                                                value={newItem.sellingPrice}
-                                                onChange={e => setNewItem({...newItem, sellingPrice: e.target.value})}
-                                                className="h-11 rounded-xl bg-slate-50 border-slate-100 font-bold"
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div className="space-y-2">
-                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Unit</label>
-                                            <Input 
-                                                placeholder="e.g. Pieces"
-                                                value={newItem.unit}
-                                                onChange={e => setNewItem({...newItem, unit: e.target.value})}
-                                                className="h-11 rounded-xl bg-slate-50 border-slate-100 font-bold"
-                                            />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Min Alert Qty</label>
-                                            <Input 
-                                                type="number"
-                                                value={newItem.minStock}
-                                                onChange={e => setNewItem({...newItem, minStock: e.target.value})}
-                                                className="h-11 rounded-xl bg-slate-50 border-slate-100 font-bold"
-                                            />
-                                        </div>
-                                    </div>
-                                    <Button type="submit" className="w-full h-12 rounded-xl bg-[#191A43] text-white font-black uppercase tracking-widest mt-2">
-                                        Save Asset
-                                    </Button>
-                                </form>
-                            </DialogContent>
-                        </Dialog>
+                        <Button 
+                            onClick={() => setIsAddModalOpen(true)}
+                            className="w-full sm:w-auto h-10 sm:h-12 bg-[#191A43] hover:bg-[#191A43]/90 text-white rounded-xl sm:rounded-2xl px-6 gap-2 font-black uppercase tracking-widest text-xs sm:text-sm shadow-xl shadow-[#191A43]/20"
+                        >
+                            <Plus className="w-4 h-4" />
+                            Add Asset
+                        </Button>
                     </div>
                 </div>
             </div>
@@ -539,7 +454,8 @@ export default function InventoryPage() {
                         )}
                     </Card>
                 </div>
-                <DialogContent className="max-w-2xl rounded-[2rem] border-none shadow-2xl p-0 overflow-hidden bg-white">
+                <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
+                    <DialogContent className="max-w-2xl rounded-[2rem] border-none shadow-2xl p-0 overflow-hidden bg-white">
                     <DialogHeader className="p-8 pb-4">
                         <div className="flex items-center gap-4 mb-4">
                             <div className="w-12 h-12 rounded-2xl bg-[#191A43] flex items-center justify-center shadow-lg shadow-[#191A43]/20">
@@ -649,6 +565,7 @@ export default function InventoryPage() {
                 <Plus className="w-6 h-6 sm:w-8 sm:h-8 transition-transform group-hover:rotate-90" />
             </motion.button>
         </div>
+    </div>
     );
 }
 
