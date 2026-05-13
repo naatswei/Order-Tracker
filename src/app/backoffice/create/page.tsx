@@ -94,6 +94,31 @@ function CreateOrderContent() {
         getInventory().then(items => setAllInventory(items))
     }, [searchParams, organization])
 
+    // Bidirectional sync for quantity (only if 1 item is linked)
+    useEffect(() => {
+        const metadataQty = String(metadata.quantity || "");
+        if (selectedInventory.length === 1 && metadataQty) {
+            const invQty = selectedInventory[0].quantity;
+            if (metadataQty !== invQty) {
+                setSelectedInventory(prev => {
+                    const next = [...prev];
+                    next[0].quantity = metadataQty;
+                    return next;
+                });
+            }
+        }
+    }, [metadata.quantity]);
+
+    useEffect(() => {
+        if (selectedInventory.length === 1) {
+            const invQty = selectedInventory[0].quantity;
+            const metadataQty = String(metadata.quantity || "");
+            if (invQty !== metadataQty) {
+                setMetadata(prev => ({ ...prev, quantity: invQty }));
+            }
+        }
+    }, [selectedInventory]);
+
     // Auto-match inventory logic
     useEffect(() => {
         if (!itemType || editingId || allInventory.length === 0) return;
@@ -107,14 +132,18 @@ function CreateOrderContent() {
         if (match) {
             const alreadySelected = selectedInventory.find(s => s.id === match.id);
             if (!alreadySelected) {
+                // Use the quantity from metadata if it exists, otherwise default to 1
+                const initialQty = String(metadata.quantity || "1");
+                
                 setSelectedInventory(prev => [...prev, { 
                     id: match.id, 
                     name: match.name, 
-                    quantity: "1",
+                    quantity: initialQty,
                     max: parseFloat(match.quantity) - parseFloat(match.reserved || "0")
                 }]);
+                
                 toast.success(`Matched "${match.name}"`, {
-                    description: "Automatically reserved 1 unit from inventory.",
+                    description: `Automatically reserved ${initialQty} unit(s) from inventory.`,
                     duration: 3000,
                 });
             }
