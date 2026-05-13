@@ -155,9 +155,9 @@ export async function updateOrderStatus(orderId: string, status: string, locatio
         // Trigger inventory logic based on status
         const lowerStatus = status.toLowerCase();
         if (lowerStatus === "delivered" || lowerStatus === "completed" || lowerStatus === "collected") {
-            await consumeReservedStock(orderId);
+            await consumeReservedStock(orderId, tx);
         } else if (lowerStatus === "cancelled" || lowerStatus === "voided") {
-            await releaseReservedStock(orderId);
+            await releaseReservedStock(orderId, tx);
         }
     });
 
@@ -292,9 +292,9 @@ export async function bulkUpdateOrderStatus(orderIds: string[], status: string, 
             // Trigger inventory logic based on status
             const lowerStatus = status.toLowerCase();
             if (lowerStatus === "delivered" || lowerStatus === "completed" || lowerStatus === "collected") {
-                await consumeReservedStock(orderId);
+                await consumeReservedStock(orderId, tx);
             } else if (lowerStatus === "cancelled" || lowerStatus === "voided") {
-                await releaseReservedStock(orderId);
+                await releaseReservedStock(orderId, tx);
             }
         }
     });

@@ -135,7 +135,14 @@ export async function updateOrderStage(orderId: string, stageName: string, messa
     const staffId = await getCurrentStaffId(orgId, userId);
 
     await db.transaction(async (tx) => {
-        // Update order current status
+        // 1. Get the current order to see its old status
+        const currentOrder = await tx.query.orders.findFirst({
+            where: and(eq(orders.id, orderId), eq(orders.clerkOrgId, orgId))
+        });
+
+        if (!currentOrder) throw new Error("Order not found");
+
+        // 2. Update order current status
         await tx
             .update(orders)
             .set({
@@ -144,15 +151,33 @@ export async function updateOrderStage(orderId: string, stageName: string, messa
             })
             .where(and(eq(orders.id, orderId), eq(orders.clerkOrgId, orgId)));
 
-        // Add to history with staff attribution
+        // 3. Add to history with staff attribution
         await tx.insert(statusHistory).values({
             id: `sh_${nanoid(10)}`,
             orderId: orderId,
             status: stageName,
             location: "Production Line",
             message: message || `Moved to ${stageName}`,
-            staffId: staffId, // Automatically attribute to the performing staff member
+            staffId: staffId,
         });
+
+        // 4. Trigger inventory logic based on status transition
+        const oldStatus = (currentOrder.currentStatus || "").toLowerCase();
+        const newStatus = stageName.toLowerCase();
+
+        const isDelivered = (s: string) => s === "delivered" || s === "completed" || s === "collected";
+        const isCancelled = (s: string) => s === "cancelled" || s === "voided" || s === "returned";
+
+        if (!isDelivered(oldStatus) && isDelivered(newStatus)) {
+            // Moving TO delivered - consume the reserved stock
+            await consumeReservedStock(orderId, tx);
+        } else if (isDelivered(oldStatus) && !isDelivered(newStatus)) {
+            // Moving BACK FROM delivered - put back into reserved/physical
+            await releaseReservedStock(orderId, tx);
+        } else if (isCancelled(newStatus)) {
+            // Cancelled - release reserved stock
+            await releaseReservedStock(orderId, tx);
+        }
     });
 
     revalidatePath("/backoffice");
@@ -279,11 +304,10 @@ export async function linkOrderToInventory(orderId: string, inventoryItems: { id
                 clerkOrgId: orgId,
             });
 
-            // 2. Subtract from physical quantity immediately AND increment totalSold
+            // 2. Add to RESERVED instead of physical quantity deduction
             await tx.update(inventory)
                 .set({ 
-                    quantity: sql`(${inventory.quantity}::float - ${parseFloat(item.quantity)})::text`,
-                    totalSold: sql`(${inventory.totalSold}::float + ${parseFloat(item.quantity)})::text`,
+                    reserved: sql`(${inventory.reserved}::float + ${parseFloat(item.quantity)})::text`,
                     updatedAt: new Date() 
                 })
                 .where(and(eq(inventory.id, item.id), eq(inventory.clerkOrgId, orgId)));
@@ -292,9 +316,9 @@ export async function linkOrderToInventory(orderId: string, inventoryItems: { id
             await tx.insert(inventoryTransactions).values({
                 id: `tr_${nanoid(10)}`,
                 inventoryId: item.id,
-                type: "out",
+                type: "adjustment",
                 quantity: item.quantity,
-                note: `Direct deduction for Order #${orderId}`,
+                note: `Stock reserved for Order #${orderId}`,
                 clerkOrgId: orgId,
             });
         }
@@ -304,33 +328,22 @@ export async function linkOrderToInventory(orderId: string, inventoryItems: { id
     return { success: true };
 }
 
-export async function consumeReservedStock(orderId: string) {
+export async function consumeReservedStock(orderId: string, providedTx?: any) {
     const { orgId } = await auth();
     if (!orgId) throw new Error("Unauthorized");
 
-        // In the simpler model, stock is already subtracted at the "Link" stage.
-        // So we just leave this here for potential future status updates.
-        return { success: true };
-
-    revalidatePath("/backoffice/inventory");
-    return { success: true };
-}
-
-export async function releaseReservedStock(orderId: string) {
-    const { orgId } = await auth();
-    if (!orgId) throw new Error("Unauthorized");
-
-    await db.transaction(async (tx) => {
+    const logic = async (tx: any) => {
         const links = await tx.select().from(orderInventoryLinks).where(and(eq(orderInventoryLinks.orderId, orderId), eq(orderInventoryLinks.clerkOrgId, orgId)));
         
         for (const link of links) {
             const qty = parseFloat(link.quantity);
 
-            // Re-add to quantity AND decrement totalSold (Return to Stock)
+            // Subtract from physical quantity AND reserved, increment totalSold
             await tx.update(inventory)
                 .set({ 
-                    quantity: sql`(${inventory.quantity}::float + ${qty})::text`,
-                    totalSold: sql`(${inventory.totalSold}::float - ${qty})::text`,
+                    quantity: sql`(${inventory.quantity}::float - ${qty})::text`,
+                    reserved: sql`(${inventory.reserved}::float - ${qty})::text`,
+                    totalSold: sql`(${inventory.totalSold}::float + ${qty})::text`,
                     updatedAt: new Date()
                 })
                 .where(and(eq(inventory.id, link.inventoryId), eq(inventory.clerkOrgId, orgId)));
@@ -338,13 +351,56 @@ export async function releaseReservedStock(orderId: string) {
             await tx.insert(inventoryTransactions).values({
                 id: `tr_${nanoid(10)}`,
                 inventoryId: link.inventoryId,
-                type: "in",
+                type: "out",
                 quantity: link.quantity,
-                note: `Returned to stock from Order #${orderId}`,
+                note: `Delivered: Deducted from physical stock for Order #${orderId}`,
                 clerkOrgId: orgId,
             });
         }
-    });
+    };
+
+    if (providedTx) {
+        await logic(providedTx);
+    } else {
+        await db.transaction(logic);
+    }
+
+    revalidatePath("/backoffice/inventory");
+    return { success: true };
+}
+
+export async function releaseReservedStock(orderId: string, providedTx?: any) {
+    const { orgId } = await auth();
+    if (!orgId) throw new Error("Unauthorized");
+
+    const logic = async (tx: any) => {
+        const links = await tx.select().from(orderInventoryLinks).where(and(eq(orderInventoryLinks.orderId, orderId), eq(orderInventoryLinks.clerkOrgId, orgId)));
+        
+        for (const link of links) {
+            // Simply subtract from reserved (stock is still there)
+            await tx.update(inventory)
+                .set({ 
+                    reserved: sql`(${inventory.reserved}::float - ${parseFloat(link.quantity)})::text`,
+                    updatedAt: new Date()
+                })
+                .where(and(eq(inventory.id, link.inventoryId), eq(inventory.clerkOrgId, orgId)));
+
+            await tx.insert(inventoryTransactions).values({
+                id: `tr_${nanoid(10)}`,
+                inventoryId: link.inventoryId,
+                type: "adjustment",
+                quantity: link.quantity,
+                note: `Reservation released for Order #${orderId}`,
+                clerkOrgId: orgId,
+            });
+        }
+    };
+
+    if (providedTx) {
+        await logic(providedTx);
+    } else {
+        await db.transaction(logic);
+    }
 
     revalidatePath("/backoffice/inventory");
     return { success: true };
