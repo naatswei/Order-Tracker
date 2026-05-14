@@ -387,20 +387,28 @@ export default function ProfilePage() {
                                             plan.name === "Growth" ? "border-slate-300 bg-slate-50/50" : "bg-white"
                                         )}>
                                             <CardHeader className="p-0 space-y-1">
-                                                {plan.name === "Growth" && (
-                                                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#CE0003] text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full shadow-sm whitespace-nowrap">
-                                                        Most Popular
-                                                    </div>
-                                                )}
-                                                <h3 className="text-lg font-bold">{plan.name}</h3>
-                                                <p className="text-[11px] text-slate-500 font-medium">{plan.description}</p>
+                                        <Card 
+                                            key={plan.name} 
+                                            className={cn(
+                                                "border-slate-100 flex flex-col relative",
+                                                plan.popular && "ring-2 ring-[#161931] shadow-lg"
+                                            )}
+                                        >
+                                            {plan.popular && (
+                                                <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#161931] text-white text-[8px] font-bold uppercase tracking-widest px-3 py-1 rounded-full shadow-sm">
+                                                    Recommended
+                                                </div>
+                                            )}
+                                            <CardHeader className="p-4 sm:p-6 pb-0">
+                                                <CardTitle className="text-base sm:text-lg font-bold">{plan.name}</CardTitle>
+                                                <CardDescription className="text-xs">{plan.description}</CardDescription>
                                             </CardHeader>
                                             <CardContent className="p-0 pt-4 sm:pt-6 flex-1 flex flex-col">
-                                                <div className="mb-4 sm:mb-6">
+                                                <div className="mb-4 sm:mb-6 px-4 sm:px-6">
                                                     <span className="text-xl sm:text-2xl font-bold tracking-tight">{getPlanPriceLabel(plan)}</span>
                                                     <span className="text-xs text-slate-500 font-medium ml-1">/{getPlanPeriodLabel(plan)}</span>
                                                 </div>
-                                                <ul className="space-y-3 mb-8 flex-1">
+                                                <ul className="space-y-3 mb-8 flex-1 px-4 sm:px-6">
                                                     {plan.features.map((feature, idx) => (
                                                         <li key={idx} className="flex items-start gap-2 text-[12px] font-medium text-slate-600">
                                                             <Check className="w-3.5 h-3.5 text-emerald-500 mt-0.5 shrink-0" />
@@ -408,14 +416,16 @@ export default function ProfilePage() {
                                                         </li>
                                                     ))}
                                                 </ul>
-                                                <PlanButton
-                                                    plan={plan}
-                                                    publicKey={publicKey}
-                                                    organization={organization}
-                                                    user={user}
-                                                    onSuccess={() => handleActivateSubscription(plan.name)}
-                                                    isLoaded={isLoaded}
-                                                />
+                                                <div className="p-4 sm:p-6 pt-0">
+                                                    <PlanButton
+                                                        plan={plan}
+                                                        publicKey={publicKey}
+                                                        organization={organization}
+                                                        user={user}
+                                                        onSuccess={() => handleActivateSubscription(plan.name)}
+                                                        isLoaded={isLoaded}
+                                                    />
+                                                </div>
                                             </CardContent>
                                         </Card>
                                     ))}

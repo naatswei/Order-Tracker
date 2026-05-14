@@ -195,7 +195,7 @@ export default function SubscriptionPage() {
                     <div className={cn("grid grid-cols-1 md:grid-cols-2 gap-6 pt-6", displayPlans.length === 3 ? "lg:grid-cols-3 max-w-5xl mx-auto" : "lg:grid-cols-4")}>
                         {displayPlans.map((plan) => (
                             <div key={plan.name} className="relative group">
-                                {plan.name === "Growth" && (
+                                {plan.popular && (
                                     <div className="absolute -top-12 left-0 right-0 bg-[#161931] h-24 rounded-t-[1.5rem] -z-10 flex justify-center pt-3">
                                         <div className="bg-white text-[#161931] text-[10px] font-bold uppercase tracking-widest px-6 py-1.5 rounded-full h-fit">
                                             Most Popular
@@ -204,13 +204,14 @@ export default function SubscriptionPage() {
                                 )}
                                 <Card
                                     className={cn(
-                                        "relative flex flex-col border-0 rounded-[1.5rem] p-8 shadow-sm transition-all duration-300 hover:shadow-xl hover:-translate-y-1 h-full bg-white text-[#101323]",
-                                        plan.name === "Growth" && "mt-0"
+                                        "relative flex flex-col border-0 rounded-[1.5rem] p-8 shadow-sm transition-all duration-300 hover:shadow-xl hover:-translate-y-1 h-full text-[#101323]",
+                                        plan.popular ? "bg-white ring-2 ring-[#161931] shadow-2xl" : "bg-white",
+                                        plan.popular && "mt-0"
                                     )}
                                 >
-                                    {plan.name === "Yearly" && (
+                                    {plan.id === "1-year" && (
                                         <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#00B171] text-white text-[10px] font-bold uppercase tracking-widest px-4 py-1.5 rounded-full shadow-sm whitespace-nowrap z-20">
-                                            SAVE 64%
+                                            BEST VALUE
                                         </div>
                                     )}
                                     <CardHeader className="space-y-1 p-0">
