@@ -75,10 +75,10 @@ export const BUSINESS_CONFIGS: Record<string, BusinessConfig> = {
         searchPlaceholder: "Search by order number, name",
         dashboardTitle: "Active Orders",
         theme: {
-            primary: "#111827",   // Gray 900 (Obsidian Professional)
-            secondary: "#6366F1", // Indigo 500 (Modern, Trustworthy)
-            accent: "#4F46E5",    // Indigo 600
-            text: "#111827"
+            primary: "#1A1A1A",   // Obsidian Black
+            secondary: "#831843", // Deep Rose/Maroon (Elegant & Professional)
+            accent: "#BE123C",    // Rose 700
+            text: "#1A1A1A"
         },
         extraFields: [
             { id: "length", label: "Wig Length", placeholder: "e.g., 22 inches", type: "text" },
@@ -104,8 +104,8 @@ export const BUSINESS_CONFIGS: Record<string, BusinessConfig> = {
         searchPlaceholder: "Search by tracking number, recipient",
         dashboardTitle: "Active Shipments",
         theme: {
-            primary: "#0F172A",   // Slate 900 (Corporate Professional)
-            secondary: "#0284C7", // Sky 600 (Logistics Blue)
+            primary: "#0F172A",   // Slate 900
+            secondary: "#0284C7", // Sky Blue (Trustworthy & Fast)
             accent: "#0EA5E9",    // Sky 500
             text: "#0F172A"
         },
@@ -133,9 +133,9 @@ export const BUSINESS_CONFIGS: Record<string, BusinessConfig> = {
         searchPlaceholder: "Search by order number, customer name",
         dashboardTitle: "Active Orders",
         theme: {
-            primary: "#020617",   // Midnight Black (Premium SaaS)
-            secondary: "#3B82F6", // Blue 600 (Action Blue)
-            accent: "#10B981",    // Emerald Green
+            primary: "#020617",   // Midnight Black
+            secondary: "#059669", // Emerald Green (Growth & Modern)
+            accent: "#10B981",    // Emerald 500
             text: "#0F172A"       // Dark Slate
         },
         extraFields: [
