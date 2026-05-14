@@ -302,7 +302,7 @@ export default function ProfilePage() {
                                             <Button
                                                 type="submit"
                                                 disabled={profileLoading}
-                                                className="min-w-[140px] h-11 rounded-xl bg-[#191A43] hover:bg-[#191A43]/90 text-white font-bold shadow-sm transition-opacity"
+                                                className="min-w-[140px] h-11 rounded-full bg-[#111827] hover:bg-[#1f2937] text-white font-bold shadow-[0_4px_20px_rgb(0,0,0,0.1)] transition-all hover:-translate-y-0.5 active:scale-[0.98]"
                                             >
                                                 {profileLoading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
                                                 Save Changes
@@ -367,7 +367,7 @@ export default function ProfilePage() {
                                             )}
                                         </div>
                                         {isExpired && (
-                                            <Button className="h-11 px-6 rounded-xl font-bold bg-[#CE0003] hover:bg-[#CE0003]/90 text-white shadow-sm">
+                                            <Button className="h-11 px-8 rounded-full font-bold bg-[#CE0003] hover:bg-[#CE0003]/90 text-white shadow-[0_4px_20px_rgb(206,0,3,0.2)] transition-all hover:-translate-y-0.5 active:scale-[0.98]">
                                                 Renew Now
                                             </Button>
                                         )}

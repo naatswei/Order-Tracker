@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { motion, AnimatePresence } from "framer-motion"
 import { getUnreadCount } from "@/app/actions/messages"
 import { usePathname } from "next/navigation"
+import { cn } from "@/lib/utils"
 
 interface BackofficeHeaderProps {
     config: {

@@ -158,71 +158,71 @@ export default function BackofficePage() {
                         {/* Search Input */}
                         <div className="relative w-full md:flex-1 md:max-w-xl">
                             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                            <Input
-                                placeholder={config.searchPlaceholder}
-                                className="pl-11 h-10 rounded-lg bg-white border-none shadow-[0_4px_20px_rgb(0,0,0,0.03)] focus-visible:ring-1 focus-visible:ring-slate-200 transition-all text-sm font-medium placeholder:text-slate-400 w-full"
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                            />
-                        </div>
-
-                        {/* Action Buttons */}
-                        <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
-                            <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                    <Button variant="outline" className="h-10 rounded-lg bg-white border border-slate-100 text-slate-700 hover:bg-white hover:border-slate-200 hover:text-slate-900 gap-2 px-3.5 shadow-[0_4px_20px_rgb(0,0,0,0.02)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] hover:-translate-y-0.5 transition-all duration-300 md:flex-none text-sm font-medium">
-                                        <Filter className="w-4 h-4" />
-                                        {statusFilter === "All" ? "Filter" : statusFilter}
-                                    </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end" className="w-[200px] max-h-[300px] overflow-y-auto">
-                                    <DropdownMenuLabel>Filter by Status</DropdownMenuLabel>
-                                    <DropdownMenuSeparator />
-                                    <DropdownMenuItem
-                                        className="cursor-pointer focus:bg-slate-50 focus:text-slate-900 transition-colors"
-                                        style={{ color: config.theme.primary }}
-                                        onSelect={() => router.push("/backoffice")}
-                                    >
-                                        All {config.dashboardTitle.split(" ").length > 1 ? config.dashboardTitle.split(" ")[1] : "Order"}s
-                                    </DropdownMenuItem>
-                                    {statusOptions.map((status) => (
+                                <Input
+                                    placeholder={config.searchPlaceholder}
+                                    className="pl-11 h-11 rounded-xl bg-white border-none shadow-[0_4px_20px_rgb(0,0,0,0.03)] focus-visible:ring-1 focus-visible:ring-slate-200 transition-all text-sm font-medium placeholder:text-slate-400 w-full"
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                />
+                            </div>
+    
+                            {/* Action Buttons */}
+                            <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <Button variant="outline" className="h-11 rounded-full bg-white border border-slate-200 text-slate-700 hover:bg-white hover:border-slate-300 hover:text-slate-900 gap-2 px-5 shadow-[0_4px_20px_rgb(0,0,0,0.02)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] hover:-translate-y-0.5 transition-all duration-300 md:flex-none text-sm font-semibold">
+                                            <Filter className="w-4 h-4" />
+                                            {statusFilter === "All" ? "Filter" : statusFilter}
+                                        </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent align="end" className="w-[200px] max-h-[300px] overflow-y-auto rounded-2xl shadow-xl border-slate-100">
+                                        <DropdownMenuLabel>Filter by Status</DropdownMenuLabel>
+                                        <DropdownMenuSeparator />
                                         <DropdownMenuItem
-                                            key={status}
                                             className="cursor-pointer focus:bg-slate-50 focus:text-slate-900 transition-colors"
                                             style={{ color: config.theme.primary }}
-                                            onSelect={() => router.push(`/backoffice/status/${encodeURIComponent(status)}`)}
+                                            onSelect={() => router.push("/backoffice")}
                                         >
-                                            {status}
+                                            All {config.dashboardTitle.split(" ").length > 1 ? config.dashboardTitle.split(" ")[1] : "Order"}s
                                         </DropdownMenuItem>
-                                    ))}
-                                </DropdownMenuContent>
-                            </DropdownMenu>
-                            <Button
-                                asChild={!needsRenewal}
-                                disabled={needsRenewal}
-                                className={cn(
-                                    "flex-1 md:flex-none h-10 rounded-lg text-white gap-2 px-3.5 shadow-[0_4px_20px_rgb(0,0,0,0.04)] text-sm font-medium border-0 transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] hover:-translate-y-0.5 active:scale-[0.98]",
-                                    needsRenewal && "opacity-50 cursor-not-allowed"
-                                )}
-                                style={{ backgroundColor: !needsRenewal ? config.theme.primary : "#94a3b8" }}
-                            >
-                                {needsRenewal ? (
-                                    <span>Bulk Update</span>
-                                ) : (
-                                    <Link href={searchQuery ? `/backoffice/bulk?search=${encodeURIComponent(searchQuery)}` : "/backoffice/bulk"}>
-                                        Bulk Update
-                                    </Link>
-                                )}
-                            </Button>
-                            <Button
-                                asChild={!needsRenewal}
-                                disabled={needsRenewal}
-                                className={cn(
-                                    "flex-1 md:flex-none h-10 rounded-lg shadow-[0_4px_20px_rgb(0,0,0,0.04)] gap-2 px-4 text-sm font-medium text-white border-0 transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] hover:-translate-y-0.5 active:scale-[0.98]",
-                                    needsRenewal && "opacity-50 cursor-not-allowed"
-                                )}
-                                style={{ backgroundColor: !needsRenewal ? config.theme.secondary : "#94a3b8" }}
-                            >
+                                        {statusOptions.map((status) => (
+                                            <DropdownMenuItem
+                                                key={status}
+                                                className="cursor-pointer focus:bg-slate-50 focus:text-slate-900 transition-colors"
+                                                style={{ color: config.theme.primary }}
+                                                onSelect={() => router.push(`/backoffice/status/${encodeURIComponent(status)}`)}
+                                            >
+                                                {status}
+                                            </DropdownMenuItem>
+                                        ))}
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+                                <Button
+                                    asChild={!needsRenewal}
+                                    disabled={needsRenewal}
+                                    className={cn(
+                                        "flex-1 md:flex-none h-11 rounded-full text-white gap-2 px-6 shadow-[0_4px_20px_rgb(0,0,0,0.08)] text-sm font-bold border-0 transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.15)] hover:-translate-y-0.5 active:scale-[0.98]",
+                                        needsRenewal && "opacity-50 cursor-not-allowed"
+                                    )}
+                                    style={{ backgroundColor: !needsRenewal ? config.theme.primary : "#94a3b8" }}
+                                >
+                                    {needsRenewal ? (
+                                        <span>Bulk Update</span>
+                                    ) : (
+                                        <Link href={searchQuery ? `/backoffice/bulk?search=${encodeURIComponent(searchQuery)}` : "/backoffice/bulk"}>
+                                            Bulk Update
+                                        </Link>
+                                    )}
+                                </Button>
+                                <Button
+                                    asChild={!needsRenewal}
+                                    disabled={needsRenewal}
+                                    className={cn(
+                                        "flex-1 md:flex-none h-11 rounded-full shadow-[0_4px_20px_rgb(0,0,0,0.08)] gap-2 px-6 text-sm font-bold text-white border-0 transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.15)] hover:-translate-y-0.5 active:scale-[0.98]",
+                                        needsRenewal && "opacity-50 cursor-not-allowed"
+                                    )}
+                                    style={{ backgroundColor: !needsRenewal ? config.theme.secondary : "#94a3b8" }}
+                                >
                                 {needsRenewal ? (
                                     <>
                                         <Plus className="w-4 h-4" /> Create New Order

@@ -51,8 +51,8 @@ export const BUSINESS_CONFIGS: Record<string, BusinessConfig> = {
         dashboardTitle: "Active Orders",
         theme: {
             primary: "#191A43",   // Sartorial Navy (Deep, Premium)
-            secondary: "#C5A059", // Champagne Gold (Elegant, High-end)
-            accent: "#CE0003",    // Signature Red (Action-oriented)
+            secondary: "#9C7E41", // Antique Gold (Sophisticated, High-end)
+            accent: "#CE0003",    // Signature Red
             text: "#191A43"
         }
     },
@@ -75,10 +75,10 @@ export const BUSINESS_CONFIGS: Record<string, BusinessConfig> = {
         searchPlaceholder: "Search by order number, name",
         dashboardTitle: "Active Orders",
         theme: {
-            primary: "#4D1D3A",   // Deep Plum
-            secondary: "#C77D9E", // Dusty Rose
-            accent: "#D4AF37",    // Rose Gold
-            text: "#4D1D3A"
+            primary: "#111827",   // Gray 900 (Obsidian Professional)
+            secondary: "#6366F1", // Indigo 500 (Modern, Trustworthy)
+            accent: "#4F46E5",    // Indigo 600
+            text: "#111827"
         },
         extraFields: [
             { id: "length", label: "Wig Length", placeholder: "e.g., 22 inches", type: "text" },
@@ -104,10 +104,10 @@ export const BUSINESS_CONFIGS: Record<string, BusinessConfig> = {
         searchPlaceholder: "Search by tracking number, recipient",
         dashboardTitle: "Active Shipments",
         theme: {
-            primary: "#0D3B4F",   // Deep Teal
-            secondary: "#1A8A7D", // Vivid Teal
-            accent: "#2196F3",    // Electric Blue
-            text: "#0D3B4F"
+            primary: "#0F172A",   // Slate 900 (Corporate Professional)
+            secondary: "#0284C7", // Sky 600 (Logistics Blue)
+            accent: "#0EA5E9",    // Sky 500
+            text: "#0F172A"
         },
         extraFields: [
             { id: "weight", label: "Weight (kg)", placeholder: "e.g., 5.5", type: "number" },
@@ -133,9 +133,9 @@ export const BUSINESS_CONFIGS: Record<string, BusinessConfig> = {
         searchPlaceholder: "Search by order number, customer name",
         dashboardTitle: "Active Orders",
         theme: {
-            primary: "#1E293B",   // Deep Slate (Professional, Sleek)
-            secondary: "#2563EB", // Royal Blue (Trustworthy, Action-oriented)
-            accent: "#10B981",    // Emerald Green (Success/Growth)
+            primary: "#020617",   // Midnight Black (Premium SaaS)
+            secondary: "#3B82F6", // Blue 600 (Action Blue)
+            accent: "#10B981",    // Emerald Green
             text: "#0F172A"       // Dark Slate
         },
         extraFields: [

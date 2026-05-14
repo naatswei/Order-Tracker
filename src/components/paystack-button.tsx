@@ -104,8 +104,8 @@ export default function PaystackButton({
             onClick={handleSelect}
             disabled={!isLoaded || isRedirecting}
             className={cn(
-                "w-full h-12 text-sm font-bold rounded-xl transition-all duration-200",
-                plan.name === "Growth" ? "bg-[#161931] text-white hover:bg-[#161931]/90" : "bg-[#161931] text-white hover:bg-[#161931]/90",
+                "w-full h-12 text-sm font-bold rounded-full transition-all duration-300 shadow-md hover:shadow-lg hover:-translate-y-0.5",
+                "bg-[#0F172A] text-white hover:bg-[#1E293B]",
                 isRedirecting && "opacity-70 scale-[0.98]",
                 !isLoaded && "opacity-50 cursor-not-allowed"
             )}
