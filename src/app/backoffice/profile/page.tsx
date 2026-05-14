@@ -382,30 +382,25 @@ export default function ProfilePage() {
                                 </div>
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                     {plans.map((plan) => (
-                                        <Card key={plan.name} className={cn(
-                                            "relative flex flex-col border-slate-200 rounded-3xl p-6 shadow-sm flex-1",
-                                            plan.name === "Growth" ? "border-slate-300 bg-slate-50/50" : "bg-white"
-                                        )}>
-                                            <CardHeader className="p-0 space-y-1">
-                                        <Card 
-                                            key={plan.name} 
+                                        <Card
+                                            key={plan.name}
                                             className={cn(
-                                                "border-slate-100 flex flex-col relative",
-                                                plan.popular && "ring-2 ring-[#161931] shadow-lg"
+                                                "border-slate-100 flex flex-col relative rounded-3xl shadow-sm",
+                                                plan.popular && "ring-2 ring-[#191A43] shadow-lg"
                                             )}
                                         >
                                             {plan.popular && (
-                                                <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#161931] text-white text-[8px] font-bold uppercase tracking-widest px-3 py-1 rounded-full shadow-sm">
+                                                <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#191A43] text-white text-[8px] font-bold uppercase tracking-widest px-3 py-1 rounded-full shadow-sm">
                                                     Recommended
                                                 </div>
                                             )}
                                             <CardHeader className="p-4 sm:p-6 pb-0">
-                                                <CardTitle className="text-base sm:text-lg font-bold">{plan.name}</CardTitle>
-                                                <CardDescription className="text-xs">{plan.description}</CardDescription>
+                                                <div className="text-base sm:text-lg font-bold text-slate-900">{plan.name}</div>
+                                                <div className="text-xs text-slate-500">{plan.description}</div>
                                             </CardHeader>
                                             <CardContent className="p-0 pt-4 sm:pt-6 flex-1 flex flex-col">
                                                 <div className="mb-4 sm:mb-6 px-4 sm:px-6">
-                                                    <span className="text-xl sm:text-2xl font-bold tracking-tight">{getPlanPriceLabel(plan)}</span>
+                                                    <span className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">{getPlanPriceLabel(plan)}</span>
                                                     <span className="text-xs text-slate-500 font-medium ml-1">/{getPlanPeriodLabel(plan)}</span>
                                                 </div>
                                                 <ul className="space-y-3 mb-8 flex-1 px-4 sm:px-6">
