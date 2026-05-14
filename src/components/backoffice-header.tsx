@@ -79,7 +79,7 @@ export function BackofficeHeader({ config }: BackofficeHeaderProps) {
                 <div className="hidden md:flex items-center gap-6">
                     <nav className="flex items-center gap-1 bg-slate-50/50 p-1 rounded-xl border border-slate-100/50">
                         {navLinks.map((link) => {
-                            const isActive = pathname === link.href;
+                            const isActive = pathname === link.href || pathname.startsWith(link.href + "/");
                             const Icon = link.icon;
                             return (
                                 <Link 
@@ -194,62 +194,61 @@ export function BackofficeHeader({ config }: BackofficeHeaderProps) {
                                 <Link
                                     href="/backoffice"
                                     onClick={() => setIsMenuOpen(false)}
-                                    className="flex items-center gap-3 px-3 py-3 rounded-xl text-slate-700 hover:bg-slate-50 transition-colors group"
+                                    className={cn(
+                                        "flex items-center gap-3 px-3 py-3 rounded-xl transition-colors group",
+                                        pathname === "/backoffice" ? "bg-slate-100/80" : "hover:bg-slate-50"
+                                    )}
                                 >
-                                    <div className="w-9 h-9 rounded-lg bg-slate-100 flex items-center justify-center group-hover:bg-[#191A43]/10 transition-colors">
-                                        <LayoutDashboard className="w-4 h-4 text-slate-500 group-hover:text-[#191A43] transition-colors" />
+                                    <div className={cn(
+                                        "w-9 h-9 rounded-lg flex items-center justify-center transition-colors",
+                                        pathname === "/backoffice" ? "bg-[#191A43] text-white" : "bg-slate-100 group-hover:bg-[#191A43]/10 text-slate-500 group-hover:text-[#191A43]"
+                                    )}>
+                                        <LayoutDashboard className="w-4 h-4" />
                                     </div>
                                     <div className="flex-1">
-                                        <p className="text-sm font-semibold text-slate-800">Dashboard</p>
+                                        <p className={cn(
+                                            "text-sm font-semibold transition-colors",
+                                            pathname === "/backoffice" ? "text-[#191A43]" : "text-slate-800"
+                                        )}>Dashboard</p>
                                         <p className="text-[11px] text-slate-400">Overview & analytics</p>
                                     </div>
-                                    <ChevronRight className="w-4 h-4 text-slate-300" />
+                                    <ChevronRight className={cn("w-4 h-4 transition-colors", pathname === "/backoffice" ? "text-[#191A43]" : "text-slate-300")} />
                                 </Link>
 
-                                <Link
-                                    href="/backoffice/operations"
-                                    onClick={() => setIsMenuOpen(false)}
-                                    className="flex items-center gap-3 px-3 py-3 rounded-xl text-slate-700 hover:bg-slate-50 transition-colors group"
-                                >
-                                    <div className="w-9 h-9 rounded-lg bg-slate-100 flex items-center justify-center group-hover:bg-[#191A43]/10 transition-colors">
-                                        <ClipboardList className="w-4 h-4 text-slate-500 group-hover:text-[#191A43] transition-colors" />
-                                    </div>
-                                    <div className="flex-1">
-                                        <p className="text-sm font-semibold text-slate-800">Operations</p>
-                                        <p className="text-[11px] text-slate-400">Production line & staging</p>
-                                    </div>
-                                    <ChevronRight className="w-4 h-4 text-slate-300" />
-                                </Link>
-
-                                <Link
-                                    href="/backoffice/inventory"
-                                    onClick={() => setIsMenuOpen(false)}
-                                    className="flex items-center gap-3 px-3 py-3 rounded-xl text-slate-700 hover:bg-slate-50 transition-colors group"
-                                >
-                                    <div className="w-9 h-9 rounded-lg bg-slate-100 flex items-center justify-center group-hover:bg-[#191A43]/10 transition-colors">
-                                        <Package className="w-4 h-4 text-slate-500 group-hover:text-[#191A43] transition-colors" />
-                                    </div>
-                                    <div className="flex-1">
-                                        <p className="text-sm font-semibold text-slate-800">Inventory</p>
-                                        <p className="text-[11px] text-slate-400">Stock & pipeline</p>
-                                    </div>
-                                    <ChevronRight className="w-4 h-4 text-slate-300" />
-                                </Link>
-
-                                <Link
-                                    href="/backoffice/staff"
-                                    onClick={() => setIsMenuOpen(false)}
-                                    className="flex items-center gap-3 px-3 py-3 rounded-xl text-slate-700 hover:bg-slate-50 transition-colors group"
-                                >
-                                    <div className="w-9 h-9 rounded-lg bg-slate-100 flex items-center justify-center group-hover:bg-[#191A43]/10 transition-colors">
-                                        <Users className="w-4 h-4 text-slate-500 group-hover:text-[#191A43] transition-colors" />
-                                    </div>
-                                    <div className="flex-1">
-                                        <p className="text-sm font-semibold text-slate-800">Team</p>
-                                        <p className="text-[11px] text-slate-400">Staff & assignments</p>
-                                    </div>
-                                    <ChevronRight className="w-4 h-4 text-slate-300" />
-                                </Link>
+                                {navLinks.map((link) => {
+                                    const isActive = pathname === link.href || pathname.startsWith(link.href + "/");
+                                    const Icon = link.icon;
+                                    return (
+                                        <Link
+                                            key={link.href}
+                                            href={link.href}
+                                            onClick={() => setIsMenuOpen(false)}
+                                            className={cn(
+                                                "flex items-center gap-3 px-3 py-3 rounded-xl transition-colors group",
+                                                isActive ? "bg-slate-100/80" : "hover:bg-slate-50"
+                                            )}
+                                        >
+                                            <div className={cn(
+                                                "w-9 h-9 rounded-lg flex items-center justify-center transition-colors",
+                                                isActive ? "bg-[#191A43] text-white" : "bg-slate-100 group-hover:bg-[#191A43]/10 text-slate-500 group-hover:text-[#191A43]"
+                                            )}>
+                                                <Icon className="w-4 h-4" />
+                                            </div>
+                                            <div className="flex-1">
+                                                <p className={cn(
+                                                    "text-sm font-semibold transition-colors",
+                                                    isActive ? "text-[#191A43]" : "text-slate-800"
+                                                )}>{link.label}</p>
+                                                <p className="text-[11px] text-slate-400">
+                                                    {link.label === "Operations" ? "Production line & staging" : 
+                                                     link.label === "Inventory" ? "Stock & pipeline" : 
+                                                     "Staff & assignments"}
+                                                </p>
+                                            </div>
+                                            <ChevronRight className={cn("w-4 h-4 transition-colors", isActive ? "text-[#191A43]" : "text-slate-300")} />
+                                        </Link>
+                                    )
+                                })}
 
                                 <Link
                                     href="/backoffice/inbox"
@@ -276,16 +275,25 @@ export function BackofficeHeader({ config }: BackofficeHeaderProps) {
                                 <Link
                                     href="/backoffice/profile"
                                     onClick={() => setIsMenuOpen(false)}
-                                    className="flex items-center gap-3 px-3 py-3 rounded-xl text-slate-700 hover:bg-slate-50 transition-colors group"
+                                    className={cn(
+                                        "flex items-center gap-3 px-3 py-3 rounded-xl transition-colors group",
+                                        pathname === "/backoffice/profile" ? "bg-slate-100/80" : "hover:bg-slate-50"
+                                    )}
                                 >
-                                    <div className="w-9 h-9 rounded-lg bg-slate-100 flex items-center justify-center group-hover:bg-[#191A43]/10 transition-colors">
-                                        <Settings className="w-4 h-4 text-slate-500 group-hover:text-[#191A43] transition-colors" />
+                                    <div className={cn(
+                                        "w-9 h-9 rounded-lg flex items-center justify-center transition-colors",
+                                        pathname === "/backoffice/profile" ? "bg-[#191A43] text-white" : "bg-slate-100 group-hover:bg-[#191A43]/10 text-slate-500 group-hover:text-[#191A43]"
+                                    )}>
+                                        <Settings className="w-4 h-4" />
                                     </div>
                                     <div className="flex-1">
-                                        <p className="text-sm font-semibold text-slate-800">Profile</p>
+                                        <p className={cn(
+                                            "text-sm font-semibold transition-colors",
+                                            pathname === "/backoffice/profile" ? "text-[#191A43]" : "text-slate-800"
+                                        )}>Profile</p>
                                         <p className="text-[11px] text-slate-400">Settings & preferences</p>
                                     </div>
-                                    <ChevronRight className="w-4 h-4 text-slate-300" />
+                                    <ChevronRight className={cn("w-4 h-4 transition-colors", pathname === "/backoffice/profile" ? "text-[#191A43]" : "text-slate-300")} />
                                 </Link>
                             </nav>
 
