@@ -5,23 +5,77 @@ import { motion } from "framer-motion"
 import { Check, ArrowRight } from "lucide-react"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
-import { useState } from "react"
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { PRICING_PLANS } from "@/constants/pricing"
+import { PRICING_PLANS, FREE_TRIAL_PLAN } from "@/constants/pricing"
 
-const plans = PRICING_PLANS;
+const plans = [FREE_TRIAL_PLAN, ...PRICING_PLANS];
+
+const planStyles: Record<string, {
+    card: string;
+    badge?: string;
+    badgeText?: string;
+    title: string;
+    description: string;
+    price: string;
+    period: string;
+    checkBg: string;
+    checkColor: string;
+    featureText: string;
+    button: string;
+    periodLabel: string;
+}> = {
+    "free-trial": {
+        card: "bg-white border-slate-200 text-[#191A43] shadow-sm",
+        title: "text-[#191A43]",
+        description: "text-slate-400",
+        price: "text-[#191A43]",
+        period: "text-slate-400",
+        checkBg: "bg-indigo-50",
+        checkColor: "text-indigo-500",
+        featureText: "text-[#191A43]/80",
+        button: "bg-slate-100 text-[#191A43] hover:bg-slate-200",
+        periodLabel: "/14 days",
+    },
+    "1-month": {
+        card: "bg-[#191A43] border-[#191A43] text-white shadow-lg",
+        title: "text-white",
+        description: "text-slate-300",
+        price: "text-white",
+        period: "text-slate-300",
+        checkBg: "bg-white/10",
+        checkColor: "text-white",
+        featureText: "text-slate-100",
+        button: "bg-white text-[#191A43] hover:bg-white/90",
+        periodLabel: "/month",
+    },
+    "3-months": {
+        card: "bg-[#CE0003] border-[#CE0003] text-white shadow-xl",
+        badge: "Most Popular",
+        title: "text-white",
+        description: "text-red-100",
+        price: "text-white",
+        period: "text-red-100",
+        checkBg: "bg-white/15",
+        checkColor: "text-white",
+        featureText: "text-red-50",
+        button: "bg-white text-[#CE0003] hover:bg-white/90 font-extrabold",
+        periodLabel: "/3 months",
+    },
+    "1-year": {
+        card: "bg-[#00864e] border-[#00864e] text-white shadow-lg",
+        badge: "Best Value",
+        title: "text-white",
+        description: "text-green-100",
+        price: "text-white",
+        period: "text-green-100",
+        checkBg: "bg-white/15",
+        checkColor: "text-white",
+        featureText: "text-green-50",
+        button: "bg-white text-[#00864e] hover:bg-white/90 font-extrabold",
+        periodLabel: "/year",
+    },
+};
 
 export function LandingPricing() {
-    const getPlanPriceLabel = (plan: any) => {
-        return `GHS ${plan.price}`;
-    }
-
-    const getPlanPeriodLabel = (plan: any) => {
-        if (plan.id === '1-month') return "/month";
-        if (plan.id === '3-months') return "/3 months";
-        return "/year";
-    }
-
     return (
         <section id="pricing" className="py-32 md:py-48 bg-slate-50 scroll-mt-32">
             <div className="max-w-7xl mx-auto px-6">
@@ -45,85 +99,73 @@ export function LandingPricing() {
                     </motion.p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pt-12 max-w-6xl mx-auto">
-                    {plans.map((plan, index) => (
-                        <motion.div
-                            key={plan.name}
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ delay: index * 0.1 }}
-                            className="relative group h-full"
-                        >
-                            <div className={cn(
-                                "p-8 md:p-10 rounded-[2rem] border relative h-full flex flex-col transition-all duration-300 hover:shadow-2xl hover:-translate-y-1",
-                                plan.popular ? "bg-[#161931] border-[#161931] text-white shadow-xl" : "bg-white border-slate-100 text-[#191A43] shadow-sm"
-                            )}>
-                                {plan.name === "Yearly" && (
-                                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#00B171] text-white text-[10px] font-bold uppercase tracking-widest px-4 py-1.5 rounded-full shadow-sm whitespace-nowrap z-20">
-                                        SAVE 64%
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 pt-12 max-w-7xl mx-auto">
+                    {plans.map((plan, index) => {
+                        const style = planStyles[plan.id] ?? planStyles["1-month"];
+                        return (
+                            <motion.div
+                                key={plan.id}
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: index * 0.08 }}
+                                className="relative h-full"
+                            >
+                                {style.badge && (
+                                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-white text-[#191A43] text-[10px] font-extrabold uppercase tracking-widest px-4 py-1.5 rounded-full shadow-md whitespace-nowrap z-20 border border-slate-200">
+                                        {style.badge}
                                     </div>
                                 )}
+                                <div className={cn(
+                                    "p-7 rounded-[2rem] border relative h-full flex flex-col transition-all duration-300 hover:shadow-2xl hover:-translate-y-1",
+                                    style.card
+                                )}>
+                                    <div className="mb-0">
+                                        <h3 className={cn("text-xl font-extrabold tracking-tight mb-1", style.title)}>
+                                            {plan.name}
+                                        </h3>
+                                        <p className={cn("text-[13px] font-medium", style.description)}>
+                                            {plan.description}
+                                        </p>
+                                    </div>
 
-                                <div className="mb-0">
-                                    <h3 className={cn(
-                                        "text-2xl font-extrabold tracking-tight mb-1",
-                                        plan.popular ? "text-white" : "text-[#191A43]"
-                                    )}>
-                                        {plan.name}
-                                    </h3>
-                                    <p className={cn(
-                                        "text-[14px] font-medium",
-                                        plan.popular ? "text-slate-300" : "text-slate-400"
-                                    )}>
-                                        {plan.description}
-                                    </p>
-                                </div>
+                                    <div className="mt-6 mb-8 items-baseline flex gap-1.5">
+                                        <span className={cn("text-2xl font-black tracking-tight", style.price)}>
+                                            {plan.price === 0 ? "Free" : `GHS ${plan.price}`}
+                                        </span>
+                                        <span className={cn("text-[12px] font-medium uppercase tracking-wider", style.period)}>
+                                            {style.periodLabel}
+                                        </span>
+                                    </div>
 
-                                <div className="mt-8 mb-10 items-baseline flex gap-2">
-                                    <span className={cn(
-                                        "text-3xl font-black tracking-tight",
-                                        plan.popular ? "text-white" : "text-[#191A43]"
-                                    )}>
-                                        {getPlanPriceLabel(plan)}
-                                    </span>
-                                    <span className={cn(
-                                        "text-[14px] font-medium uppercase tracking-wider",
-                                        plan.popular ? "text-slate-300" : "text-slate-400"
-                                    )}>
-                                        {getPlanPeriodLabel(plan)}
-                                    </span>
-                                </div>
+                                    <ul className="space-y-3 flex-1">
+                                        {plan.features.map((feature) => (
+                                            <li key={feature} className="flex items-center gap-2.5 text-[12px] font-medium">
+                                                <div className={cn(
+                                                    "w-4 h-4 rounded-full flex items-center justify-center shrink-0",
+                                                    style.checkBg, style.checkColor
+                                                )}>
+                                                    <Check className="w-2.5 h-2.5" strokeWidth={3} />
+                                                </div>
+                                                <span className={style.featureText}>{feature}</span>
+                                            </li>
+                                        ))}
+                                    </ul>
 
-                                <ul className="space-y-4 flex-1">
-                                    {plan.features.map((feature) => (
-                                        <li key={feature} className="flex items-center gap-3 text-[13px] font-medium">
-                                            <div className={cn(
-                                                "w-5 h-5 rounded-full flex items-center justify-center shrink-0",
-                                                plan.popular ? "bg-white/10 text-white" : "bg-indigo-50 text-indigo-500"
+                                    <div className="mt-8">
+                                        <Link href="/sign-up">
+                                            <Button className={cn(
+                                                "w-full rounded-xl h-11 font-bold transition-all active:scale-95",
+                                                style.button
                                             )}>
-                                                <Check className="w-3 h-3" strokeWidth={3} />
-                                            </div>
-                                            <span className={plan.popular ? "text-slate-100" : "text-[#191A43]/90"}>
-                                                {feature}
-                                            </span>
-                                        </li>
-                                    ))}
-                                </ul>
-
-                                <div className="mt-10">
-                                    <Link href="/sign-up">
-                                        <Button className={cn(
-                                            "w-full rounded-xl h-12 font-bold transition-all active:scale-95",
-                                            plan.popular ? "bg-white text-[#161931] hover:bg-white/90" : "bg-[#161931] text-white hover:bg-[#161931]/90"
-                                        )}>
-                                            {plan.buttonText}
-                                        </Button>
-                                    </Link>
+                                                {plan.buttonText}
+                                            </Button>
+                                        </Link>
+                                    </div>
                                 </div>
-                            </div>
-                        </motion.div>
-                    ))}
+                            </motion.div>
+                        );
+                    })}
                 </div>
 
                 <div className="mt-20 text-center">
