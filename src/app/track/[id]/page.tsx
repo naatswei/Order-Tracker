@@ -455,12 +455,9 @@ export default function TrackingDetailsPage() {
                         {/* Item Availability Section */}
                         {order.inventoryItems && order.inventoryItems.length > 0 && (
                             <div className="mb-20 space-y-8">
-                                <div className="flex items-center justify-between px-2">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-1 h-4 bg-[#3B82F6] rounded-full" />
-                                        <h3 className="text-[11px] font-black uppercase tracking-[0.4em] text-white/90">Item Availability</h3>
-                                    </div>
-                                    <div className="text-[10px] text-white/40 tracking-[0.1em] font-medium">{order.inventoryItems.length} items</div>
+                                <div className="flex flex-col items-center gap-2 text-center mb-6">
+                                    <h3 className="text-[11px] font-black uppercase tracking-[0.4em] text-white/90">Available store items</h3>
+                                    <div className="text-[10px] text-white/40 tracking-[0.2em] font-medium uppercase">{order.inventoryItems.length} items</div>
                                 </div>
                                 <div className="bg-white/[0.04] backdrop-blur-xl border border-white/10 rounded-[2rem] overflow-hidden shadow-2xl">
                                     <div className="divide-y divide-white/5">
