@@ -318,6 +318,7 @@ export default function InventoryPage() {
                                             <p className="text-lg font-black text-slate-400">
                                                 {item.totalEntered || item.quantity}
                                             </p>
+                                            <p className="text-[8px] font-bold text-slate-300 uppercase mt-0.5">GHS {(parseFloat(item.totalEntered || item.quantity) * parseFloat(item.unitCost || "0")).toLocaleString()}</p>
                                         </div>
                                         <div className="bg-slate-50/50 p-3 rounded-xl border border-slate-100/50">
                                             <p className="text-[8px] font-black text-slate-400 uppercase tracking-[0.15em] mb-1">On Hand</p>
@@ -410,9 +411,12 @@ export default function InventoryPage() {
                                                     </div>
                                                 </td>
                                                 <td className="px-4 py-6 text-center">
-                                                    <span className="text-base font-black text-slate-400">
-                                                        {item.totalEntered || item.quantity}
-                                                    </span>
+                                                    <div className="flex flex-col items-center">
+                                                        <span className="text-base font-black text-slate-400">
+                                                            {item.totalEntered || item.quantity}
+                                                        </span>
+                                                        <span className="text-[10px] text-slate-300 font-bold tracking-tight">GHS {(parseFloat(item.totalEntered || item.quantity) * parseFloat(item.unitCost || "0")).toLocaleString()}</span>
+                                                    </div>
                                                 </td>
                                                 <td className="px-4 py-6 text-center">
                                                     <div className="flex flex-col items-center">
