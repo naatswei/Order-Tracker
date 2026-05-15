@@ -58,16 +58,6 @@ export default function InventoryPage() {
 
     // Form state
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-    const [newItem, setNewItem] = useState({
-        name: "",
-        quantity: "0",
-        sku: "",
-        unit: "",
-        category: "",
-        minStock: "0",
-        unitCost: "0",
-        sellingPrice: "0"
-    });
 
     useEffect(() => {
         if (!isLoaded || !organization) return;
@@ -93,16 +83,30 @@ export default function InventoryPage() {
         }
     }
 
-    async function handleAddItem(e: React.FormEvent) {
+    async function handleAddItem(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
+        const formData = new FormData(e.currentTarget);
+        
+        const data = {
+            name: formData.get("name") as string,
+            quantity: (formData.get("totalEntered") as string) || "0",
+            sku: formData.get("sku") as string,
+            unit: formData.get("unit") as string,
+            category: formData.get("category") as string,
+            minStock: (formData.get("minStock") as string) || "0",
+            unitCost: (formData.get("unitCost") as string) || "0",
+            businessType: businessType || "tailoring"
+        };
+
+        if (!data.name) {
+            toast.error("Asset name is required");
+            return;
+        }
+
         try {
-            await addInventoryItem({
-                ...newItem,
-                businessType: businessType || "tailoring"
-            });
+            await addInventoryItem(data);
             toast.success("Item added to inventory");
             setIsAddModalOpen(false);
-            setNewItem({ name: "", quantity: "0", sku: "", unit: "", category: "", minStock: "0", unitCost: "0", sellingPrice: "0" });
             loadData();
         } catch (error: any) {
             console.error("Inventory Error:", error);
