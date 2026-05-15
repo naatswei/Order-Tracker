@@ -474,7 +474,7 @@ export default function InventoryPage() {
                                 <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Asset Name</Label>
                                 <Input 
                                     name="name" 
-                                    placeholder="e.g. Silk Thread" 
+                                    placeholder={config.inventory?.assetPlaceholder || "e.g. Silk Thread"} 
                                     required 
                                     className="h-12 rounded-2xl border-slate-100 bg-slate-50/50 font-semibold"
                                 />
@@ -483,7 +483,7 @@ export default function InventoryPage() {
                                 <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">SKU / Reference</Label>
                                 <Input 
                                     name="sku" 
-                                    placeholder="e.g. SLK-001" 
+                                    placeholder={config.inventory?.skuPlaceholder || "e.g. SLK-001"} 
                                     className="h-12 rounded-2xl border-slate-100 bg-slate-50/50 font-semibold"
                                 />
                             </div>
@@ -491,7 +491,7 @@ export default function InventoryPage() {
                                 <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Category</Label>
                                 <Input 
                                     name="category" 
-                                    placeholder="e.g. Raw Materials" 
+                                    placeholder={config.inventory?.categoryPlaceholder || "e.g. Raw Materials"} 
                                     className="h-12 rounded-2xl border-slate-100 bg-slate-50/50 font-semibold"
                                 />
                             </div>
@@ -499,7 +499,7 @@ export default function InventoryPage() {
                                 <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Measurement Unit</Label>
                                 <Input 
                                     name="unit" 
-                                    placeholder="e.g. Rolls, Meters" 
+                                    placeholder={config.inventory?.unitPlaceholder || "e.g. Rolls, Meters"} 
                                     className="h-12 rounded-2xl border-slate-100 bg-slate-50/50 font-semibold"
                                 />
                             </div>

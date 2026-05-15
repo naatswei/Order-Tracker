@@ -27,6 +27,12 @@ export interface BusinessConfig {
         text: string
     }
     extraFields?: ExtraField[]
+    inventory?: {
+        assetPlaceholder: string
+        skuPlaceholder: string
+        categoryPlaceholder: string
+        unitPlaceholder: string
+    }
 }
 
 export const BUSINESS_CONFIGS: Record<string, BusinessConfig> = {
@@ -54,6 +60,12 @@ export const BUSINESS_CONFIGS: Record<string, BusinessConfig> = {
             secondary: "#9C7E41", // Antique Gold (Sophisticated, High-end)
             accent: "#CE0003",    // Signature Red
             text: "#191A43"
+        },
+        inventory: {
+            assetPlaceholder: "e.g. Silk Thread",
+            skuPlaceholder: "e.g. SLK-001",
+            categoryPlaceholder: "e.g. Raw Materials",
+            unitPlaceholder: "e.g. Rolls, Meters"
         }
     },
     "hair-retail": {
@@ -83,7 +95,13 @@ export const BUSINESS_CONFIGS: Record<string, BusinessConfig> = {
         extraFields: [
             { id: "length", label: "Wig Length", placeholder: "e.g., 22 inches", type: "text" },
             { id: "color", label: "Hair Color/Density", placeholder: "e.g., Natural Black, 180%", type: "text" }
-        ]
+        ],
+        inventory: {
+            assetPlaceholder: "e.g. Frontal Wig",
+            skuPlaceholder: "e.g. HW-001",
+            categoryPlaceholder: "e.g. Extensions",
+            unitPlaceholder: "e.g. Pieces, Bundles"
+        }
     },
     logistics: {
         id: "logistics",
@@ -112,7 +130,13 @@ export const BUSINESS_CONFIGS: Record<string, BusinessConfig> = {
         extraFields: [
             { id: "weight", label: "Weight (kg)", placeholder: "e.g., 5.5", type: "number" },
             { id: "method", label: "Shipping Method", placeholder: "Express, Standard", type: "text" }
-        ]
+        ],
+        inventory: {
+            assetPlaceholder: "e.g. Transit Box",
+            skuPlaceholder: "e.g. LG-BX1",
+            categoryPlaceholder: "e.g. Packaging",
+            unitPlaceholder: "e.g. Units, Pieces"
+        }
     },
     "online-business": {
         id: "online-business",
@@ -141,7 +165,13 @@ export const BUSINESS_CONFIGS: Record<string, BusinessConfig> = {
         extraFields: [
             { id: "quantity", label: "Quantity", placeholder: "1", type: "number" },
             { id: "sku", label: "SKU / Model", placeholder: "SKU-123", type: "text" }
-        ]
+        ],
+        inventory: {
+            assetPlaceholder: "e.g. Smart Watch",
+            skuPlaceholder: "e.g. SW-001",
+            categoryPlaceholder: "e.g. Electronics",
+            unitPlaceholder: "e.g. Pieces, Units"
+        }
     }
 }
 
