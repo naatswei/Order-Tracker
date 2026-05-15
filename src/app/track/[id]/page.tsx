@@ -132,7 +132,7 @@ export default function TrackingDetailsPage() {
         }
 
         loadChat()
-        const interval = setInterval(loadChat, 30000)
+        const interval = setInterval(loadChat, 3000)
         return () => clearInterval(interval)
     }, [order?.id])
 
@@ -154,7 +154,7 @@ export default function TrackingDetailsPage() {
         }
 
         pollTyping()
-        const interval = setInterval(pollTyping, 3000)
+        const interval = setInterval(pollTyping, 2000)
         return () => clearInterval(interval)
     }, [order?.id, chatOpen, chatMessages])
 

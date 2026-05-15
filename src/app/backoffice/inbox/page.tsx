@@ -89,6 +89,8 @@ export default function InboxPage() {
             const orgBusinessType = organization.publicMetadata?.businessType as string
             setBusinessType(orgBusinessType || localStorage.getItem("businessType"))
             loadMessages()
+            const interval = setInterval(loadMessages, 3000)
+            return () => clearInterval(interval)
         } else {
             setMessagesLoading(false)
         }
@@ -178,7 +180,7 @@ export default function InboxPage() {
         }
 
         pollTyping()
-        const interval = setInterval(pollTyping, 4000)
+        const interval = setInterval(pollTyping, 2000)
         return () => clearInterval(interval)
     }, [expandedThread])
 
