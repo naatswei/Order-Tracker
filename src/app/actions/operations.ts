@@ -415,3 +415,52 @@ export async function releaseReservedStock(orderId: string, providedTx?: any) {
     revalidatePath("/backoffice/inventory");
     return { success: true };
 }
+
+export async function syncOrderInventoryLinks(orderId: string, inventoryItems: { id: string, quantity: string }[], tx?: any) {
+    const { orgId } = await auth();
+    if (!orgId) throw new Error("Unauthorized");
+
+    const logic = async (currentTx: any) => {
+        // 1. Release existing reservations based on old links
+        await releaseReservedStock(orderId, currentTx);
+        
+        // 2. Delete existing links
+        await currentTx.delete(orderInventoryLinks).where(and(eq(orderInventoryLinks.orderId, orderId), eq(orderInventoryLinks.clerkOrgId, orgId)));
+
+        // 3. Create new links and reserve
+        for (const item of inventoryItems) {
+            await currentTx.insert(orderInventoryLinks).values({
+                id: `link_${nanoid(10)}`,
+                orderId,
+                inventoryId: item.id,
+                quantity: item.quantity,
+                clerkOrgId: orgId,
+            });
+
+            await currentTx.update(inventory)
+                .set({ 
+                    reserved: sql`(${inventory.reserved}::float + ${parseFloat(item.quantity)})::text`,
+                    updatedAt: new Date() 
+                })
+                .where(and(eq(inventory.id, item.id), eq(inventory.clerkOrgId, orgId)));
+
+            await currentTx.insert(inventoryTransactions).values({
+                id: `tr_${nanoid(10)}`,
+                inventoryId: item.id,
+                type: "adjustment",
+                quantity: item.quantity,
+                note: `Stock updated/reserved for Order #${orderId}`,
+                clerkOrgId: orgId,
+            });
+        }
+    };
+
+    if (tx) {
+        await logic(tx);
+    } else {
+        await db.transaction(logic);
+    }
+
+    revalidatePath("/backoffice/inventory");
+    return { success: true };
+}

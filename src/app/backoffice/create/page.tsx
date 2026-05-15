@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { generateTrackingId, type Order } from "@/lib/storage"
-import { createOrder, getOrderById, updateOrder } from "@/app/actions/orders"
+import { createOrder, getOrderWithHistory, updateOrder } from "@/app/actions/orders"
 import { getInventory } from "@/app/actions/operations"
 import Link from "next/link"
 import { OrganizationSwitcher, useOrganization } from "@clerk/nextjs"
@@ -65,7 +65,7 @@ function CreateOrderContent() {
 
         const editId = searchParams.get("edit")
         if (editId) {
-            getOrderById(editId).then(orderToEdit => {
+            getOrderWithHistory(editId).then(orderToEdit => {
                 if (orderToEdit) {
                     setEditingId(orderToEdit.id)
                     setOrderNumber(orderToEdit.orderNumber)
@@ -86,6 +86,17 @@ function CreateOrderContent() {
                     }
                     setMeasurements(orderToEdit.measurements || "")
                     setMetadata(orderToEdit.metadata as Record<string, unknown> || {})
+
+                    // Load inventory links
+                    if ((orderToEdit as any).inventoryLinks) {
+                        const mappedInventory = (orderToEdit as any).inventoryLinks.map((link: any) => ({
+                            id: link.inventoryId,
+                            name: link.inventoryItem.name,
+                            quantity: link.quantity,
+                            max: parseFloat(link.inventoryItem.quantity) + parseFloat(link.quantity) - parseFloat(link.inventoryItem.reserved || "0")
+                        }))
+                        setSelectedInventory(mappedInventory)
+                    }
                 }
             })
         }
@@ -193,6 +204,7 @@ function CreateOrderContent() {
                     pickupDate: pickupDate ? format(pickupDate, "yyyy-MM-dd") : "",
                     measurements,
                     metadata,
+                    inventoryItems: selectedInventory.map(item => ({ id: item.id, quantity: item.quantity })),
                 })
                 toast.success("Order details updated")
             } else {

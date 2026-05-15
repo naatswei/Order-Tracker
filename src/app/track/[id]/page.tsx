@@ -69,13 +69,13 @@ export default function TrackingDetailsPage() {
                             timestamp: new Date(h.timestamp as string | number | Date)
                         })),
                         messagingEnabled: foundOrder.messagingEnabled,
-                        inventoryItems: (foundOrder as any).inventoryLinks?.map((link: any) => ({
-                            id: link.inventoryItem.id,
-                            name: link.inventoryItem.name,
-                            quantity: link.inventoryItem.quantity,
-                            sku: link.inventoryItem.sku,
-                            category: link.inventoryItem.category,
-                            availability: parseFloat(link.inventoryItem.quantity) > 0 ? "In Stock" : "Out of Stock"
+                        inventoryItems: (foundOrder as any).allBusinessInventory?.map((item: any) => ({
+                            id: item.id,
+                            name: item.name,
+                            quantity: item.quantity,
+                            sku: item.sku,
+                            category: item.category,
+                            availability: parseFloat(item.quantity) > 0 ? "In Stock" : "Out of Stock"
                         })) || []
                     }
 

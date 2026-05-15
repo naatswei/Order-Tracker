@@ -1,12 +1,12 @@
 "use server"
 
 import { db } from "@/db";
-import { orders, statusHistory } from "@/db/schema";
+import { orders, statusHistory, inventory } from "@/db/schema";
 import { eq, desc, and, or, count } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { auth, clerkClient } from "@clerk/nextjs/server";
 import { getPlanLimits } from "@/lib/plan-config";
-import { linkOrderToInventory, consumeReservedStock, releaseReservedStock } from "./operations";
+import { linkOrderToInventory, consumeReservedStock, releaseReservedStock, syncOrderInventoryLinks } from "./operations";
 
 interface OrderInput {
     id?: string;
@@ -201,19 +201,26 @@ export async function updateOrder(id: string, data: Partial<OrderInput>) {
         await validateSubscription(orgId);
     }
 
-    await db.update(orders)
-        .set({
-            orderNumber: data.orderNumber,
-            customerName: data.customerName,
-            customerEmail: data.customerEmail || null,
-            customerPhone: data.customerPhone,
-            itemType: data.itemType || data.garmentType,
-            pickupDate: data.pickupDate || null,
-            measurements: data.measurements || null,
-            metadata: data.metadata || {},
-            updatedAt: new Date(),
-        })
-        .where(eq(orders.id, id));
+    await db.transaction(async (tx) => {
+        await tx.update(orders)
+            .set({
+                orderNumber: data.orderNumber,
+                customerName: data.customerName,
+                customerEmail: data.customerEmail || null,
+                customerPhone: data.customerPhone,
+                itemType: data.itemType || data.garmentType,
+                pickupDate: data.pickupDate || null,
+                measurements: data.measurements || null,
+                metadata: data.metadata || {},
+                updatedAt: new Date(),
+            })
+            .where(eq(orders.id, id));
+
+        // Sync inventory links if provided
+        if (data.inventoryItems) {
+            await syncOrderInventoryLinks(id, data.inventoryItems, tx);
+        }
+    });
 
     revalidatePath("/backoffice");
     revalidatePath(`/track/${id}`);
@@ -260,10 +267,20 @@ export async function getOrderWithHistory(id: string) {
         }
     }
 
+    // Fetch all inventory items for this business to show public availability
+    let allBusinessInventory: any[] = [];
+    if (order.clerkOrgId) {
+        allBusinessInventory = await db.select()
+            .from(inventory)
+            .where(eq(inventory.clerkOrgId, order.clerkOrgId))
+            .orderBy(desc(inventory.updatedAt));
+    }
+
     return {
         ...order,
         businessDetails,
-        messagingEnabled
+        messagingEnabled,
+        allBusinessInventory
     };
 }
 
