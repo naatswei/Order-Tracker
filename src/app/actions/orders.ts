@@ -227,6 +227,11 @@ export async function getOrderWithHistory(id: string) {
             statusHistory: {
                 orderBy: desc(statusHistory.timestamp),
             },
+            inventoryLinks: {
+                with: {
+                    inventoryItem: true
+                }
+            }
         },
     });
 

@@ -68,7 +68,15 @@ export default function TrackingDetailsPage() {
                             message: h.message as string | null,
                             timestamp: new Date(h.timestamp as string | number | Date)
                         })),
-                        messagingEnabled: foundOrder.messagingEnabled
+                        messagingEnabled: foundOrder.messagingEnabled,
+                        inventoryItems: (foundOrder as any).inventoryLinks?.map((link: any) => ({
+                            id: link.inventoryItem.id,
+                            name: link.inventoryItem.name,
+                            quantity: link.inventoryItem.quantity,
+                            sku: link.inventoryItem.sku,
+                            category: link.inventoryItem.category,
+                            availability: parseFloat(link.inventoryItem.quantity) > 0 ? "In Stock" : "Out of Stock"
+                        })) || []
                     }
 
                     if (order && mappedOrder.currentStatus !== order.currentStatus) {
@@ -457,6 +465,37 @@ export default function TrackingDetailsPage() {
                                 </div>
                             </CardContent>
                         </Card>
+                        
+                        {/* Item Availability Section */}
+                        {order.inventoryItems && order.inventoryItems.length > 0 && (
+                            <div className="mb-16 space-y-6">
+                                <div className="flex items-center justify-between px-2">
+                                    <h3 className="text-xs font-bold uppercase tracking-[0.3em] text-white/70">Item Availability</h3>
+                                    <div className="text-[10px] text-white/40 tracking-[0.1em]">{order.inventoryItems.length} items</div>
+                                </div>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    {order.inventoryItems.map((item) => (
+                                        <Card key={item.id} className="bg-white/[0.03] backdrop-blur-md border border-white/[0.08] rounded-2xl overflow-hidden shadow-xl group hover:border-[#3B82F6]/30 transition-all duration-300">
+                                            <CardContent className="p-5 flex items-center justify-between">
+                                                <div className="space-y-1">
+                                                    <p className="text-sm font-medium text-white/90 group-hover:text-white transition-colors">{item.name}</p>
+                                                    {item.sku && <p className="text-[10px] text-white/40 tracking-wider uppercase">{item.sku}</p>}
+                                                </div>
+                                                <Badge 
+                                                    className={`rounded-full px-3 py-1 text-[10px] font-bold tracking-wider uppercase border-none ${
+                                                        item.availability === "In Stock" 
+                                                        ? "bg-[#10B981]/10 text-[#10B981]" 
+                                                        : "bg-[#EF4444]/10 text-[#EF4444]"
+                                                    }`}
+                                                >
+                                                    {item.availability}
+                                                </Badge>
+                                            </CardContent>
+                                        </Card>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
 
                         {/* Chat Section */}
                         {order.messagingEnabled && (

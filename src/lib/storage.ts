@@ -6,6 +6,15 @@ export interface OrderStatus {
     message: string | null
 }
 
+export interface InventoryItem {
+    id: string
+    name: string
+    quantity: string
+    sku?: string | null
+    category?: string | null
+    availability?: "In Stock" | "Out of Stock"
+}
+
 export interface Order {
     id: string
     orderNumber: string
@@ -31,6 +40,7 @@ export interface Order {
         website?: string
     } | null
     messagingEnabled?: boolean
+    inventoryItems?: InventoryItem[]
 }
 
 // Generate unique tracking ID
