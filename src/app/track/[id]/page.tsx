@@ -454,24 +454,27 @@ export default function TrackingDetailsPage() {
                         
                         {/* Item Availability Section */}
                         {order.inventoryItems && order.inventoryItems.length > 0 && (
-                            <div className="mb-16 space-y-6">
+                            <div className="mb-20 space-y-8">
                                 <div className="flex items-center justify-between px-2">
-                                    <h3 className="text-xs font-bold uppercase tracking-[0.3em] text-white/70">Item Availability</h3>
-                                    <div className="text-[10px] text-white/40 tracking-[0.1em]">{order.inventoryItems.length} items</div>
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-1 h-4 bg-[#3B82F6] rounded-full" />
+                                        <h3 className="text-[11px] font-black uppercase tracking-[0.4em] text-white/90">Item Availability</h3>
+                                    </div>
+                                    <div className="text-[10px] text-white/40 tracking-[0.1em] font-medium">{order.inventoryItems.length} items</div>
                                 </div>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                                     {order.inventoryItems.map((item) => (
-                                        <Card key={item.id} className="bg-white/[0.03] backdrop-blur-md border border-white/[0.08] rounded-2xl overflow-hidden shadow-xl group hover:border-[#3B82F6]/30 transition-all duration-300">
-                                            <CardContent className="p-5 flex items-center justify-between">
-                                                <div className="space-y-1">
-                                                    <p className="text-sm font-medium text-white/90 group-hover:text-white transition-colors">{item.name}</p>
-                                                    {item.sku && <p className="text-[10px] text-white/40 tracking-wider uppercase">{item.sku}</p>}
+                                        <Card key={item.id} className="bg-white/[0.06] backdrop-blur-2xl border border-white/10 rounded-[1.5rem] overflow-hidden shadow-2xl group hover:bg-white/[0.1] hover:border-white/20 transition-all duration-500">
+                                            <CardContent className="p-6 flex items-center justify-between">
+                                                <div className="space-y-1.5">
+                                                    <p className="text-base font-light text-white group-hover:text-white transition-colors">{item.name}</p>
+                                                    {item.sku && <p className="text-[10px] text-white/30 tracking-[0.15em] uppercase font-medium">{item.sku}</p>}
                                                 </div>
                                                 <Badge 
-                                                    className={`rounded-full px-3 py-1 text-[10px] font-bold tracking-wider uppercase border-none ${
+                                                    className={`rounded-full px-4 py-1.5 text-[10px] font-black tracking-wider uppercase border-none shadow-lg ${
                                                         item.availability === "In Stock" 
-                                                        ? "bg-[#10B981]/10 text-[#10B981]" 
-                                                        : "bg-[#EF4444]/10 text-[#EF4444]"
+                                                        ? "bg-[#10B981] text-[#0A0B14] shadow-[#10B981]/20" 
+                                                        : "bg-white/5 text-[#EF4444] border border-[#EF4444]/20"
                                                     }`}
                                                 >
                                                     {item.availability}
