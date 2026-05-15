@@ -634,32 +634,19 @@ export default function TrackingDetailsPage() {
                                 {/* Decorative Glow */}
                                 <div className="absolute -top-24 -right-24 w-48 h-48 bg-[#3B82F6]/20 rounded-full blur-[80px] group-hover:bg-[#3B82F6]/30 transition-colors duration-700" />
                                 
-                                <div className="relative z-10 space-y-6">
-                                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#3B82F6]/10 border border-[#3B82F6]/20 mb-2">
-                                        <Zap className="w-3 h-3 text-[#3B82F6]" />
-                                        <span className="text-[10px] font-black text-[#3B82F6] uppercase tracking-[0.2em]">Partner with OTracker</span>
-                                    </div>
-
-                                    <h2 className="text-3xl sm:text-4xl font-light text-white tracking-tight leading-tight">
-                                        Empower your business with <span className="font-bold">OTracker</span>
+                                <div className="relative z-10 space-y-8">
+                                    <h2 className="text-2xl sm:text-3xl font-light text-white tracking-tight leading-tight">
+                                        Want to sign up your business on <span className="font-bold">OTracker</span>?
                                     </h2>
 
-                                    <p className="text-sm sm:text-base text-white/50 font-light max-w-md mx-auto leading-relaxed">
-                                        Join the community of premium vendors using our Command Center to manage operations and build radical trust with customers.
-                                    </p>
-
-                                    <div className="pt-6">
+                                    <div className="flex justify-center">
                                         <Link href="/sign-up">
-                                            <Button className="bg-white text-[#0A0B14] hover:bg-white/90 h-14 px-10 rounded-full font-black text-sm transition-all shadow-[0_0_40px_rgba(255,255,255,0.15)] hover:shadow-[0_0_50px_rgba(255,255,255,0.25)] active:scale-95 group/btn">
-                                                Launch Your Dashboard
+                                            <Button className="bg-white text-[#0A0B14] hover:bg-white/90 h-12 px-10 rounded-full font-bold text-sm transition-all shadow-[0_0_30px_rgba(255,255,255,0.1)] active:scale-95 group/btn">
+                                                Sign up now
                                                 <ChevronRight className="ml-2 w-4 h-4 transition-transform group-hover/btn:translate-x-1" />
                                             </Button>
                                         </Link>
                                     </div>
-
-                                    <p className="text-[10px] text-white/20 uppercase tracking-[0.4em] pt-8">
-                                        Verified Global Network
-                                    </p>
                                 </div>
                             </motion.div>
                         </div>
