@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useOrganization } from "@clerk/nextjs";
-import { getInventory, addInventoryItem, updateStock, removeInventoryItem } from "@/app/actions/operations";
+import { getInventory, addInventoryItem, updateStock, removeInventoryItem, getInventoryHistory } from "@/app/actions/operations";
 import { getOrders } from "@/app/actions/orders";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -55,6 +55,11 @@ export default function InventoryPage() {
     const [isLoading, setIsLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState("");
     const [businessType, setBusinessType] = useState<string | null>(null);
+
+    // History state
+    const [historyItem, setHistoryItem] = useState<any>(null);
+    const [historyTransactions, setHistoryTransactions] = useState<any[]>([]);
+    const [isHistoryLoading, setIsHistoryLoading] = useState(false);
 
     // Form state
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -132,6 +137,19 @@ export default function InventoryPage() {
             loadData();
         } catch (error) {
             toast.error("Failed to remove item");
+        }
+    }
+
+    async function loadHistory(item: any) {
+        setHistoryItem(item);
+        setIsHistoryLoading(true);
+        try {
+            const data = await getInventoryHistory(item.id);
+            setHistoryTransactions(data);
+        } catch (error) {
+            toast.error("Failed to load history");
+        } finally {
+            setIsHistoryLoading(false);
         }
     }
 
@@ -309,6 +327,7 @@ export default function InventoryPage() {
                                             <p className="text-lg font-black text-[#191A43]">
                                                 {item.quantity}
                                             </p>
+                                            <p className="text-[8px] font-bold text-slate-400 uppercase mt-0.5">Intake: {item.totalEntered || item.quantity}</p>
                                         </div>
                                     </div>
 
@@ -329,6 +348,14 @@ export default function InventoryPage() {
                                                 className="h-9 px-3 rounded-lg border-slate-200 text-slate-600"
                                             >
                                                 <Plus className="w-4 h-4" />
+                                            </Button>
+                                            <Button 
+                                                size="sm" 
+                                                variant="outline" 
+                                                onClick={() => loadHistory(item)}
+                                                className="h-9 px-3 rounded-lg border-slate-200 text-slate-400"
+                                            >
+                                                <History className="w-4 h-4" />
                                             </Button>
                                         </div>
                                         <Button 
@@ -386,11 +413,11 @@ export default function InventoryPage() {
                                                     </div>
                                                 </td>
                                                 <td className="px-4 py-6 text-center">
-                                                    <div className="flex flex-col items-center">
                                                         <span className="text-base font-black text-[#191A43]">
                                                             {item.quantity}
                                                         </span>
                                                         <span className="text-[10px] text-slate-400 font-bold tracking-tight">GHS {(parseFloat(item.quantity) * parseFloat(item.unitCost || "0")).toLocaleString()}</span>
+                                                        <span className="text-[9px] text-slate-300 font-bold uppercase tracking-widest mt-1">Total Intake: {item.totalEntered || item.quantity}</span>
                                                     </div>
                                                 </td>
                                                 <td className="px-4 py-6 text-center">
@@ -427,6 +454,14 @@ export default function InventoryPage() {
                                                             className="w-10 h-10 rounded-xl hover:bg-emerald-50 hover:text-emerald-600 transition-all border border-transparent hover:border-emerald-100"
                                                         >
                                                             <Plus className="w-5 h-5" />
+                                                        </Button>
+                                                        <Button 
+                                                            size="icon" 
+                                                            variant="ghost" 
+                                                            onClick={() => loadHistory(item)}
+                                                            className="w-10 h-10 rounded-xl hover:bg-slate-100 text-slate-400 hover:text-[#191A43] transition-all"
+                                                        >
+                                                            <History className="w-5 h-5" />
                                                         </Button>
                                                         <div className="w-px h-6 bg-slate-100 mx-1" />
                                                         <Button 
@@ -554,6 +589,62 @@ export default function InventoryPage() {
                             </Button>
                         </div>
                     </form>
+                </DialogContent>
+            </Dialog>
+
+            {/* History Dialog */}
+            <Dialog open={!!historyItem} onOpenChange={() => setHistoryItem(null)}>
+                <DialogContent className="max-w-3xl rounded-[2rem] border-none shadow-2xl p-0 overflow-hidden bg-white">
+                    <DialogHeader className="p-8 pb-4">
+                        <div className="flex items-center gap-4 mb-4">
+                            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-white font-black text-lg shadow-lg ${historyItem ? getAvatarColor(historyItem.name) : 'bg-slate-100'}`}>
+                                {historyItem?.name[0]}
+                            </div>
+                            <div>
+                                <DialogTitle className="text-xl font-black text-[#191A43] tracking-tight">{historyItem?.name} - History</DialogTitle>
+                                <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mt-1">Transaction Log & Audit Trail</p>
+                            </div>
+                        </div>
+                    </DialogHeader>
+
+                    <div className="px-8 pb-8 max-h-[60vh] overflow-y-auto">
+                        {isHistoryLoading ? (
+                            <div className="py-20 flex justify-center">
+                                <SignatureLoader />
+                            </div>
+                        ) : historyTransactions.length === 0 ? (
+                            <div className="py-20 text-center">
+                                <p className="text-slate-400 font-medium italic">No transactions recorded yet.</p>
+                            </div>
+                        ) : (
+                            <div className="space-y-4">
+                                {historyTransactions.map((tx) => (
+                                    <div key={tx.id} className="flex items-center justify-between p-4 rounded-2xl bg-slate-50 border border-slate-100/50 group hover:bg-white hover:shadow-xl hover:shadow-slate-200/50 transition-all">
+                                        <div className="flex items-center gap-4">
+                                            <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+                                                tx.type === "in" ? "bg-emerald-50 text-emerald-600" : 
+                                                tx.type === "out" ? "bg-red-50 text-red-600" : 
+                                                "bg-blue-50 text-blue-600"
+                                            }`}>
+                                                {tx.type === "in" ? <ArrowDownLeft className="w-5 h-5" /> : 
+                                                 tx.type === "out" ? <ArrowUpRight className="w-5 h-5" /> : 
+                                                 <Package className="w-5 h-5" />}
+                                            </div>
+                                            <div>
+                                                <p className="text-sm font-black text-[#191A43] capitalize">{tx.type} • {tx.quantity} {historyItem?.unit || "Units"}</p>
+                                                <p className="text-[10px] text-slate-400 font-medium">{new Date(tx.timestamp).toLocaleString()}</p>
+                                            </div>
+                                        </div>
+                                        {tx.note && (
+                                            <Badge variant="outline" className="text-[9px] font-bold uppercase tracking-wider bg-white border-slate-100 text-slate-400 max-w-[200px] truncate">
+                                                {tx.note}
+                                            </Badge>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
                 </DialogContent>
             </Dialog>
 

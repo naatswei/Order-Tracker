@@ -278,6 +278,16 @@ export async function updateStock(itemId: string, type: "in" | "out" | "adjustme
     return { success: true };
 }
 
+export async function getInventoryHistory(itemId: string) {
+    const { orgId } = await auth();
+    if (!orgId) return [];
+
+    return await db.select()
+        .from(inventoryTransactions)
+        .where(and(eq(inventoryTransactions.inventoryId, itemId), eq(inventoryTransactions.clerkOrgId, orgId)))
+        .orderBy(desc(inventoryTransactions.timestamp));
+}
+
 export async function removeInventoryItem(id: string) {
     const { orgId } = await auth();
     if (!orgId) throw new Error("Unauthorized");
