@@ -564,17 +564,6 @@ export default function InventoryPage() {
                 </DialogContent>
             </Dialog>
 
-            {/* Floating Action Button */}
-            <motion.button 
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                onClick={() => setIsAddModalOpen(true)}
-                className="fixed bottom-6 right-6 sm:bottom-10 sm:right-10 w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-[#191A43] text-white shadow-2xl flex items-center justify-center hover:bg-[#191A43]/90 transition-all z-50 group border-4 border-white/10"
-            >
-                <Plus className="w-6 h-6 sm:w-8 sm:h-8 transition-transform group-hover:rotate-90" />
-            </motion.button>
         </div>
     </div>
     );
