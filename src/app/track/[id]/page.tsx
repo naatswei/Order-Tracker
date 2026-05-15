@@ -618,7 +618,7 @@ export default function TrackingDetailsPage() {
                                 
                                 <div className="relative z-10 space-y-8">
                                     <h2 className="text-2xl sm:text-3xl font-light text-white tracking-tight leading-tight">
-                                        Want to sign up your business on <span className="font-bold">OTracker</span>?
+                                        Want to sign up your business on <span className="text-[#CE0003] font-bold">O</span><span className="font-bold">Tracker</span>?
                                     </h2>
 
                                     <div className="flex justify-center">
