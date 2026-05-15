@@ -462,19 +462,19 @@ export default function TrackingDetailsPage() {
                                     </div>
                                     <div className="text-[10px] text-white/40 tracking-[0.1em] font-medium">{order.inventoryItems.length} items</div>
                                 </div>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                                     {order.inventoryItems.map((item) => (
-                                        <Card key={item.id} className="bg-white/[0.06] backdrop-blur-2xl border border-white/10 rounded-[1.5rem] overflow-hidden shadow-2xl group hover:bg-white/[0.1] hover:border-white/20 transition-all duration-500">
-                                            <CardContent className="p-6 flex items-center justify-between">
-                                                <div className="space-y-1.5">
-                                                    <p className="text-base font-light text-white group-hover:text-white transition-colors">{item.name}</p>
-                                                    {item.sku && <p className="text-[10px] text-white/30 tracking-[0.15em] uppercase font-medium">{item.sku}</p>}
+                                        <Card key={item.id} className="bg-white/[0.05] backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden shadow-lg group hover:bg-white/[0.08] transition-all duration-300">
+                                            <CardContent className="p-3.5 sm:p-4 flex items-center justify-between">
+                                                <div className="space-y-0.5">
+                                                    <p className="text-sm font-light text-white/90 group-hover:text-white transition-colors">{item.name}</p>
+                                                    {item.sku && <p className="text-[9px] text-white/20 tracking-wider uppercase font-medium">{item.sku}</p>}
                                                 </div>
                                                 <Badge 
-                                                    className={`rounded-full px-4 py-1.5 text-[10px] font-black tracking-wider uppercase border-none shadow-lg ${
+                                                    className={`rounded-full px-3 py-1 text-[9px] font-black tracking-wider uppercase border-none ${
                                                         item.availability === "In Stock" 
-                                                        ? "bg-[#10B981] text-[#0A0B14] shadow-[#10B981]/20" 
-                                                        : "bg-white/5 text-[#EF4444] border border-[#EF4444]/20"
+                                                        ? "bg-[#10B981] text-[#0A0B14]" 
+                                                        : "bg-white/5 text-[#EF4444] border border-[#EF4444]/10"
                                                     }`}
                                                 >
                                                     {item.availability}
