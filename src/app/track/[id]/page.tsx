@@ -297,7 +297,7 @@ export default function TrackingDetailsPage() {
                                         Welcome, <span className="font-normal">{order.customerName.split(' ')[0]}</span>
                                     </h1>
                                     <div className="h-[1px] w-12 bg-[#3B82F6] mx-auto mb-6" />
-                                    <p className="text-sm text-white/60 font-light leading-loose tracking-wide">
+                                    <p className="text-sm text-white/90 font-light leading-loose tracking-wide">
                                         Track your order and item availability <br />
                                         <span className="text-white/80 font-medium tracking-normal">
                                             {order.businessDetails?.name === "OTracker" ? (
