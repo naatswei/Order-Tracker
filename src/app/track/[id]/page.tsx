@@ -431,40 +431,22 @@ export default function TrackingDetailsPage() {
                             </div>
                         </div>
 
-                        {/* Customer Details Section */}
-                        <Card className="bg-white/5 border border-white/20 rounded-[2rem] mb-16 shadow-2xl overflow-hidden backdrop-blur-md">
-                            <CardContent className="p-6 sm:p-8">
-                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 items-start">
-                                    <div className="space-y-2">
-                                        <Label className="text-[9px] uppercase tracking-[0.2em] text-[#3B82F6]/80 font-black block">Client</Label>
-                                        <p className="text-xl font-light text-white leading-none truncate">{order.customerName}</p>
-                                    </div>
-                                    <div className="space-y-2">
-                                        <Label className="text-[9px] uppercase tracking-[0.2em] text-[#3B82F6]/80 font-black block">Contact</Label>
-                                        <p className="text-sm font-light text-white/70 leading-none truncate tabular-nums">
-                                            {order.customerPhone || order.customerEmail || "N/A"}
-                                        </p>
-                                    </div>
-                                    <div className="space-y-2">
-                                        <Label className="text-[9px] uppercase tracking-[0.2em] text-[#3B82F6]/80 font-black block">Tracking Item</Label>
-                                        <p className="text-sm font-light text-white/70 leading-none truncate">
-                                            {order.garmentType || "Custom Item"}
-                                        </p>
-                                    </div>
-                                    
-                                    {order.measurements && (
-                                        <div className="col-span-full pt-6 border-t border-white/10 space-y-2">
-                                            <Label className="text-[9px] uppercase tracking-[0.2em] text-[#3B82F6]/80 font-black block">
-                                                {order.businessType === "tailoring" ? "Specifications & Notes" : "Special Instructions"}
-                                            </Label>
-                                            <p className="text-xs font-light text-white/50 leading-relaxed italic max-w-2xl">
-                                                "{order.measurements}"
-                                            </p>
-                                        </div>
-                                    )}
-                                </div>
-                            </CardContent>
-                        </Card>
+                        {/* Special Instructions / Notes */}
+                        {order.measurements && (
+                            <motion.div
+                                initial={{ opacity: 0, y: 10 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                className="mb-16 px-4 py-6 rounded-3xl bg-white/[0.02] border border-white/5 border-dashed"
+                            >
+                                <Label className="text-[10px] uppercase tracking-[0.2em] text-[#3B82F6]/60 font-black block mb-2">
+                                    {order.businessType === "tailoring" ? "Specifications" : "Special Instructions"}
+                                </Label>
+                                <p className="text-sm font-light text-white/50 leading-relaxed italic">
+                                    "{order.measurements}"
+                                </p>
+                            </motion.div>
+                        )}
                         
                         {/* Item Availability Section */}
                         {order.inventoryItems && order.inventoryItems.length > 0 && (
