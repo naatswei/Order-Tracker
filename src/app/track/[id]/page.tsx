@@ -621,13 +621,14 @@ export default function TrackingDetailsPage() {
                                         Want to sign up your business on <span className="text-[#CE0003] font-bold">O</span><span className="font-bold">Tracker</span>?
                                     </h2>
 
-                                    <div className="flex justify-center">
+                                    <div className="flex flex-col items-center gap-4">
                                         <Link href="/sign-up">
                                             <Button className="bg-white text-[#0A0B14] hover:bg-white/90 h-12 px-10 rounded-full font-bold text-sm transition-all shadow-[0_0_30px_rgba(255,255,255,0.1)] active:scale-95 group/btn">
                                                 Sign up now
                                                 <ChevronRight className="ml-2 w-4 h-4 transition-transform group-hover/btn:translate-x-1" />
                                             </Button>
                                         </Link>
+                                        <p className="text-[10px] text-white/30 uppercase tracking-[0.3em] font-medium">Contact: 0577064301</p>
                                     </div>
                                 </div>
                             </motion.div>
