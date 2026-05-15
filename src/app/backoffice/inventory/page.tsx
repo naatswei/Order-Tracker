@@ -413,6 +413,7 @@ export default function InventoryPage() {
                                                     </div>
                                                 </td>
                                                 <td className="px-4 py-6 text-center">
+                                                    <div className="flex flex-col items-center">
                                                         <span className="text-base font-black text-[#191A43]">
                                                             {item.quantity}
                                                         </span>
