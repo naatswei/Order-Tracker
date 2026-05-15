@@ -358,8 +358,8 @@ export default function TrackingDetailsPage() {
                                 <CardContent className="p-6 flex flex-col items-center sm:items-start text-center sm:text-left gap-3">
                                     <Calendar className="w-5 h-5 text-[#3B82F6]" strokeWidth={1.5} />
                                     <div>
-                                        <p className="text-[10px] uppercase tracking-widest text-white/60 font-bold mb-1">Order Created</p>
-                                        <p className="text-sm font-light text-white/80">
+                                        <p className="text-[10px] uppercase tracking-widest text-white/80 font-bold mb-1">Order Created</p>
+                                        <p className="text-sm font-light text-white">
                                             {new Date(order.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
                                         </p>
                                     </div>
@@ -369,8 +369,8 @@ export default function TrackingDetailsPage() {
                                 <CardContent className="p-6 flex flex-col items-center sm:items-start text-center sm:text-left gap-3">
                                     <Clock className="w-5 h-5 text-blue-400" strokeWidth={1.5} />
                                     <div>
-                                        <p className="text-[10px] uppercase tracking-widest text-white/60 font-bold mb-1">Estimated Arrival</p>
-                                        <p className="text-sm font-light text-white/80">
+                                        <p className="text-[10px] uppercase tracking-widest text-white/80 font-bold mb-1">Estimated Arrival</p>
+                                        <p className="text-sm font-light text-white">
                                             {order.pickupDate ? new Date(order.pickupDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) : "Evaluating..."}
                                         </p>
                                     </div>
