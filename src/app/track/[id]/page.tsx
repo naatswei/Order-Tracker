@@ -455,12 +455,15 @@ export default function TrackingDetailsPage() {
                         {/* Item Availability Section */}
                         {order.inventoryItems && order.inventoryItems.length > 0 && (
                             <div className="mb-20 space-y-8">
-                                <div className="flex flex-col items-center gap-5 text-center mb-14 pt-12">
-                                    <div className="px-8 py-3.5 rounded-full bg-white/10 border border-white/20 shadow-[0_0_40px_rgba(255,255,255,0.05)] backdrop-blur-2xl inline-flex items-center gap-3 group hover:bg-white/20 hover:border-white/40 transition-all duration-500 hover:scale-[1.02] cursor-default">
-                                        <div className="w-2 h-2 rounded-full bg-[#3B82F6] shadow-[0_0_15px_rgba(59,130,246,0.6)] animate-pulse" />
-                                        <h3 className="text-[12px] font-light uppercase tracking-[0.4em] text-white">Available store items</h3>
+                                <div className="flex flex-col items-center text-center mb-16 pt-16 space-y-4">
+                                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/30 mb-2">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-[#3B82F6] shadow-[0_0_10px_rgba(59,130,246,0.5)] animate-pulse" />
+                                        <span className="text-[10px] uppercase tracking-widest text-white/70 font-medium">Live Store</span>
                                     </div>
-                                    <div className="text-[10px] text-white/40 tracking-[0.3em] font-medium uppercase">{order.inventoryItems.length} items</div>
+                                    <h2 className="text-4xl sm:text-6xl font-light tracking-tighter text-white uppercase">
+                                        Available store items
+                                    </h2>
+                                    <div className="text-[10px] text-white/40 tracking-[0.4em] font-medium uppercase mt-4">{order.inventoryItems.length} items catalog</div>
                                 </div>
                                 <div className="bg-white/[0.04] backdrop-blur-xl border border-white/10 rounded-[2rem] overflow-hidden shadow-2xl">
                                     <div className="divide-y divide-white/5">
