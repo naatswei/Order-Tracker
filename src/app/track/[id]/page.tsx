@@ -455,12 +455,12 @@ export default function TrackingDetailsPage() {
                         {/* Item Availability Section */}
                         {order.inventoryItems && order.inventoryItems.length > 0 && (
                             <div className="mb-20 space-y-8">
-                                <div className="flex flex-col items-center gap-4 text-center mb-12 pt-8">
-                                    <div className="px-5 py-2.5 rounded-full bg-white/[0.03] border border-white/10 shadow-2xl backdrop-blur-md inline-flex items-center gap-2 group hover:bg-white/[0.05] hover:border-white/20 transition-all duration-300">
-                                        <div className="w-1.5 h-1.5 rounded-full bg-[#3B82F6] shadow-[0_0_10px_rgba(59,130,246,0.5)] animate-pulse" />
-                                        <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/90">Available store items</h3>
+                                <div className="flex flex-col items-center gap-5 text-center mb-14 pt-12">
+                                    <div className="px-8 py-3.5 rounded-full bg-white/[0.04] border border-white/20 shadow-[0_0_40px_rgba(0,0,0,0.3)] backdrop-blur-2xl inline-flex items-center gap-3 group hover:bg-white/[0.07] hover:border-white/30 transition-all duration-500 hover:scale-[1.02] cursor-default">
+                                        <div className="w-2 h-2 rounded-full bg-[#3B82F6] shadow-[0_0_15px_rgba(59,130,246,0.6)] animate-pulse" />
+                                        <h3 className="text-[12px] font-black uppercase tracking-[0.4em] text-white">Available store items</h3>
                                     </div>
-                                    <div className="text-[9px] text-white/30 tracking-[0.2em] font-medium uppercase">{order.inventoryItems.length} items</div>
+                                    <div className="text-[10px] text-white/40 tracking-[0.3em] font-medium uppercase">{order.inventoryItems.length} items</div>
                                 </div>
                                 <div className="bg-white/[0.04] backdrop-blur-xl border border-white/10 rounded-[2rem] overflow-hidden shadow-2xl">
                                     <div className="divide-y divide-white/5">
