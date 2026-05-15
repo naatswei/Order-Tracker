@@ -314,20 +314,16 @@ export default function InventoryPage() {
 
                                     <div className="grid grid-cols-2 gap-4 py-2">
                                         <div className="bg-slate-50/50 p-3 rounded-xl border border-slate-100/50">
-                                            <p className="text-[8px] font-black text-slate-400 uppercase tracking-[0.15em] mb-1">Available to Order</p>
-                                            <p className={`text-xl font-black ${(parseFloat(item.quantity) - parseFloat(item.reserved || "0")) <= parseFloat(item.minStock || "0") ? "text-red-500" : "text-emerald-600"}`}>
-                                                {parseFloat(item.quantity) - parseFloat(item.reserved || "0")} <span className="text-[10px] text-slate-400 opacity-50 ml-1">{item.unit || "Units"}</span>
+                                            <p className="text-[8px] font-black text-slate-400 uppercase tracking-[0.15em] mb-1">Initial Stock</p>
+                                            <p className="text-lg font-black text-slate-400">
+                                                {item.totalEntered || item.quantity}
                                             </p>
-                                            {parseFloat(item.reserved || "0") > 0 && (
-                                                <p className="text-[8px] font-bold text-amber-600 uppercase mt-1">{item.reserved} Reserved</p>
-                                            )}
                                         </div>
                                         <div className="bg-slate-50/50 p-3 rounded-xl border border-slate-100/50">
                                             <p className="text-[8px] font-black text-slate-400 uppercase tracking-[0.15em] mb-1">On Hand</p>
                                             <p className="text-lg font-black text-[#191A43]">
                                                 {item.quantity}
                                             </p>
-                                            <p className="text-[8px] font-bold text-slate-400 uppercase mt-0.5">Intake: {item.totalEntered || item.quantity}</p>
                                         </div>
                                     </div>
 
@@ -377,6 +373,7 @@ export default function InventoryPage() {
                                 <thead>
                                     <tr className="border-b border-slate-50 bg-slate-50/50">
                                         <th className="px-8 py-6 text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">Asset Narrative</th>
+                                        <th className="px-4 py-6 text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] text-center">Initial Stock</th>
                                         <th className="px-4 py-6 text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] text-center">On Hand (Value)</th>
                                         <th className="px-4 py-6 text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] text-center">Reserved</th>
                                         <th className="px-4 py-6 text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] text-center">Available</th>
@@ -413,12 +410,16 @@ export default function InventoryPage() {
                                                     </div>
                                                 </td>
                                                 <td className="px-4 py-6 text-center">
+                                                    <span className="text-base font-black text-slate-400">
+                                                        {item.totalEntered || item.quantity}
+                                                    </span>
+                                                </td>
+                                                <td className="px-4 py-6 text-center">
                                                     <div className="flex flex-col items-center">
                                                         <span className="text-base font-black text-[#191A43]">
                                                             {item.quantity}
                                                         </span>
                                                         <span className="text-[10px] text-slate-400 font-bold tracking-tight">GHS {(parseFloat(item.quantity) * parseFloat(item.unitCost || "0")).toLocaleString()}</span>
-                                                        <span className="text-[9px] text-slate-300 font-bold uppercase tracking-widest mt-1">Total Intake: {item.totalEntered || item.quantity}</span>
                                                     </div>
                                                 </td>
                                                 <td className="px-4 py-6 text-center">
@@ -632,7 +633,9 @@ export default function InventoryPage() {
                                                  <Package className="w-5 h-5" />}
                                             </div>
                                             <div>
-                                                <p className="text-sm font-black text-[#191A43] capitalize">{tx.type} • {tx.quantity} {historyItem?.unit || "Units"}</p>
+                                                <p className="text-sm font-black text-[#191A43] capitalize">
+                                                    {tx.type === "in" ? "Received" : tx.type === "out" ? "Shipped" : "Adjusted"} {tx.quantity} {historyItem?.unit || "Units"}
+                                                </p>
                                                 <p className="text-[10px] text-slate-400 font-medium">{new Date(tx.timestamp).toLocaleString()}</p>
                                             </div>
                                         </div>
