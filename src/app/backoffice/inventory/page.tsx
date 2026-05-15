@@ -347,13 +347,13 @@ export default function InventoryPage() {
                             <table className="w-full text-left border-collapse min-w-[1000px]">
                                 <thead>
                                     <tr className="border-b border-slate-50 bg-slate-50/50">
-                                        <th className="px-8 py-6 text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">Asset Narrative</th>
-                                        <th className="px-4 py-6 text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] text-center">Initial Stock</th>
-                                        <th className="px-4 py-6 text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] text-center">On Hand (Value)</th>
-                                        <th className="px-4 py-6 text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] text-center">Reserved</th>
-                                        <th className="px-4 py-6 text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] text-center">Available</th>
-                                        <th className="px-4 py-6 text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] text-center">Sold</th>
-                                        <th className="px-8 py-6 text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] text-right">Control</th>
+                                        <th className="px-8 py-6 text-[11px] font-black text-slate-600 uppercase tracking-[0.2em]">Asset Narrative</th>
+                                        <th className="px-4 py-6 text-[11px] font-black text-slate-600 uppercase tracking-[0.2em] text-center">Initial Stock</th>
+                                        <th className="px-4 py-6 text-[11px] font-black text-slate-600 uppercase tracking-[0.2em] text-center">On Hand (Value)</th>
+                                        <th className="px-4 py-6 text-[11px] font-black text-slate-600 uppercase tracking-[0.2em] text-center">Reserved</th>
+                                        <th className="px-4 py-6 text-[11px] font-black text-slate-600 uppercase tracking-[0.2em] text-center">Available</th>
+                                        <th className="px-4 py-6 text-[11px] font-black text-slate-600 uppercase tracking-[0.2em] text-center">Sold</th>
+                                        <th className="px-8 py-6 text-[11px] font-black text-slate-600 uppercase tracking-[0.2em] text-right">Control</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-slate-50">
