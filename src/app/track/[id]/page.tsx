@@ -462,13 +462,18 @@ export default function TrackingDetailsPage() {
                                     </div>
                                     <div className="text-[10px] text-white/40 tracking-[0.1em] font-medium">{order.inventoryItems.length} items</div>
                                 </div>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                                    {order.inventoryItems.map((item) => (
-                                        <Card key={item.id} className="bg-white/[0.05] backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden shadow-lg group hover:bg-white/[0.08] transition-all duration-300">
-                                            <CardContent className="p-3.5 sm:p-4 flex items-center justify-between">
-                                                <div className="space-y-0.5">
-                                                    <p className="text-sm font-light text-white/90 group-hover:text-white transition-colors">{item.name}</p>
-                                                    {item.sku && <p className="text-[9px] text-white/20 tracking-wider uppercase font-medium">{item.sku}</p>}
+                                <div className="bg-white/[0.04] backdrop-blur-xl border border-white/10 rounded-[2rem] overflow-hidden shadow-2xl">
+                                    <div className="divide-y divide-white/5">
+                                        {order.inventoryItems.map((item) => (
+                                            <div key={item.id} className="p-4 sm:p-5 flex items-center justify-between hover:bg-white/[0.03] transition-colors group">
+                                                <div className="flex items-center gap-4">
+                                                    <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center border border-white/10 group-hover:bg-[#3B82F6]/20 group-hover:border-[#3B82F6]/30 transition-all">
+                                                        <Package className="w-3.5 h-3.5 text-white/40 group-hover:text-[#3B82F6] transition-colors" />
+                                                    </div>
+                                                    <div className="space-y-0.5">
+                                                        <p className="text-sm font-light text-white/90 group-hover:text-white transition-colors">{item.name}</p>
+                                                        {item.sku && <p className="text-[9px] text-white/20 tracking-wider uppercase font-medium">{item.sku}</p>}
+                                                    </div>
                                                 </div>
                                                 <Badge 
                                                     className={`rounded-full px-3 py-1 text-[9px] font-black tracking-wider uppercase border-none ${
@@ -479,9 +484,9 @@ export default function TrackingDetailsPage() {
                                                 >
                                                     {item.availability}
                                                 </Badge>
-                                            </CardContent>
-                                        </Card>
-                                    ))}
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
                             </div>
                         )}
