@@ -117,15 +117,19 @@ export default function TrackingDetailsPage() {
             const result = await getThreadMessages(order.id)
             if (result.messages) {
                 const prev = chatMessages.length
-                setChatMessages(result.messages)
-                // Play sound on new business reply
-                if (result.messages.length > prev && prev > 0) {
-                    const latest = result.messages[result.messages.length - 1]
-                    if (latest.sender === "business") {
-                        import("@/lib/notifications").then(mod => mod.notificationSound.play())
-                        toast.success("New reply from the business!", {
-                            style: { background: "#191A43", color: "#fff", border: "none" }
-                        })
+                
+                // Only update state if message count has changed to avoid unnecessary re-renders/scrolls
+                if (result.messages.length !== prev) {
+                    setChatMessages(result.messages)
+                    // Play sound on new business reply
+                    if (result.messages.length > prev && prev > 0) {
+                        const latest = result.messages[result.messages.length - 1]
+                        if (latest.sender === "business") {
+                            import("@/lib/notifications").then(mod => mod.notificationSound.play())
+                            toast.success("New reply from the business!", {
+                                style: { background: "#191A43", color: "#fff", border: "none" }
+                            })
+                        }
                     }
                 }
             }
@@ -160,8 +164,17 @@ export default function TrackingDetailsPage() {
 
     // Auto-scroll chat to bottom
     useEffect(() => {
-        chatEndRef.current?.scrollIntoView({ behavior: "smooth" })
-    }, [chatMessages, chatOpen])
+        if (!chatOpen || chatMessages.length === 0) return
+
+        // Use a more localized scroll to avoid moving the entire page window
+        const container = chatEndRef.current?.parentElement
+        if (container) {
+            container.scrollTo({
+                top: container.scrollHeight,
+                behavior: "smooth"
+            })
+        }
+    }, [chatMessages.length, chatOpen])
 
     const handleSendMessage = async () => {
         if (!messageBody.trim()) {
