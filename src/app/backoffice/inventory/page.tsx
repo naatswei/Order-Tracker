@@ -205,8 +205,8 @@ export default function InventoryPage() {
 
             <div className="max-w-[1600px] mx-auto px-6 sm:px-12 py-10">
                 {/* Metrics Bar */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8 sm:mb-12">
-                    <Card className="border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white rounded-2xl sm:rounded-3xl overflow-hidden group hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all">
+                <div className="flex overflow-x-auto pb-4 -mx-6 px-6 sm:mx-0 sm:px-0 sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8 sm:mb-12 no-scrollbar">
+                    <Card className="min-w-[280px] sm:min-w-0 border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white rounded-2xl sm:rounded-3xl overflow-hidden group hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all shrink-0">
                         <CardContent className="p-4 sm:p-6 flex items-center gap-4 sm:gap-5">
                             <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center transition-transform group-hover:scale-110">
                                 {isLogistics ? <Truck className="w-5 h-5 sm:w-6 sm:h-6" /> : <Boxes className="w-5 h-5 sm:w-6 sm:h-6" />}
@@ -222,7 +222,7 @@ export default function InventoryPage() {
                         </CardContent>
                     </Card>
 
-                    <Card className="border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white rounded-2xl sm:rounded-3xl overflow-hidden group hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all">
+                    <Card className="min-w-[280px] sm:min-w-0 border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white rounded-2xl sm:rounded-3xl overflow-hidden group hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all shrink-0">
                         <CardContent className="p-4 sm:p-6 flex items-center gap-4 sm:gap-5">
                             <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center transition-transform group-hover:scale-110">
                                 <TrendingUp className="w-5 h-5 sm:w-6 sm:h-6" />
@@ -238,7 +238,7 @@ export default function InventoryPage() {
                         </CardContent>
                     </Card>
 
-                    <Card className="border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white rounded-2xl sm:rounded-3xl overflow-hidden group hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all">
+                    <Card className="min-w-[280px] sm:min-w-0 border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white rounded-2xl sm:rounded-3xl overflow-hidden group hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all shrink-0">
                         <CardContent className="p-4 sm:p-6 flex items-center gap-4 sm:gap-5">
                             <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-red-50 text-red-500 flex items-center justify-center transition-transform group-hover:scale-110">
                                 <AlertCircle className="w-5 h-5 sm:w-6 sm:h-6" />
@@ -254,7 +254,7 @@ export default function InventoryPage() {
                         </CardContent>
                     </Card>
 
-                    <Card className="border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-[#191A43] rounded-2xl sm:rounded-3xl overflow-hidden group hover:scale-[1.02] transition-all">
+                    <Card className="min-w-[280px] sm:min-w-0 border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-[#191A43] rounded-2xl sm:rounded-3xl overflow-hidden group hover:scale-[1.02] transition-all shrink-0">
                         <CardContent className="p-4 sm:p-6 flex items-center gap-4 sm:gap-5">
                             <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-white/10 text-white flex items-center justify-center transition-transform group-hover:rotate-12">
                                 <ShoppingCart className="w-5 h-5 sm:w-6 sm:h-6" />
@@ -275,75 +275,10 @@ export default function InventoryPage() {
                 <div className="grid grid-cols-1 gap-8">
                     {/* Stock Table */}
                     <Card className="border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white rounded-[1.5rem] sm:rounded-[2.5rem] overflow-hidden">
-                        {/* Mobile Card View */}
-                        <div className="md:hidden divide-y divide-slate-50">
-                            {filteredItems.map((item) => (
-                                <div key={item.id} className="p-5 space-y-4">
-                                    <div className="flex items-center gap-4">
-                                        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-white font-black text-lg shadow-lg shrink-0 ${getAvatarColor(item.name)}`}>
-                                            {item.name[0]}
-                                        </div>
-                                        <div className="min-w-0 flex-1">
-                                            <h3 className="font-black text-[#191A43] text-base leading-tight truncate">{item.name}</h3>
-                                            <div className="flex flex-wrap items-center gap-2 mt-1">
-                                                <Badge variant="outline" className="text-[8px] font-bold uppercase tracking-wider bg-slate-50 border-slate-100 text-slate-400 px-1.5 py-0">
-                                                    {item.category || "General"}
-                                                </Badge>
-                                                <span className="text-[9px] text-slate-300 font-bold uppercase tracking-widest truncate">{item.sku || "No SKU"}</span>
-                                            </div>
-                                        </div>
-                                    </div>
 
-                                    <div className="grid grid-cols-2 gap-4 py-2">
-                                        <div className="bg-slate-50/50 p-3 rounded-xl border border-slate-100/50">
-                                            <p className="text-[8px] font-black text-slate-400 uppercase tracking-[0.15em] mb-1">Initial Stock</p>
-                                            <p className="text-lg font-black text-slate-400">
-                                                {item.totalEntered || item.quantity}
-                                            </p>
-                                            <p className="text-[8px] font-bold text-slate-300 uppercase mt-0.5">GHS {(parseFloat(item.totalEntered || item.quantity) * parseFloat(item.unitCost || "0")).toLocaleString()}</p>
-                                        </div>
-                                        <div className="bg-slate-50/50 p-3 rounded-xl border border-slate-100/50">
-                                            <p className="text-[8px] font-black text-slate-400 uppercase tracking-[0.15em] mb-1">On Hand</p>
-                                            <p className="text-lg font-black text-[#191A43]">
-                                                {item.quantity}
-                                            </p>
-                                        </div>
-                                    </div>
 
-                                    <div className="flex items-center justify-between gap-3 pt-1">
-                                        <div className="flex items-center gap-2">
-                                            <Button 
-                                                size="sm" 
-                                                variant="outline" 
-                                                onClick={() => handleUpdateStock(item.id, "out", "1")}
-                                                className="h-9 px-3 rounded-lg border-slate-200 text-slate-600"
-                                            >
-                                                <Minus className="w-4 h-4" />
-                                            </Button>
-                                            <Button 
-                                                size="sm" 
-                                                variant="outline" 
-                                                onClick={() => handleUpdateStock(item.id, "in", "1")}
-                                                className="h-9 px-3 rounded-lg border-slate-200 text-slate-600"
-                                            >
-                                                <Plus className="w-4 h-4" />
-                                            </Button>
-                                        </div>
-                                        <Button 
-                                            size="sm" 
-                                            variant="ghost" 
-                                            onClick={() => handleRemove(item.id)}
-                                            className="h-9 w-9 rounded-lg text-slate-300 hover:text-red-500 hover:bg-red-50"
-                                        >
-                                            <Trash2 className="w-4 h-4" />
-                                        </Button>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-
-                        {/* Desktop Table View */}
-                        <div className="hidden md:block overflow-x-auto">
+                        {/* Stock Table View */}
+                        <div className="overflow-x-auto no-scrollbar">
                             <table className="w-full text-left border-collapse min-w-[1000px]">
                                 <thead>
                                     <tr className="border-b border-slate-50 bg-slate-50/50">
