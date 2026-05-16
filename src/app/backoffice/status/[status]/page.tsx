@@ -6,15 +6,26 @@ import { type Order } from "@/lib/storage"
 import { getOrders } from "@/app/actions/orders"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { ArrowLeft, Package, Loader2 } from "lucide-react"
+import { ArrowLeft, Package, Loader2, Filter } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { OrderCard } from "@/components/order-card"
 import { motion, AnimatePresence } from "framer-motion"
 import { OrganizationSwitcher, useOrganization } from "@clerk/nextjs"
+import { useRouter } from "next/navigation"
 import { getBusinessConfig } from "@/lib/business-configs"
 import { BackofficeHeader } from "@/components/backoffice-header"
+import { cn } from "@/lib/utils"
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 export default function StatusFilterPage() {
+    const router = useRouter()
     const params = useParams()
     // Decode the status from the URL (e.g. "Order%20Received" -> "Order Received")
     const statusFilter = decodeURIComponent(params.status as string)
@@ -113,7 +124,7 @@ export default function StatusFilterPage() {
                     {/* Status Filter Info */}
                     <div className="flex flex-wrap items-center justify-between sm:justify-end gap-3 bg-slate-50 sm:bg-transparent p-3 sm:p-0 rounded-lg sm:rounded-none w-full sm:w-auto">
                         <span className="sm:hidden text-sm font-medium text-muted-foreground">Status:</span>
-                        <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
+                        <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
                             {filteredOrders.length > 0 && (
                                 <Button
                                     asChild
@@ -127,14 +138,46 @@ export default function StatusFilterPage() {
                             )}
 
                             <div className="flex items-center gap-3">
-                                <Button
-                                    variant="outline"
-                                    className="font-medium rounded-full px-4 h-9 cursor-default pointer-events-none border-0"
-                                    style={{ backgroundColor: `${config.theme.primary}1A`, color: config.theme.primary }}
-                                >
-                                    {statusFilter}
-                                </Button>
-                                <span className="text-muted-foreground text-sm">{filteredOrders.length} orders</span>
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <Button 
+                                            variant="outline" 
+                                            className="font-medium rounded-full px-4 h-9 border-0 flex items-center gap-2 shadow-sm transition-all hover:shadow-md"
+                                            style={{ backgroundColor: `${config.theme.primary}1A`, color: config.theme.primary }}
+                                        >
+                                            <Filter className="w-3.5 h-3.5" />
+                                            {statusFilter}
+                                        </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent align="end" className="w-[200px] max-h-[300px] overflow-y-auto rounded-2xl shadow-xl border-slate-100">
+                                        <DropdownMenuLabel>Filter by Status</DropdownMenuLabel>
+                                        <DropdownMenuSeparator />
+                                        <DropdownMenuItem
+                                            className={cn(
+                                                "cursor-pointer focus:bg-slate-50 active:bg-slate-100 transition-colors py-3 px-4 text-sm",
+                                                statusFilter === "All" && "bg-slate-50 font-bold"
+                                            )}
+                                            style={{ color: config.theme.primary }}
+                                            onSelect={() => router.push("/backoffice")}
+                                        >
+                                            All {config.dashboardTitle.split(" ").length > 1 ? config.dashboardTitle.split(" ")[1].replace(/s$/, "") : "Order"}s
+                                        </DropdownMenuItem>
+                                        {config.statuses.map((status) => (
+                                            <DropdownMenuItem
+                                                key={status}
+                                                className={cn(
+                                                    "cursor-pointer focus:bg-slate-50 active:bg-slate-100 transition-colors py-3 px-4 text-sm",
+                                                    statusFilter === status && "bg-slate-50 font-bold"
+                                                )}
+                                                style={{ color: config.theme.primary }}
+                                                onSelect={() => router.push(`/backoffice/status/${encodeURIComponent(status)}`)}
+                                            >
+                                                {status}
+                                            </DropdownMenuItem>
+                                        ))}
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+                                <span className="text-muted-foreground text-sm font-medium">{filteredOrders.length} orders</span>
                             </div>
                         </div>
                     </div>

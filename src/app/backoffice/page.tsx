@@ -160,7 +160,7 @@ export default function BackofficePage() {
                             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                                 <Input
                                     placeholder={config.searchPlaceholder}
-                                    className="pl-11 h-11 rounded-xl bg-white border-none shadow-[0_4px_20px_rgb(0,0,0,0.03)] focus-visible:ring-1 focus-visible:ring-slate-200 transition-all text-sm font-medium placeholder:text-slate-400 w-full"
+                                    className="pl-11 h-11 rounded-xl bg-white border-none shadow-[0_4px_20px_rgb(0,0,0,0.03)] focus-visible:ring-2 focus-visible:ring-primary/20 transition-all text-sm font-medium placeholder:text-slate-400 w-full"
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
                                 />
@@ -179,16 +179,22 @@ export default function BackofficePage() {
                                         <DropdownMenuLabel>Filter by Status</DropdownMenuLabel>
                                         <DropdownMenuSeparator />
                                         <DropdownMenuItem
-                                            className="cursor-pointer focus:bg-slate-50 focus:text-slate-900 transition-colors"
+                                            className={cn(
+                                                "cursor-pointer focus:bg-slate-50 active:bg-slate-100 transition-colors py-3 px-4",
+                                                statusFilter === "All" && "bg-slate-50 font-bold"
+                                            )}
                                             style={{ color: config.theme.primary }}
                                             onSelect={() => router.push("/backoffice")}
                                         >
-                                            All {config.dashboardTitle.split(" ").length > 1 ? config.dashboardTitle.split(" ")[1] : "Order"}s
+                                            All {config.dashboardTitle.split(" ").length > 1 ? config.dashboardTitle.split(" ")[1].replace(/s$/, "") : "Order"}s
                                         </DropdownMenuItem>
                                         {statusOptions.map((status) => (
                                             <DropdownMenuItem
                                                 key={status}
-                                                className="cursor-pointer focus:bg-slate-50 focus:text-slate-900 transition-colors"
+                                                className={cn(
+                                                    "cursor-pointer focus:bg-slate-50 active:bg-slate-100 transition-colors py-3 px-4",
+                                                    statusFilter === status && "bg-slate-50 font-bold"
+                                                )}
                                                 style={{ color: config.theme.primary }}
                                                 onSelect={() => router.push(`/backoffice/status/${encodeURIComponent(status)}`)}
                                             >
