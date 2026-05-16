@@ -14,10 +14,11 @@ export function BackofficeGuard({ children }: { children: React.ReactNode }) {
     });
     const router = useRouter()
     const pathname = usePathname()
+    const [isAutoSelecting, setIsAutoSelecting] = useState(false)
     const [validatedOrgId, setValidatedOrgId] = useState<string | null>(null)
 
     useEffect(() => {
-        if (!isLoaded || !membershipsLoaded) return
+        if (!isLoaded || !membershipsLoaded || isAutoSelecting) return
 
         const checkOnboarding = async () => {
             if (organization) {
@@ -39,10 +40,12 @@ export function BackofficeGuard({ children }: { children: React.ReactNode }) {
             const memberships = userMemberships.data
             if (memberships && memberships.length === 1 && setActive) {
                 try {
+                    setIsAutoSelecting(true)
                     await setActive({ organization: memberships[0].organization.id })
                     return
                 } catch (e) {
                     console.error("Failed to auto-select organization", e)
+                    setIsAutoSelecting(false)
                 }
             }
 
@@ -53,7 +56,7 @@ export function BackofficeGuard({ children }: { children: React.ReactNode }) {
         }
 
         checkOnboarding()
-    }, [isLoaded, organization?.id, membershipsLoaded, router, pathname, setActive, userMemberships.data])
+    }, [isLoaded, organization?.id, membershipsLoaded, router, pathname, setActive, userMemberships.data, isAutoSelecting])
 
     // CRITICAL: Prevent dashboard content from flashing until the current organization has been validated
     if (!isLoaded || !membershipsLoaded || !organization || organization.id !== validatedOrgId) {

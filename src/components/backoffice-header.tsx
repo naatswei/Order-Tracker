@@ -107,19 +107,19 @@ export function BackofficeHeader({ config }: BackofficeHeaderProps) {
                     <div className="flex items-center gap-3 lg:gap-5">
                     {/* Action Items */}
                     <div className="flex items-center gap-2">
-                        <Link href="/backoffice/inbox">
-                            <Button variant="ghost" size="icon" className="relative h-8 w-8 rounded-full bg-white hover:bg-slate-50 border border-slate-200 shadow-sm transition-all text-slate-600 hover:text-slate-900" title="Inbox">
+                        <Button asChild variant="ghost" size="icon" className="relative h-8 w-8 rounded-full bg-white hover:bg-slate-50 border border-slate-200 shadow-sm transition-all text-slate-600 hover:text-slate-900" title="Inbox">
+                            <Link href="/backoffice/inbox">
                                 <Mail className="w-4 h-4" />
                                 {unreadCount > 0 && (
                                     <span className="absolute top-[5px] right-[5px] w-2 h-2 bg-red-500 rounded-full border border-white animate-pulse" />
                                 )}
-                            </Button>
-                        </Link>
-                        <Link href="/backoffice/profile">
-                            <Button variant="ghost" size="icon" className="relative h-8 w-8 rounded-full bg-white hover:bg-slate-50 border border-slate-200 shadow-sm transition-all text-slate-600 hover:text-slate-900" title="Settings">
+                            </Link>
+                        </Button>
+                        <Button asChild variant="ghost" size="icon" className="relative h-8 w-8 rounded-full bg-white hover:bg-slate-50 border border-slate-200 shadow-sm transition-all text-slate-600 hover:text-slate-900" title="Settings">
+                            <Link href="/backoffice/profile">
                                 <Settings className="w-4 h-4" />
-                            </Button>
-                        </Link>
+                            </Link>
+                        </Button>
                     </div>
 
                     {/* Divider */}
@@ -160,14 +160,14 @@ export function BackofficeHeader({ config }: BackofficeHeaderProps) {
 
                 {/* Mobile Menu Button */}
                 <div className="md:hidden flex items-center gap-2">
-                    <Link href="/backoffice/inbox">
-                        <Button variant="ghost" size="icon" className="relative h-9 w-9 rounded-full bg-slate-100/50 hover:bg-slate-200/50 border border-slate-200 shadow-sm transition-colors">
+                    <Button asChild variant="ghost" size="icon" className="relative h-9 w-9 rounded-full bg-slate-100/50 hover:bg-slate-200/50 border border-slate-200 shadow-sm transition-colors">
+                        <Link href="/backoffice/inbox">
                             <Mail className="w-4 h-4 text-slate-600" />
                             {unreadCount > 0 && (
                                 <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-600 rounded-full border border-white animate-pulse" />
                             )}
-                        </Button>
-                    </Link>
+                        </Link>
+                    </Button>
                     <Button
                         variant="ghost"
                         size="icon"

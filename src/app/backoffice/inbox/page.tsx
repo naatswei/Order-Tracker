@@ -88,8 +88,8 @@ export default function InboxPage() {
         if (organization) {
             const orgBusinessType = organization.publicMetadata?.businessType as string
             setBusinessType(orgBusinessType || localStorage.getItem("businessType"))
-            loadMessages()
-            const interval = setInterval(loadMessages, 3000)
+            loadMessages(true)
+            const interval = setInterval(() => loadMessages(false), 3000)
             return () => clearInterval(interval)
         } else {
             setMessagesLoading(false)
@@ -120,9 +120,9 @@ export default function InboxPage() {
         )
     }
 
-    const loadMessages = async () => {
+    const loadMessages = async (showLoading = false) => {
         if (!organization?.id) return
-        setMessagesLoading(true)
+        if (showLoading) setMessagesLoading(true)
         try {
             const result = await getInboxMessages(organization.id)
             if (result.messages) {
