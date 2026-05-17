@@ -96,6 +96,12 @@ export default function OperationsPage() {
                 getStaff(),
                 getWorkflowStages()
             ]);
+            const ordersError = ordersData.find(o => (o as any).__isError);
+            if (ordersError) {
+                toast.error(`Failed to load orders: ${(ordersError as any).message}`);
+                setIsLoading(false);
+                return;
+            }
             setOrders(ordersData);
             setStaff(staffData);
             setStages(stagesData.length > 0 ? stagesData : [

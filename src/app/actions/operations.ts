@@ -239,10 +239,27 @@ export async function addInventoryItem(data: { name: string, quantity: string, c
 }
 
 export async function getInventory() {
-    const { orgId } = await auth();
-    if (!orgId) return [];
+    try {
+        const { orgId } = await auth();
+        if (!orgId) return [];
 
-    return await db.select().from(inventory).where(eq(inventory.clerkOrgId, orgId)).orderBy(desc(inventory.updatedAt));
+        return await db.select().from(inventory).where(eq(inventory.clerkOrgId, orgId)).orderBy(desc(inventory.updatedAt));
+    } catch (error: any) {
+        console.error("Failed to get inventory server-side:", error);
+        return [
+            {
+                id: "error",
+                name: "Error loading inventory",
+                quantity: "0",
+                businessType: "Error",
+                clerkOrgId: "Error",
+                createdAt: new Date(),
+                updatedAt: new Date(),
+                __isError: true,
+                message: error?.message || String(error)
+            } as any
+        ];
+    }
 }
 
 export async function updateStock(itemId: string, type: "in" | "out" | "adjustment", quantity: string, note?: string) {

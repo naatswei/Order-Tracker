@@ -6,6 +6,7 @@ import { type Order } from "@/lib/storage"
 import { getOrders } from "@/app/actions/orders"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import { toast } from "sonner"
 import { ArrowLeft, Package, Loader2 } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { OrderCard } from "@/components/order-card"
@@ -51,6 +52,14 @@ export default function StatusFilterPage() {
         setLoading(true)
         try {
             const allOrders = await getOrders()
+            
+            const errorItem = allOrders.find(o => (o as any).__isError);
+            if (errorItem) {
+                toast.error(`Failed to load orders: ${(errorItem as any).message}`);
+                setLoading(false);
+                return;
+            }
+
             const mappedOrders: Order[] = (allOrders as Record<string, unknown>[]).map((o) => ({
                 id: o.id as string,
                 orderNumber: o.orderNumber as string,

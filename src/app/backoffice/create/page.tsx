@@ -102,7 +102,15 @@ function CreateOrderContent() {
         }
 
         // Fetch inventory
-        getInventory().then(items => setAllInventory(items))
+        getInventory().then(items => {
+            const errorItem = items.find(o => (o as any).__isError);
+            if (errorItem) {
+                toast.error(`Failed to load inventory: ${(errorItem as any).message}`);
+                setAllInventory([]);
+            } else {
+                setAllInventory(items);
+            }
+        })
     }, [searchParams, organization])
 
     // Bidirectional sync for quantity (only if 1 item is linked)

@@ -74,6 +74,22 @@ export default function InventoryPage() {
                 getInventory(),
                 getOrders()
             ]);
+
+            const inventoryError = inventoryData.find(o => (o as any).__isError);
+            const ordersError = ordersData.find(o => (o as any).__isError);
+
+            if (inventoryError) {
+                toast.error(`Failed to load inventory: ${(inventoryError as any).message}`);
+            }
+            if (ordersError) {
+                toast.error(`Failed to load orders: ${(ordersError as any).message}`);
+            }
+
+            if (inventoryError || ordersError) {
+                setIsLoading(false);
+                return;
+            }
+
             setItems(inventoryData);
             setOrders(ordersData);
         } catch (error: any) {

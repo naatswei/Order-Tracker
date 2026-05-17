@@ -94,6 +94,14 @@ export default function BackofficePage() {
         setIsLoading(true)
         try {
             const allOrders = await getOrders()
+            
+            const errorItem = allOrders.find(o => (o as any).__isError);
+            if (errorItem) {
+                toast.error(`Failed to load orders: ${(errorItem as any).message}`);
+                setIsLoading(false);
+                return;
+            }
+
             // Map DB fields to what the UI expects if necessary
             // In our case, schema matches mostly, but we use 'itemType' instead of 'garmentType'
             // and we need to ensure the types match the Order interface

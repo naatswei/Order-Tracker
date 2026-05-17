@@ -145,6 +145,14 @@ function BulkUpdateContent() {
         setIsLoading(true)
         try {
             const allOrders = await getOrders()
+            
+            const errorItem = allOrders.find(o => (o as any).__isError);
+            if (errorItem) {
+                toast.error(`Failed to load orders: ${(errorItem as any).message}`);
+                setIsLoading(false);
+                return;
+            }
+
             const mappedOrders: Order[] = (allOrders as Record<string, unknown>[]).map(o => ({
                 id: o.id as string,
                 orderNumber: o.orderNumber as string,

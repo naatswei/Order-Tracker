@@ -181,15 +181,34 @@ export async function updateOrderStatus(orderId: string, status: string, locatio
 }
 
 export async function getOrders() {
-    const { orgId } = await auth();
+    try {
+        const { orgId } = await auth();
 
-    const query = db.select().from(orders);
+        const query = db.select().from(orders);
 
-    if (orgId) {
-        query.where(eq(orders.clerkOrgId, orgId));
+        if (orgId) {
+            query.where(eq(orders.clerkOrgId, orgId));
+        }
+
+        return await query.orderBy(desc(orders.createdAt));
+    } catch (error: any) {
+        console.error("Failed to get orders server-side:", error);
+        return [
+            {
+                id: "error",
+                orderNumber: "ERR",
+                customerName: "Error",
+                customerPhone: "Error",
+                itemType: "Error",
+                businessType: "Error",
+                currentStatus: "Error",
+                createdAt: new Date(),
+                updatedAt: new Date(),
+                __isError: true,
+                message: error?.message || String(error)
+            } as any
+        ];
     }
-
-    return await query.orderBy(desc(orders.createdAt));
 }
 
 export async function getOrderCount() {
