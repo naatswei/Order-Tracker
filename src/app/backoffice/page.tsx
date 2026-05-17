@@ -20,6 +20,7 @@ import { BackofficeHeader } from "@/components/backoffice-header"
 import { SignatureLoader } from "@/components/signature-loader"
 import { RenewalBanner } from "@/components/renewal-banner"
 import { cn } from "@/lib/utils"
+import { toast } from "sonner"
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -112,8 +113,10 @@ export default function BackofficePage() {
                 statusHistory: [],
             }))
             setOrders(mappedOrders)
-        } catch (error) {
-            console.error("Failed to load orders:", error)
+        } catch (error: any) {
+            console.error("Failed to load orders:", error);
+            const errMsg = error?.message || (typeof error === "string" ? error : "Check database connection");
+            toast.error(`Failed to load orders: ${errMsg}`);
         } finally {
             setIsLoading(false)
         }

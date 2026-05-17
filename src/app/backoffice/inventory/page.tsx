@@ -76,8 +76,10 @@ export default function InventoryPage() {
             ]);
             setItems(inventoryData);
             setOrders(ordersData);
-        } catch (error) {
-            toast.error("Failed to sync inventory");
+        } catch (error: any) {
+            console.error("Inventory Sync Error:", error);
+            const errMsg = error?.message || (typeof error === "string" ? error : "Check connection");
+            toast.error(`Failed to sync inventory: ${errMsg}`);
         } finally {
             setIsLoading(false);
         }
