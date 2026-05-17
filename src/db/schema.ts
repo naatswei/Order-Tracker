@@ -188,3 +188,19 @@ export const typingStatus = pgTable("typing_status", {
     userType: text("user_type").notNull(), // "customer" or "business"
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
+
+export const pushSubscriptions = pgTable("push_subscriptions", {
+    id: text("id").primaryKey(),
+    orderId: text("order_id").references(() => orders.id, { onDelete: "cascade" }).notNull(),
+    endpoint: text("endpoint").notNull(),
+    p256dh: text("p256dh").notNull(),
+    auth: text("auth").notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const pushSubscriptionsRelations = relations(pushSubscriptions, ({ one }) => ({
+    order: one(orders, {
+        fields: [pushSubscriptions.orderId],
+        references: [orders.id],
+    }),
+}));

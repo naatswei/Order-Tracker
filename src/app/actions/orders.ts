@@ -7,6 +7,7 @@ import { revalidatePath } from "next/cache";
 import { auth, clerkClient } from "@clerk/nextjs/server";
 import { getPlanLimits } from "@/lib/plan-config";
 import { linkOrderToInventory, consumeReservedStock, releaseReservedStock, syncOrderInventoryLinks } from "./operations";
+import { triggerOrderStatusNotification } from "@/lib/web-push";
 
 interface OrderInput {
     id?: string;
@@ -133,7 +134,16 @@ export async function updateOrderStatus(orderId: string, status: string, locatio
         await validateSubscription(orgId);
     }
 
+    let orderNumber = "";
+
     await db.transaction(async (tx) => {
+        const orderData = await tx.query.orders.findFirst({
+            where: eq(orders.id, orderId)
+        });
+        if (orderData) {
+            orderNumber = orderData.orderNumber;
+        }
+
         // Update order current status
         await tx
             .update(orders)
@@ -160,6 +170,10 @@ export async function updateOrderStatus(orderId: string, status: string, locatio
             await releaseReservedStock(orderId, tx);
         }
     });
+
+    if (orderNumber) {
+        triggerOrderStatusNotification(orderId, status, orderNumber).catch(console.error);
+    }
 
     revalidatePath("/backoffice");
     revalidatePath(`/track/${orderId}`);

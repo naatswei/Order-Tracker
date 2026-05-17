@@ -134,6 +134,8 @@ export async function updateOrderStage(orderId: string, stageName: string, messa
 
     const staffId = await getCurrentStaffId(orgId, userId);
 
+    let orderNumber = "";
+
     await db.transaction(async (tx) => {
         // 1. Get the current order to see its old status
         const currentOrder = await tx.query.orders.findFirst({
@@ -141,6 +143,7 @@ export async function updateOrderStage(orderId: string, stageName: string, messa
         });
 
         if (!currentOrder) throw new Error("Order not found");
+        orderNumber = currentOrder.orderNumber;
 
         // 2. Update order current status
         await tx
@@ -179,6 +182,13 @@ export async function updateOrderStage(orderId: string, stageName: string, messa
             await releaseReservedStock(orderId, tx);
         }
     });
+
+    if (orderNumber) {
+        // Dynamic import to prevent potential circular dependency
+        import("@/lib/web-push").then(({ triggerOrderStatusNotification }) => {
+            triggerOrderStatusNotification(orderId, stageName, orderNumber).catch(console.error);
+        });
+    }
 
     revalidatePath("/backoffice");
     revalidatePath("/backoffice/operations");

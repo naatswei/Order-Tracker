@@ -8,14 +8,30 @@ import { Badge } from "@/components/ui/badge"
 import { type Order } from "@/lib/storage"
 import { getOrderWithHistory } from "@/app/actions/orders"
 import { submitCustomerMessage, getThreadMessages, updateTypingStatus, getTypingStatus } from "@/app/actions/messages"
+import { savePushSubscription } from "@/app/actions/push"
 import Link from "next/link"
 import { getBusinessConfig } from "@/lib/business-configs"
 import { toast } from "sonner"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
-import { Loader2, Package, CheckCircle2, Clock, Truck, MapPin, Search, Send, MessageSquare, MessageSquareMore, X, ArrowRight, User, Building2, ChevronRight, ExternalLink, Calendar, Zap } from "lucide-react"
+import { Loader2, Package, CheckCircle2, Clock, Truck, MapPin, Search, Send, MessageSquare, MessageSquareMore, X, ArrowRight, User, Building2, ChevronRight, ExternalLink, Calendar, Zap, Bell, BellRing, BellOff } from "lucide-react"
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion"
 import { SignatureLoader } from "@/components/signature-loader"
+
+function urlBase64ToUint8Array(base64String: string) {
+    const padding = '='.repeat((4 - base64String.length % 4) % 4);
+    const base64 = (base64String + padding)
+        .replace(/\-/g, '+')
+        .replace(/_/g, '/');
+
+    const rawData = window.atob(base64);
+    const outputArray = new Uint8Array(rawData.length);
+
+    for (let i = 0; i < rawData.length; ++i) {
+        outputArray[i] = rawData.charCodeAt(i);
+    }
+    return outputArray;
+}
 
 export default function TrackingDetailsPage() {
     const params = useParams()
@@ -27,6 +43,92 @@ export default function TrackingDetailsPage() {
     const [chatOpen, setChatOpen] = useState(false)
     const [chatMessages, setChatMessages] = useState<any[]>([])
     const [isBusinessTyping, setIsBusinessTyping] = useState(false)
+    const [isPushSupported, setIsPushSupported] = useState(false)
+    const [isSubscribed, setIsSubscribed] = useState(false)
+    const [subscriptionLoading, setSubscriptionLoading] = useState(false)
+    const [isIOS, setIsIOS] = useState(false)
+
+    useEffect(() => {
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js')
+                .then(reg => console.log('Service Worker registered successfully with scope:', reg.scope))
+                .catch(err => console.error('Service Worker registration failed:', err));
+        }
+    }, []);
+
+    useEffect(() => {
+        const checkPushSupport = async () => {
+            const hasServiceWorker = 'serviceWorker' in navigator;
+            const hasPushManager = 'PushManager' in window;
+            
+            // Check if iOS
+            const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
+            setIsIOS(isIOSDevice);
+
+            if (hasServiceWorker && hasPushManager) {
+                setIsPushSupported(true);
+                
+                try {
+                    const registration = await navigator.serviceWorker.ready;
+                    const subscription = await registration.pushManager.getSubscription();
+                    setIsSubscribed(!!subscription);
+                } catch (e) {
+                    console.error("Error checking push subscription status:", e);
+                }
+            }
+        };
+
+        checkPushSupport();
+    }, []);
+
+    const handleSubscribe = async () => {
+        if (!isPushSupported) return;
+        setSubscriptionLoading(true);
+
+        try {
+            const permission = await Notification.requestPermission();
+            if (permission !== 'granted') {
+                toast.error("Notification permission denied.");
+                setSubscriptionLoading(false);
+                return;
+            }
+
+            const registration = await navigator.serviceWorker.ready;
+            
+            const vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
+            if (!vapidPublicKey) {
+                console.error("VAPID public key not found in env vars!");
+                toast.error("Push notification configuration is missing on the server.");
+                setSubscriptionLoading(false);
+                return;
+            }
+
+            const convertedVapidKey = urlBase64ToUint8Array(vapidPublicKey);
+
+            const subscription = await registration.pushManager.subscribe({
+                userVisibleOnly: true,
+                applicationServerKey: convertedVapidKey
+            });
+
+            const subscriptionJSON = subscription.toJSON();
+            if (subscriptionJSON.endpoint && subscriptionJSON.keys?.p256dh && subscriptionJSON.keys?.auth) {
+                const res = await savePushSubscription(trackingId, subscriptionJSON);
+                if (res.success) {
+                    setIsSubscribed(true);
+                    toast.success("Subscribed to status updates!");
+                } else {
+                    toast.error(res.error || "Failed to register subscription.");
+                }
+            } else {
+                toast.error("Invalid subscription payload returned from browser.");
+            }
+        } catch (error) {
+            console.error("Failed to subscribe:", error);
+            toast.error("An error occurred while enabling notifications.");
+        } finally {
+            setSubscriptionLoading(false);
+        }
+    };
 
     console.log("Tracking Page State:", { trackingId, chatOpen, messagesCount: chatMessages.length, isBusinessTyping })
     const [showOverlay, setShowOverlay] = useState(true)
@@ -390,6 +492,63 @@ export default function TrackingDetailsPage() {
                                 </CardContent>
                             </Card>
                         </div>
+
+                        {/* Push Notification Card */}
+                        {isPushSupported && (
+                            <motion.div
+                                initial={{ opacity: 0, y: 15 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="mb-12"
+                            >
+                                <Card className="bg-gradient-to-br from-white/[0.04] to-white/[0.01] backdrop-blur-md border border-white/[0.08] rounded-3xl overflow-hidden shadow-2xl relative">
+                                    <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-3xl -z-10 pointer-events-none" />
+                                    <CardContent className="p-6 flex flex-col sm:flex-row items-center justify-between gap-6">
+                                        <div className="flex items-center gap-4 text-center sm:text-left flex-col sm:flex-row">
+                                            <div className={`p-3.5 rounded-2xl bg-white/[0.04] border border-white/10 ${isSubscribed ? 'text-blue-400' : 'text-white/60'}`}>
+                                                {isSubscribed ? (
+                                                    <BellRing className="w-6 h-6 animate-bounce" />
+                                                ) : (
+                                                    <Bell className="w-6 h-6" />
+                                                )}
+                                            </div>
+                                            <div className="space-y-1">
+                                                <h4 className="text-sm font-medium text-white tracking-wide">
+                                                    {isSubscribed ? "Updates Active" : "Get Real-time Updates"}
+                                                </h4>
+                                                <p className="text-xs text-white/50 font-light max-w-sm leading-relaxed">
+                                                    {isSubscribed 
+                                                        ? "You will receive browser notifications whenever your order status updates." 
+                                                        : "Enable push notifications to track this order instantly when status changes."}
+                                                </p>
+                                                {isIOS && !isSubscribed && (
+                                                    <p className="text-[10px] text-blue-400/80 font-light leading-relaxed max-w-xs mt-1">
+                                                        ℹ️ iPhone user? Tap "Share" and "Add to Home Screen" first to enable notifications.
+                                                    </p>
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        <Button
+                                            disabled={isSubscribed || subscriptionLoading}
+                                            onClick={handleSubscribe}
+                                            className={`w-full sm:w-auto px-6 py-5 rounded-2xl font-medium text-xs tracking-wider uppercase transition-all duration-300 ${
+                                                isSubscribed
+                                                    ? "bg-white/[0.05] border border-white/10 text-white/40 cursor-default"
+                                                    : "bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-500/20 hover:shadow-blue-500/35 hover:-translate-y-0.5 active:translate-y-0"
+                                            }`}
+                                        >
+                                            {subscriptionLoading ? (
+                                                <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                                            ) : isSubscribed ? (
+                                                "Active"
+                                            ) : (
+                                                "Enable Notifications"
+                                            )}
+                                        </Button>
+                                    </CardContent>
+                                </Card>
+                            </motion.div>
+                        )}
 
                         {/* Timeline */}
                         <div className="space-y-8 mb-16 px-4 sm:px-0">
