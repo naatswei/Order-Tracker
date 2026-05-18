@@ -1,8 +1,8 @@
 "use client"
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useOrganization } from "@clerk/nextjs";
-import { getInventory, addInventoryItem, updateStock, removeInventoryItem, getInventoryHistory } from "@/app/actions/operations";
+import { getInventory, addInventoryItem, updateStock, removeInventoryItem, getInventoryHistory, bulkAddInventoryItems } from "@/app/actions/operations";
 import { getOrders } from "@/app/actions/orders";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -24,10 +24,15 @@ import {
     ShoppingCart,
     Scissors,
     History,
-    Trash2
+    Trash2,
+    Upload,
+    Download,
+    Loader2,
+    FileSpreadsheet
 } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import * as XLSX from "xlsx";
 import Link from "next/link";
 import {
     Dialog,
@@ -58,6 +63,219 @@ export default function InventoryPage() {
 
     // Form state
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+
+    // Bulk Import states
+    const [isImportModalOpen, setIsImportModalOpen] = useState(false);
+    const [importData, setImportData] = useState<any[]>([]);
+    const [isImporting, setIsImporting] = useState(false);
+    const [dragActive, setDragActive] = useState(false);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const handleDrag = (e: React.DragEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (e.type === "dragenter" || e.type === "dragover") {
+            setDragActive(true);
+        } else if (e.type === "dragleave") {
+            setDragActive(false);
+        }
+    };
+
+    const handleDrop = (e: React.DragEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setDragActive(false);
+        if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+            parseFile(e.dataTransfer.files[0]);
+        }
+    };
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            parseFile(e.target.files[0]);
+        }
+    };
+
+    const normalizeHeader = (h: string) => h.toLowerCase().trim().replace(/[^a-z0-9]/g, "");
+
+    const parseFile = (file: File) => {
+        const reader = new FileReader();
+        const fileExt = file.name.split('.').pop()?.toLowerCase();
+
+        if (fileExt === 'xlsx' || fileExt === 'xls') {
+            reader.onload = (e) => {
+                try {
+                    const data = new Uint8Array(e.target?.result as ArrayBuffer);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const firstSheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[firstSheetName];
+                    const json = XLSX.utils.sheet_to_json(worksheet, { header: 1 }) as any[][];
+                    processRawData(json);
+                } catch (error) {
+                    toast.error("Failed to parse Excel file. Please ensure it is not corrupted.");
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        } else if (fileExt === 'csv') {
+            reader.onload = (e) => {
+                try {
+                    const text = e.target?.result as string;
+                    const rows = parseCSVText(text);
+                    processRawData(rows);
+                } catch (error) {
+                    toast.error("Failed to parse CSV file.");
+                }
+            };
+            reader.readAsText(file);
+        } else {
+            toast.error("Unsupported file type. Please upload a .xlsx, .xls, or .csv file.");
+        }
+    };
+
+    const parseCSVText = (text: string): string[][] => {
+        const lines: string[][] = [];
+        let row: string[] = [];
+        let inQuotes = false;
+        let currentValue = '';
+
+        for (let i = 0; i < text.length; i++) {
+            const char = text[i];
+            const nextChar = text[i + 1];
+
+            if (char === '"') {
+                if (inQuotes && nextChar === '"') {
+                    currentValue += '"';
+                    i++;
+                } else {
+                    inQuotes = !inQuotes;
+                }
+            } else if (char === ',' && !inQuotes) {
+                row.push(currentValue.trim());
+                currentValue = '';
+            } else if ((char === '\r' || char === '\n') && !inQuotes) {
+                if (char === '\r' && nextChar === '\n') {
+                    i++;
+                }
+                row.push(currentValue.trim());
+                if (row.length > 1 || row[0] !== '') {
+                    lines.push(row);
+                }
+                row = [];
+                currentValue = '';
+            } else {
+                currentValue += char;
+            }
+        }
+        if (row.length > 0 || currentValue !== '') {
+            row.push(currentValue.trim());
+            lines.push(row);
+        }
+        return lines;
+    };
+
+    const processRawData = (rows: any[][]) => {
+        if (rows.length < 2) {
+            toast.error("File is empty or missing headers");
+            return;
+        }
+
+        const headers = rows[0].map(h => normalizeHeader(String(h || "")));
+        const dataRows = rows.slice(1);
+
+        const mapped = dataRows.map((row) => {
+            const item: any = {
+                name: '',
+                sku: '',
+                category: '',
+                unit: '',
+                quantity: '0',
+                unitCost: '0',
+                minStock: '0',
+                errors: [] as string[]
+            };
+
+            row.forEach((val, colIdx) => {
+                const header = headers[colIdx];
+                if (!header) return;
+                const valueStr = String(val || "").trim();
+
+                if (['name', 'assetname', 'item', 'itemname', 'product', 'productname'].includes(header)) {
+                    item.name = valueStr;
+                } else if (['sku', 'reference', 'skureference'].includes(header)) {
+                    item.sku = valueStr;
+                } else if (['category', 'group'].includes(header)) {
+                    item.category = valueStr;
+                } else if (['unit', 'measurement', 'measurementunit'].includes(header)) {
+                    item.unit = valueStr;
+                } else if (['stock', 'quantity', 'qty', 'initialstock', 'physicalstock', 'initialphysicalstock'].includes(header)) {
+                    item.quantity = isNaN(parseFloat(valueStr)) ? "0" : parseFloat(valueStr).toString();
+                } else if (['unitcost', 'unitcostghs', 'cost', 'costprice'].includes(header)) {
+                    item.unitCost = isNaN(parseFloat(valueStr)) ? "0" : parseFloat(valueStr).toString();
+                } else if (['minstock', 'minstockthreshold', 'alertthreshold', 'minimumalertthreshold'].includes(header)) {
+                    item.minStock = isNaN(parseFloat(valueStr)) ? "0" : parseFloat(valueStr).toString();
+                }
+            });
+
+            if (!item.name) {
+                item.errors.push("Asset Name is required");
+            }
+
+            return item;
+        }).filter(item => item !== null && (item.name || item.sku || item.category));
+
+        if (mapped.length === 0) {
+            toast.error("No valid data rows found in the uploaded file");
+            return;
+        }
+
+        setImportData(mapped);
+    };
+
+    const handleImportSubmit = async () => {
+        const validItems = importData.filter(item => item.errors.length === 0);
+        if (validItems.length === 0) {
+            toast.error("No valid items to import");
+            return;
+        }
+
+        setIsImporting(true);
+        try {
+            const formatted = validItems.map(item => ({
+                name: item.name,
+                quantity: item.quantity,
+                sku: item.sku || null,
+                category: item.category || null,
+                unit: item.unit || null,
+                minStock: item.minStock || "0",
+                unitCost: item.unitCost || "0",
+                businessType: businessType || "tailoring"
+            }));
+
+            await bulkAddInventoryItems(formatted);
+            toast.success(`Successfully imported ${validItems.length} items`);
+            setIsImportModalOpen(false);
+            setImportData([]);
+            loadData();
+        } catch (error: any) {
+            console.error("Bulk Import Error:", error);
+            toast.error("Failed to import inventory items: " + (error.message || "Unknown error"));
+        } finally {
+            setIsImporting(false);
+        }
+    };
+
+    const downloadTemplate = () => {
+        const headers = "Asset Name,SKU,Category,Unit,Initial Physical Stock,Unit Cost (GHS),Minimum Alert Threshold\n";
+        const exampleRow = "Silk Thread,SLK-001,Raw Materials,Rolls,150,25.00,10\n";
+        const blob = new Blob([headers + exampleRow], { type: "text/csv;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.setAttribute("href", url);
+        link.setAttribute("download", "otracker_inventory_template.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
 
     useEffect(() => {
         if (!isLoaded || !organization) return;
@@ -211,8 +429,16 @@ export default function InventoryPage() {
                             />
                         </div>
                         <Button 
+                            variant="outline"
+                            onClick={() => setIsImportModalOpen(true)}
+                            className="w-full sm:w-auto h-10 sm:h-12 border-slate-200 bg-white hover:bg-slate-50 text-[#191A43] rounded-xl sm:rounded-2xl px-6 gap-2 font-black uppercase tracking-widest text-xs sm:text-sm shadow-sm transition-all shrink-0"
+                        >
+                            <Upload className="w-4 h-4" />
+                            Import Excel/CSV
+                        </Button>
+                        <Button 
                             onClick={() => setIsAddModalOpen(true)}
-                            className="w-full sm:w-auto h-10 sm:h-12 bg-[#191A43] hover:bg-[#191A43]/90 text-white rounded-xl sm:rounded-2xl px-6 gap-2 font-black uppercase tracking-widest text-xs sm:text-sm shadow-xl shadow-[#191A43]/20"
+                            className="w-full sm:w-auto h-10 sm:h-12 bg-[#191A43] hover:bg-[#191A43]/90 text-white rounded-xl sm:rounded-2xl px-6 gap-2 font-black uppercase tracking-widest text-xs sm:text-sm shadow-xl shadow-[#191A43]/20 shrink-0"
                         >
                             <Plus className="w-4 h-4" />
                             Add Asset
@@ -534,6 +760,187 @@ export default function InventoryPage() {
                             </Button>
                         </div>
                     </form>
+                </DialogContent>
+            </Dialog>
+
+            <Dialog open={isImportModalOpen} onOpenChange={(open) => {
+                setIsImportModalOpen(open);
+                if (!open) setImportData([]);
+            }}>
+                <DialogContent className="max-w-4xl rounded-[2rem] border-none shadow-2xl p-0 overflow-hidden bg-white">
+                    <DialogHeader className="p-8 pb-4">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-4">
+                                <div className="w-12 h-12 rounded-2xl bg-[#191A43] flex items-center justify-center shadow-lg shadow-[#191A43]/20">
+                                    <FileSpreadsheet className="w-6 h-6 text-white" />
+                                </div>
+                                <div>
+                                    <DialogTitle className="text-xl font-black text-[#191A43] tracking-tight">Bulk Import Assets</DialogTitle>
+                                    <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mt-1">Excel & CSV Ingestion Engine</p>
+                                </div>
+                            </div>
+                            <Button
+                                onClick={downloadTemplate}
+                                variant="outline"
+                                className="h-10 border-[#191A43]/10 hover:border-[#191A43]/20 text-[#191A43] font-bold rounded-xl gap-2 text-xs uppercase tracking-wider shadow-sm hover:bg-slate-50"
+                            >
+                                <Download className="w-4 h-4" />
+                                Get Template
+                            </Button>
+                        </div>
+                    </DialogHeader>
+
+                    <div className="p-8 pt-0 space-y-6">
+                        {importData.length === 0 ? (
+                            <div
+                                onDragEnter={handleDrag}
+                                onDragOver={handleDrag}
+                                onDragLeave={handleDrag}
+                                onDrop={handleDrop}
+                                onClick={() => fileInputRef.current?.click()}
+                                className={`group border-2 border-dashed rounded-3xl p-12 text-center cursor-pointer transition-all duration-300 flex flex-col items-center justify-center gap-4 ${
+                                    dragActive
+                                        ? "border-[#191A43] bg-[#191A43]/5 scale-[0.99]"
+                                        : "border-slate-200 bg-slate-50/50 hover:border-[#191A43]/40 hover:bg-slate-50"
+                                }`}
+                            >
+                                <input
+                                    ref={fileInputRef}
+                                    type="file"
+                                    accept=".csv, .xlsx, .xls"
+                                    onChange={handleFileChange}
+                                    className="hidden"
+                                />
+                                <div className={`w-16 h-16 rounded-2xl bg-white shadow-md flex items-center justify-center transition-transform group-hover:scale-110 duration-300 ${
+                                    dragActive ? "scale-105" : ""
+                                }`}>
+                                    <Upload className="w-8 h-8 text-[#191A43]" />
+                                </div>
+                                <div className="space-y-1">
+                                    <p className="font-black text-slate-700 text-sm">Drag & drop your Excel or CSV file here</p>
+                                    <p className="text-xs text-slate-400 font-medium">or click anywhere to browse local files</p>
+                                </div>
+                                <div className="flex gap-2 mt-2">
+                                    <Badge variant="outline" className="bg-white border-slate-100 text-slate-400 font-bold uppercase tracking-wider text-[9px] px-2.5 py-0.5">
+                                        .xlsx
+                                    </Badge>
+                                    <Badge variant="outline" className="bg-white border-slate-100 text-slate-400 font-bold uppercase tracking-wider text-[9px] px-2.5 py-0.5">
+                                        .xls
+                                    </Badge>
+                                    <Badge variant="outline" className="bg-white border-slate-100 text-slate-400 font-bold uppercase tracking-wider text-[9px] px-2.5 py-0.5">
+                                        .csv
+                                    </Badge>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="space-y-6">
+                                <div className="flex items-center justify-between bg-slate-50 border border-slate-100 p-4 rounded-2xl">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center font-black">
+                                            {importData.filter(i => i.errors.length === 0).length}
+                                        </div>
+                                        <div>
+                                            <p className="text-xs font-black text-slate-700 uppercase tracking-wider">Ready for Ingestion</p>
+                                            <p className="text-[10px] text-slate-400 font-medium mt-0.5">Valid records matched and parsed</p>
+                                        </div>
+                                    </div>
+                                    {importData.filter(i => i.errors.length > 0).length > 0 && (
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-8 h-8 rounded-lg bg-red-50 text-red-500 flex items-center justify-center font-black">
+                                                {importData.filter(i => i.errors.length > 0).length}
+                                            </div>
+                                            <div>
+                                                <p className="text-xs font-black text-red-500 uppercase tracking-wider">Validation Errors</p>
+                                                <p className="text-[10px] text-slate-400 font-medium mt-0.5">Empty names or invalid values</p>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+
+                                <div className="max-h-[350px] overflow-y-auto border border-slate-100 rounded-2xl no-scrollbar">
+                                    <table className="w-full text-left border-collapse">
+                                        <thead className="sticky top-0 bg-slate-50 z-10">
+                                            <tr className="border-b border-slate-100">
+                                                <th className="px-5 py-3 text-[10px] font-black text-slate-500 uppercase tracking-wider">Asset Name</th>
+                                                <th className="px-4 py-3 text-[10px] font-black text-slate-500 uppercase tracking-wider">SKU</th>
+                                                <th className="px-4 py-3 text-[10px] font-black text-slate-500 uppercase tracking-wider">Category</th>
+                                                <th className="px-4 py-3 text-[10px] font-black text-slate-500 uppercase tracking-wider">Unit</th>
+                                                <th className="px-4 py-3 text-[10px] font-black text-slate-500 uppercase tracking-wider text-center">Stock</th>
+                                                <th className="px-4 py-3 text-[10px] font-black text-slate-500 uppercase tracking-wider text-center">Unit Cost</th>
+                                                <th className="px-5 py-3 text-[10px] font-black text-slate-500 uppercase tracking-wider text-right">Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="divide-y divide-slate-50 text-xs font-semibold text-slate-600">
+                                            {importData.map((row, idx) => (
+                                                <tr key={idx} className={`group transition-colors ${row.errors.length > 0 ? "bg-red-50/20 hover:bg-red-50/30" : "hover:bg-slate-50/50"}`}>
+                                                    <td className="px-5 py-3 font-bold text-slate-800">
+                                                        {row.name ? row.name : <span className="text-red-400 italic font-medium">Missing Asset Name</span>}
+                                                    </td>
+                                                    <td className="px-4 py-3 font-mono text-slate-400">{row.sku || "—"}</td>
+                                                    <td className="px-4 py-3">
+                                                        <Badge variant="outline" className="bg-white border-slate-100 text-slate-400 font-bold uppercase tracking-wider text-[8px] py-0">
+                                                            {row.category || "General"}
+                                                        </Badge>
+                                                    </td>
+                                                    <td className="px-4 py-3 text-slate-400">{row.unit || "Units"}</td>
+                                                    <td className="px-4 py-3 text-center text-slate-800">{row.quantity}</td>
+                                                    <td className="px-4 py-3 text-center text-[#9C7E41]">GHS {row.unitCost}</td>
+                                                    <td className="px-5 py-3 text-right">
+                                                        {row.errors.length > 0 ? (
+                                                            <div className="flex items-center justify-end gap-1.5 text-red-500 font-bold text-[10px] uppercase tracking-wider" title={row.errors.join(", ")}>
+                                                                <AlertCircle className="w-3.5 h-3.5" />
+                                                                Invalid
+                                                            </div>
+                                                        ) : (
+                                                            <Badge className="bg-emerald-50 border border-emerald-100 text-emerald-600 font-bold uppercase tracking-wider text-[8px] px-2 py-0">
+                                                                Ready
+                                                            </Badge>
+                                                        )}
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <div className="flex justify-between items-center pt-4">
+                                    <Button
+                                        type="button"
+                                        variant="ghost"
+                                        onClick={() => setImportData([])}
+                                        className="h-12 px-6 rounded-2xl font-bold text-slate-400 hover:text-red-500 text-xs uppercase tracking-widest"
+                                    >
+                                        Clear & Start Over
+                                    </Button>
+
+                                    <div className="flex gap-3">
+                                        <Button
+                                            type="button"
+                                            variant="ghost"
+                                            onClick={() => setIsImportModalOpen(false)}
+                                            className="h-12 px-8 rounded-2xl font-bold text-slate-400 hover:text-[#191A43] text-xs uppercase tracking-widest"
+                                        >
+                                            Cancel
+                                        </Button>
+                                        <Button
+                                            onClick={handleImportSubmit}
+                                            disabled={isImporting || importData.filter(i => i.errors.length === 0).length === 0}
+                                            className="h-12 px-10 rounded-2xl bg-[#191A43] text-white font-bold hover:bg-[#191A43]/90 shadow-xl shadow-[#191A43]/10 text-xs uppercase tracking-widest transition-all active:scale-95 disabled:opacity-50 disabled:pointer-events-none"
+                                        >
+                                            {isImporting ? (
+                                                <>
+                                                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                                    Ingesting...
+                                                </>
+                                            ) : (
+                                                `Import ${importData.filter(i => i.errors.length === 0).length} Assets`
+                                            )}
+                                        </Button>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
                 </DialogContent>
             </Dialog>
 

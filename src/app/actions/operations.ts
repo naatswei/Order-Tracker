@@ -491,3 +491,44 @@ export async function syncOrderInventoryLinks(orderId: string, inventoryItems: {
     revalidatePath("/backoffice/inventory");
     return { success: true };
 }
+
+export async function bulkAddInventoryItems(items: { name: string, quantity: string, category?: string, unit?: string, sku?: string, minStock?: string, unitCost?: string, businessType: string }[]) {
+    const { orgId } = await auth();
+    if (!orgId) throw new Error("Unauthorized");
+
+    await db.transaction(async (tx) => {
+        for (const item of items) {
+            const itemId = `inv_${nanoid(10)}`;
+            await tx.insert(inventory).values({
+                id: itemId,
+                name: item.name,
+                quantity: item.quantity,
+                category: item.category || null,
+                unit: item.unit || null,
+                sku: item.sku || null,
+                minStock: item.minStock || "0",
+                reserved: "0",
+                unitCost: item.unitCost || "0",
+                sellingPrice: "0",
+                totalEntered: item.quantity,
+                totalSold: "0",
+                clerkOrgId: orgId,
+                businessType: item.businessType,
+            });
+
+            // Add initial transaction
+            await tx.insert(inventoryTransactions).values({
+                id: `tr_${nanoid(10)}`,
+                inventoryId: itemId,
+                type: "in",
+                quantity: item.quantity,
+                note: "Bulk excel import entry",
+                clerkOrgId: orgId,
+            });
+        }
+    });
+
+    revalidatePath("/backoffice/inventory");
+    return { success: true };
+}
+
