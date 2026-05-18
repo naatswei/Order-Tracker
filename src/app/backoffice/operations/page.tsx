@@ -51,6 +51,7 @@ import { StageConfig } from "@/components/operations/stage-config";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { SignatureLoader } from "@/components/signature-loader";
+import { getBusinessConfig } from "@/lib/business-configs";
 
 const STAGE_THEMES: Record<string, { color: string, icon: any, bg: string, border: string }> = {
     "Order Received": { color: "text-blue-600", icon: Package, bg: "bg-blue-50/50", border: "border-blue-100" },
@@ -86,7 +87,7 @@ export default function OperationsPage() {
 
     useEffect(() => {
         loadData();
-    }, []);
+    }, [businessType]);
 
     async function loadData() {
         setIsLoading(true);
@@ -104,14 +105,31 @@ export default function OperationsPage() {
             }
             setOrders(ordersData);
             setStaff(staffData);
-            setStages(stagesData.length > 0 ? stagesData : [
-                { name: "Order Received", position: "1" },
-                { name: "Production", position: "2" },
-                { name: "First Fitting", position: "3" },
-                { name: "Second Fitting", position: "4" },
-                { name: "Ready for Pickup", position: "5" },
-                { name: "Shipped", position: "6" }
-            ]);
+            
+            if (stagesData.length > 0) {
+                setStages(stagesData);
+            } else {
+                const config = getBusinessConfig(businessType);
+                const activeStatuses = config.statuses.filter(status => 
+                    status !== "Completed" && 
+                    status !== "Delivered" && 
+                    status !== "Pending" && 
+                    status !== "Refunded" && 
+                    status !== "Cancelled" && 
+                    status !== "Order Cancelled" && 
+                    status !== "Order Delayed" &&
+                    status !== "Delayed" &&
+                    status !== "Returned" &&
+                    status !== "Returned to Sender" &&
+                    status !== "On Hold"
+                );
+                
+                const fallbackStages = activeStatuses.map((status, index) => ({
+                    name: status,
+                    position: String(index + 1)
+                }));
+                setStages(fallbackStages);
+            }
         } finally {
             setIsLoading(false);
         }
@@ -243,7 +261,10 @@ export default function OperationsPage() {
                 {isLoading ? (
                     <SignatureLoader message="Syncing Production Board" />
                 ) : (
-                    <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 overflow-x-auto pb-8">
+                    <div 
+                        className="grid gap-8 overflow-x-auto pb-8" 
+                        style={{ gridTemplateColumns: `repeat(${stages.length}, minmax(300px, 1fr))` }}
+                    >
                         {stages.map((stage) => {
                             const getStatusTheme = (name: string) => {
                                 const lower = name.toLowerCase();
