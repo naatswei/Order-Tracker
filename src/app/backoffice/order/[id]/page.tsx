@@ -77,7 +77,14 @@ export default function OrderUpdatePage() {
                             location: h.location as string | null,
                             message: h.message as string | null,
                             timestamp: new Date(h.timestamp as string | number | Date)
-                        }))
+                        })),
+                        inventoryItems: (foundOrder.inventoryLinks as any[])?.map((link: any) => ({
+                            id: link.inventoryItem?.id,
+                            name: link.inventoryItem?.name,
+                            quantity: link.quantity,
+                            sku: link.inventoryItem?.sku,
+                            category: link.inventoryItem?.category
+                        })) || []
                     }
                     setOrder(mappedOrder)
                 }
@@ -224,6 +231,18 @@ export default function OrderUpdatePage() {
                                         <Mail className="w-4 h-4 text-slate-400" />
                                         <span className="text-[13px] sm:text-sm text-slate-600 font-medium truncate" title={order.customerEmail}>{order.customerEmail}</span>
                                     </div>
+                                    {order.inventoryItems && order.inventoryItems.length > 0 && (
+                                        <div className="pt-4 border-t border-slate-100 mt-4 space-y-2">
+                                            <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Stock Items Sold</div>
+                                            <div className="flex flex-wrap gap-1.5">
+                                                {order.inventoryItems.map((item, idx) => (
+                                                    <Badge key={idx} variant="outline" className="text-xs font-bold bg-emerald-50/50 border-emerald-100 text-emerald-600 px-2 py-0.5 rounded-lg flex items-center gap-1">
+                                                        <span className="font-black">{item.quantity}</span> x <span>{item.name}</span>
+                                                    </Badge>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         </Card>

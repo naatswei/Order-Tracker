@@ -67,6 +67,18 @@ export function OrderCard({ order, copiedId, onCopy, businessType, needsRenewal 
                                         <span className="text-slate-400 text-sm font-medium w-28 shrink-0 whitespace-nowrap">{config.orderLabel === "Tracking Number" ? "Delivery Date" : "Delivery Date"}:</span>
                                         <span className="font-semibold text-red-500" suppressHydrationWarning>{order.pickupDate ? new Date(order.pickupDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}</span>
                                     </div>
+                                    {order.inventoryItems && order.inventoryItems.length > 0 && (
+                                        <div className="flex gap-2 items-start pt-1">
+                                            <span className="text-slate-400 text-sm font-medium w-28 shrink-0 whitespace-nowrap pt-0.5">Stock Sold:</span>
+                                            <div className="flex flex-wrap gap-1.5">
+                                                {order.inventoryItems.map((item, idx) => (
+                                                    <Badge key={idx} variant="outline" className="text-xs font-bold bg-emerald-50/50 border-emerald-100 text-emerald-600 px-2 py-0.5 rounded-lg flex items-center gap-1">
+                                                        <span className="font-black">{item.quantity}</span> x <span>{item.name}</span>
+                                                    </Badge>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
 
                                 <div className="pt-2">

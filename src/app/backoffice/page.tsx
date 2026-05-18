@@ -105,7 +105,7 @@ export default function BackofficePage() {
             // Map DB fields to what the UI expects if necessary
             // In our case, schema matches mostly, but we use 'itemType' instead of 'garmentType'
             // and we need to ensure the types match the Order interface
-            const mappedOrders: Order[] = (allOrders as Record<string, unknown>[]).map(o => ({
+            const mappedOrders: Order[] = (allOrders as Record<string, any>[]).map(o => ({
                 id: o.id as string,
                 orderNumber: o.orderNumber as string,
                 customerName: o.customerName as string,
@@ -119,6 +119,13 @@ export default function BackofficePage() {
                 businessType: o.businessType as string,
                 pickupDate: o.pickupDate as string,
                 statusHistory: [],
+                inventoryItems: o.inventoryLinks?.map((link: any) => ({
+                    id: link.inventoryItem?.id,
+                    name: link.inventoryItem?.name,
+                    quantity: link.quantity,
+                    sku: link.inventoryItem?.sku,
+                    category: link.inventoryItem?.category
+                })) || []
             }))
             setOrders(mappedOrders)
         } catch (error: any) {

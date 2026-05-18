@@ -191,6 +191,7 @@ export default function InventoryPage() {
                 quantity: '0',
                 unitCost: '0',
                 minStock: '0',
+                totalSold: '0',
                 pricingTiers: null,
                 errors: [] as string[]
             };
@@ -202,7 +203,7 @@ export default function InventoryPage() {
                 if (!header) return;
                 const valueStr = String(val || "").trim();
 
-                if (['name', 'assetname', 'item', 'itemname', 'product', 'productname'].includes(header)) {
+                if (['name', 'assetname', 'item', 'itemname', 'product', 'productname', 'hairtype', 'packagetype'].includes(header)) {
                     item.name = valueStr;
                 } else if (['sku', 'reference', 'skureference'].includes(header)) {
                     item.sku = valueStr;
@@ -216,6 +217,8 @@ export default function InventoryPage() {
                     item.unitCost = isNaN(parseFloat(valueStr)) ? "0" : parseFloat(valueStr).toString();
                 } else if (['minstock', 'minstockthreshold', 'alertthreshold', 'minimumalertthreshold'].includes(header)) {
                     item.minStock = isNaN(parseFloat(valueStr)) ? "0" : parseFloat(valueStr).toString();
+                } else if (['sold', 'sales', 'totalsold', 'quantitysold', 'unitssold', 'out'].includes(header)) {
+                    item.totalSold = isNaN(parseFloat(valueStr)) ? "0" : parseFloat(valueStr).toString();
                 } else {
                     // Check if the original raw header is a wholesale pricing tier range (like ">20 orders", "btn 11-20", "5-10 orders")
                     const rawHeader = String(rows[0][colIdx] || "").trim().toLowerCase();
@@ -279,6 +282,7 @@ export default function InventoryPage() {
                 unit: item.unit || null,
                 minStock: item.minStock || "0",
                 unitCost: item.unitCost || "0",
+                totalSold: item.totalSold || "0",
                 businessType: businessType || "tailoring",
                 pricingTiers: item.pricingTiers || null
             }));
@@ -297,13 +301,25 @@ export default function InventoryPage() {
     };
 
     const downloadTemplate = () => {
-        const headers = "Asset Name,SKU,Category,Unit,Initial Physical Stock,Unit Cost (GHS),Minimum Alert Threshold\n";
-        const exampleRow = "Silk Thread,SLK-001,Raw Materials,Rolls,150,25.00,10\n";
+        let headers = "Asset Name,SKU,Category,Unit,Initial Physical Stock,Unit Cost (GHS),Minimum Alert Threshold,5-10 orders,btn 11-20,>20 orders\n";
+        let exampleRow = "Silk Thread,SLK-001,Raw Materials,Rolls,150,25.00,10,23.50,21.00,19.50\n";
+        
+        if (businessType === "hair-retail") {
+            headers = "Hair Type,SKU,Category,Unit,Initial Physical Stock,Unit Cost (GHS),Minimum Alert Threshold,5-10 orders,btn 11-20,>20 orders\n";
+            exampleRow = "22 Inch Straight Wig,HR-WIG22,Extensions,Pieces,50,450.00,5,430.00,410.00,390.00\n";
+        } else if (businessType === "online-business") {
+            headers = "Product Name,SKU,Category,Unit,Initial Physical Stock,Unit Cost (GHS),Minimum Alert Threshold,5-10 orders,btn 11-20,>20 orders\n";
+            exampleRow = "Smart Watch,SW-001,Electronics,Units,100,75.00,10,72.00,68.00,65.00\n";
+        } else if (businessType === "logistics") {
+            headers = "Package Type,SKU,Category,Unit,Initial Physical Stock,Unit Cost (GHS),Minimum Alert Threshold,5-10 orders,btn 11-20,>20 orders\n";
+            exampleRow = "Transit Box,LG-BX1,Packaging,Units,200,5.00,20,4.80,4.50,4.20\n";
+        }
+
         const blob = new Blob([headers + exampleRow], { type: "text/csv;charset=utf-8;" });
         const url = URL.createObjectURL(blob);
         const link = document.createElement("a");
         link.setAttribute("href", url);
-        link.setAttribute("download", "otracker_inventory_template.csv");
+        link.setAttribute("download", `otracker_${businessType || "inventory"}_template.csv`);
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -454,7 +470,7 @@ export default function InventoryPage() {
                         <div className="relative w-full sm:w-80">
                             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-400" />
                             <Input 
-                                placeholder="Search assets, SKUs..." 
+                                placeholder={`Search ${config.itemLabel || "assets"}...`}
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 className="h-10 sm:h-12 pl-11 sm:pl-12 pr-4 rounded-xl sm:rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white focus:ring-2 focus:ring-[#191A43]/5 transition-all text-xs sm:text-sm font-semibold"
@@ -473,7 +489,7 @@ export default function InventoryPage() {
                             className="w-full sm:w-auto h-10 sm:h-12 bg-[#191A43] hover:bg-[#191A43]/90 text-white rounded-xl sm:rounded-2xl px-6 gap-2 font-black uppercase tracking-widest text-xs sm:text-sm shadow-xl shadow-[#191A43]/20 shrink-0"
                         >
                             <Plus className="w-4 h-4" />
-                            Add Asset
+                            Add {config.itemLabel || "Asset"}
                         </Button>
                     </div>
                 </div>
@@ -537,7 +553,7 @@ export default function InventoryPage() {
                             </div>
                             <div>
                                 <p className="text-[9px] sm:text-[10px] font-black text-white/50 uppercase tracking-widest">
-                                    Total Asset Investment
+                                    Total {config.itemLabel || "Asset"} Investment
                                 </p>
                                 <p className="text-xl sm:text-2xl font-black text-white">
                                     GHS {stats.totalStockValue.toLocaleString()}
@@ -558,7 +574,7 @@ export default function InventoryPage() {
                             <table className="w-full text-left border-collapse min-w-[1000px]">
                                 <thead>
                                     <tr className="border-b border-slate-50 bg-slate-50/50">
-                                        <th className="px-8 py-6 text-[11px] font-black text-slate-600 uppercase tracking-[0.2em]">Asset Narrative</th>
+                                        <th className="px-8 py-6 text-[11px] font-black text-slate-600 uppercase tracking-[0.2em]">{config.itemLabel || "Asset"} Narrative</th>
                                         <th className="px-4 py-6 text-[11px] font-black text-slate-600 uppercase tracking-[0.2em] text-center">Initial Stock</th>
                                         <th className="px-4 py-6 text-[11px] font-black text-slate-600 uppercase tracking-[0.2em] text-center">On Hand (Value)</th>
                                         <th className="px-4 py-6 text-[11px] font-black text-slate-600 uppercase tracking-[0.2em] text-center">Reserved</th>
@@ -716,8 +732,8 @@ export default function InventoryPage() {
                                 <Plus className="w-6 h-6 text-white" />
                             </div>
                             <div>
-                                <DialogTitle className="text-xl font-black text-[#191A43] tracking-tight">Register New Asset</DialogTitle>
-                                <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mt-1">Asset Intake & Categorization</p>
+                                <DialogTitle className="text-xl font-black text-[#191A43] tracking-tight">Register New {config.itemLabel || "Asset"}</DialogTitle>
+                                <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mt-1">{config.itemLabel || "Asset"} Intake & Categorization</p>
                             </div>
                         </div>
                     </DialogHeader>
@@ -725,7 +741,7 @@ export default function InventoryPage() {
                     <form onSubmit={handleAddItem} className="p-8 pt-0 space-y-6">
                         <div className="grid grid-cols-2 gap-6">
                             <div className="space-y-2">
-                                <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Asset Name</Label>
+                                <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">{config.itemLabel || "Asset Name"}</Label>
                                 <Input 
                                     name="name" 
                                     placeholder={config.inventory?.assetPlaceholder || "e.g. Silk Thread"} 
@@ -800,7 +816,7 @@ export default function InventoryPage() {
                                 type="submit" 
                                 className="h-12 px-10 rounded-2xl bg-[#191A43] text-white font-bold hover:bg-[#191A43]/90 shadow-xl shadow-[#191A43]/10 text-xs uppercase tracking-widest transition-all active:scale-95"
                             >
-                                Deploy Asset
+                                Add {config.itemLabel || "Asset"}
                             </Button>
                         </div>
                     </form>

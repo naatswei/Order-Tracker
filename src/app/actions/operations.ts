@@ -274,20 +274,28 @@ export async function updateStock(itemId: string, type: "in" | "out" | "adjustme
         const currentQty = parseFloat(items[0].quantity);
         const changeQty = parseFloat(quantity);
         const currentEntered = parseFloat(items[0].totalEntered || "0");
+        const currentSold = parseFloat(items[0].totalSold || "0");
         let newQty = currentQty;
         let newEntered = currentEntered;
+        let newSold = currentSold;
 
         if (type === "in") {
             newQty += changeQty;
             newEntered += changeQty;
         }
-        else if (type === "out") newQty -= changeQty;
-        else if (type === "adjustment") newQty = changeQty;
+        else if (type === "out") {
+            newQty -= changeQty;
+            newSold += changeQty; // Manual stock out represents a sale in small retail/wholesale shops
+        }
+        else if (type === "adjustment") {
+            newQty = changeQty;
+        }
 
         await tx.update(inventory)
             .set({ 
                 quantity: newQty.toString(), 
                 totalEntered: newEntered.toString(),
+                totalSold: newSold.toString(),
                 updatedAt: new Date() 
             })
             .where(and(eq(inventory.id, itemId), eq(inventory.clerkOrgId, orgId)));
@@ -493,13 +501,18 @@ export async function syncOrderInventoryLinks(orderId: string, inventoryItems: {
     return { success: true };
 }
 
-export async function bulkAddInventoryItems(items: { name: string, quantity: string, category?: string, unit?: string, sku?: string, minStock?: string, unitCost?: string, businessType: string, pricingTiers?: any }[]) {
+export async function bulkAddInventoryItems(items: { name: string, quantity: string, category?: string, unit?: string, sku?: string, minStock?: string, unitCost?: string, totalSold?: string, businessType: string, pricingTiers?: any }[]) {
     const { orgId } = await auth();
     if (!orgId) throw new Error("Unauthorized");
 
     await db.transaction(async (tx) => {
         for (const item of items) {
             const itemId = `inv_${nanoid(10)}`;
+            const soldVal = item.totalSold || "0";
+            const currentQty = parseFloat(item.quantity);
+            // If they are importing pre-existing sold history, ensure totalEntered includes the sold items
+            const totalEnteredVal = (currentQty + parseFloat(soldVal)).toString();
+
             await tx.insert(inventory).values({
                 id: itemId,
                 name: item.name,
@@ -512,8 +525,8 @@ export async function bulkAddInventoryItems(items: { name: string, quantity: str
                 unitCost: item.unitCost || "0",
                 sellingPrice: "0",
                 pricingTiers: item.pricingTiers || null,
-                totalEntered: item.quantity,
-                totalSold: "0",
+                totalEntered: totalEnteredVal,
+                totalSold: soldVal,
                 clerkOrgId: orgId,
                 businessType: item.businessType,
             });

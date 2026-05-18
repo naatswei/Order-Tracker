@@ -184,13 +184,19 @@ export async function getOrders() {
     try {
         const { orgId } = await auth();
 
-        const query = db.select().from(orders);
+        const allOrders = await db.query.orders.findMany({
+            where: orgId ? eq(orders.clerkOrgId, orgId) : undefined,
+            orderBy: desc(orders.createdAt),
+            with: {
+                inventoryLinks: {
+                    with: {
+                        inventoryItem: true
+                    }
+                }
+            }
+        });
 
-        if (orgId) {
-            query.where(eq(orders.clerkOrgId, orgId));
-        }
-
-        return await query.orderBy(desc(orders.createdAt));
+        return allOrders;
     } catch (error: any) {
         console.error("Failed to get orders server-side:", error);
         return [
