@@ -767,7 +767,7 @@ export default function InventoryPage() {
                 setIsImportModalOpen(open);
                 if (!open) setImportData([]);
             }}>
-                <DialogContent className="max-w-7xl w-[90vw] rounded-[2rem] border-none shadow-2xl p-0 overflow-hidden bg-white">
+                <DialogContent className="sm:max-w-[90vw] lg:max-w-[85vw] xl:max-w-[1200px] w-full rounded-[2rem] border-none shadow-2xl p-0 overflow-hidden bg-white">
                     <DialogHeader className="p-8 pb-4">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-4">
@@ -857,7 +857,7 @@ export default function InventoryPage() {
                                     )}
                                 </div>
 
-                                <div className="max-h-[500px] overflow-y-auto border border-slate-100 rounded-2xl no-scrollbar">
+                                <div className="max-h-[500px] overflow-auto border border-slate-100 rounded-2xl no-scrollbar">
                                     <table className="w-full text-left border-collapse">
                                         <thead className="sticky top-0 bg-slate-50 z-10">
                                             <tr className="border-b border-slate-100">
