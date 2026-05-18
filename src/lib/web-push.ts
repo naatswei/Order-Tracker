@@ -9,7 +9,11 @@ const vapidPrivateKey = process.env.VAPID_PRIVATE_KEY || "";
 const subject = "mailto:support@otracker.app"; // Need a valid email or URL
 
 if (vapidPublicKey && vapidPrivateKey) {
-    webpush.setVapidDetails(subject, vapidPublicKey, vapidPrivateKey);
+    try {
+        webpush.setVapidDetails(subject, vapidPublicKey, vapidPrivateKey);
+    } catch (err: any) {
+        console.error("Failed to initialize web-push VAPID details:", err?.message || err);
+    }
 } else {
     console.warn("Web Push VAPID keys are missing! Push notifications will fail.");
 }
