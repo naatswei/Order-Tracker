@@ -327,12 +327,32 @@ export default function InventoryPage() {
                                                         </div>
                                                         <div>
                                                             <h3 className="font-black text-[#191A43] text-base leading-tight">{item.name}</h3>
-                                                            <div className="flex items-center gap-2 mt-1">
-                                                                <Badge variant="outline" className="text-[9px] font-bold uppercase tracking-wider bg-slate-50 border-slate-100 text-slate-400 px-2 py-0">
-                                                                    {item.category || "General"}
-                                                                </Badge>
-                                                                <span className="text-[10px] text-slate-300 font-bold uppercase tracking-widest">{item.sku || "No SKU"}</span>
-                                                                <span className="text-[10px] text-slate-300 font-bold uppercase tracking-widest">• {item.unit || "Units"}</span>
+                                                            <div className="flex flex-col gap-1.5 mt-1.5">
+                                                                {/* Category and SKU Tag Line */}
+                                                                <div className="flex items-center gap-2">
+                                                                    <Badge variant="outline" className="text-[9px] font-bold uppercase tracking-wider bg-slate-50 border-slate-100 text-slate-400 px-2 py-0">
+                                                                        {item.category || "General"}
+                                                                    </Badge>
+                                                                    <span className="text-[10px] text-slate-300 font-bold uppercase tracking-widest">{item.sku || "No SKU"}</span>
+                                                                    <span className="text-[10px] text-slate-300 font-bold uppercase tracking-widest">• {item.unit || "Units"}</span>
+                                                                </div>
+                                                                
+                                                                {/* Premium Financials & Creation Timestamp Line */}
+                                                                <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[10px]">
+                                                                    <span className="text-[#9C7E41] font-black tracking-wide bg-[#9C7E41]/5 px-2 py-0.5 rounded-md border border-[#9C7E41]/10">
+                                                                        Unit Cost: GHS {parseFloat(item.unitCost || "0").toLocaleString()}
+                                                                    </span>
+                                                                    <span className="text-slate-300 font-bold hidden sm:inline">•</span>
+                                                                    <span className="text-slate-400 font-semibold bg-slate-50 border border-slate-100 px-2 py-0.5 rounded-md">
+                                                                        Entered: {new Date(item.createdAt).toLocaleDateString(undefined, { 
+                                                                            year: 'numeric', 
+                                                                            month: 'short', 
+                                                                            day: 'numeric',
+                                                                            hour: '2-digit',
+                                                                            minute: '2-digit'
+                                                                        })}
+                                                                    </span>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
