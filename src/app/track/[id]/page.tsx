@@ -71,15 +71,31 @@ export default function TrackingDetailsPage() {
                 try {
                     const registration = await navigator.serviceWorker.ready;
                     const subscription = await registration.pushManager.getSubscription();
-                    setIsSubscribed(!!subscription);
+                    if (subscription) {
+                        const subscriptionJSON = subscription.toJSON();
+                        if (subscriptionJSON.endpoint && subscriptionJSON.keys?.p256dh && subscriptionJSON.keys?.auth) {
+                            // Silently register this active browser subscription to the current order in the database
+                            const res = await savePushSubscription(trackingId, subscriptionJSON);
+                            if (res.success) {
+                                setIsSubscribed(true);
+                            } else {
+                                setIsSubscribed(false);
+                            }
+                        } else {
+                            setIsSubscribed(false);
+                        }
+                    } else {
+                        setIsSubscribed(false);
+                    }
                 } catch (e) {
                     console.error("Error checking push subscription status:", e);
+                    setIsSubscribed(false);
                 }
             }
         };
 
         checkPushSupport();
-    }, []);
+    }, [trackingId]);
 
     const handleSubscribe = async () => {
         if (!isPushSupported) return;
