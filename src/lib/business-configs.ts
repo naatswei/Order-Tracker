@@ -172,6 +172,40 @@ export const BUSINESS_CONFIGS: Record<string, BusinessConfig> = {
             categoryPlaceholder: "e.g. Electronics",
             unitPlaceholder: "e.g. Pieces, Units"
         }
+    },
+    "nu-retail": {
+        id: "nu-retail",
+        title: "Nu Retail",
+        itemLabel: "Product Name",
+        itemPlaceholder: "Wig, Hair Bundle, Retail Goods, etc.",
+        statuses: [
+            "Order Received", "Payment Verified", "Processing", "Packaging",
+            "Dispatched", "Delivered", "Returned", "Cancelled"
+        ],
+        defaultStatus: "Order Received",
+        defaultLocation: "Nu Retail Store",
+        defaultMessage: "We've received your order and are packing your items.",
+        orderLabel: "Order Number",
+        orderPrefix: "NU",
+        orderPlaceholder: "eg., NU9102",
+        searchPlaceholder: "Search by order number, name",
+        dashboardTitle: "Retail Orders",
+        theme: {
+            primary: "#4F46E5",   // Indigo
+            secondary: "#06B6D4", // Cyan
+            accent: "#6366F1",    // Violet
+            text: "#1F2937"
+        },
+        extraFields: [
+            { id: "brand", label: "Brand / Manufacturer", placeholder: "e.g., Nu Hair", type: "text" },
+            { id: "batch", label: "Batch Number", placeholder: "e.g., B-001", type: "text" }
+        ],
+        inventory: {
+            assetPlaceholder: "e.g. 24 Inch Straight Wig",
+            skuPlaceholder: "e.g. NU-001",
+            categoryPlaceholder: "e.g. Extensions",
+            unitPlaceholder: "e.g. Pieces, Units"
+        }
     }
 }
 
