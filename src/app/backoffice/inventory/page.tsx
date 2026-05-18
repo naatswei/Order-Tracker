@@ -191,8 +191,11 @@ export default function InventoryPage() {
                 quantity: '0',
                 unitCost: '0',
                 minStock: '0',
+                pricingTiers: null,
                 errors: [] as string[]
             };
+
+            const pricingTiers: { minQty: number; maxQty: number | null; price: number }[] = [];
 
             row.forEach((val, colIdx) => {
                 const header = headers[colIdx];
@@ -213,8 +216,36 @@ export default function InventoryPage() {
                     item.unitCost = isNaN(parseFloat(valueStr)) ? "0" : parseFloat(valueStr).toString();
                 } else if (['minstock', 'minstockthreshold', 'alertthreshold', 'minimumalertthreshold'].includes(header)) {
                     item.minStock = isNaN(parseFloat(valueStr)) ? "0" : parseFloat(valueStr).toString();
+                } else {
+                    // Check if the original raw header is a wholesale pricing tier range (like ">20 orders", "btn 11-20", "5-10 orders")
+                    const rawHeader = String(rows[0][colIdx] || "").trim().toLowerCase();
+                    const numbers = rawHeader.match(/\d+/g)?.map(Number);
+                    const price = parseFloat(valueStr);
+
+                    if (numbers && numbers.length > 0 && !isNaN(price)) {
+                        let minQty = 0;
+                        let maxQty: number | null = null;
+
+                        if (rawHeader.includes('>') || rawHeader.includes('over') || rawHeader.includes('above') || rawHeader.includes('+')) {
+                            minQty = rawHeader.includes('>') ? numbers[0] + 1 : numbers[0];
+                            maxQty = null;
+                        } else if (numbers.length === 2) {
+                            minQty = numbers[0];
+                            maxQty = numbers[1];
+                        } else if (numbers.length === 1) {
+                            minQty = numbers[0];
+                            maxQty = null;
+                        }
+
+                        pricingTiers.push({ minQty, maxQty, price });
+                    }
                 }
             });
+
+            if (pricingTiers.length > 0) {
+                pricingTiers.sort((a, b) => a.minQty - b.minQty);
+                item.pricingTiers = pricingTiers;
+            }
 
             if (!item.name) {
                 item.errors.push("Asset Name is required");
@@ -248,7 +279,8 @@ export default function InventoryPage() {
                 unit: item.unit || null,
                 minStock: item.minStock || "0",
                 unitCost: item.unitCost || "0",
-                businessType: businessType || "tailoring"
+                businessType: businessType || "tailoring",
+                pricingTiers: item.pricingTiers || null
             }));
 
             await bulkAddInventoryItems(formatted);
@@ -579,6 +611,18 @@ export default function InventoryPage() {
                                                                         })}
                                                                     </span>
                                                                 </div>
+
+                                                                {/* Wholesale Pricing Tiers */}
+                                                                {item.pricingTiers && Array.isArray(item.pricingTiers) && item.pricingTiers.length > 0 && (
+                                                                    <div className="flex flex-wrap items-center gap-1.5 mt-1.5">
+                                                                        <span className="text-[9px] font-black text-emerald-600 uppercase tracking-wider bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-100/50 shrink-0">Wholesale:</span>
+                                                                        {item.pricingTiers.map((tier: any, tIdx: number) => (
+                                                                            <Badge key={tIdx} variant="outline" className="text-[9px] font-black uppercase bg-white border-slate-200 text-slate-500 px-2 py-0.5">
+                                                                                {tier.minQty}{tier.maxQty ? `-${tier.maxQty}` : '+'} units: GHS {parseFloat(tier.price).toLocaleString()}
+                                                                            </Badge>
+                                                                        ))}
+                                                                    </div>
+                                                                )}
                                                             </div>
                                                         </div>
                                                     </div>

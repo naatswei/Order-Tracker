@@ -21,6 +21,22 @@ import { getBusinessConfig } from "@/lib/business-configs"
 import { DatePicker } from "@/components/ui/date-picker"
 import { format, parse } from "date-fns"
 
+function resolveUnitPrice(quantity: number, inventoryItem: any): number {
+    if (!inventoryItem) return 0;
+    const tiers = inventoryItem.pricingTiers;
+    if (!Array.isArray(tiers) || tiers.length === 0) {
+        return parseFloat(inventoryItem.unitCost || "0");
+    }
+    
+    const matchedTier = tiers.find((tier: any) => {
+        const minMatch = quantity >= tier.minQty;
+        const maxMatch = tier.maxQty === null || quantity <= tier.maxQty;
+        return minMatch && maxMatch;
+    });
+    
+    return matchedTier ? parseFloat(matchedTier.price) : parseFloat(inventoryItem.unitCost || "0");
+}
+
 function CreateOrderContent() {
     const router = useRouter()
     const searchParams = useSearchParams()
@@ -516,8 +532,29 @@ function CreateOrderContent() {
                                                             newItems[index].quantity = e.target.value;
                                                             setSelectedInventory(newItems);
                                                         }}
-                                                        className="w-20 h-8 rounded-lg bg-white border-slate-100 text-xs font-bold text-center"
+                                                        className="w-16 h-8 rounded-lg bg-white border-slate-100 text-xs font-bold text-center"
                                                     />
+                                                </div>
+                                                <div className="text-right flex flex-col justify-center min-w-[120px]">
+                                                    {(() => {
+                                                        const invItem = allInventory.find(inv => inv.id === item.id);
+                                                        const qty = parseFloat(item.quantity) || 1;
+                                                        const unitPrice = resolveUnitPrice(qty, invItem);
+                                                        const standardCost = parseFloat(invItem?.unitCost || "0");
+                                                        const isDiscounted = unitPrice < standardCost;
+                                                        
+                                                        return (
+                                                            <>
+                                                                <p className="text-xs font-black text-[#191A43]">
+                                                                    GHS {(qty * unitPrice).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                                                </p>
+                                                                <p className="text-[9px] text-slate-400 font-bold uppercase flex items-center justify-end gap-1 mt-0.5">
+                                                                    {isDiscounted && <span className="text-[8px] font-extrabold text-emerald-600 bg-emerald-50 px-1 py-0.2 rounded border border-emerald-100/50">Wholesale</span>}
+                                                                    GHS {unitPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}/ea
+                                                                </p>
+                                                            </>
+                                                        );
+                                                    })()}
                                                 </div>
                                                 <Button
                                                     type="button"

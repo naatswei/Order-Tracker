@@ -216,11 +216,12 @@ export async function addInventoryItem(data: { name: string, quantity: string, c
             reserved: "0",
             unitCost: (data as any).unitCost || "0",
             sellingPrice: (data as any).sellingPrice || "0",
+            pricingTiers: (data as any).pricingTiers || null,
             totalEntered: data.quantity, // Initial entry
             totalSold: "0",
             clerkOrgId: orgId,
             businessType: data.businessType,
-            branchId: data.branchId,
+            branchId: (data as any).branchId,
         });
 
         // Add initial transaction
@@ -492,7 +493,7 @@ export async function syncOrderInventoryLinks(orderId: string, inventoryItems: {
     return { success: true };
 }
 
-export async function bulkAddInventoryItems(items: { name: string, quantity: string, category?: string, unit?: string, sku?: string, minStock?: string, unitCost?: string, businessType: string }[]) {
+export async function bulkAddInventoryItems(items: { name: string, quantity: string, category?: string, unit?: string, sku?: string, minStock?: string, unitCost?: string, businessType: string, pricingTiers?: any }[]) {
     const { orgId } = await auth();
     if (!orgId) throw new Error("Unauthorized");
 
@@ -510,6 +511,7 @@ export async function bulkAddInventoryItems(items: { name: string, quantity: str
                 reserved: "0",
                 unitCost: item.unitCost || "0",
                 sellingPrice: "0",
+                pricingTiers: item.pricingTiers || null,
                 totalEntered: item.quantity,
                 totalSold: "0",
                 clerkOrgId: orgId,
