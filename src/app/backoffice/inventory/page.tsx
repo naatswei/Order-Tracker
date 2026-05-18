@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useOrganization } from "@clerk/nextjs";
-import { getInventory, addInventoryItem, updateStock, removeInventoryItem, getInventoryHistory, bulkAddInventoryItems } from "@/app/actions/operations";
+import { getInventory, addInventoryItem, updateStock, removeInventoryItem, getInventoryHistory, bulkAddInventoryItems, getClientOrganizations, addClientOrganization, removeClientOrganization, saveClientPricingOverrides } from "@/app/actions/operations";
 import { getOrders } from "@/app/actions/orders";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -28,7 +28,9 @@ import {
     Upload,
     Download,
     Loader2,
-    FileSpreadsheet
+    FileSpreadsheet,
+    Users,
+    Building2
 } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
@@ -60,6 +62,15 @@ export default function InventoryPage() {
     const [isLoading, setIsLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState("");
     const [businessType, setBusinessType] = useState<string | null>(null);
+
+    // B2B Customer / Client States
+    const [clients, setClients] = useState<any[]>([]);
+    const [selectedImportClientId, setSelectedImportClientId] = useState<string>("");
+    const [isB2BModalOpen, setIsB2BModalOpen] = useState(false);
+    const [newClientName, setNewClientName] = useState("");
+    const [newClientEmail, setNewClientEmail] = useState("");
+    const [newClientPhone, setNewClientPhone] = useState("");
+    const [isSavingClient, setIsSavingClient] = useState(false);
 
     // Form state
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -265,6 +276,43 @@ export default function InventoryPage() {
         setImportData(mapped);
     };
 
+    async function handleCreateClient(e: React.FormEvent) {
+        e.preventDefault();
+        if (!newClientName.trim()) {
+            toast.error("Client name is required");
+            return;
+        }
+
+        setIsSavingClient(true);
+        try {
+            await addClientOrganization({
+                name: newClientName.trim(),
+                email: newClientEmail.trim() || undefined,
+                phone: newClientPhone.trim() || undefined,
+            });
+            toast.success("B2B Client account created");
+            setNewClientName("");
+            setNewClientEmail("");
+            setNewClientPhone("");
+            loadData();
+        } catch (error: any) {
+            toast.error("Failed to add B2B client: " + (error.message || "Unknown error"));
+        } finally {
+            setIsSavingClient(false);
+        }
+    }
+
+    async function handleRemoveClient(id: string) {
+        if (!confirm("Are you sure you want to remove this client? This will delete all client-specific pricing overrides.")) return;
+        try {
+            await removeClientOrganization(id);
+            toast.success("B2B Client removed");
+            loadData();
+        } catch (error) {
+            toast.error("Failed to remove client");
+        }
+    }
+
     const handleImportSubmit = async () => {
         const validItems = importData.filter(item => item.errors.length === 0);
         if (validItems.length === 0) {
@@ -287,10 +335,26 @@ export default function InventoryPage() {
                 pricingTiers: item.pricingTiers || null
             }));
 
-            await bulkAddInventoryItems(formatted);
-            toast.success(`Successfully imported ${validItems.length} items`);
+            const response = await bulkAddInventoryItems(formatted);
+            const clientId = selectedImportClientId === "none" ? "" : selectedImportClientId;
+            
+            if (response.success && response.inserted && clientId) {
+                const overrides = response.inserted
+                    .filter(item => item.pricingTiers && Array.isArray(item.pricingTiers) && item.pricingTiers.length > 0)
+                    .map(item => ({
+                        inventoryId: item.id,
+                        pricingTiers: item.pricingTiers
+                    }));
+
+                if (overrides.length > 0) {
+                    await saveClientPricingOverrides(clientId, overrides);
+                }
+            }
+
+            toast.success(`Successfully imported ${validItems.length} items${clientId ? " with client pricing overrides" : ""}`);
             setIsImportModalOpen(false);
             setImportData([]);
+            setSelectedImportClientId("");
             loadData();
         } catch (error: any) {
             console.error("Bulk Import Error:", error);
@@ -336,9 +400,10 @@ export default function InventoryPage() {
     async function loadData() {
         setIsLoading(true);
         try {
-            const [inventoryData, ordersData] = await Promise.all([
+            const [inventoryData, ordersData, clientsData] = await Promise.all([
                 getInventory(),
-                getOrders()
+                getOrders(),
+                getClientOrganizations()
             ]);
 
             const inventoryError = inventoryData.find(o => (o as any).__isError);
@@ -358,6 +423,7 @@ export default function InventoryPage() {
 
             setItems(inventoryData);
             setOrders(ordersData);
+            setClients(clientsData || []);
         } catch (error: any) {
             console.error("Inventory Sync Error:", error);
             const errMsg = error?.message || (typeof error === "string" ? error : "Check connection");
@@ -476,6 +542,14 @@ export default function InventoryPage() {
                                 className="h-10 sm:h-12 pl-11 sm:pl-12 pr-4 rounded-xl sm:rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white focus:ring-2 focus:ring-[#191A43]/5 transition-all text-xs sm:text-sm font-semibold"
                             />
                         </div>
+                        <Button 
+                            variant="outline"
+                            onClick={() => setIsB2BModalOpen(true)}
+                            className="w-full sm:w-auto h-10 sm:h-12 border-slate-200 bg-white hover:bg-slate-50 text-[#191A43] rounded-xl sm:rounded-2xl px-6 gap-2 font-black uppercase tracking-widest text-xs sm:text-sm shadow-sm transition-all shrink-0"
+                        >
+                            <Users className="w-4 h-4" />
+                            B2B Clients
+                        </Button>
                         <Button 
                             variant="outline"
                             onClick={() => setIsImportModalOpen(true)}
@@ -636,6 +710,24 @@ export default function InventoryPage() {
                                                                             <Badge key={tIdx} variant="outline" className="text-[9px] font-black uppercase bg-white border-slate-200 text-slate-500 px-2 py-0.5">
                                                                                 {tier.minQty}{tier.maxQty ? `-${tier.maxQty}` : '+'} units: GHS {parseFloat(tier.price).toLocaleString()}
                                                                             </Badge>
+                                                                        ))}
+                                                                    </div>
+                                                                )}
+
+                                                                {/* Client Pricing Overrides */}
+                                                                {item.clientOverrides && Array.isArray(item.clientOverrides) && item.clientOverrides.length > 0 && (
+                                                                    <div className="flex flex-col gap-1.5 mt-1.5 border-t border-slate-50 pt-1.5">
+                                                                        {item.clientOverrides.map((override: any, oIdx: number) => (
+                                                                            <div key={oIdx} className="flex flex-wrap items-center gap-1.5">
+                                                                                <span className="text-[9px] font-black text-indigo-600 uppercase tracking-wider bg-indigo-50 px-1.5 py-0.5 rounded border border-indigo-100/50 shrink-0">
+                                                                                    For {override.client?.name}:
+                                                                                </span>
+                                                                                {Array.isArray(override.pricingTiers) && override.pricingTiers.map((tier: any, tIdx: number) => (
+                                                                                    <Badge key={tIdx} variant="outline" className="text-[9px] font-black uppercase bg-white border-slate-200 text-slate-600 px-2 py-0.5">
+                                                                                        {tier.minQty}{tier.maxQty ? `-${tier.maxQty}` : '+'} units: GHS {parseFloat(tier.price).toLocaleString()}
+                                                                                    </Badge>
+                                                                                ))}
+                                                                            </div>
                                                                         ))}
                                                                     </div>
                                                                 )}
@@ -825,7 +917,10 @@ export default function InventoryPage() {
 
             <Dialog open={isImportModalOpen} onOpenChange={(open) => {
                 setIsImportModalOpen(open);
-                if (!open) setImportData([]);
+                if (!open) {
+                    setImportData([]);
+                    setSelectedImportClientId("");
+                }
             }}>
                 <DialogContent className="sm:max-w-[90vw] lg:max-w-[85vw] xl:max-w-[1200px] w-full rounded-[2rem] border-none shadow-2xl p-0 bg-white max-h-[90vh] overflow-y-auto no-scrollbar">
                     <DialogHeader className="p-8 pb-4">
@@ -847,6 +942,32 @@ export default function InventoryPage() {
                                 <Download className="w-4 h-4" />
                                 Get Template
                             </Button>
+                        </div>
+
+                        {/* Optional Client Dropdown */}
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-t border-slate-100 p-8 py-4 bg-slate-50/50 mt-4 rounded-xl">
+                            <div className="space-y-1 max-w-md text-left">
+                                <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-0.5">Assign Custom Rates to Client (Optional)</Label>
+                                <p className="text-[10px] text-slate-400 font-bold leading-normal mt-0.5">Select a customer account to save the spreadsheet volume discounts as their personalized pricing overrides sheet.</p>
+                            </div>
+                            <div className="w-full sm:w-72">
+                                <Select
+                                    value={selectedImportClientId}
+                                    onValueChange={setSelectedImportClientId}
+                                >
+                                    <SelectTrigger className="h-11 rounded-xl border-slate-200 bg-white font-semibold text-xs">
+                                        <SelectValue placeholder="Standard Catalog Prices (Default)" />
+                                    </SelectTrigger>
+                                    <SelectContent className="rounded-xl border-slate-100 bg-white">
+                                        <SelectItem value="none" className="text-xs font-semibold">Standard Catalog Prices (Default)</SelectItem>
+                                        {clients.map((client) => (
+                                            <SelectItem key={client.id} value={client.id} className="text-xs font-semibold">
+                                                {client.name} (Custom overrides)
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
                         </div>
                     </DialogHeader>
 
@@ -1000,6 +1121,112 @@ export default function InventoryPage() {
                                 </div>
                             </div>
                         )}
+                    </div>
+                </DialogContent>
+            </Dialog>
+
+            {/* B2B Customer Accounts Management Dialog */}
+            <Dialog open={isB2BModalOpen} onOpenChange={setIsB2BModalOpen}>
+                <DialogContent className="max-w-3xl rounded-[2rem] border-none shadow-2xl p-0 overflow-hidden bg-white max-h-[85vh] flex flex-col">
+                    <DialogHeader className="p-8 pb-4 shrink-0">
+                        <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 rounded-2xl bg-[#191A43] flex items-center justify-center shadow-lg shadow-[#191A43]/20">
+                                <Users className="w-6 h-6 text-white" />
+                            </div>
+                            <div>
+                                <DialogTitle className="text-xl font-black text-[#191A43] tracking-tight">B2B Customer Accounts</DialogTitle>
+                                <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mt-1">Client Management & Custom Catalog Overrides</p>
+                            </div>
+                        </div>
+                    </DialogHeader>
+
+                    <div className="flex-1 overflow-y-auto px-8 pb-8 no-scrollbar space-y-6">
+                        {/* New Client Form */}
+                        <form onSubmit={handleCreateClient} className="p-5 bg-slate-50 border border-slate-100 rounded-2xl space-y-4 text-left">
+                            <h3 className="text-xs font-black text-[#191A43] uppercase tracking-widest">Register New Client Organization</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div className="space-y-1.5">
+                                    <Label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-0.5">Organization Name</Label>
+                                    <Input
+                                        placeholder="e.g. Acme Wholesalers Ltd"
+                                        value={newClientName}
+                                        onChange={(e) => setNewClientName(e.target.value)}
+                                        className="h-10 rounded-xl border-slate-200 bg-white font-semibold text-xs"
+                                        required
+                                    />
+                                </div>
+                                <div className="space-y-1.5">
+                                    <Label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-0.5">Contact Email</Label>
+                                    <Input
+                                        type="email"
+                                        placeholder="e.g. billing@acme.com"
+                                        value={newClientEmail}
+                                        onChange={(e) => setNewClientEmail(e.target.value)}
+                                        className="h-10 rounded-xl border-slate-200 bg-white font-semibold text-xs"
+                                    />
+                                </div>
+                                <div className="space-y-1.5">
+                                    <Label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-0.5">Contact Phone</Label>
+                                    <Input
+                                        placeholder="e.g. +233 24 123 4567"
+                                        value={newClientPhone}
+                                        onChange={(e) => setNewClientPhone(e.target.value)}
+                                        className="h-10 rounded-xl border-slate-200 bg-white font-semibold text-xs"
+                                    />
+                                </div>
+                            </div>
+                            <div className="flex justify-end pt-1">
+                                <Button
+                                    type="submit"
+                                    disabled={isSavingClient}
+                                    className="h-10 px-6 rounded-xl bg-[#191A43] text-white text-xs font-black uppercase tracking-wider shadow-md hover:bg-[#191A43]/90 border-0"
+                                >
+                                    {isSavingClient ? "Registering..." : "Add Client Account"}
+                                </Button>
+                            </div>
+                        </form>
+
+                        {/* Clients List */}
+                        <div className="space-y-3 text-left">
+                            <h3 className="text-xs font-black text-[#191A43] uppercase tracking-widest ml-1">Active Client Organizations</h3>
+                            {clients.length === 0 ? (
+                                <div className="py-12 border border-dashed border-slate-200 rounded-2xl flex flex-col items-center justify-center text-center">
+                                    <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center mb-2">
+                                        <Building2 className="w-5 h-5 text-slate-300" />
+                                    </div>
+                                    <p className="text-xs font-bold text-slate-500">No B2B Customer Accounts Registered</p>
+                                    <p className="text-[10px] text-slate-400 max-w-xs mt-0.5">Add custom corporate accounts above to build dedicated pricing overrides sheets.</p>
+                                </div>
+                            ) : (
+                                <div className="divide-y divide-slate-100 border border-slate-100 rounded-2xl overflow-hidden bg-white">
+                                    {clients.map((client) => (
+                                        <div key={client.id} className="flex items-center justify-between p-4 hover:bg-slate-50 transition-colors">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-10 h-10 rounded-xl bg-[#191A43]/5 text-[#191A43] flex items-center justify-center font-bold text-sm shrink-0">
+                                                    {client.name[0]}
+                                                </div>
+                                                <div>
+                                                    <h4 className="text-xs font-black text-[#191A43]">{client.name}</h4>
+                                                    <div className="flex items-center gap-2 mt-1 text-[10px] text-slate-400 font-bold">
+                                                        <span>{client.email || "No Email"}</span>
+                                                        <span>•</span>
+                                                        <span>{client.phone || "No Phone"}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <Button
+                                                size="icon"
+                                                variant="ghost"
+                                                onClick={() => handleRemoveClient(client.id)}
+                                                className="w-8 h-8 rounded-lg hover:bg-red-50 hover:text-red-500 text-slate-300 transition-all border-0"
+                                            >
+                                                <Trash2 className="w-4 h-4" />
+                                            </Button>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </DialogContent>
             </Dialog>

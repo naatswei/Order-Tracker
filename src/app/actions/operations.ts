@@ -1,7 +1,7 @@
 "use server"
 
 import { db } from "@/db";
-import { orders, staff, workflows, statusHistory, inventory, inventoryTransactions, orderInventoryLinks } from "@/db/schema";
+import { orders, staff, workflows, statusHistory, inventory, inventoryTransactions, orderInventoryLinks, clientOrganizations, clientPricingOverrides } from "@/db/schema";
 import { eq, desc, and, asc, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { auth } from "@clerk/nextjs/server";
@@ -244,7 +244,17 @@ export async function getInventory() {
         const { orgId } = await auth();
         if (!orgId) return [];
 
-        return await db.select().from(inventory).where(eq(inventory.clerkOrgId, orgId)).orderBy(desc(inventory.updatedAt));
+        return await db.query.inventory.findMany({
+            where: eq(inventory.clerkOrgId, orgId),
+            orderBy: desc(inventory.updatedAt),
+            with: {
+                clientOverrides: {
+                    with: {
+                        client: true
+                    }
+                }
+            }
+        });
     } catch (error: any) {
         console.error("Failed to get inventory server-side:", error);
         return [
@@ -505,6 +515,8 @@ export async function bulkAddInventoryItems(items: { name: string, quantity: str
     const { orgId } = await auth();
     if (!orgId) throw new Error("Unauthorized");
 
+    const inserted: { name: string; id: string; pricingTiers: any }[] = [];
+
     await db.transaction(async (tx) => {
         for (const item of items) {
             const itemId = `inv_${nanoid(10)}`;
@@ -540,10 +552,82 @@ export async function bulkAddInventoryItems(items: { name: string, quantity: str
                 note: "Bulk excel import entry",
                 clerkOrgId: orgId,
             });
+
+            inserted.push({ name: item.name, id: itemId, pricingTiers: item.pricingTiers });
         }
+    });
+
+    revalidatePath("/backoffice/inventory");
+    return { success: true, inserted };
+}
+
+// --- B2B Client & Pricing Overrides Management ---
+
+export async function addClientOrganization(data: { name: string; email?: string; phone?: string }) {
+    const { orgId } = await auth();
+    if (!orgId) throw new Error("Unauthorized");
+
+    await db.insert(clientOrganizations).values({
+        id: `client_${nanoid(10)}`,
+        name: data.name,
+        email: data.email || null,
+        phone: data.phone || null,
+        vendorOrgId: orgId,
     });
 
     revalidatePath("/backoffice/inventory");
     return { success: true };
 }
+
+export async function getClientOrganizations() {
+    const { orgId } = await auth();
+    if (!orgId) return [];
+
+    return await db.select().from(clientOrganizations).where(eq(clientOrganizations.vendorOrgId, orgId)).orderBy(desc(clientOrganizations.createdAt));
+}
+
+export async function removeClientOrganization(id: string) {
+    const { orgId } = await auth();
+    if (!orgId) throw new Error("Unauthorized");
+
+    await db.delete(clientOrganizations).where(and(eq(clientOrganizations.id, id), eq(clientOrganizations.vendorOrgId, orgId)));
+    
+    revalidatePath("/backoffice/inventory");
+    return { success: true };
+}
+
+export async function saveClientPricingOverrides(clientId: string, overrides: { inventoryId: string; pricingTiers: any }[]) {
+    const { orgId } = await auth();
+    if (!orgId) throw new Error("Unauthorized");
+
+    await db.transaction(async (tx) => {
+        for (const override of overrides) {
+            // Check if override already exists
+            const existing = await tx.query.clientPricingOverrides.findFirst({
+                where: and(
+                    eq(clientPricingOverrides.clientId, clientId),
+                    eq(clientPricingOverrides.inventoryId, override.inventoryId)
+                )
+            });
+
+            if (existing) {
+                await tx.update(clientPricingOverrides)
+                    .set({ pricingTiers: override.pricingTiers })
+                    .where(eq(clientPricingOverrides.id, existing.id));
+            } else {
+                await tx.insert(clientPricingOverrides).values({
+                    id: `override_${nanoid(10)}`,
+                    inventoryId: override.inventoryId,
+                    clientId: clientId,
+                    pricingTiers: override.pricingTiers,
+                });
+            }
+        }
+    });
+
+    revalidatePath("/backoffice/inventory");
+    revalidatePath("/backoffice/create");
+    return { success: true };
+}
+
 

@@ -118,6 +118,7 @@ export const staffRelations = relations(staff, ({ many, one }) => ({
 export const inventoryRelations = relations(inventory, ({ many }) => ({
     transactions: many(inventoryTransactions),
     orderLinks: many(orderInventoryLinks),
+    clientOverrides: many(clientPricingOverrides),
 }));
 
 export const orderInventoryLinksRelations = relations(orderInventoryLinks, ({ one }) => ({
@@ -203,5 +204,41 @@ export const pushSubscriptionsRelations = relations(pushSubscriptions, ({ one })
     order: one(orders, {
         fields: [pushSubscriptions.orderId],
         references: [orders.id],
+    }),
+}));
+
+export const clientOrganizations = pgTable("client_organizations", {
+    id: text("id").primaryKey(),
+    name: text("name").notNull(),
+    email: text("email"),
+    phone: text("phone"),
+    vendorOrgId: text("vendor_org_id").notNull(), // Scoped to the logged-in Clerk organization
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const clientPricingOverrides = pgTable("client_pricing_overrides", {
+    id: text("id").primaryKey(),
+    inventoryId: text("inventory_id")
+        .references(() => inventory.id, { onDelete: "cascade" })
+        .notNull(),
+    clientId: text("client_id")
+        .references(() => clientOrganizations.id, { onDelete: "cascade" })
+        .notNull(),
+    pricingTiers: jsonb("pricing_tiers"), // Client-specific pricing tiers override
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const clientOrganizationsRelations = relations(clientOrganizations, ({ many }) => ({
+    pricingOverrides: many(clientPricingOverrides),
+}));
+
+export const clientPricingOverridesRelations = relations(clientPricingOverrides, ({ one }) => ({
+    inventoryItem: one(inventory, {
+        fields: [clientPricingOverrides.inventoryId],
+        references: [inventory.id],
+    }),
+    client: one(clientOrganizations, {
+        fields: [clientPricingOverrides.clientId],
+        references: [clientOrganizations.id],
     }),
 }));
