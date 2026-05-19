@@ -69,6 +69,7 @@ export const inventory = pgTable("inventory", {
     clerkOrgId: text("clerk_org_id").notNull(),
     branchId: text("branch_id").references(() => branches.id, { onDelete: "set null" }),
     businessType: text("business_type").notNull(),
+    saleType: text("sale_type").default("unit").notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });

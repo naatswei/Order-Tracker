@@ -69,6 +69,7 @@ function CreateOrderContent() {
     // B2B Customer Pricing
     const [clients, setClients] = useState<any[]>([])
     const [selectedClientId, setSelectedClientId] = useState<string>("none")
+    const [orderMode, setOrderMode] = useState<"unit" | "wholesale">("unit")
 
     // Inventory state
     const [allInventory, setAllInventory] = useState<any[]>([])
@@ -301,32 +302,65 @@ function CreateOrderContent() {
                         <CardDescription>Enter order details to verify and generate a tracking link.</CardDescription>
                     </CardHeader>
                     <CardContent className="pt-8">
+                        {/* sliding tab switcher */}
+                        <div className="mb-6 flex justify-start">
+                            <div className="bg-slate-100/80 backdrop-blur-md p-1 rounded-2xl flex items-center gap-1 shadow-inner border border-slate-200/50">
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setOrderMode("unit");
+                                        setSelectedClientId("none");
+                                    }}
+                                    className={`px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all duration-300 ${
+                                        orderMode === "unit"
+                                            ? "bg-white text-[#191A43] shadow-sm font-black"
+                                            : "text-slate-400 hover:text-slate-600 font-bold"
+                                    }`}
+                                >
+                                    Retail Sales Mode (Unit)
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setOrderMode("wholesale")}
+                                    className={`px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all duration-300 ${
+                                        orderMode === "wholesale"
+                                            ? "bg-white text-[#191A43] shadow-sm font-black"
+                                            : "text-slate-400 hover:text-slate-600 font-bold"
+                                    }`}
+                                >
+                                    Wholesale Sales Mode (Bulk/B2B)
+                                </button>
+                            </div>
+                        </div>
+
                         <form onSubmit={handleSubmit} className="space-y-6">
                             {/* B2B Client Account Selector */}
-                            <div className="p-5 bg-slate-50/70 border border-slate-100 rounded-3xl flex flex-col md:flex-row md:items-center justify-between gap-4">
-                                <div className="space-y-1 text-left">
-                                    <Label className="text-[10px] font-black text-[#191A43] uppercase tracking-widest ml-0.5">B2B Customer Pricing Account</Label>
-                                    <p className="text-[10px] text-slate-400 font-bold leading-normal">Select a registered client organization to apply their custom pricing overrides sheet automatically.</p>
+                            {orderMode === "wholesale" && (
+                                <div className="p-5 bg-slate-50/70 border border-slate-100 rounded-3xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+                                    <div className="space-y-1 text-left">
+                                        <Label className="text-[10px] font-black text-[#191A43] uppercase tracking-widest ml-0.5">B2B Customer Pricing Account</Label>
+                                        <p className="text-[10px] text-slate-400 font-bold leading-normal">Select a registered client organization to apply their custom pricing overrides sheet automatically.</p>
+                                    </div>
+                                    <div className="w-full md:w-80">
+                                        <Select
+                                            value={selectedClientId}
+                                            onValueChange={setSelectedClientId}
+                                        >
+                                            <SelectTrigger className="h-12 rounded-2xl border-slate-200 bg-white font-semibold text-xs text-left">
+                                                <SelectValue placeholder="Standard Catalog Prices (Default)" />
+                                            </SelectTrigger>
+                                            <SelectContent className="rounded-2xl border-slate-100 bg-white">
+                                                <SelectItem value="none" className="text-xs font-semibold">Standard Catalog Prices (Default)</SelectItem>
+                                                {clients.map((client) => (
+                                                    <SelectItem key={client.id} value={client.id} className="text-xs font-semibold">
+                                                        {client.name} (Custom overrides)
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
                                 </div>
-                                <div className="w-full md:w-80">
-                                    <Select
-                                        value={selectedClientId}
-                                        onValueChange={setSelectedClientId}
-                                    >
-                                        <SelectTrigger className="h-12 rounded-2xl border-slate-200 bg-white font-semibold text-xs text-left">
-                                            <SelectValue placeholder="Standard Catalog Prices (Default)" />
-                                        </SelectTrigger>
-                                        <SelectContent className="rounded-2xl border-slate-100 bg-white">
-                                            <SelectItem value="none" className="text-xs font-semibold">Standard Catalog Prices (Default)</SelectItem>
-                                            {clients.map((client) => (
-                                                <SelectItem key={client.id} value={client.id} className="text-xs font-semibold">
-                                                    {client.name} (Custom overrides)
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                            </div>
+                            )}
 
                             <div className="grid md:grid-cols-2 gap-6">
                                 <div className="space-y-2">
@@ -371,20 +405,36 @@ function CreateOrderContent() {
                                             disabled={!canCreateOrder}
                                             className="h-12 rounded-xl bg-white/50 border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80"
                                         />
-                                        {itemType && allInventory.some(inv => inv.name.toLowerCase().includes(itemType.toLowerCase()) && !selectedInventory.some(s => s.id === inv.id)) && (
+                                        {itemType && allInventory.some(inv => (inv.saleType || "unit") === orderMode && inv.name.toLowerCase().includes(itemType.toLowerCase()) && !selectedInventory.some(s => s.id === inv.id)) && (
                                             <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-100 rounded-xl shadow-xl z-50 max-h-48 overflow-auto">
                                                 {allInventory
-                                                    .filter(item => item.name.toLowerCase().includes(itemType.toLowerCase()) && !selectedInventory.some(s => s.id === item.id))
+                                                    .filter(item => (item.saleType || "unit") === orderMode && item.name.toLowerCase().includes(itemType.toLowerCase()) && !selectedInventory.some(s => s.id === item.id))
                                                     .map(item => (
                                                         <button
                                                             key={item.id}
                                                             type="button"
                                                             onClick={() => {
-                                                                setSelectedItemForUnitModal(item);
-                                                                const existing = selectedInventory.find(s => s.id === item.id);
-                                                                setModalQuantity(existing ? existing.quantity : "1");
-                                                                setIsUnitModalOpen(true);
-                                                                setItemType("");
+                                                                if (orderMode === "unit") {
+                                                                    if (!selectedInventory.find(s => s.id === item.id)) {
+                                                                        const limit = parseFloat(item.quantity) - parseFloat(item.reserved || "0");
+                                                                        setSelectedInventory([...selectedInventory, { 
+                                                                            id: item.id, 
+                                                                            name: item.name, 
+                                                                            quantity: "1",
+                                                                            max: limit
+                                                                        }]);
+                                                                        toast.success(`Linked "${item.name}"`);
+                                                                    } else {
+                                                                        toast.error(`"${item.name}" is already linked.`);
+                                                                    }
+                                                                    setItemType("");
+                                                                } else {
+                                                                    setSelectedItemForUnitModal(item);
+                                                                    const existing = selectedInventory.find(s => s.id === item.id);
+                                                                    setModalQuantity(existing ? existing.quantity : "1");
+                                                                    setIsUnitModalOpen(true);
+                                                                    setItemType("");
+                                                                }
                                                             }}
                                                             className="w-full px-4 py-3 text-left hover:bg-slate-50 flex items-center justify-between border-b border-slate-50 last:border-0"
                                                         >
@@ -502,19 +552,30 @@ function CreateOrderContent() {
                                         {inventorySearch && (
                                             <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-100 rounded-xl shadow-xl z-50 max-h-48 overflow-auto">
                                                 {allInventory
-                                                    .filter(item => item.name.toLowerCase().includes(inventorySearch.toLowerCase()))
+                                                    .filter(item => 
+                                                        (item.saleType || "unit") === orderMode &&
+                                                        item.name.toLowerCase().includes(inventorySearch.toLowerCase()) && 
+                                                        !selectedInventory.some(s => s.id === item.id)
+                                                    )
                                                     .map(item => (
                                                         <button
                                                             key={item.id}
                                                             type="button"
                                                             onClick={() => {
-                                                                if (!selectedInventory.find(s => s.id === item.id)) {
-                                                                    setSelectedInventory([...selectedInventory, { 
-                                                                        id: item.id, 
-                                                                        name: item.name, 
-                                                                        quantity: "1",
-                                                                        max: parseFloat(item.quantity) - parseFloat(item.reserved || "0")
-                                                                    }]);
+                                                                if (orderMode === "unit") {
+                                                                    if (!selectedInventory.find(s => s.id === item.id)) {
+                                                                        setSelectedInventory([...selectedInventory, { 
+                                                                            id: item.id, 
+                                                                            name: item.name, 
+                                                                            quantity: "1",
+                                                                            max: parseFloat(item.quantity) - parseFloat(item.reserved || "0")
+                                                                        }]);
+                                                                        toast.success(`Linked "${item.name}"`);
+                                                                    }
+                                                                } else {
+                                                                    setSelectedItemForUnitModal(item);
+                                                                    setModalQuantity("1");
+                                                                    setIsUnitModalOpen(true);
                                                                 }
                                                                 setInventorySearch("");
                                                             }}

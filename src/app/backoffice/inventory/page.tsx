@@ -62,6 +62,7 @@ export default function InventoryPage() {
     const [isLoading, setIsLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState("");
     const [businessType, setBusinessType] = useState<string | null>(null);
+    const [saleTypeTab, setSaleTypeTab] = useState<"unit" | "wholesale">("unit");
 
     // B2B Customer / Client States
     const [clients, setClients] = useState<any[]>([]);
@@ -204,6 +205,7 @@ export default function InventoryPage() {
                 minStock: '0',
                 totalSold: '0',
                 pricingTiers: null,
+                saleType: 'unit',
                 errors: [] as string[]
             };
 
@@ -216,6 +218,9 @@ export default function InventoryPage() {
 
                 if (['name', 'assetname', 'item', 'itemname', 'product', 'productname', 'hairtype', 'packagetype'].includes(header)) {
                     item.name = valueStr;
+                } else if (['saletype', 'salesmode', 'type', 'salemode', 'type_sale', 'sale_type'].includes(header)) {
+                    const normVal = valueStr.toLowerCase();
+                    item.saleType = (normVal === 'wholesale' || normVal === 'bulk' || normVal === 'b2b') ? 'wholesale' : 'unit';
                 } else if (['sku', 'reference', 'skureference'].includes(header)) {
                     item.sku = valueStr;
                 } else if (['category', 'group'].includes(header)) {
@@ -332,7 +337,8 @@ export default function InventoryPage() {
                 unitCost: item.unitCost || "0",
                 totalSold: item.totalSold || "0",
                 businessType: businessType || "tailoring",
-                pricingTiers: item.pricingTiers || null
+                pricingTiers: item.pricingTiers || null,
+                saleType: item.saleType || "unit"
             }));
 
             const response = await bulkAddInventoryItems(formatted);
@@ -445,7 +451,8 @@ export default function InventoryPage() {
             category: formData.get("category") as string,
             minStock: (formData.get("minStock") as string) || "0",
             unitCost: (formData.get("unitCost") as string) || "0",
-            businessType: businessType || "tailoring"
+            businessType: businessType || "tailoring",
+            saleType: (formData.get("saleType") as string) || "unit"
         };
 
         if (!data.name) {
@@ -486,8 +493,9 @@ export default function InventoryPage() {
     }
 
     const filteredItems = items.filter(item => 
-        item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.sku?.toLowerCase().includes(searchQuery.toLowerCase())
+        (item.saleType || "unit") === saleTypeTab &&
+        (item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+         item.sku?.toLowerCase().includes(searchQuery.toLowerCase()))
     );
 
     const config = getBusinessConfig(businessType);
@@ -496,12 +504,13 @@ export default function InventoryPage() {
     const isLogistics = businessType === "logistics";
     const isTailoring = businessType === "tailoring";
 
+    const activeTabItems = items.filter(item => (item.saleType || "unit") === saleTypeTab);
     const stats = {
-        totalItems: items.reduce((acc, item) => acc + parseFloat(item.quantity), 0),
-        totalReserved: items.reduce((acc, item) => acc + parseFloat(item.reserved || "0"), 0),
-        lowStock: items.filter(item => (parseFloat(item.quantity) - parseFloat(item.reserved || "0")) <= parseFloat(item.minStock || "0")).length,
+        totalItems: activeTabItems.reduce((acc, item) => acc + parseFloat(item.quantity), 0),
+        totalReserved: activeTabItems.reduce((acc, item) => acc + parseFloat(item.reserved || "0"), 0),
+        lowStock: activeTabItems.filter(item => (parseFloat(item.quantity) - parseFloat(item.reserved || "0")) <= parseFloat(item.minStock || "0")).length,
         receivedToday: orders.filter(o => new Date(o.createdAt).toDateString() === new Date().toDateString()).length,
-        totalStockValue: items.reduce((acc, item) => acc + (parseFloat(item.totalEntered || "0") * parseFloat(item.unitCost || "0")), 0)
+        totalStockValue: activeTabItems.reduce((acc, item) => acc + (parseFloat(item.totalEntered || "0") * parseFloat(item.unitCost || "0")), 0)
     };
 
     if (isLoading) return <SignatureLoader fullScreen message="Loading Inventory Hub" />;
@@ -635,6 +644,32 @@ export default function InventoryPage() {
                             </div>
                         </CardContent>
                     </Card>
+                </div>
+
+                {/* sliding tab switcher */}
+                <div className="mb-6 flex justify-start">
+                    <div className="bg-slate-100/80 backdrop-blur-md p-1 rounded-2xl flex items-center gap-1 shadow-inner border border-slate-200/50">
+                        <button
+                            onClick={() => setSaleTypeTab("unit")}
+                            className={`px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all duration-300 ${
+                                saleTypeTab === "unit"
+                                    ? "bg-white text-[#191A43] shadow-sm font-black"
+                                    : "text-slate-400 hover:text-slate-600 font-bold"
+                            }`}
+                        >
+                            Retail Catalog (Unit Sales)
+                        </button>
+                        <button
+                            onClick={() => setSaleTypeTab("wholesale")}
+                            className={`px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all duration-300 ${
+                                saleTypeTab === "wholesale"
+                                    ? "bg-white text-[#191A43] shadow-sm font-black"
+                                    : "text-slate-400 hover:text-slate-600 font-bold"
+                            }`}
+                        >
+                            Wholesale Catalog (Bulk/B2B)
+                        </button>
+                    </div>
                 </div>
 
                 {/* Main Content */}
@@ -832,6 +867,18 @@ export default function InventoryPage() {
 
                     <form onSubmit={handleAddItem} className="p-8 pt-0 space-y-6">
                         <div className="grid grid-cols-2 gap-6">
+                            <div className="space-y-2 col-span-2">
+                                <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Sale Mode Type</Label>
+                                <Select name="saleType" defaultValue="unit">
+                                    <SelectTrigger className="h-12 rounded-2xl border-slate-100 bg-slate-50/50 font-semibold text-xs">
+                                        <SelectValue placeholder="Select sale type mode" />
+                                    </SelectTrigger>
+                                    <SelectContent className="rounded-xl border-slate-100 bg-white">
+                                        <SelectItem value="unit" className="text-xs font-semibold">Retail Product (Unit Sales)</SelectItem>
+                                        <SelectItem value="wholesale" className="text-xs font-semibold">Wholesale Product (Bulk / B2B Discount Tiers)</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
                             <div className="space-y-2">
                                 <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">{config.itemLabel || "Asset Name"}</Label>
                                 <Input 

@@ -198,7 +198,7 @@ export async function updateOrderStage(orderId: string, stageName: string, messa
 
 // --- Inventory Management ---
 
-export async function addInventoryItem(data: { name: string, quantity: string, category?: string, unit?: string, sku?: string, minStock?: string, businessType: string }) {
+export async function addInventoryItem(data: { name: string, quantity: string, category?: string, unit?: string, sku?: string, minStock?: string, businessType: string, saleType?: string }) {
     const { orgId } = await auth();
     if (!orgId) throw new Error("Unauthorized");
 
@@ -222,6 +222,7 @@ export async function addInventoryItem(data: { name: string, quantity: string, c
             clerkOrgId: orgId,
             businessType: data.businessType,
             branchId: (data as any).branchId,
+            saleType: data.saleType || "unit",
         });
 
         // Add initial transaction
@@ -511,7 +512,7 @@ export async function syncOrderInventoryLinks(orderId: string, inventoryItems: {
     return { success: true };
 }
 
-export async function bulkAddInventoryItems(items: { name: string, quantity: string, category?: string, unit?: string, sku?: string, minStock?: string, unitCost?: string, totalSold?: string, businessType: string, pricingTiers?: any }[]) {
+export async function bulkAddInventoryItems(items: { name: string, quantity: string, category?: string, unit?: string, sku?: string, minStock?: string, unitCost?: string, totalSold?: string, businessType: string, pricingTiers?: any, saleType?: string }[]) {
     const { orgId } = await auth();
     if (!orgId) throw new Error("Unauthorized");
 
@@ -541,6 +542,7 @@ export async function bulkAddInventoryItems(items: { name: string, quantity: str
                 totalSold: soldVal,
                 clerkOrgId: orgId,
                 businessType: item.businessType,
+                saleType: item.saleType || "unit",
             });
 
             // Add initial transaction
