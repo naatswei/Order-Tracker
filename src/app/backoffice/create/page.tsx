@@ -196,8 +196,8 @@ function CreateOrderContent() {
     
     const subscriptionExpiry = organization?.publicMetadata?.subscriptionExpiry as string
     const expiryDate = subscriptionExpiry ? new Date(subscriptionExpiry) : null
-    const isExpired = expiryDate ? new Date() > expiryDate : false
     const canCreateOrder = isSubscriptionActive && !isExpired
+    const isRetailBusiness = businessType ? ["hair-retail", "online-business", "nu-retail"].includes(businessType) : false
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -274,10 +274,9 @@ function CreateOrderContent() {
     const hasRequiredFields =
         customerName.trim() !== "" &&
         customerPhone.trim() !== "" &&
-        (itemType.trim() !== "" || selectedInventory.length > 0) &&
+        (selectedInventory.length > 0 || (!isRetailBusiness && itemType.trim() !== "")) &&
         pickupDate !== undefined &&
-        quantity.trim() !== "" &&
-        parseInt(quantity) > 0
+        (selectedInventory.length > 0 || (!isRetailBusiness && quantity.trim() !== "" && parseInt(quantity) > 0))
 
     return (
         <div className="min-h-screen bg-background font-sans selection:bg-primary/20">
@@ -561,8 +560,8 @@ function CreateOrderContent() {
                                     {selectedInventory.length > 0 ? "Specifications & Delivery" : "Product Specifications & Delivery"}
                                 </h3>
                                 <div className="grid md:grid-cols-2 gap-6">
-                                    {/* Manual fields: only rendered if NO inventory is linked */}
-                                    {selectedInventory.length === 0 && (
+                                    {/* Manual fields: only rendered if NO inventory is linked and it is NOT a retail business */}
+                                    {selectedInventory.length === 0 && !isRetailBusiness && (
                                         <>
                                             <div className="space-y-2 relative">
                                                 <Label htmlFor={`${businessType}-itemType`} className="ml-1 text-xs font-semibold text-muted-foreground tracking-wider">{config.itemLabel} <span className="text-red-500">*</span></Label>
@@ -573,7 +572,7 @@ function CreateOrderContent() {
                                                         value={itemType}
                                                         onChange={(e) => setItemType(e.target.value)}
                                                         placeholder={config.itemPlaceholder}
-                                                        required={selectedInventory.length === 0}
+                                                        required={selectedInventory.length === 0 && !isRetailBusiness}
                                                         autoComplete="off"
                                                         spellCheck="false"
                                                         disabled={!canCreateOrder}
@@ -612,8 +611,8 @@ function CreateOrderContent() {
                                     {/* Custom metadata fields */}
                                     {config.extraFields
                                         ?.filter(field => {
-                                            // Hide 'quantity' and 'sku' when inventory item is linked
-                                            if (selectedInventory.length > 0) {
+                                            // Hide 'quantity' and 'sku' when inventory item is linked OR if it's a retail business
+                                            if (selectedInventory.length > 0 || isRetailBusiness) {
                                                 return field.id !== "quantity" && field.id !== "sku";
                                             }
                                             return true;
