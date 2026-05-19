@@ -374,191 +374,120 @@ function CreateOrderContent() {
                                 </div>
                             )}
 
-                            <div className="grid md:grid-cols-2 gap-6">
-                                <div className="space-y-2">
-                                    <Label htmlFor={`${businessType}-customerName`} className="ml-1 text-xs font-semibold text-muted-foreground tracking-wider">Customer Name <span className="text-red-500">*</span></Label>
-                                    <Input
-                                        id={`${businessType}-customerName`}
-                                        value={customerName}
-                                        onChange={(e) => setCustomerName(e.target.value)}
-                                        placeholder="Naa"
-                                        required
-                                        disabled={!canCreateOrder}
-                                        className="h-12 rounded-xl bg-white/50 border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80"
-                                    />
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label htmlFor={`${businessType}-customerPhone`} className="ml-1 text-xs font-semibold text-muted-foreground tracking-wider">Customer Contact <span className="text-red-500">*</span></Label>
-                                    <Input
-                                        id={`${businessType}-customerPhone`}
-                                        type="tel"
-                                        value={customerPhone}
-                                        onChange={(e) => setCustomerPhone(e.target.value)}
-                                        placeholder="0577064301"
-                                        required
-                                        disabled={!canCreateOrder}
-                                        className="h-12 rounded-xl bg-white/50 border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80"
-                                    />
-                                </div>
-
-                                <div className="space-y-2 relative">
-                                    <Label htmlFor={`${businessType}-itemType`} className="ml-1 text-xs font-semibold text-muted-foreground tracking-wider">{config.itemLabel} <span className="text-red-500">*</span></Label>
-                                    <div className="relative">
-                                                                        <Input
-                                            name="order-item-type-search"
-                                            id={`${businessType}-itemType`}
-                                            value={itemType}
-                                            onChange={(e) => setItemType(e.target.value)}
-                                            placeholder={config.itemPlaceholder}
-                                            required
-                                            autoComplete="off"
-                                            spellCheck="false"
-                                            disabled={!canCreateOrder}
-                                            className="h-12 rounded-xl bg-white/50 border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80"
-                                        />
-                                    </div>
-                                </div>
-
-                                {!config.extraFields?.some(f => f.id === "quantity") && (
+                            {/* Customer Information */}
+                            <div className="bg-slate-50/50 p-6 rounded-3xl border border-slate-100/80 space-y-4">
+                                <h3 className="text-xs font-black text-[#191A43] uppercase tracking-wider flex items-center gap-2">
+                                    Customer Information
+                                </h3>
+                                <div className="grid md:grid-cols-3 gap-6">
                                     <div className="space-y-2">
-                                    <Label htmlFor={`${businessType}-quantity`} className="ml-1 text-xs font-semibold text-muted-foreground tracking-wider">Quantity <span className="text-red-500">*</span></Label>
-                                    <Input
-                                        id={`${businessType}-quantity`} type="number" min="1"
-                                        value={quantity}
-                                        disabled={!canCreateOrder} onChange={(e) => setQuantity(e.target.value)} required
-                                        placeholder="1"
-                                        className="h-12 rounded-xl bg-white/50 border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80"
-                                    />
-                                </div>
-                                )}
-
-                                <div className="space-y-2">
-                                    <Label htmlFor={`${businessType}-pickupDate`} className="ml-1 text-xs font-semibold text-muted-foreground tracking-wider">{config.orderLabel === "Tracking Number" ? "Date" : "Delivery Date"} <span className="text-red-500">*</span></Label>
-                                    <DatePicker
-                                        date={pickupDate}
-                                        setDate={setPickupDate}
-                                        placeholder="Select a date"
-                                        disabled={!canCreateOrder}
-                                        fromDate={new Date(new Date().setHours(0, 0, 0, 0))}
-                                    />
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label htmlFor={`${businessType}-customerEmail`} className="ml-1 text-xs font-semibold text-muted-foreground tracking-wider">Customer Email</Label>
-                                    <Input
-                                        id={`${businessType}-customerEmail`}
-                                        type="email"
-                                        value={customerEmail}
-                                        onChange={(e) => setCustomerEmail(e.target.value)}
-                                        placeholder="naa@gmail.com"
-                                        disabled={!canCreateOrder}
-                                        className="h-12 rounded-xl bg-white/50 border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80"
-                                    />
-                                </div>
-
-                                {config.extraFields?.map((field) => (
-                                    <div key={field.id} className="space-y-2">
-                                        <Label htmlFor={`${businessType}-${field.id}`} className="ml-1 text-xs font-semibold text-muted-foreground tracking-wider">{field.label}</Label>
+                                        <Label htmlFor={`${businessType}-customerName`} className="ml-1 text-xs font-semibold text-muted-foreground tracking-wider">Customer Name <span className="text-red-500">*</span></Label>
                                         <Input
-                                            id={`${businessType}-${field.id}`}
-                                            type={field.type === "number" ? "number" : "text"}
-                                            value={field.id === "quantity" ? quantity : ((metadata[field.id] as string) || "")}
-                                            onChange={(e) => {
-                                                 if (field.id === "quantity") {
-                                                     setQuantity(e.target.value);
-                                                 } else {
-                                                     setMetadata({ ...metadata, [field.id]: e.target.value });
-                                                 }
-                                             }}
-                                            placeholder={field.placeholder}
+                                            id={`${businessType}-customerName`}
+                                            value={customerName}
+                                            onChange={(e) => setCustomerName(e.target.value)}
+                                            placeholder="Naa"
+                                            required
                                             disabled={!canCreateOrder}
-                                            className="h-12 rounded-xl bg-white/50 border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80"
+                                            className="h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80"
                                         />
                                     </div>
-                                ))}
-                            </div>
 
-                            <div className="space-y-2">
-                                <Label htmlFor="measurements" className="ml-1 text-xs font-semibold text-muted-foreground tracking-wider">{config.id === "tailoring" ? "Notes / Measurements" : "Notes"}</Label>
-                                <Textarea
-                                    id="measurements"
-                                    value={measurements}
-                                    onChange={(e) => setMeasurements(e.target.value)}
-                                    placeholder={config.id === "tailoring" ? "Details, measurements or special instructions..." : "Additional notes or special instructions..."}
-                                    rows={4}
-                                    disabled={!canCreateOrder}
-                                    className="rounded-xl bg-white/50 border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80 resize-none p-4"
-                                />
-                            </div>
-
-                            {/* Inventory Selection */}
-                            {(orderMode === "wholesale" || orderMode === "unit") && (
-                                <div className="space-y-4 pt-4 border-t border-slate-100">
-                                    <div className="flex items-center justify-between">
-                                        <Label className="ml-1 text-sm font-black text-[#191A43] uppercase tracking-widest flex items-center gap-2">
-                                            <Boxes className="w-4 h-4" />
-                                            Stock Usage
-                                        </Label>
-                                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Items from Inventory</span>
+                                    <div className="space-y-2">
+                                        <Label htmlFor={`${businessType}-customerPhone`} className="ml-1 text-xs font-semibold text-muted-foreground tracking-wider">Customer Contact <span className="text-red-500">*</span></Label>
+                                        <Input
+                                            id={`${businessType}-customerPhone`}
+                                            type="tel"
+                                            value={customerPhone}
+                                            onChange={(e) => setCustomerPhone(e.target.value)}
+                                            placeholder="0577064301"
+                                            required
+                                            disabled={!canCreateOrder}
+                                            className="h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80"
+                                        />
                                     </div>
 
-                                    <div className="relative">
-                                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                                        <Input 
-                                            placeholder="Search inventory to add items..."
-                                            value={inventorySearch}
-                                            onChange={(e) => setInventorySearch(e.target.value)}
-                                            className="pl-10 rounded-xl bg-slate-50 border-slate-100 h-11 text-sm"
+                                    <div className="space-y-2">
+                                        <Label htmlFor={`${businessType}-customerEmail`} className="ml-1 text-xs font-semibold text-muted-foreground tracking-wider">Customer Email</Label>
+                                        <Input
+                                            id={`${businessType}-customerEmail`}
+                                            type="email"
+                                            value={customerEmail}
+                                            onChange={(e) => setCustomerEmail(e.target.value)}
+                                            placeholder="naa@gmail.com"
+                                            disabled={!canCreateOrder}
+                                            className="h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80"
                                         />
-                                        {inventorySearch && (
-                                            <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-100 rounded-xl shadow-xl z-50 max-h-48 overflow-auto">
-                                                {allInventory
-                                                    .filter(item => 
-                                                        (item.saleType || "unit") === orderMode &&
-                                                        item.name.toLowerCase().includes(inventorySearch.toLowerCase()) && 
-                                                        !selectedInventory.some(s => s.id === item.id)
-                                                    )
-                                                    .map(item => (
-                                                        <button
-                                                            key={item.id}
-                                                            type="button"
-                                                            onClick={() => {
-                                                                if (orderMode === "unit") {
-                                                                    if (!selectedInventory.find(s => s.id === item.id)) {
-                                                                        setSelectedInventory([...selectedInventory, { 
-                                                                            id: item.id, 
-                                                                            name: item.name, 
-                                                                            quantity: "1",
-                                                                            max: parseFloat(item.quantity) - parseFloat(item.reserved || "0")
-                                                                        }]);
-                                                                        setItemType(item.name);
-                                                                         toast.success(`Linked "${item.name}"`);
-                                                                    }
-                                                                } else {
-                                                                    setSelectedItemForUnitModal(item);
-                                                                    setModalQuantity("1");
-                                                                    setIsUnitModalOpen(true);
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Stock Usage & Product Selection */}
+                            <div className="bg-slate-50/30 p-6 rounded-3xl border border-slate-100/60 space-y-4">
+                                <div className="flex items-center justify-between">
+                                    <Label className="ml-1 text-xs font-black text-[#191A43] uppercase tracking-widest flex items-center gap-2">
+                                        <Boxes className="w-4 h-4" />
+                                        Stock Usage / Product Selection
+                                    </Label>
+                                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Items from Inventory</span>
+                                </div>
+
+                                <div className="relative">
+                                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                                    <Input 
+                                        placeholder="Search inventory to add items..."
+                                        value={inventorySearch}
+                                        onChange={(e) => setInventorySearch(e.target.value)}
+                                        className="pl-10 rounded-xl bg-white border-slate-200 h-12 text-sm"
+                                    />
+                                    {inventorySearch && (
+                                        <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-100 rounded-xl shadow-xl z-50 max-h-48 overflow-auto">
+                                            {allInventory
+                                                .filter(item => 
+                                                    (item.saleType || "unit") === orderMode &&
+                                                    item.name.toLowerCase().includes(inventorySearch.toLowerCase()) && 
+                                                    !selectedInventory.some(s => s.id === item.id)
+                                                )
+                                                .map(item => (
+                                                    <button
+                                                        key={item.id}
+                                                        type="button"
+                                                        onClick={() => {
+                                                            if (orderMode === "unit") {
+                                                                if (!selectedInventory.find(s => s.id === item.id)) {
+                                                                    setSelectedInventory([...selectedInventory, { 
+                                                                        id: item.id, 
+                                                                        name: item.name, 
+                                                                        quantity: "1",
+                                                                        max: parseFloat(item.quantity) - parseFloat(item.reserved || "0")
+                                                                    }]);
+                                                                    setItemType(item.name);
+                                                                     toast.success(`Linked "${item.name}"`);
                                                                 }
-                                                                setInventorySearch("");
-                                                            }}
-                                                            className="w-full px-4 py-3 text-left hover:bg-slate-50 flex items-center justify-between border-b border-slate-50 last:border-0"
-                                                        >
-                                                            <div>
-                                                                <p className="text-sm font-black text-slate-700">{item.name}</p>
-                                                                <p className="text-[10px] text-slate-400 font-bold uppercase">{item.sku || "No SKU"}</p>
-                                                            </div>
-                                                            <p className="text-[10px] font-black text-emerald-500 uppercase">{parseFloat(item.quantity) - parseFloat(item.reserved || "0")} Available</p>
-                                                        </button>
-                                                    ))}
-                                            </div>
-                                        )}
-                                    </div>
+                                                            } else {
+                                                                setSelectedItemForUnitModal(item);
+                                                                setModalQuantity("1");
+                                                                setIsUnitModalOpen(true);
+                                                            }
+                                                            setInventorySearch("");
+                                                        }}
+                                                        className="w-full px-4 py-3 text-left hover:bg-slate-50 flex items-center justify-between border-b border-slate-50 last:border-0"
+                                                    >
+                                                        <div>
+                                                            <p className="text-sm font-black text-slate-700">{item.name}</p>
+                                                            <p className="text-[10px] text-slate-400 font-bold uppercase">{item.sku || "No SKU"}</p>
+                                                        </div>
+                                                        <p className="text-[10px] font-black text-emerald-500 uppercase">{parseFloat(item.quantity) - parseFloat(item.reserved || "0")} Available</p>
+                                                    </button>
+                                                ))}
+                                        </div>
+                                    )}
+                                </div>
 
                                 {selectedInventory.length > 0 && (
                                     <div className="space-y-2">
                                         {selectedInventory.map((item, index) => (
-                                            <div key={item.id} className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
+                                            <div key={item.id} className="flex items-center gap-3 p-3 bg-white rounded-xl border border-slate-100 shadow-sm">
                                                 <div className="flex-1">
                                                     <p className="text-sm font-black text-slate-700">{item.name}</p>
                                                 </div>
@@ -573,7 +502,7 @@ function CreateOrderContent() {
                                                             newItems[index].quantity = e.target.value;
                                                             setSelectedInventory(newItems);
                                                         }}
-                                                        className="w-16 h-8 rounded-lg bg-white border-slate-100 text-xs font-bold text-center"
+                                                        className="w-16 h-8 rounded-lg bg-slate-50 border-slate-100 text-xs font-bold text-center"
                                                     />
                                                 </div>
                                                 <div className="text-right flex flex-col justify-center min-w-[140px]">
@@ -609,7 +538,13 @@ function CreateOrderContent() {
                                                     type="button"
                                                     variant="ghost"
                                                     size="icon"
-                                                    onClick={() => setSelectedInventory(selectedInventory.filter((_, i) => i !== index))}
+                                                    onClick={() => {
+                                                        const remaining = selectedInventory.filter((_, i) => i !== index);
+                                                        setSelectedInventory(remaining);
+                                                        if (remaining.length === 0) {
+                                                            setItemType("");
+                                                        }
+                                                    }}
                                                     className="w-8 h-8 rounded-lg hover:bg-red-50 hover:text-red-600 transition-all"
                                                 >
                                                     <Trash2 className="w-4 h-4" />
@@ -618,8 +553,106 @@ function CreateOrderContent() {
                                         ))}
                                     </div>
                                 )}
+                            </div>
+
+                            {/* Additional Specifications / Details */}
+                            <div className="bg-slate-50/10 p-6 rounded-3xl border border-slate-100/50 space-y-4">
+                                <h3 className="text-xs font-black text-[#191A43] uppercase tracking-wider">
+                                    {selectedInventory.length > 0 ? "Specifications & Delivery" : "Product Specifications & Delivery"}
+                                </h3>
+                                <div className="grid md:grid-cols-2 gap-6">
+                                    {/* Manual fields: only rendered if NO inventory is linked */}
+                                    {selectedInventory.length === 0 && (
+                                        <>
+                                            <div className="space-y-2 relative">
+                                                <Label htmlFor={`${businessType}-itemType`} className="ml-1 text-xs font-semibold text-muted-foreground tracking-wider">{config.itemLabel} <span className="text-red-500">*</span></Label>
+                                                <div className="relative">
+                                                    <Input
+                                                        name="order-item-type-search"
+                                                        id={`${businessType}-itemType`}
+                                                        value={itemType}
+                                                        onChange={(e) => setItemType(e.target.value)}
+                                                        placeholder={config.itemPlaceholder}
+                                                        required={selectedInventory.length === 0}
+                                                        autoComplete="off"
+                                                        spellCheck="false"
+                                                        disabled={!canCreateOrder}
+                                                        className="h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80"
+                                                    />
+                                                </div>
+                                            </div>
+
+                                            {!config.extraFields?.some(f => f.id === "quantity") && (
+                                                <div className="space-y-2">
+                                                    <Label htmlFor={`${businessType}-quantity`} className="ml-1 text-xs font-semibold text-muted-foreground tracking-wider">Quantity <span className="text-red-500">*</span></Label>
+                                                    <Input
+                                                        id={`${businessType}-quantity`} type="number" min="1"
+                                                        value={quantity}
+                                                        disabled={!canCreateOrder} onChange={(e) => setQuantity(e.target.value)} required
+                                                        placeholder="1"
+                                                        className="h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80"
+                                                    />
+                                                </div>
+                                            )}
+                                        </>
+                                    )}
+
+                                    {/* Pickup/Delivery Date */}
+                                    <div className="space-y-2">
+                                        <Label htmlFor={`${businessType}-pickupDate`} className="ml-1 text-xs font-semibold text-muted-foreground tracking-wider">{config.orderLabel === "Tracking Number" ? "Date" : "Delivery Date"} <span className="text-red-500">*</span></Label>
+                                        <DatePicker
+                                            date={pickupDate}
+                                            setDate={setPickupDate}
+                                            placeholder="Select a date"
+                                            disabled={!canCreateOrder}
+                                            fromDate={new Date(new Date().setHours(0, 0, 0, 0))}
+                                        />
+                                    </div>
+
+                                    {/* Custom metadata fields */}
+                                    {config.extraFields
+                                        ?.filter(field => {
+                                            // Hide 'quantity' and 'sku' when inventory item is linked
+                                            if (selectedInventory.length > 0) {
+                                                return field.id !== "quantity" && field.id !== "sku";
+                                            }
+                                            return true;
+                                        })
+                                        .map((field) => (
+                                            <div key={field.id} className="space-y-2">
+                                                <Label htmlFor={`${businessType}-${field.id}`} className="ml-1 text-xs font-semibold text-muted-foreground tracking-wider">{field.label}</Label>
+                                                <Input
+                                                    id={`${businessType}-${field.id}`}
+                                                    type={field.type === "number" ? "number" : "text"}
+                                                    value={field.id === "quantity" ? quantity : ((metadata[field.id] as string) || "")}
+                                                    onChange={(e) => {
+                                                         if (field.id === "quantity") {
+                                                             setQuantity(e.target.value);
+                                                         } else {
+                                                             setMetadata({ ...metadata, [field.id]: e.target.value });
+                                                         }
+                                                     }}
+                                                    placeholder={field.placeholder}
+                                                    disabled={!canCreateOrder}
+                                                    className="h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80"
+                                                />
+                                            </div>
+                                        ))}
                                 </div>
-                            )}
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="measurements" className="ml-1 text-xs font-semibold text-muted-foreground tracking-wider">{config.id === "tailoring" ? "Notes / Measurements" : "Notes"}</Label>
+                                <Textarea
+                                    id="measurements"
+                                    value={measurements}
+                                    onChange={(e) => setMeasurements(e.target.value)}
+                                    placeholder={config.id === "tailoring" ? "Details, measurements or special instructions..." : "Additional notes or special instructions..."}
+                                    rows={4}
+                                    disabled={!canCreateOrder}
+                                    className="rounded-xl bg-white border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80 resize-none p-4"
+                                />
+                            </div>
 
                             <div className="pt-2 flex flex-col items-end gap-3">
                                 <Button
