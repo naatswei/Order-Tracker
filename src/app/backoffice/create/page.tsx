@@ -424,7 +424,7 @@ function CreateOrderContent() {
                                 <div className="flex items-center justify-between">
                                     <Label className="ml-1 text-xs font-black text-[#191A43] uppercase tracking-widest flex items-center gap-2">
                                         <Boxes className="w-4 h-4" />
-                                        Stock Usage / Product Selection
+                                        Stock Usage / Product Selection {isRetailBusiness && <span className="text-red-500">*</span>}
                                     </Label>
                                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Items from Inventory</span>
                                 </div>
