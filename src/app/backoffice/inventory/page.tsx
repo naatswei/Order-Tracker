@@ -864,8 +864,8 @@ export default function InventoryPage() {
                     </Card>
                 </div>
                 <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
-                    <DialogContent className="max-w-2xl rounded-[2rem] border-none shadow-2xl p-0 overflow-hidden bg-white">
-                    <DialogHeader className="p-8 pb-4">
+                    <DialogContent className="max-w-2xl rounded-[1.5rem] sm:rounded-[2rem] border-none shadow-2xl p-0 max-h-[90vh] overflow-y-auto no-scrollbar bg-white">
+                    <DialogHeader className="p-6 sm:p-8 pb-4">
                         <div className="flex items-center gap-4 mb-4">
                             <div className="w-12 h-12 rounded-2xl bg-[#191A43] flex items-center justify-center shadow-lg shadow-[#191A43]/20">
                                 <Plus className="w-6 h-6 text-white" />
@@ -877,9 +877,9 @@ export default function InventoryPage() {
                         </div>
                     </DialogHeader>
 
-                    <form onSubmit={handleAddItem} className="p-8 pt-0 space-y-6">
-                        <div className="grid grid-cols-2 gap-6">
-                            <div className="space-y-2 col-span-2">
+                    <form onSubmit={handleAddItem} className="p-6 sm:p-8 pt-0 space-y-4 sm:space-y-6">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                            <div className="space-y-2 col-span-1 sm:col-span-2">
                                 <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Sale Mode Type</Label>
                                 <Select name="saleType" defaultValue="unit">
                                     <SelectTrigger className="h-12 rounded-2xl border-slate-100 bg-slate-50/50 font-semibold text-xs">
@@ -954,18 +954,18 @@ export default function InventoryPage() {
                             </div>
                         </div>
 
-                        <div className="flex justify-end gap-3 pt-4">
+                        <div className="flex flex-col-reverse sm:flex-row justify-end gap-3 pt-4">
                             <Button 
                                 type="button" 
                                 variant="ghost" 
                                 onClick={() => setIsAddModalOpen(false)}
-                                className="h-12 px-8 rounded-2xl font-bold text-slate-400 hover:text-[#191A43] text-xs uppercase tracking-widest"
+                                className="h-12 w-full sm:w-auto px-8 rounded-2xl font-bold text-slate-400 hover:text-[#191A43] text-xs uppercase tracking-widest"
                             >
                                 Cancel
                             </Button>
                             <Button 
                                 type="submit" 
-                                className="h-12 px-10 rounded-2xl bg-[#191A43] text-white font-bold hover:bg-[#191A43]/90 shadow-xl shadow-[#191A43]/10 text-xs uppercase tracking-widest transition-all active:scale-95"
+                                className="h-12 w-full sm:w-auto px-10 rounded-2xl bg-[#191A43] text-white font-bold hover:bg-[#191A43]/90 shadow-xl shadow-[#191A43]/10 text-xs uppercase tracking-widest transition-all active:scale-95"
                             >
                                 Add {config.itemLabel || "Asset"}
                             </Button>
@@ -981,7 +981,7 @@ export default function InventoryPage() {
                     setSelectedImportClientId("");
                 }
             }}>
-                <DialogContent className="sm:max-w-[90vw] lg:max-w-[85vw] xl:max-w-[1200px] w-full rounded-[2rem] border-none shadow-2xl p-0 bg-white max-h-[90vh] overflow-y-auto no-scrollbar">
+                <DialogContent className="sm:max-w-[90vw] lg:max-w-[85vw] xl:max-w-[1200px] w-full rounded-[1.5rem] sm:rounded-[2rem] border-none shadow-2xl p-0 bg-white max-h-[90vh] overflow-y-auto no-scrollbar">
                     <DialogHeader className="p-8 pb-4">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-4">
@@ -1190,7 +1190,7 @@ export default function InventoryPage() {
 
             {/* B2B Customer Accounts Management Dialog */}
             <Dialog open={isB2BModalOpen} onOpenChange={setIsB2BModalOpen}>
-                <DialogContent className="max-w-3xl rounded-[2rem] border-none shadow-2xl p-0 overflow-hidden bg-white max-h-[85vh] flex flex-col">
+                <DialogContent className="max-w-3xl rounded-[1.5rem] sm:rounded-[2rem] border-none shadow-2xl p-0 overflow-hidden bg-white max-h-[85vh] flex flex-col">
                     <DialogHeader className="p-8 pb-4 shrink-0">
                         <div className="flex items-center gap-4">
                             <div className="w-12 h-12 rounded-2xl bg-[#191A43] flex items-center justify-center shadow-lg shadow-[#191A43]/20">
