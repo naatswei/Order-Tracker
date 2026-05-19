@@ -337,8 +337,8 @@ export default function InventoryPage() {
                 unitCost: item.unitCost || "0",
                 totalSold: item.totalSold || "0",
                 businessType: businessType || "tailoring",
-                pricingTiers: item.pricingTiers || null,
-                saleType: item.saleType || "unit"
+                pricingTiers: saleTypeTab === "wholesale" ? (item.pricingTiers || null) : null,
+                saleType: saleTypeTab
             }));
 
             const response = await bulkAddInventoryItems(formatted);
@@ -371,25 +371,32 @@ export default function InventoryPage() {
     };
 
     const downloadTemplate = () => {
-        let headers = "Asset Name,SKU,Category,Unit,Initial Physical Stock,Unit Cost (GHS),Minimum Alert Threshold,5-10 orders,btn 11-20,>20 orders\n";
-        let exampleRow = "Silk Thread,SLK-001,Raw Materials,Rolls,150,25.00,10,23.50,21.00,19.50\n";
+        const isWholesale = saleTypeTab === "wholesale";
+        const wholesaleHeaders = isWholesale ? ",5-10 orders,btn 11-20,>20 orders" : "";
+        const wholesaleExample = isWholesale ? ",23.50,21.00,19.50" : "";
+        const wholesaleHairExample = isWholesale ? ",430.00,410.00,390.00" : "";
+        const wholesaleOnlineExample = isWholesale ? ",72.00,68.00,65.00" : "";
+        const wholesaleLogisticsExample = isWholesale ? ",4.80,4.50,4.20" : "";
+
+        let headers = `Asset Name,SKU,Category,Unit,Initial Physical Stock,Unit Cost (GHS),Minimum Alert Threshold${wholesaleHeaders}\n`;
+        let exampleRow = `Silk Thread,SLK-001,Raw Materials,Rolls,150,25.00,10${wholesaleExample}\n`;
         
         if (businessType === "hair-retail") {
-            headers = "Hair Type,SKU,Category,Unit,Initial Physical Stock,Unit Cost (GHS),Minimum Alert Threshold,5-10 orders,btn 11-20,>20 orders\n";
-            exampleRow = "22 Inch Straight Wig,HR-WIG22,Extensions,Pieces,50,450.00,5,430.00,410.00,390.00\n";
+            headers = `Hair Type,SKU,Category,Unit,Initial Physical Stock,Unit Cost (GHS),Minimum Alert Threshold${wholesaleHeaders}\n`;
+            exampleRow = `22 Inch Straight Wig,HR-WIG22,Extensions,Pieces,50,450.00,5${wholesaleHairExample}\n`;
         } else if (businessType === "online-business") {
-            headers = "Product Name,SKU,Category,Unit,Initial Physical Stock,Unit Cost (GHS),Minimum Alert Threshold,5-10 orders,btn 11-20,>20 orders\n";
-            exampleRow = "Smart Watch,SW-001,Electronics,Units,100,75.00,10,72.00,68.00,65.00\n";
+            headers = `Product Name,SKU,Category,Unit,Initial Physical Stock,Unit Cost (GHS),Minimum Alert Threshold${wholesaleHeaders}\n`;
+            exampleRow = `Smart Watch,SW-001,Electronics,Units,100,75.00,10${wholesaleOnlineExample}\n`;
         } else if (businessType === "logistics") {
-            headers = "Package Type,SKU,Category,Unit,Initial Physical Stock,Unit Cost (GHS),Minimum Alert Threshold,5-10 orders,btn 11-20,>20 orders\n";
-            exampleRow = "Transit Box,LG-BX1,Packaging,Units,200,5.00,20,4.80,4.50,4.20\n";
+            headers = `Package Type,SKU,Category,Unit,Initial Physical Stock,Unit Cost (GHS),Minimum Alert Threshold${wholesaleHeaders}\n`;
+            exampleRow = `Transit Box,LG-BX1,Packaging,Units,200,5.00,20${wholesaleLogisticsExample}\n`;
         }
 
         const blob = new Blob([headers + exampleRow], { type: "text/csv;charset=utf-8;" });
         const url = URL.createObjectURL(blob);
         const link = document.createElement("a");
         link.setAttribute("href", url);
-        link.setAttribute("download", `otracker_${businessType || "inventory"}_template.csv`);
+        link.setAttribute("download", `otracker_${businessType || "inventory"}_${saleTypeTab}_template.csv`);
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
