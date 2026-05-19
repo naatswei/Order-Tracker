@@ -196,6 +196,7 @@ function CreateOrderContent() {
     
     const subscriptionExpiry = organization?.publicMetadata?.subscriptionExpiry as string
     const expiryDate = subscriptionExpiry ? new Date(subscriptionExpiry) : null
+    const isExpired = expiryDate ? new Date() > expiryDate : false
     const canCreateOrder = isSubscriptionActive && !isExpired
     const isRetailBusiness = businessType ? ["hair-retail", "online-business", "nu-retail"].includes(businessType) : false
 
