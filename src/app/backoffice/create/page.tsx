@@ -273,9 +273,7 @@ function CreateOrderContent() {
 
     const hasRequiredFields =
         customerName.trim() !== "" &&
-        customerPhone.trim() !== "" &&
         (selectedInventory.length > 0 || (!isRetailBusiness && itemType.trim() !== "")) &&
-        pickupDate !== undefined &&
         (selectedInventory.length > 0 || (!isRetailBusiness && quantity.trim() !== "" && parseInt(quantity) > 0))
 
     return (
@@ -393,14 +391,13 @@ function CreateOrderContent() {
                                     </div>
 
                                     <div className="space-y-2">
-                                        <Label htmlFor={`${businessType}-customerPhone`} className="ml-1 text-xs font-semibold text-muted-foreground tracking-wider">Customer Contact <span className="text-red-500">*</span></Label>
+                                        <Label htmlFor={`${businessType}-customerPhone`} className="ml-1 text-xs font-semibold text-muted-foreground tracking-wider">Customer Contact</Label>
                                         <Input
                                             id={`${businessType}-customerPhone`}
                                             type="tel"
                                             value={customerPhone}
                                             onChange={(e) => setCustomerPhone(e.target.value)}
                                             placeholder="0577064301"
-                                            required
                                             disabled={!canCreateOrder}
                                             className="h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80"
                                         />
@@ -598,7 +595,7 @@ function CreateOrderContent() {
 
                                     {/* Pickup/Delivery Date */}
                                     <div className="space-y-2">
-                                        <Label htmlFor={`${businessType}-pickupDate`} className="ml-1 text-xs font-semibold text-muted-foreground tracking-wider">{config.orderLabel === "Tracking Number" ? "Date" : "Delivery Date"} <span className="text-red-500">*</span></Label>
+                                        <Label htmlFor={`${businessType}-pickupDate`} className="ml-1 text-xs font-semibold text-muted-foreground tracking-wider">{config.orderLabel === "Tracking Number" ? "Date" : "Delivery Date"}</Label>
                                         <DatePicker
                                             date={pickupDate}
                                             setDate={setPickupDate}
