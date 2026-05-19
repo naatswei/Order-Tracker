@@ -76,7 +76,7 @@ function CreateOrderContent() {
     const [allInventory, setAllInventory] = useState<any[]>([])
     const [selectedInventory, setSelectedInventory] = useState<{ id: string, name: string, quantity: string, max: number }[]>([])
     const [inventorySearch, setInventorySearch] = useState("")
-    const [showManualInventory, setShowManualInventory] = useState(false)
+
 
     // Unit Modal state
     const [isUnitModalOpen, setIsUnitModalOpen] = useState(false)
@@ -495,28 +495,14 @@ function CreateOrderContent() {
                             {/* Inventory Selection */}
                             {(orderMode === "wholesale" || orderMode === "unit") && (
                                 <div className="space-y-4 pt-4 border-t border-slate-100">
-                                <div className="flex items-center justify-between">
-                                    <Label className="ml-1 text-sm font-black text-[#191A43] uppercase tracking-widest flex items-center gap-2">
-                                        <Boxes className="w-4 h-4" />
-                                        Stock Usage
-                                    </Label>
-                                    {!showManualInventory && selectedInventory.length === 0 && (
-                                        <Button 
-                                            type="button" 
-                                            variant="ghost" 
-                                            onClick={() => setShowManualInventory(true)}
-                                            className="h-7 px-2 text-[10px] font-black text-blue-600 hover:text-blue-700 hover:bg-blue-50 uppercase tracking-wider rounded-lg border border-blue-100 transition-all"
-                                        >
-                                            <Plus className="w-3 h-3 mr-1" />
-                                            {orderMode === "unit" ? "Link Stock / Add Products" : "Link Materials"}
-                                        </Button>
-                                    )}
-                                    {(showManualInventory || selectedInventory.length > 0) && (
+                                    <div className="flex items-center justify-between">
+                                        <Label className="ml-1 text-sm font-black text-[#191A43] uppercase tracking-widest flex items-center gap-2">
+                                            <Boxes className="w-4 h-4" />
+                                            Stock Usage
+                                        </Label>
                                         <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Items from Inventory</span>
-                                    )}
-                                </div>
+                                    </div>
 
-                                {(showManualInventory || selectedInventory.length > 0) && (
                                     <div className="relative">
                                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                                         <Input 
@@ -568,7 +554,6 @@ function CreateOrderContent() {
                                             </div>
                                         )}
                                     </div>
-                                )}
 
                                 {selectedInventory.length > 0 && (
                                     <div className="space-y-2">
