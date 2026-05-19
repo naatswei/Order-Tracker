@@ -174,7 +174,7 @@ export default function OrderUpdatePage() {
             <BackofficeHeader config={config} />
 
 
-            <div className="container mx-auto px-4 pt-10 sm:pt-12 pb-6 sm:pb-8 max-w-6xl space-y-6">
+            <div className="container mx-auto px-4 pt-16 sm:pt-20 pb-8 sm:pb-12 max-w-6xl space-y-6">
 
 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8">

@@ -175,7 +175,7 @@ export default function ProfilePage() {
         <div className="min-h-screen bg-slate-50/50 font-sans">
             <BackofficeHeader config={config} />
 
-            <div className="container mx-auto px-4 pt-10 sm:pt-12 pb-6 sm:pb-8 max-w-[1000px] space-y-6 sm:space-y-8">
+            <div className="container mx-auto px-4 pt-16 sm:pt-20 pb-8 sm:pb-12 max-w-[1000px] space-y-6 sm:space-y-8">
                 {/* Header */}
                 <div className="flex items-center gap-4">
                     <Button asChild variant="ghost" size="icon" className="shrink-0 text-slate-500 hover:text-slate-900 rounded-full hover:bg-white shadow-sm transition-all border border-transparent hover:border-slate-200">

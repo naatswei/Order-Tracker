@@ -168,7 +168,7 @@ export default function BackofficePage() {
             {/* Renewal Banner */}
             {needsRenewal && <RenewalBanner status={renewalStatus} />}
 
-            <div className="container mx-auto px-4 pt-10 sm:pt-12 pb-6 sm:pb-8 max-w-[1400px] space-y-8 sm:space-y-[70px]">
+            <div className="container mx-auto px-4 pt-16 sm:pt-20 pb-8 sm:pb-12 max-w-[1400px] space-y-8 sm:space-y-[70px]">
                 {/* Actions Bar */}
                 <div className="space-y-3">
                     <h2 className="text-[10px] uppercase font-bold tracking-[0.2em] text-[#191A43] ml-1">Track Order</h2>
