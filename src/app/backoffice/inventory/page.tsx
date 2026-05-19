@@ -986,7 +986,9 @@ export default function InventoryPage() {
                                     <FileSpreadsheet className="w-6 h-6 text-white" />
                                 </div>
                                 <div>
-                                    <DialogTitle className="text-xl font-black text-[#191A43] tracking-tight">Bulk Import Assets</DialogTitle>
+                                    <DialogTitle className="text-xl font-black text-[#191A43] tracking-tight">
+                                        {saleTypeTab === "wholesale" ? "Bulk Import" : "Import"} {config.itemLabel ? `${config.itemLabel}s` : "Assets"}
+                                    </DialogTitle>
                                     <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mt-1">Excel & CSV Ingestion Engine</p>
                                 </div>
                             </div>
@@ -1172,7 +1174,7 @@ export default function InventoryPage() {
                                                     Ingesting...
                                                 </>
                                             ) : (
-                                                `Import ${importData.filter(i => i.errors.length === 0).length} Assets`
+                                                `Import ${importData.filter(i => i.errors.length === 0).length} ${config.itemLabel ? `${config.itemLabel}s` : "Assets"}`
                                             )}
                                         </Button>
                                     </div>
