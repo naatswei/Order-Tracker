@@ -97,13 +97,6 @@ export default function BusinessTypePage() {
             icon: Laptop,
             imageSrc: "/images/online.jpg",
         },
-        {
-            id: "nu-retail",
-            title: "Nu Retail",
-            description: "Retail & Wholesale with Bracket Pricing",
-            icon: Sparkles,
-            imageSrc: "/images/online.jpg",
-        },
     ]
 
     const handleNext = async () => {
