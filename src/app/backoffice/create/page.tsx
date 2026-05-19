@@ -222,9 +222,15 @@ function CreateOrderContent() {
 
         setIsSaving(true)
 
-        const finalItemType = itemType.trim() !== "" 
+        const finalItemType = (selectedInventory.length > 1)
+            ? selectedInventory.map(s => s.name).join(", ")
+            : (itemType.trim() !== "" 
             ? itemType 
-            : selectedInventory.map(s => s.name).join(", ");
+            : selectedInventory.map(s => s.name).join(", "));
+
+        const totalQty = selectedInventory.length > 0
+            ? selectedInventory.reduce((sum, item) => sum + (parseInt(item.quantity) || 0), 0)
+            : (parseInt(quantity) || 1);
 
         try {
             if (editingId) {
@@ -236,7 +242,7 @@ function CreateOrderContent() {
                     itemType: finalItemType,
                     pickupDate: pickupDate ? format(pickupDate, "yyyy-MM-dd") : "",
                     measurements,
-                    metadata: { ...metadata, quantity: parseInt(quantity) || 1 },
+                    metadata: { ...metadata, quantity: totalQty },
                     inventoryItems: selectedInventory.map(item => ({ id: item.id, quantity: item.quantity })),
                 })
                 toast.success("Order details updated")
@@ -249,7 +255,7 @@ function CreateOrderContent() {
                     itemType: finalItemType,
                     pickupDate: pickupDate ? format(pickupDate, "yyyy-MM-dd") : "",
                     measurements,
-                    metadata: { ...metadata, quantity: parseInt(quantity) || 1 },
+                    metadata: { ...metadata, quantity: totalQty },
                     businessType: localStorage.getItem("businessType") || "tailoring",
                     currentStatus: config.defaultStatus,
                     inventoryItems: selectedInventory.map(item => ({ id: item.id, quantity: item.quantity })),
@@ -531,7 +537,7 @@ function CreateOrderContent() {
                             </div>
 
                             {/* Inventory Selection */}
-                            {orderMode === "wholesale" && (
+                            {(orderMode === "wholesale" || orderMode === "unit") && (
                                 <div className="space-y-4 pt-4 border-t border-slate-100">
                                 <div className="flex items-center justify-between">
                                     <Label className="ml-1 text-sm font-black text-[#191A43] uppercase tracking-widest flex items-center gap-2">
@@ -546,7 +552,7 @@ function CreateOrderContent() {
                                             className="h-7 px-2 text-[10px] font-black text-blue-600 hover:text-blue-700 hover:bg-blue-50 uppercase tracking-wider rounded-lg border border-blue-100 transition-all"
                                         >
                                             <Plus className="w-3 h-3 mr-1" />
-                                            Link Materials
+                                            {orderMode === "unit" ? "Link Stock / Add Products" : "Link Materials"}
                                         </Button>
                                     )}
                                     {(showManualInventory || selectedInventory.length > 0) && (
@@ -578,10 +584,10 @@ function CreateOrderContent() {
                                                             onClick={() => {
                                                                 if (orderMode === "unit") {
                                                                     if (!selectedInventory.find(s => s.id === item.id)) {
-                                                                        setSelectedInventory([{ 
+                                                                        setSelectedInventory([...selectedInventory, { 
                                                                             id: item.id, 
                                                                             name: item.name, 
-                                                                            quantity: quantity,
+                                                                            quantity: "1",
                                                                             max: parseFloat(item.quantity) - parseFloat(item.reserved || "0")
                                                                         }]);
                                                                         setItemType(item.name);
