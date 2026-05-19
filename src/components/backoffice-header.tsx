@@ -62,7 +62,7 @@ export function BackofficeHeader({ config }: BackofficeHeaderProps) {
 
     return (
         <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b-[0.5px] border-slate-100 shadow-[0_2px_20px_rgb(0,0,0,0.02)]">
-            <div className="w-full px-4 sm:px-8 py-3 flex items-center justify-between">
+            <div className="w-full px-4 sm:px-8 py-5 flex items-center justify-between">
                 {/* Logo */}
                 <Link href="/backoffice" className="flex items-center gap-3 group">
                     <div className="w-8 h-8 rounded-full bg-red-50/50 border border-red-100 flex items-center justify-center shadow-sm group-hover:shadow-md transition-all">

@@ -4,7 +4,7 @@ export function DashboardSkeleton() {
     return (
         <div className="min-h-screen bg-[#F8FAFC]">
             {/* Mock Header */}
-            <header className="h-[72px] bg-white/90 backdrop-blur-md border-b border-slate-100 flex items-center px-4 sm:px-8 justify-between">
+            <header className="h-20 bg-white/90 backdrop-blur-md border-b border-slate-100 flex items-center px-4 sm:px-8 justify-between">
                 <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-full bg-slate-100 animate-pulse" />
                     <div className="space-y-2">
