@@ -64,6 +64,7 @@ function CreateOrderContent() {
     const [pickupDate, setPickupDate] = useState<Date | undefined>(undefined)
     const [measurements, setMeasurements] = useState("")
     const [metadata, setMetadata] = useState<Record<string, unknown>>({})
+    const [quantity, setQuantity] = useState("1")
     const [isSaving, setIsSaving] = useState(false)
     
     // B2B Customer Pricing
@@ -124,7 +125,9 @@ function CreateOrderContent() {
                         }
                     }
                     setMeasurements(orderToEdit.measurements || "")
-                    setMetadata(orderToEdit.metadata as Record<string, unknown> || {})
+                    const editMeta = orderToEdit.metadata as Record<string, unknown> || {}
+                    setMetadata(editMeta)
+                    setQuantity(String(editMeta.quantity || "1"))
 
                     // Load inventory links
                     if ((orderToEdit as any).inventoryLinks) {
@@ -233,7 +236,7 @@ function CreateOrderContent() {
                     itemType: finalItemType,
                     pickupDate: pickupDate ? format(pickupDate, "yyyy-MM-dd") : "",
                     measurements,
-                    metadata,
+                    metadata: { ...metadata, quantity: parseInt(quantity) || 1 },
                     inventoryItems: selectedInventory.map(item => ({ id: item.id, quantity: item.quantity })),
                 })
                 toast.success("Order details updated")
@@ -246,7 +249,7 @@ function CreateOrderContent() {
                     itemType: finalItemType,
                     pickupDate: pickupDate ? format(pickupDate, "yyyy-MM-dd") : "",
                     measurements,
-                    metadata,
+                    metadata: { ...metadata, quantity: parseInt(quantity) || 1 },
                     businessType: localStorage.getItem("businessType") || "tailoring",
                     currentStatus: config.defaultStatus,
                     inventoryItems: selectedInventory.map(item => ({ id: item.id, quantity: item.quantity })),
@@ -266,7 +269,9 @@ function CreateOrderContent() {
         customerName.trim() !== "" &&
         customerPhone.trim() !== "" &&
         (itemType.trim() !== "" || selectedInventory.length > 0) &&
-        pickupDate !== undefined
+        pickupDate !== undefined &&
+        quantity.trim() !== "" &&
+        parseInt(quantity) > 0
 
     return (
         <div className="min-h-screen bg-background font-sans selection:bg-primary/20">
@@ -447,16 +452,18 @@ function CreateOrderContent() {
                                     </div>
                                 </div>
 
-                                <div className="space-y-2">
-                                    <Label htmlFor={`${businessType}-orderNumber`} className="ml-1 text-xs font-semibold text-muted-foreground tracking-wider">{config.orderLabel}</Label>
+                                {!config.extraFields?.some(f => f.id === "quantity") && (
+                                    <div className="space-y-2">
+                                    <Label htmlFor={`${businessType}-quantity`} className="ml-1 text-xs font-semibold text-muted-foreground tracking-wider">Quantity <span className="text-red-500">*</span></Label>
                                     <Input
-                                        id={`${businessType}-orderNumber`}
-                                        value={editingId ? orderNumber : ""}
-                                        disabled
-                                        placeholder={editingId ? "" : "Auto-generated on save"}
-                                        className="h-12 rounded-xl bg-slate-50 border-zinc-200 text-slate-500 cursor-not-allowed"
+                                        id={`${businessType}-quantity`} type="number" min="1"
+                                        value={quantity}
+                                        disabled={!canCreateOrder} onChange={(e) => setQuantity(e.target.value)} required
+                                        placeholder="1"
+                                        className="h-12 rounded-xl bg-white/50 border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80"
                                     />
                                 </div>
+                                )}
 
                                 <div className="space-y-2">
                                     <Label htmlFor={`${businessType}-pickupDate`} className="ml-1 text-xs font-semibold text-muted-foreground tracking-wider">{config.orderLabel === "Tracking Number" ? "Date" : "Delivery Date"} <span className="text-red-500">*</span></Label>
@@ -488,8 +495,14 @@ function CreateOrderContent() {
                                         <Input
                                             id={`${businessType}-${field.id}`}
                                             type={field.type === "number" ? "number" : "text"}
-                                            value={(metadata[field.id] as string) || ""}
-                                            onChange={(e) => setMetadata({ ...metadata, [field.id]: e.target.value })}
+                                            value={field.id === "quantity" ? quantity : ((metadata[field.id] as string) || "")}
+                                            onChange={(e) => {
+                                                 if (field.id === "quantity") {
+                                                     setQuantity(e.target.value);
+                                                 } else {
+                                                     setMetadata({ ...metadata, [field.id]: e.target.value });
+                                                 }
+                                             }}
                                             placeholder={field.placeholder}
                                             disabled={!canCreateOrder}
                                             className="h-12 rounded-xl bg-white/50 border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80"
