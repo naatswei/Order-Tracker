@@ -310,6 +310,7 @@ function CreateOrderContent() {
                                     onClick={() => {
                                         setOrderMode("unit");
                                         setSelectedClientId("none");
+                                        setSelectedInventory([]);
                                     }}
                                     className={`px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all duration-300 ${
                                         orderMode === "unit"
@@ -405,7 +406,7 @@ function CreateOrderContent() {
                                             disabled={!canCreateOrder}
                                             className="h-12 rounded-xl bg-white/50 border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80"
                                         />
-                                        {itemType && allInventory.some(inv => (inv.saleType || "unit") === orderMode && inv.name.toLowerCase().includes(itemType.toLowerCase()) && !selectedInventory.some(s => s.id === inv.id)) && (
+                                        {orderMode === "wholesale" && itemType && allInventory.some(inv => (inv.saleType || "unit") === orderMode && inv.name.toLowerCase().includes(itemType.toLowerCase()) && !selectedInventory.some(s => s.id === inv.id)) && (
                                             <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-100 rounded-xl shadow-xl z-50 max-h-48 overflow-auto">
                                                 {allInventory
                                                     .filter(item => (item.saleType || "unit") === orderMode && item.name.toLowerCase().includes(itemType.toLowerCase()) && !selectedInventory.some(s => s.id === item.id))
@@ -518,7 +519,8 @@ function CreateOrderContent() {
                             </div>
 
                             {/* Inventory Selection */}
-                            <div className="space-y-4 pt-4 border-t border-slate-100">
+                            {orderMode === "wholesale" && (
+                                <div className="space-y-4 pt-4 border-t border-slate-100">
                                 <div className="flex items-center justify-between">
                                     <Label className="ml-1 text-sm font-black text-[#191A43] uppercase tracking-widest flex items-center gap-2">
                                         <Boxes className="w-4 h-4" />
@@ -656,7 +658,8 @@ function CreateOrderContent() {
                                         ))}
                                     </div>
                                 )}
-                            </div>
+                                </div>
+                            )}
 
                             <div className="pt-2 flex flex-col items-end gap-3">
                                 <Button
