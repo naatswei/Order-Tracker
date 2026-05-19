@@ -861,8 +861,8 @@ export default function InventoryPage() {
                                 <Plus className="w-6 h-6 text-white" />
                             </div>
                             <div>
-                                <DialogTitle className="text-xl font-black text-[#191A43] tracking-tight">Register New {config.itemLabel || "Asset"}</DialogTitle>
-                                <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mt-1">{config.itemLabel || "Asset"} Intake & Categorization</p>
+                                <DialogTitle className="text-xl font-black text-[#191A43] tracking-tight">Add New {config.itemLabel || "Asset"}</DialogTitle>
+                                <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mt-1">{config.itemLabel || "Asset"} Stock Intake & Categorization</p>
                             </div>
                         </div>
                     </DialogHeader>
