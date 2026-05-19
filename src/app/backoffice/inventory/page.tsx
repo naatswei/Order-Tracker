@@ -551,14 +551,16 @@ export default function InventoryPage() {
                                 className="h-10 sm:h-12 pl-11 sm:pl-12 pr-4 rounded-xl sm:rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white focus:ring-2 focus:ring-[#191A43]/5 transition-all text-xs sm:text-sm font-semibold"
                             />
                         </div>
-                        <Button 
-                            variant="outline"
-                            onClick={() => setIsB2BModalOpen(true)}
-                            className="w-full sm:w-auto h-10 sm:h-12 border-slate-200 bg-white hover:bg-slate-50 text-[#191A43] rounded-xl sm:rounded-2xl px-6 gap-2 font-black uppercase tracking-widest text-xs sm:text-sm shadow-sm transition-all shrink-0"
-                        >
-                            <Users className="w-4 h-4" />
-                            B2B Clients
-                        </Button>
+                        {saleTypeTab === "wholesale" && (
+                            <Button 
+                                variant="outline"
+                                onClick={() => setIsB2BModalOpen(true)}
+                                className="w-full sm:w-auto h-10 sm:h-12 border-slate-200 bg-white hover:bg-slate-50 text-[#191A43] rounded-xl sm:rounded-2xl px-6 gap-2 font-black uppercase tracking-widest text-xs sm:text-sm shadow-sm transition-all shrink-0"
+                            >
+                                <Users className="w-4 h-4" />
+                                B2B Clients
+                            </Button>
+                        )}
                         <Button 
                             variant="outline"
                             onClick={() => setIsImportModalOpen(true)}
@@ -738,7 +740,7 @@ export default function InventoryPage() {
                                                                 </div>
 
                                                                 {/* Wholesale Pricing Tiers */}
-                                                                {item.pricingTiers && Array.isArray(item.pricingTiers) && item.pricingTiers.length > 0 && (
+                                                                {saleTypeTab === "wholesale" && item.pricingTiers && Array.isArray(item.pricingTiers) && item.pricingTiers.length > 0 && (
                                                                     <div className="flex flex-wrap items-center gap-1.5 mt-1.5">
                                                                         <span className="text-[9px] font-black text-emerald-600 uppercase tracking-wider bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-100/50 shrink-0">Wholesale:</span>
                                                                         {item.pricingTiers.map((tier: any, tIdx: number) => (
@@ -750,7 +752,7 @@ export default function InventoryPage() {
                                                                 )}
 
                                                                 {/* Client Pricing Overrides */}
-                                                                {item.clientOverrides && Array.isArray(item.clientOverrides) && item.clientOverrides.length > 0 && (
+                                                                {saleTypeTab === "wholesale" && item.clientOverrides && Array.isArray(item.clientOverrides) && item.clientOverrides.length > 0 && (
                                                                     <div className="flex flex-col gap-1.5 mt-1.5 border-t border-slate-50 pt-1.5">
                                                                         {item.clientOverrides.map((override: any, oIdx: number) => (
                                                                             <div key={oIdx} className="flex flex-wrap items-center gap-1.5">
