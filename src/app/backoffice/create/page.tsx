@@ -403,7 +403,12 @@ function CreateOrderContent() {
                                             name="order-item-type-search"
                                             id={`${businessType}-itemType`}
                                             value={itemType}
-                                            onChange={(e) => setItemType(e.target.value)}
+                                            onChange={(e) => {
+                                                setItemType(e.target.value);
+                                                if (orderMode === "unit") {
+                                                    setSelectedInventory([]);
+                                                }
+                                            }}
                                             placeholder={config.itemPlaceholder}
                                             required
                                             autoComplete="off"
@@ -427,6 +432,7 @@ function CreateOrderContent() {
                                                             onClick={() => {
                                                                 if (orderMode === "unit") {
                                                                     setItemType(item.name);
+                                                                     setSelectedInventory([{ id: item.id, name: item.name, quantity: quantity }]);
                                                                 } else {
                                                                     setSelectedItemForUnitModal(item);
                                                                     const existing = selectedInventory.find(s => s.id === item.id);
@@ -572,13 +578,14 @@ function CreateOrderContent() {
                                                             onClick={() => {
                                                                 if (orderMode === "unit") {
                                                                     if (!selectedInventory.find(s => s.id === item.id)) {
-                                                                        setSelectedInventory([...selectedInventory, { 
+                                                                        setSelectedInventory([{ 
                                                                             id: item.id, 
                                                                             name: item.name, 
-                                                                            quantity: "1",
+                                                                            quantity: quantity,
                                                                             max: parseFloat(item.quantity) - parseFloat(item.reserved || "0")
                                                                         }]);
-                                                                        toast.success(`Linked "${item.name}"`);
+                                                                        setItemType(item.name);
+                                                                         toast.success(`Linked "${item.name}"`);
                                                                     }
                                                                 } else {
                                                                     setSelectedItemForUnitModal(item);
