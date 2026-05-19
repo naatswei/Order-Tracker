@@ -994,30 +994,32 @@ export default function InventoryPage() {
                         </div>
 
                         {/* Optional Client Dropdown */}
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-t border-slate-100 p-8 py-4 bg-slate-50/50 mt-4 rounded-xl">
-                            <div className="space-y-1 max-w-md text-left">
-                                <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-0.5">Assign Custom Rates to Client (Optional)</Label>
-                                <p className="text-[10px] text-slate-400 font-bold leading-normal mt-0.5">Select a customer account to save the spreadsheet volume discounts as their personalized pricing overrides sheet.</p>
+                        {saleTypeTab === "wholesale" && (
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-t border-slate-100 p-8 py-4 bg-slate-50/50 mt-4 rounded-xl">
+                                <div className="space-y-1 max-w-md text-left">
+                                    <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-0.5">Assign Custom Rates to Client (Optional)</Label>
+                                    <p className="text-[10px] text-slate-400 font-bold leading-normal mt-0.5">Select a customer account to save the spreadsheet volume discounts as their personalized pricing overrides sheet.</p>
+                                </div>
+                                <div className="w-full sm:w-72">
+                                    <Select
+                                        value={selectedImportClientId}
+                                        onValueChange={setSelectedImportClientId}
+                                    >
+                                        <SelectTrigger className="h-11 rounded-xl border-slate-200 bg-white font-semibold text-xs">
+                                            <SelectValue placeholder="Standard Catalog Prices (Default)" />
+                                        </SelectTrigger>
+                                        <SelectContent className="rounded-xl border-slate-100 bg-white">
+                                            <SelectItem value="none" className="text-xs font-semibold">Standard Catalog Prices (Default)</SelectItem>
+                                            {clients.map((client) => (
+                                                <SelectItem key={client.id} value={client.id} className="text-xs font-semibold">
+                                                    {client.name} (Custom overrides)
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
                             </div>
-                            <div className="w-full sm:w-72">
-                                <Select
-                                    value={selectedImportClientId}
-                                    onValueChange={setSelectedImportClientId}
-                                >
-                                    <SelectTrigger className="h-11 rounded-xl border-slate-200 bg-white font-semibold text-xs">
-                                        <SelectValue placeholder="Standard Catalog Prices (Default)" />
-                                    </SelectTrigger>
-                                    <SelectContent className="rounded-xl border-slate-100 bg-white">
-                                        <SelectItem value="none" className="text-xs font-semibold">Standard Catalog Prices (Default)</SelectItem>
-                                        {clients.map((client) => (
-                                            <SelectItem key={client.id} value={client.id} className="text-xs font-semibold">
-                                                {client.name} (Custom overrides)
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                        </div>
+                        )}
                     </DialogHeader>
 
                     <div className="p-8 pt-0 space-y-6">
