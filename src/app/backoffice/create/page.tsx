@@ -289,7 +289,7 @@ function CreateOrderContent() {
                 />
             )}
 
-            <div className="container mx-auto px-4 py-8 max-w-[1400px] space-y-6">
+            <div className="container mx-auto px-4 pt-10 sm:pt-12 pb-6 sm:pb-8 max-w-[1400px] space-y-6">
                 <div>
                     <Button
                         asChild
