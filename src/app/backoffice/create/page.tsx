@@ -162,25 +162,25 @@ function CreateOrderContent() {
 
     // Bidirectional sync for quantity (only if 1 item is linked)
     useEffect(() => {
-        const metadataQty = String(metadata.quantity || "");
-        if (selectedInventory.length === 1 && metadataQty) {
+        const inputQty = String(quantity || "");
+        if (selectedInventory.length === 1 && inputQty) {
             const invQty = selectedInventory[0].quantity;
-            if (metadataQty !== invQty) {
+            if (inputQty !== invQty) {
                 setSelectedInventory(prev => {
                     const next = [...prev];
-                    next[0].quantity = metadataQty;
+                    next[0].quantity = inputQty;
                     return next;
                 });
             }
         }
-    }, [metadata.quantity]);
+    }, [quantity]);
 
     useEffect(() => {
         if (selectedInventory.length === 1) {
             const invQty = selectedInventory[0].quantity;
-            const metadataQty = String(metadata.quantity || "");
-            if (invQty !== metadataQty) {
-                setMetadata(prev => ({ ...prev, quantity: invQty }));
+            const inputQty = String(quantity || "");
+            if (invQty !== inputQty) {
+                setQuantity(invQty);
             }
         }
     }, [selectedInventory]);
