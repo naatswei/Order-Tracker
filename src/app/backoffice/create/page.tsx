@@ -406,29 +406,22 @@ function CreateOrderContent() {
                                             disabled={!canCreateOrder}
                                             className="h-12 rounded-xl bg-white/50 border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80"
                                         />
-                                        {orderMode === "wholesale" && itemType && allInventory.some(inv => (inv.saleType || "unit") === orderMode && inv.name.toLowerCase().includes(itemType.toLowerCase()) && !selectedInventory.some(s => s.id === inv.id)) && (
+                                        {itemType && allInventory.some(inv => (inv.saleType || "unit") === orderMode && inv.name.toLowerCase().includes(itemType.toLowerCase()) && inv.name.toLowerCase() !== itemType.trim().toLowerCase() && (orderMode === "wholesale" ? !selectedInventory.some(s => s.id === inv.id) : true)) && (
                                             <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-100 rounded-xl shadow-xl z-50 max-h-48 overflow-auto">
                                                 {allInventory
-                                                    .filter(item => (item.saleType || "unit") === orderMode && item.name.toLowerCase().includes(itemType.toLowerCase()) && !selectedInventory.some(s => s.id === item.id))
+                                                    .filter(item => 
+                                                        (item.saleType || "unit") === orderMode && 
+                                                        item.name.toLowerCase().includes(itemType.toLowerCase()) && 
+                                                        item.name.toLowerCase() !== itemType.trim().toLowerCase() && 
+                                                        (orderMode === "wholesale" ? !selectedInventory.some(s => s.id === item.id) : true)
+                                                    )
                                                     .map(item => (
                                                         <button
                                                             key={item.id}
                                                             type="button"
                                                             onClick={() => {
                                                                 if (orderMode === "unit") {
-                                                                    if (!selectedInventory.find(s => s.id === item.id)) {
-                                                                        const limit = parseFloat(item.quantity) - parseFloat(item.reserved || "0");
-                                                                        setSelectedInventory([...selectedInventory, { 
-                                                                            id: item.id, 
-                                                                            name: item.name, 
-                                                                            quantity: "1",
-                                                                            max: limit
-                                                                        }]);
-                                                                        toast.success(`Linked "${item.name}"`);
-                                                                    } else {
-                                                                        toast.error(`"${item.name}" is already linked.`);
-                                                                    }
-                                                                    setItemType("");
+                                                                    setItemType(item.name);
                                                                 } else {
                                                                     setSelectedItemForUnitModal(item);
                                                                     const existing = selectedInventory.find(s => s.id === item.id);
@@ -444,7 +437,7 @@ function CreateOrderContent() {
                                                                 <p className="text-[10px] text-slate-400 font-bold uppercase">{item.sku || "No SKU"}</p>
                                                             </div>
                                                             <div className="text-right">
-                                                                <p className="text-[10px] font-black text-emerald-500 uppercase">Link to Stock</p>
+                                                                <p className="text-[10px] font-black text-slate-500 uppercase">{orderMode === "wholesale" ? "Link to Stock" : "Select Product"}</p>
                                                                 <p className="text-[9px] text-slate-400 font-bold">{(parseFloat(item.quantity) - parseFloat(item.reserved || "0"))} left</p>
                                                             </div>
                                                         </button>
