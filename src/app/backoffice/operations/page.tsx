@@ -280,7 +280,7 @@ export default function OperationsPage() {
                             };
 
                             const theme = getStatusTheme(stage.name);
-                            const stageOrders = filteredOrders.filter(o => ((o.metadata as any)?.internalStage || o.currentStatus) === stage.name);
+                            const stageOrders = filteredOrders.filter(o => ((o.metadata as any)?.internalStage || (stages[0]?.name || "Order Received")) === stage.name);
                             const Icon = theme.icon;
 
                             return (
@@ -375,7 +375,7 @@ export default function OperationsPage() {
                                                                             <div className="min-w-0 w-full">
                                                                                 <p className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Activity Progress</p>
                                                                                 <Select 
-                                                                                    value={(order.metadata as any)?.internalStage || order.currentStatus} 
+                                                                                    value={(order.metadata as any)?.internalStage || (stages[0]?.name || "")} 
                                                                                     onValueChange={(val) => handleMoveStage(order.id, val)}
                                                                                 >
                                                                                     <SelectTrigger className="h-5 border-none bg-transparent p-0 focus:ring-0 text-xs font-bold text-slate-700 w-full">
