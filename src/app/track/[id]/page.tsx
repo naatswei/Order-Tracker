@@ -698,11 +698,11 @@ export default function TrackingDetailsPage() {
                                                 </div>
                                                 <Button
                                                     variant="ghost"
-                                                    size="sm"
+                                                    size="icon"
                                                     onClick={() => setChatOpen(false)}
-                                                    className="text-white/40 hover:text-white hover:bg-white/10 text-xs rounded-full h-7 px-3"
+                                                    className="text-white/40 hover:text-white hover:bg-white/10 rounded-full h-8 w-8 transition-colors shrink-0"
                                                 >
-                                                    Minimize
+                                                    <X className="w-4 h-4" />
                                                 </Button>
                                             </div>
 
