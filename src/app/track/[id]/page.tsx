@@ -47,6 +47,7 @@ export default function TrackingDetailsPage() {
     const [isSubscribed, setIsSubscribed] = useState(false)
     const [subscriptionLoading, setSubscriptionLoading] = useState(false)
     const [isIOS, setIsIOS] = useState(false)
+    const [searchQuery, setSearchQuery] = useState("")
 
     useEffect(() => {
         if ('serviceWorker' in navigator) {
@@ -346,6 +347,11 @@ export default function TrackingDetailsPage() {
 
     const config = getBusinessConfig(order?.businessType || "tailoring")
 
+    const filteredItems = (order?.inventoryItems || []).filter(item => 
+        item.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+        (item.sku && item.sku.toLowerCase().includes(searchQuery.toLowerCase()))
+    )
+
     return (
         <div ref={containerRef} className="min-h-screen bg-[#0A0B14] text-white selection:bg-[#3B82F6]/30 overflow-x-hidden relative">
             {/* Ambient Background Elements */}
@@ -640,36 +646,72 @@ export default function TrackingDetailsPage() {
                         {order.inventoryItems && order.inventoryItems.length > 0 && (
                             <div className="mb-20 space-y-8">
                                 <div className="flex flex-col items-center gap-5 text-center mb-14 pt-12">
-                                    <div className="px-8 py-3.5 rounded-full bg-white/10 border border-white/20 shadow-[0_0_40px_rgba(255,255,255,0.05)] backdrop-blur-2xl inline-flex items-center gap-3 group hover:bg-white/20 hover:border-white/40 transition-all duration-500 hover:scale-[1.02] cursor-default">
-                                        <div className="w-2 h-2 rounded-full bg-[#3B82F6] shadow-[0_0_15px_rgba(59,130,246,0.6)] animate-pulse" />
-                                        <h3 className="text-[12px] font-light uppercase tracking-[0.4em] text-white">Available store items</h3>
+                                    <div className="px-8 py-3.5 rounded-full bg-[#3B82F6] border border-[#2563EB] shadow-[0_4px_25px_rgba(59,130,246,0.3)] inline-flex items-center gap-3 group transition-all duration-500 hover:bg-[#2563EB] cursor-default">
+                                        <div className="w-2 h-2 rounded-full bg-white shadow-[0_0_10px_rgba(255,255,255,0.8)] animate-pulse" />
+                                        <h3 className="text-[12px] font-bold uppercase tracking-[0.4em] text-white">Available store items</h3>
                                     </div>
-                                    <div className="text-[10px] text-white/40 tracking-[0.3em] font-medium uppercase">{order.inventoryItems.length} items</div>
+                                    <div className="text-[10px] text-white/40 tracking-[0.3em] font-medium uppercase">
+                                        {searchQuery ? `${filteredItems.length} of ${order.inventoryItems.length} items` : `${order.inventoryItems.length} items`}
+                                    </div>
                                 </div>
                                 <div className="bg-white/[0.04] backdrop-blur-xl border border-white/10 rounded-[2rem] overflow-hidden shadow-2xl">
-                                    <div className="divide-y divide-white/5">
-                                        {order.inventoryItems.map((item) => (
-                                            <div key={item.id} className="p-4 sm:p-5 flex items-center justify-between hover:bg-white/[0.03] transition-colors group">
-                                                <div className="flex items-center gap-4">
-                                                    <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center border border-white/10 group-hover:bg-[#3B82F6]/20 group-hover:border-[#3B82F6]/30 transition-all">
-                                                        <Package className="w-3.5 h-3.5 text-white/40 group-hover:text-[#3B82F6] transition-colors" />
-                                                    </div>
-                                                    <div className="space-y-0.5">
-                                                        <p className="text-sm font-light text-white/90 group-hover:text-white transition-colors">{item.name}</p>
-                                                        {item.sku && <p className="text-[9px] text-white/20 tracking-wider uppercase font-medium">{item.sku}</p>}
-                                                    </div>
-                                                </div>
-                                                <Badge 
-                                                    className={`rounded-full px-3 py-1 text-[9px] font-black tracking-wider uppercase border-none ${
-                                                        item.availability === "In Stock" 
-                                                        ? "bg-[#10B981] text-[#0A0B14]" 
-                                                        : "bg-white/5 text-[#EF4444] border border-[#EF4444]/10"
-                                                    }`}
+                                    {/* Search Input Bar */}
+                                    <div className="p-4 sm:p-5 border-b border-white/5 bg-white/[0.01]">
+                                        <div className="relative">
+                                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+                                            <input
+                                                type="text"
+                                                value={searchQuery}
+                                                onChange={(e) => setSearchQuery(e.target.value)}
+                                                placeholder="Search items by name or SKU..."
+                                                className="w-full bg-white/5 border border-white/10 rounded-2xl py-3 pl-11 pr-12 text-sm font-light text-white placeholder:text-white/30 focus:outline-none focus:border-[#3B82F6]/50 focus:ring-1 focus:ring-[#3B82F6]/30 transition-all"
+                                            />
+                                            {searchQuery && (
+                                                <button
+                                                    onClick={() => setSearchQuery("")}
+                                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white transition-colors text-xs font-light"
                                                 >
-                                                    {item.availability}
-                                                </Badge>
+                                                    Clear
+                                                </button>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    <div className="divide-y divide-white/5 max-h-[500px] overflow-y-auto">
+                                        {filteredItems.length === 0 ? (
+                                            <div className="p-12 text-center">
+                                                <p className="text-sm text-white/35 font-light">No items match "{searchQuery}"</p>
+                                                <button
+                                                    onClick={() => setSearchQuery("")}
+                                                    className="text-xs text-[#3B82F6] hover:underline mt-2 font-medium"
+                                                >
+                                                    Clear search
+                                                </button>
                                             </div>
-                                        ))}
+                                        ) : (
+                                            filteredItems.map((item) => (
+                                                <div key={item.id} className="p-4 sm:p-5 flex items-center justify-between hover:bg-white/[0.03] transition-colors group">
+                                                    <div className="flex items-center gap-4">
+                                                        <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center border border-white/10 group-hover:bg-[#3B82F6]/20 group-hover:border-[#3B82F6]/30 transition-all">
+                                                            <Package className="w-3.5 h-3.5 text-white/40 group-hover:text-[#3B82F6] transition-colors" />
+                                                        </div>
+                                                        <div className="space-y-0.5">
+                                                            <p className="text-sm font-light text-white/90 group-hover:text-white transition-colors">{item.name}</p>
+                                                            {item.sku && <p className="text-[9px] text-white/20 tracking-wider uppercase font-medium">{item.sku}</p>}
+                                                        </div>
+                                                    </div>
+                                                    <Badge 
+                                                        className={`rounded-full px-3 py-1 text-[9px] font-black tracking-wider uppercase border-none ${
+                                                            item.availability === "In Stock" 
+                                                            ? "bg-[#10B981] text-[#0A0B14]" 
+                                                            : "bg-white/5 text-[#EF4444] border border-[#EF4444]/10"
+                                                        }`}
+                                                    >
+                                                        {item.availability}
+                                                    </Badge>
+                                                </div>
+                                            ))
+                                        )}
                                     </div>
                                 </div>
                             </div>
