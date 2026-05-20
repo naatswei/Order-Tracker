@@ -19,12 +19,39 @@ import { UserButton, OrganizationSwitcher, useOrganization } from "@clerk/nextjs
 import { getBusinessConfig } from "@/lib/business-configs"
 import { BackofficeHeader } from "@/components/backoffice-header"
 
+interface StaffPerformer {
+    id: string;
+    name: string;
+    role: string | null;
+}
+
+interface OrderStatusWithPerformer {
+    id: string;
+    timestamp: Date;
+    status: string;
+    location: string | null;
+    message: string | null;
+    performer?: StaffPerformer | null;
+}
+
+interface OrderWithPerformerAndMetadata extends Omit<Order, 'statusHistory'> {
+    statusHistory: OrderStatusWithPerformer[];
+    metadata?: {
+        internalStage?: string;
+        internalHistory?: {
+            stage: string;
+            performer: StaffPerformer | null;
+            timestamp: string;
+        }[];
+    } | null;
+}
+
 export default function OrderUpdatePage() {
     const params = useParams()
     const router = useRouter()
     const orderId = params.id as string
 
-    const [order, setOrder] = useState<Order | null>(null)
+    const [order, setOrder] = useState<OrderWithPerformerAndMetadata | null>(null)
     const [loading, setLoading] = useState(true)
 
     // Form state
@@ -59,7 +86,7 @@ export default function OrderUpdatePage() {
             getOrderWithHistory(orderId).then(foundOrder => {
                 if (foundOrder) {
                     // Map DB fields to Order type
-                    const mappedOrder: Order = {
+                    const mappedOrder: OrderWithPerformerAndMetadata = {
                         id: foundOrder.id,
                         orderNumber: foundOrder.orderNumber,
                         customerName: foundOrder.customerName,
@@ -71,12 +98,18 @@ export default function OrderUpdatePage() {
                         createdAt: foundOrder.createdAt,
                         updatedAt: foundOrder.updatedAt,
                         businessType: foundOrder.businessType,
-                        statusHistory: (foundOrder.statusHistory as Record<string, unknown>[]).map((h) => ({
+                        metadata: foundOrder.metadata as any,
+                        statusHistory: (foundOrder.statusHistory as Record<string, any>[]).map((h) => ({
                             id: h.id as string,
                             status: h.status as string,
                             location: h.location as string | null,
                             message: h.message as string | null,
-                            timestamp: new Date(h.timestamp as string | number | Date)
+                            timestamp: new Date(h.timestamp as string | number | Date),
+                            performer: h.performer ? {
+                                id: h.performer.id as string,
+                                name: h.performer.name as string,
+                                role: h.performer.role as string | null,
+                            } : null
                         })),
                         inventoryItems: (foundOrder.inventoryLinks as any[])?.map((link: any) => ({
                             id: link.inventoryItem?.id,
@@ -252,8 +285,9 @@ export default function OrderUpdatePage() {
                             <CardHeader>
                                 <CardTitle className="text-base font-bold flex items-center gap-2">
                                     <Clock className="w-4 h-4 text-slate-500" />
-                                    Status History
+                                    Customer-Facing Timeline
                                 </CardTitle>
+                                <CardDescription>Timeline visible to the customer on the tracking page</CardDescription>
                             </CardHeader>
                             <CardContent>
                                 <div className="relative pl-4 space-y-8 before:absolute before:left-[21px] before:top-2 before:bottom-2 before:w-px before:bg-slate-200">
@@ -272,7 +306,14 @@ export default function OrderUpdatePage() {
                                                 <div className="flex items-center gap-1 text-[11px] sm:text-xs text-slate-500">
                                                     <MapPin className="w-3 h-3" /> {historyItem.location || "Main Office"}
                                                 </div>
-                                                <div className="text-xs text-slate-600 leading-relaxed max-w-[200px]">{historyItem.message}</div>
+                                                {historyItem.message && (
+                                                    <div className="text-xs text-slate-600 leading-relaxed max-w-[200px]">{historyItem.message}</div>
+                                                )}
+                                                {historyItem.performer && (
+                                                    <div className="flex items-center gap-1 text-[10px] font-bold text-slate-400 mt-1 uppercase tracking-wider">
+                                                        <User className="w-2.5 h-2.5 text-slate-300" /> Action by: {historyItem.performer.name} {historyItem.performer.role ? `(${historyItem.performer.role})` : ""}
+                                                    </div>
+                                                )}
                                                 <div className="text-[10px] text-slate-400 pt-1">{new Date(historyItem.timestamp).toLocaleString()}</div>
                                             </div>
                                         </div>
@@ -280,6 +321,44 @@ export default function OrderUpdatePage() {
                                 </div>
                             </CardContent>
                         </Card>
+
+                        {/* Internal Production Logs Card */}
+                        {order.metadata?.internalHistory && order.metadata.internalHistory.length > 0 && (
+                            <Card className="bg-white border-slate-100 shadow-sm rounded-2xl">
+                                <CardHeader>
+                                    <CardTitle className="text-base font-bold flex items-center gap-2">
+                                        <Clock className="w-4 h-4 text-violet-500" />
+                                        Internal Production Logs
+                                    </CardTitle>
+                                    <CardDescription>Private timeline for business owner & staff members only</CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="relative pl-4 space-y-8 before:absolute before:left-[21px] before:top-2 before:bottom-2 before:w-px before:bg-slate-200">
+                                        {order.metadata.internalHistory.map((logItem, index) => (
+                                            <div key={index} className="relative flex gap-4">
+                                                <div
+                                                    className={`w-3.5 h-3.5 mt-1.5 rounded-full border-2 bg-white shrink-0 z-10 ${index === 0 ? "ring-4 border-violet-500 ring-violet-100" : "border-slate-300"}`}
+                                                    style={{
+                                                        borderColor: index === 0 ? '#8b5cf6' : undefined,
+                                                        backgroundColor: index === 0 ? '#fff' : undefined,
+                                                        boxShadow: index === 0 ? '0 0 0 4px #8b5cf61A' : undefined
+                                                    }}
+                                                />
+                                                <div className="space-y-1">
+                                                    <div className="text-[13px] sm:text-sm font-bold text-slate-900">Moved to {logItem.stage}</div>
+                                                    {logItem.performer && (
+                                                        <div className="flex items-center gap-1 text-[11px] sm:text-xs text-slate-500">
+                                                            <User className="w-3 h-3 text-violet-400" /> By {logItem.performer.name} {logItem.performer.role ? `(${logItem.performer.role})` : ""}
+                                                        </div>
+                                                    )}
+                                                    <div className="text-[10px] text-slate-400 pt-1">{new Date(logItem.timestamp).toLocaleString()}</div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        )}
                     </div>
 
                     {/* Right Column - Update Form */}

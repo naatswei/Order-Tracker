@@ -4,6 +4,7 @@ import { useOrganization, useOrganizationList } from "@clerk/nextjs"
 import { useRouter, usePathname } from "next/navigation"
 import { useState, useEffect } from "react"
 import { DashboardSkeleton } from "@/components/dashboard-skeleton"
+import { syncCurrentUserStaff } from "@/app/actions/operations"
 
 export function BackofficeGuard({ children }: { children: React.ReactNode }) {
     const { organization, isLoaded } = useOrganization()
@@ -29,6 +30,9 @@ export function BackofficeGuard({ children }: { children: React.ReactNode }) {
                     router.replace("/onboarding/business-type")
                     return
                 }
+
+                // Sync current user to staff table
+                syncCurrentUserStaff().catch(console.error)
 
                 // 2. Allow dashboard exploration even without subscription
                 // The dashboard itself will show a banner and lock 'create' actions

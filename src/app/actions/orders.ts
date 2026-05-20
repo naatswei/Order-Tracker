@@ -6,7 +6,7 @@ import { eq, desc, and, or, count } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { auth, clerkClient } from "@clerk/nextjs/server";
 import { getPlanLimits } from "@/lib/plan-config";
-import { linkOrderToInventory, consumeReservedStock, releaseReservedStock, syncOrderInventoryLinks } from "./operations";
+import { linkOrderToInventory, consumeReservedStock, releaseReservedStock, syncOrderInventoryLinks, getCurrentStaffId } from "./operations";
 import { triggerOrderStatusNotification } from "@/lib/web-push";
 
 interface OrderInput {
@@ -110,12 +110,14 @@ export async function createOrder(data: OrderInput) {
     });
 
     // Add initial status history
+    const staffId = orgId ? await getCurrentStaffId(orgId, userId) : null;
     await db.insert(statusHistory).values({
         id: Math.random().toString(36).substring(2, 9).toUpperCase(),
         orderId: orderId,
         status: data.currentStatus || "Order Received",
         location: "Main Office",
         message: "Order created successfully",
+        staffId: staffId,
     });
     // Link inventory items if any
     if (data.inventoryItems && data.inventoryItems.length > 0) {
@@ -153,6 +155,8 @@ export async function updateOrderStatus(orderId: string, status: string, locatio
             })
             .where(eq(orders.id, orderId));
 
+        const staffId = orgId ? await getCurrentStaffId(orgId, userId) : null;
+
         // Add to history
         await tx.insert(statusHistory).values({
             id: Math.random().toString(36).substring(2, 9).toUpperCase(),
@@ -160,6 +164,7 @@ export async function updateOrderStatus(orderId: string, status: string, locatio
             status: status,
             location: location,
             message: message,
+            staffId: staffId,
         });
 
         // Trigger inventory logic based on status
@@ -272,6 +277,9 @@ export async function getOrderWithHistory(id: string) {
         with: {
             statusHistory: {
                 orderBy: desc(statusHistory.timestamp),
+                with: {
+                    performer: true
+                }
             },
             inventoryLinks: {
                 with: {

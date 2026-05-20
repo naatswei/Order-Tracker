@@ -284,7 +284,7 @@ export default function OperationsPage() {
                             };
 
                             const theme = getStatusTheme(stage.name);
-                            const stageOrders = filteredOrders.filter(o => o.currentStatus === stage.name);
+                            const stageOrders = filteredOrders.filter(o => ((o.metadata as any)?.internalStage || o.currentStatus) === stage.name);
                             const Icon = theme.icon;
 
                             return (
@@ -372,7 +372,7 @@ export default function OperationsPage() {
                                                                     </div>
 
                                                                     <Button 
-                                                                        onClick={() => handleMoveStage(order.id, order.currentStatus)}
+                                                                        onClick={() => handleMoveStage(order.id, (order.metadata as any)?.internalStage || order.currentStatus)}
                                                                         className="w-full h-9 rounded-2xl bg-white text-[#191A43] border border-slate-100 hover:border-slate-300 hover:bg-slate-50 shadow-sm font-bold text-xs group/btn relative overflow-hidden"
                                                                     >
                                                                         <span className="relative z-10 flex items-center justify-center">

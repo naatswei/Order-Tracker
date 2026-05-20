@@ -4,17 +4,83 @@ import { db } from "@/db";
 import { orders, staff, workflows, statusHistory, inventory, inventoryTransactions, orderInventoryLinks, clientOrganizations, clientPricingOverrides } from "@/db/schema";
 import { eq, desc, and, asc, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-import { auth } from "@clerk/nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
 import { nanoid } from "nanoid";
 
 // --- Helpers ---
 
-async function getCurrentStaffId(orgId: string, userId: string) {
+export async function getCurrentStaffId(orgId: string, userId: string) {
     const s = await db.query.staff.findFirst({
         where: and(eq(staff.clerkOrgId, orgId), eq(staff.clerkUserId, userId))
     });
     return s?.id || null;
 }
+
+export async function syncCurrentUserStaff() {
+    const { userId, orgId, orgRole } = await auth();
+    if (!userId || !orgId) return null;
+
+    // 1. Try to find by clerkUserId
+    let s = await db.query.staff.findFirst({
+        where: and(eq(staff.clerkOrgId, orgId), eq(staff.clerkUserId, userId))
+    });
+    if (s) return s;
+
+    // 2. Try to find by email and link
+    try {
+        const user = await currentUser();
+        if (user && user.emailAddresses.length > 0) {
+            const emails = user.emailAddresses.map(e => e.emailAddress.toLowerCase());
+            for (const emailVal of emails) {
+                const matchedStaff = await db.query.staff.findFirst({
+                    where: and(
+                        eq(staff.clerkOrgId, orgId),
+                        sql`lower(${staff.email}) = ${emailVal}`
+                    )
+                });
+                if (matchedStaff) {
+                    await db.update(staff)
+                        .set({ clerkUserId: userId })
+                        .where(eq(staff.id, matchedStaff.id));
+                    
+                    revalidatePath("/backoffice/staff");
+                    const updated = await db.query.staff.findFirst({
+                        where: eq(staff.id, matchedStaff.id)
+                    });
+                    return updated || null;
+                }
+            }
+            
+            // 3. Auto-create if not found by email
+            const name = [user.firstName, user.lastName].filter(Boolean).join(" ") || user.username || "Team Member";
+            const primaryEmail = user.emailAddresses[0]?.emailAddress || null;
+            
+            // Determine role based on orgRole
+            const staffRole = orgRole === "org:admin" ? "Business Owner" : "Team Member";
+            const newStaffId = `staff_${nanoid(10)}`;
+            
+            await db.insert(staff).values({
+                id: newStaffId,
+                name: name,
+                role: staffRole,
+                email: primaryEmail,
+                clerkUserId: userId,
+                clerkOrgId: orgId,
+            });
+
+            revalidatePath("/backoffice/staff");
+            
+            const newStaff = await db.query.staff.findFirst({
+                where: eq(staff.id, newStaffId)
+            });
+            return newStaff || null;
+        }
+    } catch (err) {
+        console.error("Error auto-linking/creating staff:", err);
+    }
+    return null;
+}
+
 
 // --- Staff Management ---
 
@@ -134,65 +200,52 @@ export async function updateOrderStage(orderId: string, stageName: string, messa
 
     const staffId = await getCurrentStaffId(orgId, userId);
 
-    let orderNumber = "";
-
     await db.transaction(async (tx) => {
-        // 1. Get the current order to see its old status
+        // 1. Get the current order
         const currentOrder = await tx.query.orders.findFirst({
             where: and(eq(orders.id, orderId), eq(orders.clerkOrgId, orgId))
         });
 
         if (!currentOrder) throw new Error("Order not found");
-        orderNumber = currentOrder.orderNumber;
 
-        // 2. Update order current status
+        // 2. Fetch staff name for audit log
+        let performerName = "System";
+        if (staffId) {
+            const s = await tx.query.staff.findFirst({
+                where: eq(staff.id, staffId)
+            });
+            if (s) performerName = s.name;
+        }
+
+        // 3. Update order metadata (internalStage & internalHistory)
+        const metadata = (currentOrder.metadata as Record<string, any>) || {};
+        const internalHistory = metadata.internalHistory || [];
+        
+        const historyEntry = {
+            stage: stageName,
+            timestamp: new Date().toISOString(),
+            performerId: staffId,
+            performerName: performerName,
+            message: message || `Moved to ${stageName}`
+        };
+
+        const updatedMetadata = {
+            ...metadata,
+            internalStage: stageName,
+            internalHistory: [...internalHistory, historyEntry]
+        };
+
         await tx
             .update(orders)
             .set({
-                currentStatus: stageName,
+                metadata: updatedMetadata,
                 updatedAt: new Date()
             })
             .where(and(eq(orders.id, orderId), eq(orders.clerkOrgId, orgId)));
-
-        // 3. Add to history with staff attribution
-        await tx.insert(statusHistory).values({
-            id: `sh_${nanoid(10)}`,
-            orderId: orderId,
-            status: stageName,
-            location: "Production Line",
-            message: message || `Moved to ${stageName}`,
-            staffId: staffId,
-        });
-
-        // 4. Trigger inventory logic based on status transition
-        const oldStatus = (currentOrder.currentStatus || "").toLowerCase();
-        const newStatus = stageName.toLowerCase();
-
-        const isDelivered = (s: string) => s === "delivered" || s === "completed" || s === "collected";
-        const isCancelled = (s: string) => s === "cancelled" || s === "voided" || s === "returned";
-
-        if (!isDelivered(oldStatus) && isDelivered(newStatus)) {
-            // Moving TO delivered - consume the reserved stock
-            await consumeReservedStock(orderId, tx);
-        } else if (isDelivered(oldStatus) && !isDelivered(newStatus)) {
-            // Moving BACK FROM delivered - put back into reserved/physical
-            await releaseReservedStock(orderId, tx);
-        } else if (isCancelled(newStatus)) {
-            // Cancelled - release reserved stock
-            await releaseReservedStock(orderId, tx);
-        }
     });
-
-    if (orderNumber) {
-        // Dynamic import to prevent potential circular dependency
-        import("@/lib/web-push").then(({ triggerOrderStatusNotification }) => {
-            triggerOrderStatusNotification(orderId, stageName, orderNumber).catch(console.error);
-        });
-    }
 
     revalidatePath("/backoffice");
     revalidatePath("/backoffice/operations");
-    revalidatePath(`/track/${orderId}`);
     return { success: true };
 }
 
