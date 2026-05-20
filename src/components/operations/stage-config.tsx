@@ -73,7 +73,8 @@ export function StageConfig({ initialStages, onUpdate }: StageConfigProps) {
                                 <Button 
                                     variant="ghost" 
                                     size="icon" 
-                                    className="h-8 w-8 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg"
+                                    className="h-8 w-8 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-slate-400"
+                                    disabled={initialStages.length <= 1}
                                     onClick={() => handleDelete(stage.id, stage.name)}
                                 >
                                     <Trash2 className="w-4 h-4" />
@@ -107,7 +108,9 @@ export function StageConfig({ initialStages, onUpdate }: StageConfigProps) {
                         Add Stage
                     </Button>
                 </div>
-                <p className="text-[10px] text-slate-400 mt-3 px-1 italic">New stages will appear at the end of the production line.</p>
+                <p className="text-[10px] text-slate-400 mt-3 px-1 italic">
+                    * A workflow must have at least one stage. To customize entirely, add your new stages first, then delete the old ones.
+                </p>
             </div>
         </div>
     )
