@@ -231,7 +231,7 @@ export default function OperationsPage() {
                                     Configure
                                 </Button>
                             </DialogTrigger>
-                            <DialogContent className="sm:max-w-[425px] rounded-[2.5rem] border-none shadow-2xl p-8">
+                            <DialogContent className="sm:max-w-[425px] rounded-[2.5rem] border-none shadow-2xl p-8 max-h-[90vh] overflow-y-auto">
                                 <DialogHeader className="mb-6">
                                     <DialogTitle className="text-2xl font-black text-[#191A43]">Workflow Designer</DialogTitle>
                                     <DialogDescription className="text-slate-500 font-medium">

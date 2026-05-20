@@ -59,7 +59,7 @@ export function StageConfig({ initialStages, onUpdate }: StageConfigProps) {
         <div className="space-y-6">
             <div className="space-y-3">
                 <p className="text-xs font-black text-slate-400 uppercase tracking-widest">Active Pipeline</p>
-                <div className="space-y-2">
+                <div className="space-y-2 max-h-[280px] overflow-y-auto pr-2 custom-scrollbar">
                     {initialStages.map((stage, index) => (
                         <div 
                             key={stage.id}
