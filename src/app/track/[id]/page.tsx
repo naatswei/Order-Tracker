@@ -544,23 +544,19 @@ export default function TrackingDetailsPage() {
                                             </div>
                                         </div>
 
-                                        <Button
-                                            disabled={isSubscribed || subscriptionLoading}
-                                            onClick={handleSubscribe}
-                                            className={`w-full sm:w-auto px-6 py-5 rounded-2xl font-medium text-xs tracking-wider uppercase transition-all duration-300 ${
-                                                isSubscribed
-                                                    ? "bg-white/[0.05] border border-white/10 text-white/40 cursor-default"
-                                                    : "bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-500/20 hover:shadow-blue-500/35 hover:-translate-y-0.5 active:translate-y-0"
-                                            }`}
-                                        >
-                                            {subscriptionLoading ? (
-                                                <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                                            ) : isSubscribed ? (
-                                                "Active"
-                                            ) : (
-                                                "Enable Notifications"
-                                            )}
-                                        </Button>
+                                        {!isSubscribed && (
+                                            <Button
+                                                disabled={subscriptionLoading}
+                                                onClick={handleSubscribe}
+                                                className="w-full sm:w-auto px-6 py-5 rounded-2xl font-medium text-xs tracking-wider uppercase transition-all duration-300 bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-500/20 hover:shadow-blue-500/35 hover:-translate-y-0.5 active:translate-y-0"
+                                            >
+                                                {subscriptionLoading ? (
+                                                    <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                                                ) : (
+                                                    "Enable Notifications"
+                                                )}
+                                            </Button>
+                                        )}
                                     </CardContent>
                                 </Card>
                             </motion.div>
