@@ -125,6 +125,7 @@ export default function OperationsPage() {
                 );
                 
                 const fallbackStages = activeStatuses.map((status, index) => ({
+                    id: `fb_${index}`,
                     name: status,
                     position: String(index + 1)
                 }));

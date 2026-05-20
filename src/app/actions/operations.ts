@@ -4,7 +4,8 @@ import { db } from "@/db";
 import { orders, staff, workflows, statusHistory, inventory, inventoryTransactions, orderInventoryLinks, clientOrganizations, clientPricingOverrides } from "@/db/schema";
 import { eq, desc, and, asc, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-import { auth, currentUser } from "@clerk/nextjs/server";
+import { auth, currentUser, clerkClient } from "@clerk/nextjs/server";
+import { getBusinessConfig } from "@/lib/business-configs";
 import { nanoid } from "nanoid";
 
 // --- Helpers ---
@@ -133,12 +134,52 @@ export async function removeStaff(id: string) {
 
 // --- Workflow Management ---
 
+async function initializeDefaultWorkflowStagesIfNeeded(orgId: string) {
+    const existingStages = await db.select().from(workflows).where(eq(workflows.clerkOrgId, orgId));
+    if (existingStages.length > 0) {
+        return;
+    }
+
+    // Fetch organization businessType from Clerk
+    const client = await clerkClient();
+    const org = await client.organizations.getOrganization({ organizationId: orgId });
+    const businessType = org.publicMetadata?.businessType as string || "tailoring";
+
+    const config = getBusinessConfig(businessType);
+    const activeStatuses = config.statuses.filter(status => 
+        status !== "Completed" && 
+        status !== "Delivered" && 
+        status !== "Pending" && 
+        status !== "Refunded" && 
+        status !== "Cancelled" && 
+        status !== "Order Cancelled" && 
+        status !== "Order Delayed" &&
+        status !== "Delayed" &&
+        status !== "Returned" &&
+        status !== "Returned to Sender" &&
+        status !== "On Hold"
+    );
+
+    // Insert fallback stages
+    for (let i = 0; i < activeStatuses.length; i++) {
+        await db.insert(workflows).values({
+            id: `wf_${nanoid(10)}`,
+            name: activeStatuses[i],
+            position: String(i + 1),
+            clerkOrgId: orgId,
+        });
+    }
+}
+
 export async function addWorkflowStage(name: string, position: string) {
     const { orgId } = await auth();
     if (!orgId) throw new Error("Unauthorized");
 
     // Standardize name for comparison
     const standardizedName = name.trim();
+
+    // Initialize default stages if they don't exist in database
+    await initializeDefaultWorkflowStagesIfNeeded(orgId);
 
     // Check for duplicates
     const existing = await db.query.workflows.findFirst({
@@ -170,11 +211,19 @@ export async function getWorkflowStages() {
     return await db.select().from(workflows).where(eq(workflows.clerkOrgId, orgId)).orderBy(asc(workflows.position));
 }
 
-export async function removeWorkflowStage(id: string) {
+export async function removeWorkflowStage(id: string, name?: string) {
     const { orgId } = await auth();
     if (!orgId) throw new Error("Unauthorized");
 
-    await db.delete(workflows).where(and(eq(workflows.id, id), eq(workflows.clerkOrgId, orgId)));
+    // Initialize default stages if they don't exist in database
+    await initializeDefaultWorkflowStagesIfNeeded(orgId);
+
+    if (id && id.startsWith("wf_")) {
+        await db.delete(workflows).where(and(eq(workflows.id, id), eq(workflows.clerkOrgId, orgId)));
+    } else if (name) {
+        await db.delete(workflows).where(and(eq(workflows.name, name), eq(workflows.clerkOrgId, orgId)));
+    }
+
     revalidatePath("/backoffice/operations");
     return { success: true };
 }

@@ -45,9 +45,9 @@ export function StageConfig({ initialStages, onUpdate }: StageConfigProps) {
         }
     }
 
-    async function handleDelete(id: string) {
+    async function handleDelete(id: string, name: string) {
         try {
-            await removeWorkflowStage(id)
+            await removeWorkflowStage(id, name)
             toast.success("Stage removed")
             onUpdate()
         } catch (error) {
@@ -74,7 +74,7 @@ export function StageConfig({ initialStages, onUpdate }: StageConfigProps) {
                                     variant="ghost" 
                                     size="icon" 
                                     className="h-8 w-8 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg"
-                                    onClick={() => handleDelete(stage.id)}
+                                    onClick={() => handleDelete(stage.id, stage.name)}
                                 >
                                     <Trash2 className="w-4 h-4" />
                                 </Button>
