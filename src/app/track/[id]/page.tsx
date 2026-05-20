@@ -675,129 +675,135 @@ export default function TrackingDetailsPage() {
                             </div>
                         )}
 
-                        {/* Chat Section */}
+                        {/* Floating Customer Care Chat */}
                         {order.messagingEnabled && (
-                            <div className="space-y-6">
-                                <div className="text-center">
-                                    <p className="text-xs text-white/50 font-light tracking-[0.2em] uppercase mb-6">Customer Care</p>
-                                </div>
-
-                                {!chatOpen ? (
-                                    <div className="text-center">
-                                        <Button
-                                            onClick={() => setChatOpen(true)}
-                                            className="group relative overflow-hidden bg-white text-[#0A0B14] hover:bg-white/90 h-11 px-8 rounded-full font-light tracking-wide transition-all duration-500 hover:scale-[1.02] active:scale-95 shadow-[0_0_30px_rgba(255,255,255,0.1)] border-none text-xs"
+                            <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-4">
+                                <AnimatePresence>
+                                    {chatOpen && (
+                                        <motion.div
+                                            initial={{ opacity: 0, y: 50, scale: 0.95 }}
+                                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                                            exit={{ opacity: 0, y: 50, scale: 0.95 }}
+                                            transition={{ duration: 0.2 }}
+                                            className="w-[320px] sm:w-[380px] bg-[#0A0B14]/95 backdrop-blur-xl rounded-3xl border border-white/10 overflow-hidden shadow-2xl flex flex-col"
+                                            style={{
+                                                height: '480px',
+                                                boxShadow: '0 20px 50px rgba(0, 0, 0, 0.5)'
+                                            }}
                                         >
-                                            <span className="relative z-10 flex items-center gap-3">
-                                                <MessageSquare className="w-4 h-4 transition-transform group-hover:rotate-12" />
-                                                {chatMessages.length > 0 ? `Resume Chat (${chatMessages.length})` : "Start Chat"}
-                                            </span>
-                                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#3B82F6]/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
-                                        </Button>
-                                    </div>
-                                ) : (
-                                    <motion.div
-                                        initial={{ opacity: 0, y: 20 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        className="bg-white/5 backdrop-blur-md rounded-3xl border border-white/10 overflow-hidden"
-                                    >
-                                        <div className="flex items-center justify-between p-4 border-b border-white/10">
-                                            <div className="flex items-center gap-3">
-                                                <MessageSquare className="w-4 h-4 text-white/60" />
-                                                <span className="text-sm font-light text-white/80">Support Chat</span>
-                                            </div>
-                                            <Button
-                                                variant="ghost"
-                                                size="sm"
-                                                onClick={() => setChatOpen(false)}
-                                                className="text-white/40 hover:text-white hover:bg-white/10 text-xs rounded-full h-7 px-3"
-                                            >
-                                                Minimize
-                                            </Button>
-                                        </div>
-
-                                        <div className="p-4 space-y-3 max-h-[350px] overflow-y-auto">
-                                            {chatMessages.length === 0 && (
-                                                <p className="text-center text-white/30 text-sm py-8 font-light">No message history found.</p>
-                                            )}
-                                            {chatMessages.map((msg: any) => (
-                                                <div
-                                                    key={msg.id}
-                                                    className={`flex ${msg.sender === "customer" ? "justify-end" : "justify-start"}`}
-                                                >
-                                                    <div className={`max-w-[80%] rounded-2xl px-4 py-3 ${msg.sender === "customer"
-                                                        ? "bg-white/15 text-white"
-                                                        : "bg-[#3B82F6]/20 text-white border border-[#3B82F6]/20"
-                                                        }`}>
-                                                        <div className="flex items-center gap-2 mb-1">
-                                                            {msg.sender === "customer" ? (
-                                                                <User className="w-3 h-3 opacity-50" />
-                                                            ) : (
-                                                                <Building2 className="w-3 h-3 opacity-50" />
-                                                            )}
-                                                            <span className="text-[10px] font-semibold uppercase tracking-wider opacity-60">
-                                                                {msg.sender === "customer" ? "You" : "Business"}
-                                                            </span>
-                                                        </div>
-                                                        <p className="text-sm leading-relaxed whitespace-pre-wrap font-light">{msg.message}</p>
-                                                        <p className="text-[10px] mt-2 opacity-40">
-                                                            {new Date(msg.createdAt).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
-                                                        </p>
-                                                    </div>
+                                            <div className="flex items-center justify-between p-4 border-b border-white/10 bg-white/5">
+                                                <div className="flex items-center gap-3">
+                                                    <MessageSquare className="w-4 h-4 text-blue-400" />
+                                                    <span className="text-sm font-light text-white/80">Support Chat</span>
                                                 </div>
-                                            ))}
-                                            <div ref={chatEndRef} />
-                                        </div>
-
-                                        <div className="p-4 border-t border-white/10">
-                                            {isBusinessTyping && (
-                                                <motion.div
-                                                    initial={{ opacity: 0, y: 5 }}
-                                                    animate={{ opacity: 1, y: 0 }}
-                                                    className="px-2 py-2 flex items-center gap-2 mb-1"
-                                                >
-                                                    <div className="flex items-center gap-2 text-white/40">
-                                                        <MessageSquareMore className="w-3.5 h-3.5 animate-pulse" />
-                                                        <div className="flex gap-1">
-                                                            <span className="w-1 h-1 bg-white/40 rounded-full animate-bounce" />
-                                                            <span className="w-1 h-1 bg-white/40 rounded-full animate-bounce delay-75" />
-                                                            <span className="w-1 h-1 bg-white/40 rounded-full animate-bounce delay-150" />
-                                                        </div>
-                                                    </div>
-                                                    <span className="text-[10px] font-light text-white/40 font-sans">{order.customerName} is typing...</span>
-                                                </motion.div>
-                                            )}
-                                            <div className="flex gap-3">
-                                                <Textarea
-                                                    value={messageBody}
-                                                    onChange={(e) => {
-                                                        setMessageBody(e.target.value)
-                                                        updateTypingStatus(order.id, "customer")
-                                                    }}
-                                                    placeholder="Inquire here..."
-                                                    className="flex-1 min-h-[44px] max-h-[100px] bg-white/10 border-white/20 rounded-2xl text-sm font-light text-white placeholder:text-white/30 resize-none focus:border-[#3B82F6]/50 focus:ring-0"
-                                                    rows={1}
-                                                    onKeyDown={(e) => {
-                                                        if (e.key === "Enter" && !e.shiftKey) {
-                                                            e.preventDefault()
-                                                            handleSendMessage()
-                                                        }
-                                                    }}
-                                                />
                                                 <Button
-                                                    onClick={handleSendMessage}
-                                                    disabled={!messageBody.trim() || isSending}
-                                                    className="h-11 px-4 rounded-xl bg-[#3B82F6] hover:bg-[#3B82F6]/80 text-white font-semibold text-xs border-none shrink-0 transition-all active:scale-95"
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    onClick={() => setChatOpen(false)}
+                                                    className="text-white/40 hover:text-white hover:bg-white/10 text-xs rounded-full h-7 px-3"
                                                 >
-                                                    {isSending ? (
-                                                        <Loader2 className="w-4 h-4 animate-spin" />
-                                                    ) : (
-                                                        <Send className="w-3.5 h-3.5" />
-                                                    )}
+                                                    Minimize
                                                 </Button>
                                             </div>
-                                        </div>
-                                    </motion.div>
+
+                                            <div className="flex-1 p-4 space-y-3 overflow-y-auto">
+                                                {chatMessages.length === 0 && (
+                                                    <p className="text-center text-white/30 text-sm py-8 font-light">No message history found.</p>
+                                                )}
+                                                {chatMessages.map((msg: any) => (
+                                                    <div
+                                                        key={msg.id}
+                                                        className={`flex ${msg.sender === "customer" ? "justify-end" : "justify-start"}`}
+                                                    >
+                                                        <div className={`max-w-[85%] rounded-2xl px-4 py-3 ${msg.sender === "customer"
+                                                            ? "bg-white/15 text-white"
+                                                            : "bg-[#3B82F6]/20 text-white border border-[#3B82F6]/20"
+                                                            }`}>
+                                                            <div className="flex items-center gap-2 mb-1">
+                                                                {msg.sender === "customer" ? (
+                                                                    <User className="w-3 h-3 opacity-50" />
+                                                                ) : (
+                                                                    <Building2 className="w-3 h-3 opacity-50" />
+                                                                )}
+                                                                <span className="text-[10px] font-semibold uppercase tracking-wider opacity-60">
+                                                                    {msg.sender === "customer" ? "You" : "Business"}
+                                                                </span>
+                                                            </div>
+                                                            <p className="text-sm leading-relaxed whitespace-pre-wrap font-light">{msg.message}</p>
+                                                            <p className="text-[10px] mt-2 opacity-40">
+                                                                {new Date(msg.createdAt).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                                <div ref={chatEndRef} />
+                                            </div>
+
+                                            <div className="p-4 border-t border-white/10 bg-white/5">
+                                                {isBusinessTyping && (
+                                                    <motion.div
+                                                        initial={{ opacity: 0, y: 5 }}
+                                                        animate={{ opacity: 1, y: 0 }}
+                                                        className="px-2 py-1.5 flex items-center gap-2 mb-2"
+                                                    >
+                                                        <div className="flex items-center gap-2 text-white/40">
+                                                            <MessageSquareMore className="w-3.5 h-3.5 animate-pulse" />
+                                                            <div className="flex gap-1">
+                                                                <span className="w-1 h-1 bg-white/40 rounded-full animate-bounce" />
+                                                                <span className="w-1 h-1 bg-white/40 rounded-full animate-bounce delay-75" />
+                                                                <span className="w-1 h-1 bg-white/40 rounded-full animate-bounce delay-150" />
+                                                            </div>
+                                                        </div>
+                                                        <span className="text-[10px] font-light text-white/40 font-sans">Support is typing...</span>
+                                                    </motion.div>
+                                                )}
+                                                <div className="flex gap-3">
+                                                    <Textarea
+                                                        value={messageBody}
+                                                        onChange={(e) => {
+                                                            setMessageBody(e.target.value)
+                                                            updateTypingStatus(order.id, "customer")
+                                                        }}
+                                                        placeholder="Inquire here..."
+                                                        className="flex-1 min-h-[40px] max-h-[100px] bg-white/10 border-white/20 rounded-2xl text-xs font-light text-white placeholder:text-white/30 resize-none focus:border-[#3B82F6]/50 focus:ring-0 py-2.5 px-3"
+                                                        rows={1}
+                                                        onKeyDown={(e) => {
+                                                            if (e.key === "Enter" && !e.shiftKey) {
+                                                                e.preventDefault()
+                                                                handleSendMessage()
+                                                            }
+                                                        }}
+                                                    />
+                                                    <Button
+                                                        onClick={handleSendMessage}
+                                                        disabled={!messageBody.trim() || isSending}
+                                                        size="icon"
+                                                        className="h-10 w-10 bg-white text-[#0A0B14] hover:bg-white/95 rounded-2xl shrink-0"
+                                                    >
+                                                        {isSending ? (
+                                                            <Loader2 className="w-4 h-4 animate-spin" />
+                                                        ) : (
+                                                            <Send className="w-4 h-4" />
+                                                        )}
+                                                    </Button>
+                                                </div>
+                                            </div>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+
+                                {!chatOpen && (
+                                    <Button
+                                        onClick={() => setChatOpen(true)}
+                                        className="group relative overflow-hidden bg-white text-[#0A0B14] hover:bg-[#3B82F6] hover:text-white h-14 w-14 rounded-full font-light tracking-wide transition-all duration-500 hover:scale-[1.05] active:scale-95 shadow-[0_10px_40px_rgba(0,0,0,0.4)] border-none flex items-center justify-center p-0"
+                                    >
+                                        <MessageSquare className="w-6 h-6 transition-transform group-hover:rotate-12" />
+                                        {chatMessages.length > 0 && (
+                                            <span className="absolute -top-1 -right-1 bg-blue-600 text-white text-[9px] font-black h-5 w-5 rounded-full flex items-center justify-center border-2 border-[#0A0B14] animate-pulse">
+                                                {chatMessages.length}
+                                            </span>
+                                        )}
+                                    </Button>
                                 )}
                             </div>
                         )}
