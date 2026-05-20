@@ -145,14 +145,10 @@ export default function OperationsPage() {
         loadData();
     }
 
-    async function handleMoveStage(orderId: string, currentStageName: string) {
-        const currentIndex = stages.findIndex(s => s.name === currentStageName);
-        if (currentIndex === -1 || currentIndex === stages.length - 1) return;
-
-        const nextStage = stages[currentIndex + 1];
+    async function handleMoveStage(orderId: string, nextStageName: string) {
         try {
-            await updateOrderStage(orderId, nextStage.name);
-            toast.success(`Moved to ${nextStage.name}`);
+            await updateOrderStage(orderId, nextStageName);
+            toast.success(`Moved to ${nextStageName}`);
             loadData();
         } catch (error) {
             toast.error("Failed to update stage");
@@ -347,11 +343,11 @@ export default function OperationsPage() {
 
                                                                 <div className="pt-2 space-y-3">
                                                                     <div className="flex items-center justify-between p-3 rounded-2xl bg-slate-50/80 border border-slate-100/50">
-                                                                        <div className="flex items-center gap-3 overflow-hidden">
+                                                                        <div className="flex items-center gap-3 overflow-hidden w-full">
                                                                             <div className="w-8 h-8 rounded-xl bg-white border border-slate-100 flex items-center justify-center text-slate-400 shadow-sm shrink-0">
-                                                                                <User className="w-4 h-4" />
+                                                                                <User className="w-4 h-4 text-slate-500" />
                                                                             </div>
-                                                                            <div className="min-w-0">
+                                                                            <div className="min-w-0 w-full">
                                                                                 <p className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Assigned Staff</p>
                                                                                 <Select 
                                                                                     value={order.assignedStaffId || "none"} 
@@ -371,15 +367,44 @@ export default function OperationsPage() {
                                                                         </div>
                                                                     </div>
 
-                                                                    <Button 
-                                                                        onClick={() => handleMoveStage(order.id, (order.metadata as any)?.internalStage || order.currentStatus)}
-                                                                        className="w-full h-9 rounded-2xl bg-white text-[#191A43] border border-slate-100 hover:border-slate-300 hover:bg-slate-50 shadow-sm font-bold text-xs group/btn relative overflow-hidden"
-                                                                    >
-                                                                        <span className="relative z-10 flex items-center justify-center">
-                                                                            Progress Stage
-                                                                            <ChevronRight className="w-3.5 h-3.5 ml-2 transition-transform group-hover/btn:translate-x-1" />
-                                                                        </span>
-                                                                    </Button>
+                                                                    <div className="flex items-center justify-between p-3 rounded-2xl bg-slate-50/80 border border-slate-100/50">
+                                                                        <div className="flex items-center gap-3 overflow-hidden w-full">
+                                                                            <div className="w-8 h-8 rounded-xl bg-white border border-slate-100 flex items-center justify-center text-slate-400 shadow-sm shrink-0">
+                                                                                <Activity className="w-4 h-4 text-violet-500" />
+                                                                            </div>
+                                                                            <div className="min-w-0 w-full">
+                                                                                <p className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Activity Progress</p>
+                                                                                <Select 
+                                                                                    value={(order.metadata as any)?.internalStage || order.currentStatus} 
+                                                                                    onValueChange={(val) => handleMoveStage(order.id, val)}
+                                                                                >
+                                                                                    <SelectTrigger className="h-5 border-none bg-transparent p-0 focus:ring-0 text-xs font-bold text-slate-700 w-full">
+                                                                                        <SelectValue placeholder="Select activity" />
+                                                                                    </SelectTrigger>
+                                                                                    <SelectContent className="rounded-2xl border-slate-100 shadow-xl">
+                                                                                        {stages.map(s => (
+                                                                                            <SelectItem key={s.name} value={s.name}>{s.name}</SelectItem>
+                                                                                        ))}
+                                                                                    </SelectContent>
+                                                                                </Select>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    {(() => {
+                                                                        const history = (order.metadata as any)?.internalHistory;
+                                                                        const latest = history && history.length > 0 ? history[history.length - 1] : null;
+                                                                        if (!latest) return null;
+                                                                        return (
+                                                                            <div className="text-[10px] bg-violet-50/30 border border-violet-100/30 rounded-xl p-2.5 text-slate-500 font-medium space-y-0.5">
+                                                                                <span className="text-[9px] font-bold text-violet-600 block uppercase tracking-wider">Latest Activity</span>
+                                                                                <div>Moved to <span className="font-bold text-slate-700">{latest.stage}</span></div>
+                                                                                {latest.performer && (
+                                                                                    <div className="text-[9px] text-slate-400">By {latest.performer.name}</div>
+                                                                                )}
+                                                                            </div>
+                                                                        );
+                                                                    })()}
                                                                 </div>
                                                             </CardContent>
                                                         </Card>
