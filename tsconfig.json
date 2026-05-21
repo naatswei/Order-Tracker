@@ -38,6 +38,7 @@
   ],
   "exclude": [
     "node_modules",
-    "v0-legacy"
+    "v0-legacy",
+    "scratch"
   ]
 }

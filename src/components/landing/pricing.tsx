@@ -131,7 +131,7 @@ export function LandingPricing() {
 
                                     <div className="mt-6 mb-8 items-baseline flex gap-1.5">
                                         <span className={cn("text-2xl font-black tracking-tight", style.price)}>
-                                            {plan.price === 0 ? "Free" : `GHS ${plan.price}`}
+                                            {plan.price === 0 ? "Free" : `GH₵ ${plan.price}`}
                                         </span>
                                         <span className={cn("text-[12px] font-medium uppercase tracking-wider", style.period)}>
                                             {style.periodLabel}

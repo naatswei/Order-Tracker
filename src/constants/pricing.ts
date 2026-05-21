@@ -16,6 +16,7 @@ export const PRICING_PLANS = [
         buttonText: "Get 1 Month",
         buttonVariant: "secondary" as const,
         glowColor: "bg-blue-400/20",
+        popular: false,
     },
     {
         id: "3-months",
@@ -28,7 +29,7 @@ export const PRICING_PLANS = [
             "Unlimited team members",
             "Unlimited orders",
             "Branded tracking page",
-            "Save GHS 148 vs monthly",
+            "Save GH₵ 148 vs monthly",
             "Priority support"
         ],
         buttonText: "Get 3 Months",
@@ -46,13 +47,14 @@ export const PRICING_PLANS = [
             "Everything included",
             "Unlimited team members",
             "Unlimited orders",
-            "Save GHS 938 vs monthly",
+            "Save GH₵ 938 vs monthly",
             "Dedicated account manager",
             "Priority support"
         ],
         buttonText: "Get 1 Year",
         buttonVariant: "black" as const,
         glowColor: "bg-purple-400/20",
+        popular: false,
     }
 ];
 
@@ -73,4 +75,5 @@ export const FREE_TRIAL_PLAN = {
     buttonText: "Start 14-Day Free Trial",
     buttonVariant: "secondary" as const,
     glowColor: "bg-pink-400/20",
+    popular: false,
 };

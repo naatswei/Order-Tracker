@@ -17,7 +17,7 @@ import { motion } from "framer-motion"
 import { BackofficeHeader } from "@/components/backoffice-header"
 import dynamic from "next/dynamic"
 import { cn } from "@/lib/utils"
-import { PRICING_PLANS } from "@/constants/pricing"
+import { PRICING_PLANS, FREE_TRIAL_PLAN } from "@/constants/pricing"
 
 const PlanButton = dynamic(() => import("@/components/paystack-button"), {
     ssr: false,
@@ -162,7 +162,7 @@ export default function ProfilePage() {
     const isExpired = expiryDateObj ? new Date() > expiryDateObj : false
 
     const getPlanPriceLabel = (plan: any) => {
-        return `GHS ${plan.price}`;
+        return `GH₵ ${plan.price}`;
     }
 
     const getPlanPeriodLabel = (plan: any) => {

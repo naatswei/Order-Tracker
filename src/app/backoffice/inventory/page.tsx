@@ -56,6 +56,21 @@ import { motion, AnimatePresence } from "framer-motion";
 import { SignatureLoader } from "@/components/signature-loader";
 import { getBusinessConfig } from "@/lib/business-configs";
 
+const CediIcon = ({ className }: { className?: string }) => (
+    <svg 
+        viewBox="0 0 24 24" 
+        fill="none" 
+        stroke="currentColor" 
+        strokeWidth="2" 
+        strokeLinecap="round" 
+        strokeLinejoin="round" 
+        className={className}
+    >
+        <path d="M15.5 8.5A5 5 0 1 0 15.5 15.5" />
+        <line x1="12" y1="3" x2="12" y2="21" />
+    </svg>
+);
+
 export default function InventoryPage() {
     const { organization, isLoaded } = useOrganization();
     const [items, setItems] = useState<any[]>([]);
@@ -230,7 +245,7 @@ export default function InventoryPage() {
                     item.unit = valueStr;
                 } else if (['stock', 'quantity', 'qty', 'initialstock', 'physicalstock', 'initialphysicalstock'].includes(header)) {
                     item.quantity = isNaN(parseFloat(valueStr)) ? "0" : parseFloat(valueStr).toString();
-                } else if (['unitcost', 'unitcostghs', 'cost', 'costprice'].includes(header)) {
+                } else if (['unitcost', 'unitcostghs', 'cost', 'costprice', 'unitcostgh', 'unitcostghc'].includes(header)) {
                     item.unitCost = isNaN(parseFloat(valueStr)) ? "0" : parseFloat(valueStr).toString();
                 } else if (['minstock', 'minstockthreshold', 'alertthreshold', 'minimumalertthreshold'].includes(header)) {
                     item.minStock = isNaN(parseFloat(valueStr)) ? "0" : parseFloat(valueStr).toString();
@@ -379,17 +394,17 @@ export default function InventoryPage() {
         const wholesaleOnlineExample = isWholesale ? ",72.00,68.00,65.00" : "";
         const wholesaleLogisticsExample = isWholesale ? ",4.80,4.50,4.20" : "";
 
-        let headers = `Asset Name,SKU,Category,Unit,Initial Physical Stock,Unit Cost (GHS),Minimum Alert Threshold${wholesaleHeaders}\n`;
+        let headers = `Asset Name,SKU,Category,Unit,Initial Physical Stock,Unit Cost (GH₵),Minimum Alert Threshold${wholesaleHeaders}\n`;
         let exampleRow = `Silk Thread,SLK-001,Raw Materials,Rolls,150,25.00,10${wholesaleExample}\n`;
         
         if (businessType === "hair-retail") {
-            headers = `Hair Type,SKU,Category,Unit,Initial Physical Stock,Unit Cost (GHS),Minimum Alert Threshold${wholesaleHeaders}\n`;
+            headers = `Hair Type,SKU,Category,Unit,Initial Physical Stock,Unit Cost (GH₵),Minimum Alert Threshold${wholesaleHeaders}\n`;
             exampleRow = `22 Inch Straight Wig,HR-WIG22,Extensions,Pieces,50,450.00,5${wholesaleHairExample}\n`;
         } else if (businessType === "online-business") {
-            headers = `Product Name,SKU,Category,Unit,Initial Physical Stock,Unit Cost (GHS),Minimum Alert Threshold${wholesaleHeaders}\n`;
+            headers = `Product Name,SKU,Category,Unit,Initial Physical Stock,Unit Cost (GH₵),Minimum Alert Threshold${wholesaleHeaders}\n`;
             exampleRow = `Smart Watch,SW-001,Electronics,Units,100,75.00,10${wholesaleOnlineExample}\n`;
         } else if (businessType === "logistics") {
-            headers = `Package Type,SKU,Category,Unit,Initial Physical Stock,Unit Cost (GHS),Minimum Alert Threshold${wholesaleHeaders}\n`;
+            headers = `Package Type,SKU,Category,Unit,Initial Physical Stock,Unit Cost (GH₵),Minimum Alert Threshold${wholesaleHeaders}\n`;
             exampleRow = `Transit Box,LG-BX1,Packaging,Units,200,5.00,20${wholesaleLogisticsExample}\n`;
         }
 
@@ -659,7 +674,7 @@ export default function InventoryPage() {
                                     Total {displayLabel} Investment
                                 </p>
                                 <p className="text-xl sm:text-2xl font-black text-white">
-                                    GHS {stats.totalStockValue.toLocaleString()}
+                                    GH₵ {stats.totalStockValue.toLocaleString()}
                                 </p>
                             </div>
                         </CardContent>
@@ -668,14 +683,14 @@ export default function InventoryPage() {
                     <Card className="min-w-[280px] sm:min-w-0 border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-[#0D2D23] rounded-2xl sm:rounded-3xl overflow-hidden group hover:scale-[1.02] transition-all shrink-0">
                         <CardContent className="p-4 sm:p-6 flex items-center gap-4 sm:gap-5">
                             <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-white/10 text-emerald-400 flex items-center justify-center transition-transform group-hover:rotate-12">
-                                <DollarSign className="w-5 h-5 sm:w-6 sm:h-6" />
+                                <CediIcon className="w-5 h-5 sm:w-6 sm:h-6" />
                             </div>
                             <div>
                                 <p className="text-[9px] sm:text-[10px] font-black text-white/50 uppercase tracking-widest">
                                     Total Amount Sold
                                 </p>
                                 <p className="text-xl sm:text-2xl font-black text-white">
-                                    GHS {stats.totalAmountSold.toLocaleString()}
+                                    GH₵ {stats.totalAmountSold.toLocaleString()}
                                 </p>
                             </div>
                         </CardContent>
@@ -759,7 +774,7 @@ export default function InventoryPage() {
                                                                 {/* Premium Financials & Creation Timestamp Line */}
                                                                 <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[10px]">
                                                                     <span className="text-[#9C7E41] font-black tracking-wide bg-[#9C7E41]/5 px-2 py-0.5 rounded-md border border-[#9C7E41]/10">
-                                                                        Unit Cost: GHS {parseFloat(item.unitCost || "0").toLocaleString()}
+                                                                        Unit Cost: GH₵ {parseFloat(item.unitCost || "0").toLocaleString()}
                                                                     </span>
                                                                     <span className="text-slate-300 font-bold hidden sm:inline">•</span>
                                                                     <span className="text-slate-400 font-semibold bg-slate-50 border border-slate-100 px-2 py-0.5 rounded-md">
@@ -779,7 +794,7 @@ export default function InventoryPage() {
                                                                         <span className="text-[9px] font-black text-emerald-600 uppercase tracking-wider bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-100/50 shrink-0">Wholesale:</span>
                                                                         {item.pricingTiers.map((tier: any, tIdx: number) => (
                                                                             <Badge key={tIdx} variant="outline" className="text-[9px] font-black uppercase bg-white border-slate-200 text-slate-500 px-2 py-0.5">
-                                                                                {tier.minQty}{tier.maxQty ? `-${tier.maxQty}` : '+'} units: GHS {parseFloat(tier.price).toLocaleString()}
+                                                                                {tier.minQty}{tier.maxQty ? `-${tier.maxQty}` : '+'} units: GH₵ {parseFloat(tier.price).toLocaleString()}
                                                                             </Badge>
                                                                         ))}
                                                                     </div>
@@ -795,7 +810,7 @@ export default function InventoryPage() {
                                                                                 </span>
                                                                                 {Array.isArray(override.pricingTiers) && override.pricingTiers.map((tier: any, tIdx: number) => (
                                                                                     <Badge key={tIdx} variant="outline" className="text-[9px] font-black uppercase bg-white border-slate-200 text-slate-600 px-2 py-0.5">
-                                                                                        {tier.minQty}{tier.maxQty ? `-${tier.maxQty}` : '+'} units: GHS {parseFloat(tier.price).toLocaleString()}
+                                                                                        {tier.minQty}{tier.maxQty ? `-${tier.maxQty}` : '+'} units: GH₵ {parseFloat(tier.price).toLocaleString()}
                                                                                     </Badge>
                                                                                 ))}
                                                                             </div>
@@ -811,7 +826,7 @@ export default function InventoryPage() {
                                                         <span className="text-base font-black text-slate-400">
                                                             {item.totalEntered || item.quantity}
                                                         </span>
-                                                        <span className="text-[10px] text-slate-300 font-bold tracking-tight">GHS {(parseFloat(item.totalEntered || item.quantity) * parseFloat(item.unitCost || "0")).toLocaleString()}</span>
+                                                        <span className="text-[10px] text-slate-300 font-bold tracking-tight">GH₵ {(parseFloat(item.totalEntered || item.quantity) * parseFloat(item.unitCost || "0")).toLocaleString()}</span>
                                                     </div>
                                                 </td>
                                                 <td className="px-4 py-6 text-center">
@@ -819,7 +834,7 @@ export default function InventoryPage() {
                                                         <span className="text-base font-black text-[#191A43]">
                                                             {item.quantity}
                                                         </span>
-                                                        <span className="text-[10px] text-slate-400 font-bold tracking-tight">GHS {(parseFloat(item.quantity) * parseFloat(item.unitCost || "0")).toLocaleString()}</span>
+                                                        <span className="text-[10px] text-slate-400 font-bold tracking-tight">GH₵ {(parseFloat(item.quantity) * parseFloat(item.unitCost || "0")).toLocaleString()}</span>
                                                     </div>
                                                 </td>
                                                 <td className="px-4 py-6 text-center">
@@ -839,7 +854,7 @@ export default function InventoryPage() {
                                                         <span className="text-base font-black text-blue-600">
                                                             {item.totalSold || "0"}
                                                         </span>
-                                                        <span className="text-[10px] text-slate-400 font-bold tracking-tight">GHS {(parseFloat(item.totalSold || "0") * parseFloat(item.unitCost || "0")).toLocaleString()}</span>
+                                                        <span className="text-[10px] text-slate-400 font-bold tracking-tight">GH₵ {(parseFloat(item.totalSold || "0") * parseFloat(item.unitCost || "0")).toLocaleString()}</span>
                                                     </div>
                                                 </td>
                                                 <td className="px-8 py-6 text-right">
@@ -961,7 +976,7 @@ export default function InventoryPage() {
                                 />
                             </div>
                             <div className="space-y-2">
-                                <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Unit Cost (GHS)</Label>
+                                <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Unit Cost (GH₵)</Label>
                                 <Input 
                                     name="unitCost" 
                                     type="number" 
@@ -1155,7 +1170,7 @@ export default function InventoryPage() {
                                                     </td>
                                                     <td className="px-4 py-3 text-slate-400">{row.unit || "Units"}</td>
                                                     <td className="px-4 py-3 text-center text-slate-800">{row.quantity}</td>
-                                                    <td className="px-4 py-3 text-center text-[#9C7E41]">GHS {row.unitCost}</td>
+                                                    <td className="px-4 py-3 text-center text-[#9C7E41]">GH₵ {row.unitCost}</td>
                                                     <td className="px-5 py-3 text-right">
                                                         {row.errors.length > 0 ? (
                                                             <div className="flex items-center justify-end gap-1.5 text-red-500 font-bold text-[10px] uppercase tracking-wider" title={row.errors.join(", ")}>

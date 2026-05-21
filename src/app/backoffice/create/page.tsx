@@ -520,12 +520,12 @@ function CreateOrderContent() {
                                                          return (
                                                              <>
                                                                  <p className="text-xs font-black text-[#191A43]">
-                                                                     GHS {(qty * unitPrice).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                                                     GH₵ {(qty * unitPrice).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                                                  </p>
                                                                  <p className="text-[9px] text-slate-400 font-bold uppercase flex items-center justify-end gap-1.5 mt-0.5">
                                                                      {isClientSpecific && <span className="text-[8px] font-black text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded border border-indigo-100/50">Custom B2B Rate</span>}
                                                                      {!isClientSpecific && isDiscounted && <span className="text-[8px] font-extrabold text-emerald-600 bg-emerald-50 px-1 py-0.2 rounded border border-emerald-100/50">Wholesale</span>}
-                                                                     GHS {unitPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}/ea
+                                                                     GH₵ {unitPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}/ea
                                                                  </p>
                                                              </>
                                                          );
@@ -761,7 +761,7 @@ function CreateOrderContent() {
                                                  </div>
                                                  <div className="text-right">
                                                      <p className="text-sm font-black text-[#191A43]">
-                                                         GHS {retailPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                                         GH₵ {retailPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                                      </p>
                                                      <p className="text-[9px] text-slate-400 font-bold mt-0.5">per unit</p>
                                                  </div>
@@ -813,7 +813,7 @@ function CreateOrderContent() {
                                                      </div>
                                                      <div className="text-right">
                                                          <p className="text-sm font-black text-[#191A43]">
-                                                             GHS {price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                                             GH₵ {price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                                          </p>
                                                          <p className="text-[9px] text-slate-400 font-bold mt-0.5">per unit</p>
                                                      </div>
@@ -898,16 +898,16 @@ function CreateOrderContent() {
                                          <div>
                                              <p className="text-[9px] font-black text-emerald-600 uppercase tracking-widest">Pricing Subtotal</p>
                                              <p className="text-2xl font-black text-[#191A43] mt-0.5">
-                                                 GHS {(qty * unitPrice).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                                 GH₵ {(qty * unitPrice).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                              </p>
                                          </div>
                                          <div className="text-right">
                                              <p className="text-[10px] text-slate-500 font-bold">
-                                                 GHS {unitPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}/ea
+                                                 GH₵ {unitPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}/ea
                                              </p>
                                              {savings > 0 && (
                                                  <p className="text-[9px] text-emerald-600 font-extrabold mt-0.5">
-                                                     Saved GHS {savings.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                                     Saved GH₵ {savings.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                                  </p>
                                              )}
                                          </div>

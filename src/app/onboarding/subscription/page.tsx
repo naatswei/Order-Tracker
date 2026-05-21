@@ -135,7 +135,7 @@ export default function SubscriptionPage() {
 
     const getPlanPriceLabel = (plan: any) => {
         if (plan.price === 0) return "Free";
-        return `GHS ${plan.price}`;
+        return `GH₵ ${plan.price}`;
     }
 
     const getPlanPeriodLabel = (plan: any) => {

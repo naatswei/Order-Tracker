@@ -34,7 +34,7 @@ interface OrderStatusWithPerformer {
     performer?: StaffPerformer | null;
 }
 
-interface OrderWithPerformerAndMetadata extends Omit<Order, 'statusHistory'> {
+interface OrderWithPerformerAndMetadata extends Omit<Order, 'statusHistory' | 'metadata'> {
     statusHistory: OrderStatusWithPerformer[];
     metadata?: {
         internalStage?: string;
