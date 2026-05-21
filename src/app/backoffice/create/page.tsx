@@ -198,7 +198,7 @@ function CreateOrderContent() {
     const expiryDate = subscriptionExpiry ? new Date(subscriptionExpiry) : null
     const isExpired = expiryDate ? new Date() > expiryDate : false
     const canCreateOrder = isSubscriptionActive && !isExpired
-    const isRetailBusiness = businessType ? ["hair-retail", "online-business", "nu-retail"].includes(businessType) : false
+    const isRetailBusiness = businessType ? ["hair-retail", "online-business"].includes(businessType) : false
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
