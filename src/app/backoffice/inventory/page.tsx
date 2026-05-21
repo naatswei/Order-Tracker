@@ -699,26 +699,40 @@ export default function InventoryPage() {
 
                 {/* sliding tab switcher */}
                 <div className="mb-6 flex justify-start">
-                    <div className="bg-slate-100/80 backdrop-blur-md p-1 rounded-2xl flex items-center gap-1 shadow-inner border border-slate-200/50">
+                    <div className="relative bg-slate-100/80 backdrop-blur-md p-1 rounded-2xl flex items-center gap-1 shadow-inner border border-slate-200/50">
                         <button
                             onClick={() => setSaleTypeTab("unit")}
-                            className={`px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all duration-300 ${
+                            className={`relative px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-colors duration-300 select-none ${
                                 saleTypeTab === "unit"
-                                    ? "bg-white text-[#191A43] shadow-sm font-black"
+                                    ? "text-[#191A43]"
                                     : "text-slate-400 hover:text-slate-600 font-bold"
                             }`}
                         >
-                            Retail Catalog (Unit Sales)
+                            <span className="relative z-10">Retail Catalog (Unit Sales)</span>
+                            {saleTypeTab === "unit" && (
+                                <motion.div
+                                    layoutId="activeSaleTypeTab"
+                                    className="absolute inset-0 bg-white rounded-xl shadow-sm z-0"
+                                    transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                                />
+                            )}
                         </button>
                         <button
                             onClick={() => setSaleTypeTab("wholesale")}
-                            className={`px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all duration-300 ${
+                            className={`relative px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-colors duration-300 select-none ${
                                 saleTypeTab === "wholesale"
-                                    ? "bg-white text-[#191A43] shadow-sm font-black"
+                                    ? "text-[#191A43]"
                                     : "text-slate-400 hover:text-slate-600 font-bold"
                             }`}
                         >
-                            Wholesale Catalog (Bulk/B2B)
+                            <span className="relative z-10">Wholesale Catalog (Bulk/B2B)</span>
+                            {saleTypeTab === "wholesale" && (
+                                <motion.div
+                                    layoutId="activeSaleTypeTab"
+                                    className="absolute inset-0 bg-white rounded-xl shadow-sm z-0"
+                                    transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                                />
+                            )}
                         </button>
                     </div>
                 </div>
@@ -727,182 +741,196 @@ export default function InventoryPage() {
                 <div className="grid grid-cols-1 gap-8">
                     {/* Stock Table */}
                     <Card className="border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white rounded-[1.5rem] sm:rounded-[2.5rem] overflow-hidden">
-
-
-                        {/* Stock Table View */}
-                        <div className="overflow-x-auto no-scrollbar">
-                            <table className="w-full text-left border-collapse min-w-[1000px]">
-                                <thead>
-                                    <tr className="border-b border-slate-50 bg-slate-50/50">
-                                        <th className="px-8 py-6 text-[11px] font-black text-slate-600 uppercase tracking-[0.2em]">{config.itemLabel || "Asset"} Narrative</th>
-                                        <th className="px-4 py-6 text-[11px] font-black text-slate-600 uppercase tracking-[0.2em] text-center">Initial Stock</th>
-                                        <th className="px-4 py-6 text-[11px] font-black text-slate-600 uppercase tracking-[0.2em] text-center">On Hand (Value)</th>
-                                        <th className="px-4 py-6 text-[11px] font-black text-slate-600 uppercase tracking-[0.2em] text-center">Reserved</th>
-                                        <th className="px-4 py-6 text-[11px] font-black text-slate-600 uppercase tracking-[0.2em] text-center">Available</th>
-                                        <th className="px-4 py-6 text-[11px] font-black text-slate-600 uppercase tracking-[0.2em] text-center">Sold</th>
-                                        <th className="px-8 py-6 text-[11px] font-black text-slate-600 uppercase tracking-[0.2em] text-right">Control</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-slate-50">
-                                    <AnimatePresence mode="popLayout">
-                                        {filteredItems.map((item) => (
-                                            <motion.tr 
-                                                key={item.id}
-                                                layout
-                                                initial={{ opacity: 0 }}
-                                                animate={{ opacity: 1 }}
-                                                exit={{ opacity: 0 }}
-                                                className="group hover:bg-slate-50/50 transition-colors"
-                                            >
-                                                <td className="px-8 py-6">
-                                                    <div className="flex items-center gap-5">
-                                                        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-white font-black text-lg shadow-lg ${getAvatarColor(item.name)}`}>
-                                                            {item.name[0]}
-                                                        </div>
-                                                        <div>
-                                                            <h3 className="font-black text-[#191A43] text-base leading-tight">{item.name}</h3>
-                                                            <div className="flex flex-col gap-1.5 mt-1.5">
-                                                                {/* Category and SKU Tag Line */}
-                                                                <div className="flex items-center gap-2">
-                                                                    <Badge variant="outline" className="text-[9px] font-bold uppercase tracking-wider bg-slate-50 border-slate-100 text-slate-400 px-2 py-0">
-                                                                        {item.category || "General"}
-                                                                    </Badge>
-                                                                    <span className="text-[10px] text-slate-300 font-bold uppercase tracking-widest">{item.sku || "No SKU"}</span>
-                                                                    <span className="text-[10px] text-slate-300 font-bold uppercase tracking-widest">• {item.unit || "Units"}</span>
+                        <AnimatePresence mode="wait">
+                            {filteredItems.length > 0 ? (
+                                <motion.div
+                                    key={`table-${saleTypeTab}`}
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: -10 }}
+                                    transition={{ duration: 0.2 }}
+                                    className="overflow-x-auto no-scrollbar"
+                                >
+                                    <table className="w-full text-left border-collapse min-w-[1000px]">
+                                        <thead>
+                                            <tr className="border-b border-slate-50 bg-slate-50/50">
+                                                <th className="px-8 py-6 text-[11px] font-black text-slate-600 uppercase tracking-[0.2em]">{config.itemLabel || "Asset"} Narrative</th>
+                                                <th className="px-4 py-6 text-[11px] font-black text-slate-600 uppercase tracking-[0.2em] text-center">Initial Stock</th>
+                                                <th className="px-4 py-6 text-[11px] font-black text-slate-600 uppercase tracking-[0.2em] text-center">On Hand (Value)</th>
+                                                <th className="px-4 py-6 text-[11px] font-black text-slate-600 uppercase tracking-[0.2em] text-center">Reserved</th>
+                                                <th className="px-4 py-6 text-[11px] font-black text-slate-600 uppercase tracking-[0.2em] text-center">Available</th>
+                                                <th className="px-4 py-6 text-[11px] font-black text-slate-600 uppercase tracking-[0.2em] text-center">Sold</th>
+                                                <th className="px-8 py-6 text-[11px] font-black text-slate-600 uppercase tracking-[0.2em] text-right">Control</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="divide-y divide-slate-50">
+                                            <AnimatePresence mode="popLayout">
+                                                {filteredItems.map((item) => (
+                                                    <motion.tr 
+                                                        key={item.id}
+                                                        layout
+                                                        initial={{ opacity: 0 }}
+                                                        animate={{ opacity: 1 }}
+                                                        exit={{ opacity: 0 }}
+                                                        className="group hover:bg-slate-50/50 transition-colors"
+                                                    >
+                                                        <td className="px-8 py-6">
+                                                            <div className="flex items-center gap-5">
+                                                                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-white font-black text-lg shadow-lg ${getAvatarColor(item.name)}`}>
+                                                                    {item.name[0]}
                                                                 </div>
-                                                                
-                                                                {/* Premium Financials & Creation Timestamp Line */}
-                                                                <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[10px]">
-                                                                    <span className="text-[#9C7E41] font-black tracking-wide bg-[#9C7E41]/5 px-2 py-0.5 rounded-md border border-[#9C7E41]/10">
-                                                                        Unit Cost: GH₵ {parseFloat(item.unitCost || "0").toLocaleString()}
-                                                                    </span>
-                                                                    <span className="text-slate-300 font-bold hidden sm:inline">•</span>
-                                                                    <span className="text-slate-400 font-semibold bg-slate-50 border border-slate-100 px-2 py-0.5 rounded-md">
-                                                                        Entered: {new Date(item.createdAt).toLocaleDateString(undefined, { 
-                                                                            year: 'numeric', 
-                                                                            month: 'short', 
-                                                                            day: 'numeric',
-                                                                            hour: '2-digit',
-                                                                            minute: '2-digit'
-                                                                        })}
-                                                                    </span>
-                                                                </div>
-
-                                                                {/* Wholesale Pricing Tiers */}
-                                                                {saleTypeTab === "wholesale" && item.pricingTiers && Array.isArray(item.pricingTiers) && item.pricingTiers.length > 0 && (
-                                                                    <div className="flex flex-wrap items-center gap-1.5 mt-1.5">
-                                                                        <span className="text-[9px] font-black text-emerald-600 uppercase tracking-wider bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-100/50 shrink-0">Wholesale:</span>
-                                                                        {item.pricingTiers.map((tier: any, tIdx: number) => (
-                                                                            <Badge key={tIdx} variant="outline" className="text-[9px] font-black uppercase bg-white border-slate-200 text-slate-500 px-2 py-0.5">
-                                                                                {tier.minQty}{tier.maxQty ? `-${tier.maxQty}` : '+'} units: GH₵ {parseFloat(tier.price).toLocaleString()}
+                                                                <div>
+                                                                    <h3 className="font-black text-[#191A43] text-base leading-tight">{item.name}</h3>
+                                                                    <div className="flex flex-col gap-1.5 mt-1.5">
+                                                                        {/* Category and SKU Tag Line */}
+                                                                        <div className="flex items-center gap-2">
+                                                                            <Badge variant="outline" className="text-[9px] font-bold uppercase tracking-wider bg-slate-50 border-slate-100 text-slate-400 px-2 py-0">
+                                                                                {item.category || "General"}
                                                                             </Badge>
-                                                                        ))}
-                                                                    </div>
-                                                                )}
+                                                                            <span className="text-[10px] text-slate-300 font-bold uppercase tracking-widest">{item.sku || "No SKU"}</span>
+                                                                            <span className="text-[10px] text-slate-300 font-bold uppercase tracking-widest">• {item.unit || "Units"}</span>
+                                                                        </div>
+                                                                        
+                                                                        {/* Premium Financials & Creation Timestamp Line */}
+                                                                        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[10px]">
+                                                                            <span className="text-[#9C7E41] font-black tracking-wide bg-[#9C7E41]/5 px-2 py-0.5 rounded-md border border-[#9C7E41]/10">
+                                                                                Unit Cost: GH₵ {parseFloat(item.unitCost || "0").toLocaleString()}
+                                                                            </span>
+                                                                            <span className="text-slate-300 font-bold hidden sm:inline">•</span>
+                                                                            <span className="text-slate-400 font-semibold bg-slate-50 border border-slate-100 px-2 py-0.5 rounded-md">
+                                                                                Entered: {new Date(item.createdAt).toLocaleDateString(undefined, { 
+                                                                                    year: 'numeric', 
+                                                                                    month: 'short', 
+                                                                                    day: 'numeric',
+                                                                                    hour: '2-digit',
+                                                                                    minute: '2-digit'
+                                                                                })}
+                                                                            </span>
+                                                                        </div>
 
-                                                                {/* Client Pricing Overrides */}
-                                                                {saleTypeTab === "wholesale" && item.clientOverrides && Array.isArray(item.clientOverrides) && item.clientOverrides.length > 0 && (
-                                                                    <div className="flex flex-col gap-1.5 mt-1.5 border-t border-slate-50 pt-1.5">
-                                                                        {item.clientOverrides.map((override: any, oIdx: number) => (
-                                                                            <div key={oIdx} className="flex flex-wrap items-center gap-1.5">
-                                                                                <span className="text-[9px] font-black text-indigo-600 uppercase tracking-wider bg-indigo-50 px-1.5 py-0.5 rounded border border-indigo-100/50 shrink-0">
-                                                                                    For {override.client?.name}:
-                                                                                </span>
-                                                                                {Array.isArray(override.pricingTiers) && override.pricingTiers.map((tier: any, tIdx: number) => (
-                                                                                    <Badge key={tIdx} variant="outline" className="text-[9px] font-black uppercase bg-white border-slate-200 text-slate-600 px-2 py-0.5">
+                                                                        {/* Wholesale Pricing Tiers */}
+                                                                        {saleTypeTab === "wholesale" && item.pricingTiers && Array.isArray(item.pricingTiers) && item.pricingTiers.length > 0 && (
+                                                                            <div className="flex flex-wrap items-center gap-1.5 mt-1.5">
+                                                                                <span className="text-[9px] font-black text-emerald-600 uppercase tracking-wider bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-100/50 shrink-0">Wholesale:</span>
+                                                                                {item.pricingTiers.map((tier: any, tIdx: number) => (
+                                                                                    <Badge key={tIdx} variant="outline" className="text-[9px] font-black uppercase bg-white border-slate-200 text-slate-500 px-2 py-0.5">
                                                                                         {tier.minQty}{tier.maxQty ? `-${tier.maxQty}` : '+'} units: GH₵ {parseFloat(tier.price).toLocaleString()}
                                                                                     </Badge>
                                                                                 ))}
                                                                             </div>
-                                                                        ))}
+                                                                        )}
+
+                                                                        {/* Client Pricing Overrides */}
+                                                                        {saleTypeTab === "wholesale" && item.clientOverrides && Array.isArray(item.clientOverrides) && item.clientOverrides.length > 0 && (
+                                                                            <div className="flex flex-col gap-1.5 mt-1.5 border-t border-slate-50 pt-1.5">
+                                                                                {item.clientOverrides.map((override: any, oIdx: number) => (
+                                                                                    <div key={oIdx} className="flex flex-wrap items-center gap-1.5">
+                                                                                        <span className="text-[9px] font-black text-indigo-600 uppercase tracking-wider bg-indigo-50 px-1.5 py-0.5 rounded border border-indigo-100/50 shrink-0">
+                                                                                            For {override.client?.name}:
+                                                                                        </span>
+                                                                                        {Array.isArray(override.pricingTiers) && override.pricingTiers.map((tier: any, tIdx: number) => (
+                                                                                            <Badge key={tIdx} variant="outline" className="text-[9px] font-black uppercase bg-white border-slate-200 text-slate-600 px-2 py-0.5">
+                                                                                                {tier.minQty}{tier.maxQty ? `-${tier.maxQty}` : '+'} units: GH₵ {parseFloat(tier.price).toLocaleString()}
+                                                                                            </Badge>
+                                                                                        ))}
+                                                                                    </div>
+                                                                                ))}
+                                                                            </div>
+                                                                        )}
                                                                     </div>
-                                                                )}
+                                                                </div>
                                                             </div>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td className="px-4 py-6 text-center">
-                                                    <div className="flex flex-col items-center">
-                                                        <span className="text-base font-black text-slate-400">
-                                                            {item.totalEntered || item.quantity}
-                                                        </span>
-                                                        <span className="text-[10px] text-slate-300 font-bold tracking-tight">GH₵ {(parseFloat(item.totalEntered || item.quantity) * parseFloat(item.unitCost || "0")).toLocaleString()}</span>
-                                                    </div>
-                                                </td>
-                                                <td className="px-4 py-6 text-center">
-                                                    <div className="flex flex-col items-center">
-                                                        <span className="text-base font-black text-[#191A43]">
-                                                            {item.quantity}
-                                                        </span>
-                                                        <span className="text-[10px] text-slate-400 font-bold tracking-tight">GH₵ {(parseFloat(item.quantity) * parseFloat(item.unitCost || "0")).toLocaleString()}</span>
-                                                    </div>
-                                                </td>
-                                                <td className="px-4 py-6 text-center">
-                                                    <span className={`text-base font-black ${parseFloat(item.reserved || "0") > 0 ? "text-amber-500" : "text-slate-300"}`}>
-                                                        {item.reserved || "0"}
-                                                    </span>
-                                                </td>
-                                                <td className="px-4 py-6 text-center">
-                                                    <div className="flex flex-col items-center">
-                                                        <span className={`text-xl font-black ${(parseFloat(item.quantity) - parseFloat(item.reserved || "0")) <= parseFloat(item.minStock || "0") ? "text-red-500" : "text-emerald-600"}`}>
-                                                            {parseFloat(item.quantity) - parseFloat(item.reserved || "0")}
-                                                        </span>
-                                                    </div>
-                                                </td>
-                                                <td className="px-4 py-6 text-center">
-                                                    <div className="flex flex-col items-center">
-                                                        <span className="text-base font-black text-blue-600">
-                                                            {item.totalSold || "0"}
-                                                        </span>
-                                                        <span className="text-[10px] text-slate-400 font-bold tracking-tight">GH₵ {(parseFloat(item.totalSold || "0") * parseFloat(item.unitCost || "0")).toLocaleString()}</span>
-                                                    </div>
-                                                </td>
-                                                <td className="px-8 py-6 text-right">
-                                                    <div className="flex items-center justify-end gap-3">
-                                                        <Button 
-                                                            size="icon" 
-                                                            variant="ghost" 
-                                                            onClick={() => handleUpdateStock(item.id, "out", "1")}
-                                                            className="w-10 h-10 rounded-xl hover:bg-red-50 hover:text-red-600 transition-all border border-transparent hover:border-red-100"
-                                                        >
-                                                            <Minus className="w-5 h-5" />
-                                                        </Button>
-                                                        <Button 
-                                                            size="icon" 
-                                                            variant="ghost" 
-                                                            onClick={() => handleUpdateStock(item.id, "in", "1")}
-                                                            className="w-10 h-10 rounded-xl hover:bg-emerald-50 hover:text-emerald-600 transition-all border border-transparent hover:border-emerald-100"
-                                                        >
-                                                            <Plus className="w-5 h-5" />
-                                                        </Button>
-                                                        <div className="w-px h-6 bg-slate-100 mx-1" />
-                                                        <Button 
-                                                            size="icon" 
-                                                            variant="ghost" 
-                                                            onClick={() => handleRemove(item.id)}
-                                                            className="w-10 h-10 rounded-xl hover:bg-slate-100 text-slate-300 hover:text-red-500 transition-all"
-                                                        >
-                                                            <Trash2 className="w-5 h-5" />
-                                                        </Button>
-                                                    </div>
-                                                </td>
-                                            </motion.tr>
-                                        ))}
-                                    </AnimatePresence>
-                                </tbody>
-                            </table>
-                        </div>
-                        {filteredItems.length === 0 && (
-                            <div className="py-20 flex flex-col items-center justify-center text-center px-6">
-                                <div className="w-16 h-16 rounded-full bg-slate-50 flex items-center justify-center mb-4">
-                                    <Boxes className="w-8 h-8 text-slate-200" />
-                                </div>
-                                <h3 className="text-base font-black text-[#191A43]">Inventory Empty</h3>
-                                <p className="text-sm text-slate-400 max-w-xs mt-1">
-                                    Start tracking your {isLogistics ? "packages" : "products"} by adding your first item.
-                                </p>
-                            </div>
-                        )}
+                                                        </td>
+                                                        <td className="px-4 py-6 text-center">
+                                                            <div className="flex flex-col items-center">
+                                                                <span className="text-base font-black text-slate-400">
+                                                                    {item.totalEntered || item.quantity}
+                                                                </span>
+                                                                <span className="text-[10px] text-slate-300 font-bold tracking-tight">GH₵ {(parseFloat(item.totalEntered || item.quantity) * parseFloat(item.unitCost || "0")).toLocaleString()}</span>
+                                                            </div>
+                                                        </td>
+                                                        <td className="px-4 py-6 text-center">
+                                                            <div className="flex flex-col items-center">
+                                                                <span className="text-base font-black text-[#191A43]">
+                                                                    {item.quantity}
+                                                                </span>
+                                                                <span className="text-[10px] text-slate-400 font-bold tracking-tight">GH₵ {(parseFloat(item.quantity) * parseFloat(item.unitCost || "0")).toLocaleString()}</span>
+                                                            </div>
+                                                        </td>
+                                                        <td className="px-4 py-6 text-center">
+                                                            <span className={`text-base font-black ${parseFloat(item.reserved || "0") > 0 ? "text-amber-500" : "text-slate-300"}`}>
+                                                                {item.reserved || "0"}
+                                                            </span>
+                                                        </td>
+                                                        <td className="px-4 py-6 text-center">
+                                                            <div className="flex flex-col items-center">
+                                                                <span className={`text-xl font-black ${(parseFloat(item.quantity) - parseFloat(item.reserved || "0")) <= parseFloat(item.minStock || "0") ? "text-red-500" : "text-emerald-600"}`}>
+                                                                    {parseFloat(item.quantity) - parseFloat(item.reserved || "0")}
+                                                                </span>
+                                                            </div>
+                                                        </td>
+                                                        <td className="px-4 py-6 text-center">
+                                                            <div className="flex flex-col items-center">
+                                                                <span className="text-base font-black text-blue-600">
+                                                                    {item.totalSold || "0"}
+                                                                </span>
+                                                                <span className="text-[10px] text-slate-400 font-bold tracking-tight">GH₵ {(parseFloat(item.totalSold || "0") * parseFloat(item.unitCost || "0")).toLocaleString()}</span>
+                                                            </div>
+                                                        </td>
+                                                        <td className="px-8 py-6 text-right">
+                                                            <div className="flex items-center justify-end gap-3">
+                                                                <Button 
+                                                                    size="icon" 
+                                                                    variant="ghost" 
+                                                                    onClick={() => handleUpdateStock(item.id, "out", "1")}
+                                                                    className="w-10 h-10 rounded-xl hover:bg-red-50 hover:text-red-600 transition-all border border-transparent hover:border-red-100"
+                                                                >
+                                                                    <Minus className="w-5 h-5" />
+                                                                </Button>
+                                                                <Button 
+                                                                    size="icon" 
+                                                                    variant="ghost" 
+                                                                    onClick={() => handleUpdateStock(item.id, "in", "1")}
+                                                                    className="w-10 h-10 rounded-xl hover:bg-emerald-50 hover:text-emerald-600 transition-all border border-transparent hover:border-emerald-100"
+                                                                >
+                                                                    <Plus className="w-5 h-5" />
+                                                                </Button>
+                                                                <div className="w-px h-6 bg-slate-100 mx-1" />
+                                                                <Button 
+                                                                    size="icon" 
+                                                                    variant="ghost" 
+                                                                    onClick={() => handleRemove(item.id)}
+                                                                    className="w-10 h-10 rounded-xl hover:bg-slate-100 text-slate-300 hover:text-red-500 transition-all"
+                                                                >
+                                                                    <Trash2 className="w-5 h-5" />
+                                                                </Button>
+                                                            </div>
+                                                        </td>
+                                                    </motion.tr>
+                                                ))}
+                                            </AnimatePresence>
+                                        </tbody>
+                                    </table>
+                                </motion.div>
+                            ) : (
+                                <motion.div
+                                    key={`empty-${saleTypeTab}`}
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: -10 }}
+                                    transition={{ duration: 0.2 }}
+                                    className="py-20 flex flex-col items-center justify-center text-center px-6"
+                                >
+                                    <div className="w-16 h-16 rounded-full bg-slate-50 flex items-center justify-center mb-4">
+                                        <Boxes className="w-8 h-8 text-slate-200" />
+                                    </div>
+                                    <h3 className="text-base font-black text-[#191A43]">Inventory Empty</h3>
+                                    <p className="text-sm text-slate-400 max-w-xs mt-1">
+                                        Start tracking your {isLogistics ? "packages" : "products"} by adding your first item.
+                                    </p>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
                     </Card>
                 </div>
                 <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
