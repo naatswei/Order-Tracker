@@ -20,6 +20,8 @@ export interface BusinessConfig {
     orderPlaceholder: string
     searchPlaceholder: string
     dashboardTitle: string
+    operationsLabel: string
+    operationsDescription: string
     theme: {
         primary: string
         secondary: string
@@ -55,6 +57,8 @@ export const BUSINESS_CONFIGS: Record<string, BusinessConfig> = {
         orderPlaceholder: "eg., KT7248",
         searchPlaceholder: "Search by order number, name",
         dashboardTitle: "Active Orders",
+        operationsLabel: "New Order",
+        operationsDescription: "Customize your production stages to match your tailoring workflow.",
         theme: {
             primary: "#191A43",   // Sartorial Navy (Deep, Premium)
             secondary: "#9C7E41", // Antique Gold (Sophisticated, High-end)
@@ -86,6 +90,8 @@ export const BUSINESS_CONFIGS: Record<string, BusinessConfig> = {
         orderPlaceholder: "eg., HR9102",
         searchPlaceholder: "Search by order number, name",
         dashboardTitle: "Active Orders",
+        operationsLabel: "Assign Service",
+        operationsDescription: "Customize your service stages to match your hair styling workflow.",
         theme: {
             primary: "#1A1A1A",   // Obsidian Black
             secondary: "#831843", // Deep Rose/Maroon (Elegant & Professional)
@@ -121,6 +127,8 @@ export const BUSINESS_CONFIGS: Record<string, BusinessConfig> = {
         orderPlaceholder: "eg., LG5532",
         searchPlaceholder: "Search by tracking number, recipient",
         dashboardTitle: "Active Shipments",
+        operationsLabel: "Book Shipment",
+        operationsDescription: "Customize your logistics stages to match your delivery pipeline.",
         theme: {
             primary: "#0F172A",   // Slate 900
             secondary: "#0284C7", // Sky Blue (Trustworthy & Fast)
@@ -156,6 +164,8 @@ export const BUSINESS_CONFIGS: Record<string, BusinessConfig> = {
         orderPlaceholder: "eg., OB2044",
         searchPlaceholder: "Search by order number, customer name",
         dashboardTitle: "Active Orders",
+        operationsLabel: "New Order",
+        operationsDescription: "Customize your fulfillment stages to match your online business process.",
         theme: {
             primary: "#020617",   // Midnight Black
             secondary: "#059669", // Emerald Green (Growth & Modern)
@@ -190,6 +200,8 @@ export const BUSINESS_CONFIGS: Record<string, BusinessConfig> = {
         orderPlaceholder: "eg., NU9102",
         searchPlaceholder: "Search by order number, name",
         dashboardTitle: "Retail Orders",
+        operationsLabel: "New Order",
+        operationsDescription: "Customize your retail stages to match your store workflow.",
         theme: {
             primary: "#4F46E5",   // Indigo
             secondary: "#06B6D4", // Cyan

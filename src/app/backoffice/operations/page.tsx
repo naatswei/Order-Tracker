@@ -77,6 +77,7 @@ export default function OperationsPage() {
 
     // Business Logic
     const businessType = organization?.publicMetadata?.businessType as string || "tailoring";
+    const config = getBusinessConfig(businessType);
     const isLogistics = businessType === "logistics";
     const isTailoring = businessType === "tailoring";
 
@@ -236,7 +237,7 @@ export default function OperationsPage() {
                                 <DialogHeader className="mb-6">
                                     <DialogTitle className="text-2xl font-black text-[#191A43]">Operations Workflow</DialogTitle>
                                     <DialogDescription className="text-slate-500 font-medium">
-                                        Customize your production stages to match your unique business process.
+                                        {config.operationsDescription}
                                     </DialogDescription>
                                 </DialogHeader>
                                 <StageConfig initialStages={stages} onUpdate={loadData} />
@@ -246,7 +247,7 @@ export default function OperationsPage() {
                         <Link href="/backoffice/create" className="flex-1 lg:flex-none">
                             <Button className="w-full h-10 px-6 rounded-xl bg-[#191A43] hover:bg-[#191A43]/90 text-white font-bold transition-all shadow-lg shadow-[#191A43]/10 text-xs">
                                 <Plus className="w-4 h-4 mr-2" />
-                                New Order
+                                {config.operationsLabel}
                             </Button>
                         </Link>
                     </div>
