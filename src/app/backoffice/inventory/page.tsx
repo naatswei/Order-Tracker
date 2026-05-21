@@ -30,7 +30,8 @@ import {
     Loader2,
     FileSpreadsheet,
     Users,
-    Building2
+    Building2,
+    DollarSign
 } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
@@ -506,6 +507,15 @@ export default function InventoryPage() {
     );
 
     const config = getBusinessConfig(businessType);
+    const displayLabel = config.itemLabel === "Product Name" 
+        ? "Product" 
+        : config.itemLabel === "Hair/Product Type" 
+        ? "Hair/Product" 
+        : config.itemLabel === "Garment Type" 
+        ? "Garment" 
+        : config.itemLabel === "Package Type" 
+        ? "Package" 
+        : config.itemLabel || "Asset";
 
     // Business Specific Logic
     const isLogistics = businessType === "logistics";
@@ -517,7 +527,8 @@ export default function InventoryPage() {
         totalReserved: activeTabItems.reduce((acc, item) => acc + parseFloat(item.reserved || "0"), 0),
         lowStock: activeTabItems.filter(item => (parseFloat(item.quantity) - parseFloat(item.reserved || "0")) <= parseFloat(item.minStock || "0")).length,
         receivedToday: orders.filter(o => new Date(o.createdAt).toDateString() === new Date().toDateString()).length,
-        totalStockValue: activeTabItems.reduce((acc, item) => acc + (parseFloat(item.totalEntered || "0") * parseFloat(item.unitCost || "0")), 0)
+        totalStockValue: activeTabItems.reduce((acc, item) => acc + (parseFloat(item.totalEntered || "0") * parseFloat(item.unitCost || "0")), 0),
+        totalAmountSold: activeTabItems.reduce((acc, item) => acc + (parseFloat(item.totalSold || "0") * parseFloat(item.unitCost || "0")), 0)
     };
 
     if (isLoading) return <SignatureLoader fullScreen message="Loading Inventory Hub" />;
@@ -589,7 +600,7 @@ export default function InventoryPage() {
 
             <div className="max-w-[1600px] mx-auto px-6 sm:px-12 py-10">
                 {/* Metrics Bar */}
-                <div className="flex overflow-x-auto pb-4 -mx-6 px-6 sm:mx-0 sm:px-0 sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8 sm:mb-12 no-scrollbar">
+                <div className="flex overflow-x-auto pb-4 -mx-6 px-6 sm:mx-0 sm:px-0 sm:grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-6 mb-8 sm:mb-12 no-scrollbar">
                     <Card className="min-w-[280px] sm:min-w-0 border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white rounded-2xl sm:rounded-3xl overflow-hidden group hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all shrink-0">
                         <CardContent className="p-4 sm:p-6 flex items-center gap-4 sm:gap-5">
                             <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center transition-transform group-hover:scale-110">
@@ -645,10 +656,26 @@ export default function InventoryPage() {
                             </div>
                             <div>
                                 <p className="text-[9px] sm:text-[10px] font-black text-white/50 uppercase tracking-widest">
-                                    Total {config.itemLabel || "Asset"} Investment
+                                    Total {displayLabel} Investment
                                 </p>
                                 <p className="text-xl sm:text-2xl font-black text-white">
                                     GHS {stats.totalStockValue.toLocaleString()}
+                                </p>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    <Card className="min-w-[280px] sm:min-w-0 border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-[#0D2D23] rounded-2xl sm:rounded-3xl overflow-hidden group hover:scale-[1.02] transition-all shrink-0">
+                        <CardContent className="p-4 sm:p-6 flex items-center gap-4 sm:gap-5">
+                            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-white/10 text-emerald-400 flex items-center justify-center transition-transform group-hover:rotate-12">
+                                <DollarSign className="w-5 h-5 sm:w-6 sm:h-6" />
+                            </div>
+                            <div>
+                                <p className="text-[9px] sm:text-[10px] font-black text-white/50 uppercase tracking-widest">
+                                    Total Amount Sold
+                                </p>
+                                <p className="text-xl sm:text-2xl font-black text-white">
+                                    GHS {stats.totalAmountSold.toLocaleString()}
                                 </p>
                             </div>
                         </CardContent>
