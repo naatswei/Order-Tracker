@@ -31,7 +31,8 @@ import {
     FileSpreadsheet,
     Users,
     Building2,
-    DollarSign
+    DollarSign,
+    X
 } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
@@ -79,6 +80,7 @@ export default function InventoryPage() {
     const [searchQuery, setSearchQuery] = useState("");
     const [businessType, setBusinessType] = useState<string | null>(null);
     const [saleTypeTab, setSaleTypeTab] = useState<"unit" | "wholesale">("unit");
+    const [showOnlyLowStock, setShowOnlyLowStock] = useState(false);
 
     // B2B Customer / Client States
     const [clients, setClients] = useState<any[]>([]);
@@ -515,11 +517,14 @@ export default function InventoryPage() {
         }
     }
 
-    const filteredItems = items.filter(item => 
-        (item.saleType || "unit") === saleTypeTab &&
-        (item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-         item.sku?.toLowerCase().includes(searchQuery.toLowerCase()))
-    );
+    const filteredItems = items.filter(item => {
+        const matchesTab = (item.saleType || "unit") === saleTypeTab;
+        const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            item.sku?.toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesLowStock = !showOnlyLowStock || 
+            (parseFloat(item.quantity) - parseFloat(item.reserved || "0")) <= parseFloat(item.minStock || "0");
+        return matchesTab && matchesSearch && matchesLowStock;
+    });
 
     const config = getBusinessConfig(businessType);
     const displayLabel = config.itemLabel === "Product Name" 
@@ -648,19 +653,40 @@ export default function InventoryPage() {
                         </CardContent>
                     </Card>
 
-                    <Card className="min-w-[280px] sm:min-w-0 border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white rounded-2xl sm:rounded-3xl overflow-hidden group hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all shrink-0">
-                        <CardContent className="p-4 sm:p-6 flex items-center gap-4 sm:gap-5">
-                            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-red-50 text-red-500 flex items-center justify-center transition-transform group-hover:scale-110">
-                                <AlertCircle className="w-5 h-5 sm:w-6 sm:h-6" />
+                    <Card 
+                        onClick={() => setShowOnlyLowStock(!showOnlyLowStock)}
+                        className={`min-w-[280px] sm:min-w-0 border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-2xl sm:rounded-3xl overflow-hidden cursor-pointer select-none transition-all duration-300 group ${
+                            showOnlyLowStock 
+                                ? "ring-2 ring-red-500 bg-red-50/30 shadow-[0_8px_30px_rgba(239,68,68,0.1)]" 
+                                : "bg-white hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] hover:-translate-y-0.5"
+                        }`}
+                    >
+                        <CardContent className="p-4 sm:p-6 flex items-center justify-between gap-4 sm:gap-5">
+                            <div className="flex items-center gap-4 sm:gap-5">
+                                <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl flex items-center justify-center transition-all ${
+                                    showOnlyLowStock 
+                                        ? "bg-red-500 text-white shadow-md shadow-red-500/30" 
+                                        : "bg-red-50 text-red-500 group-hover:scale-110"
+                                }`}>
+                                    <AlertCircle className="w-5 h-5 sm:w-6 sm:h-6" />
+                                </div>
+                                <div>
+                                    <p className="text-[9px] sm:text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
+                                        Low Stock Alerts
+                                        {showOnlyLowStock && (
+                                            <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+                                        )}
+                                    </p>
+                                    <p className={`text-xl sm:text-2xl font-black transition-colors ${showOnlyLowStock ? "text-red-700" : "text-red-600"}`}>
+                                        {stats.lowStock}
+                                    </p>
+                                </div>
                             </div>
-                            <div>
-                                <p className="text-[9px] sm:text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                                    Low Stock Alerts
-                                </p>
-                                <p className="text-xl sm:text-2xl font-black text-red-600">
-                                    {stats.lowStock}
-                                </p>
-                            </div>
+                            {showOnlyLowStock && (
+                                <Badge className="bg-red-500 hover:bg-red-600 text-white text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full transition-all">
+                                    Active
+                                </Badge>
+                            )}
                         </CardContent>
                     </Card>
 
@@ -698,10 +724,13 @@ export default function InventoryPage() {
                 </div>
 
                 {/* sliding tab switcher */}
-                <div className="mb-6 flex justify-start">
-                    <div className="relative bg-slate-100/80 backdrop-blur-md p-1 rounded-2xl flex items-center gap-1 shadow-inner border border-slate-200/50">
+                <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div className="relative bg-slate-100/80 backdrop-blur-md p-1 rounded-2xl flex items-center gap-1 shadow-inner border border-slate-200/50 self-start">
                         <button
-                            onClick={() => setSaleTypeTab("unit")}
+                            onClick={() => {
+                                setSaleTypeTab("unit");
+                                setShowOnlyLowStock(false);
+                            }}
                             className={`relative px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-colors duration-300 select-none ${
                                 saleTypeTab === "unit"
                                     ? "text-[#191A43]"
@@ -718,7 +747,10 @@ export default function InventoryPage() {
                             )}
                         </button>
                         <button
-                            onClick={() => setSaleTypeTab("wholesale")}
+                            onClick={() => {
+                                setSaleTypeTab("wholesale");
+                                setShowOnlyLowStock(false);
+                            }}
                             className={`relative px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-colors duration-300 select-none ${
                                 saleTypeTab === "wholesale"
                                     ? "text-[#191A43]"
@@ -735,6 +767,30 @@ export default function InventoryPage() {
                             )}
                         </button>
                     </div>
+
+                    {/* Active filters pill */}
+                    <AnimatePresence>
+                        {showOnlyLowStock && (
+                            <motion.div
+                                initial={{ opacity: 0, x: -10 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                exit={{ opacity: 0, x: -10 }}
+                                className="flex items-center gap-2"
+                            >
+                                <div className="bg-red-50 border border-red-100 text-red-700 px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-2 shadow-sm">
+                                    <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                                    Showing Low Stock Alerts Only
+                                    <button 
+                                        onClick={() => setShowOnlyLowStock(false)}
+                                        className="hover:bg-red-100 p-1 rounded-md transition-colors"
+                                        title="Clear Filter"
+                                    >
+                                        <X className="w-3.5 h-3.5 text-red-500" />
+                                    </button>
+                                </div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
                 </div>
 
                 {/* Main Content */}
@@ -914,7 +970,7 @@ export default function InventoryPage() {
                                 </motion.div>
                             ) : (
                                 <motion.div
-                                    key={`empty-${saleTypeTab}`}
+                                    key={showOnlyLowStock ? `empty-low-stock-${saleTypeTab}` : `empty-${saleTypeTab}`}
                                     initial={{ opacity: 0, y: 10 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     exit={{ opacity: 0, y: -10 }}
@@ -922,12 +978,29 @@ export default function InventoryPage() {
                                     className="py-20 flex flex-col items-center justify-center text-center px-6"
                                 >
                                     <div className="w-16 h-16 rounded-full bg-slate-50 flex items-center justify-center mb-4">
-                                        <Boxes className="w-8 h-8 text-slate-200" />
+                                        {showOnlyLowStock ? (
+                                            <AlertCircle className="w-8 h-8 text-emerald-400" />
+                                        ) : (
+                                            <Boxes className="w-8 h-8 text-slate-200" />
+                                        )}
                                     </div>
-                                    <h3 className="text-base font-black text-[#191A43]">Inventory Empty</h3>
+                                    <h3 className="text-base font-black text-[#191A43]">
+                                        {showOnlyLowStock ? "No Low Stock Alerts" : "Inventory Empty"}
+                                    </h3>
                                     <p className="text-sm text-slate-400 max-w-xs mt-1">
-                                        Start tracking your {isLogistics ? "packages" : "products"} by adding your first item.
+                                        {showOnlyLowStock 
+                                            ? "All items in this catalog are currently above their minimum stock thresholds." 
+                                            : `Start tracking your ${isLogistics ? "packages" : "products"} by adding your first item.`}
                                     </p>
+                                    {showOnlyLowStock && (
+                                        <Button 
+                                            onClick={() => setShowOnlyLowStock(false)}
+                                            variant="outline" 
+                                            className="mt-4 border-slate-200 hover:bg-slate-50 rounded-xl text-xs font-black uppercase tracking-wider"
+                                        >
+                                            Clear Filter
+                                        </Button>
+                                    )}
                                 </motion.div>
                             )}
                         </AnimatePresence>
