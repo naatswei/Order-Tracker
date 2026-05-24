@@ -22,14 +22,14 @@ export const metadata: Metadata = {
     default: "OTracker | The Command Center for Modern Businesses",
     template: "%s | OTracker",
   },
-  description: "The ultimate management portal for tailoring, hair retails, and logistics brands. Oversee your operations remotely, manage orders, and build radical trust with real-time tracking.",
+  description: "The ultimate management portal for all businesses. Oversee your operations remotely, manage orders and inventory, and build radical trust with real-time tracking.",
   metadataBase: new URL("https://www.otracker.net"),
   alternates: {
     canonical: "/",
   },
   openGraph: {
     title: "OTracker - The International Business Dashboard",
-    description: "Empowering vendors to manage production and shipments from anywhere. The #1 tool for business oversight and customer transparency.",
+    description: "Empowering businesses to manage operations, inventory, and orders from anywhere. The #1 tool for business oversight and customer transparency.",
     url: "https://www.otracker.net",
     siteName: "OTracker",
     images: [
@@ -46,13 +46,12 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "OTracker - Business Command Center",
-    description: "Professional management and tracking for modern global brands.",
+    description: "Professional operations and inventory management for modern global brands.",
     images: ["/og-image.png"],
   },
   icons: {
     icon: [
-      { url: "/favicon.ico", sizes: "any" },
-      { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/icon.png", type: "image/png", sizes: "any" },
       { url: "/og-image.png", sizes: "32x32", type: "image/png" },
     ],
     apple: [
