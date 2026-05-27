@@ -378,11 +378,11 @@ export default function BusinessTypePage() {
                     <div className="flex-1 flex flex-col justify-center px-6 py-10 sm:px-12 lg:px-16 xl:px-24">
                         <div className="max-w-xl mx-auto w-full">
                             <div className="mb-10 text-left">
-                                <h1 className="text-2xl sm:text-3xl font-black text-[#191A43] tracking-tight mb-2.5">
-                                    Select your Business Type
+                                <h1 className="text-2xl sm:text-3xl font-extrabold text-[#191A43] tracking-tight mb-2.5">
+                                    Select your business type
                                 </h1>
-                                <p className="text-xs sm:text-sm font-semibold text-slate-400 leading-relaxed uppercase tracking-wider">
-                                    Choose the pipeline config that best aligns with your daily operations.
+                                <p className="text-sm sm:text-base font-normal text-slate-500 leading-relaxed">
+                                    Choose the option that best fits your daily business setup.
                                 </p>
                             </div>
 
