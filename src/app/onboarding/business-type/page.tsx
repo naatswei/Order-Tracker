@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
+import Image from "next/image"
 import { 
     ArrowRight, 
     Shirt, 
@@ -299,10 +300,41 @@ export default function BusinessTypePage() {
             <div className="lg:grid lg:grid-cols-12 min-h-screen">
                 {/* Left Column - Showcase Mockups */}
                 <div className="hidden lg:flex lg:col-span-5 relative bg-[#0b0c21] overflow-hidden flex-col justify-between p-12 shrink-0">
+                    {/* Background Images with AnimatePresence */}
+                    <div className="absolute inset-0 z-0">
+                        <AnimatePresence mode="wait">
+                            <motion.div
+                                key={activePreview}
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 0.25 }}
+                                exit={{ opacity: 0 }}
+                                transition={{ duration: 0.4 }}
+                                className="absolute inset-0"
+                            >
+                                <Image
+                                    src={
+                                        activePreview === "tailoring"
+                                            ? "/images/tailoring.jpg"
+                                            : activePreview === "hair-retail"
+                                            ? "/images/hair.jpg"
+                                            : activePreview === "logistics"
+                                            ? "/images/logistics.png"
+                                            : "/images/online.jpg"
+                                    }
+                                    alt="Business showcase"
+                                    fill
+                                    style={{ objectFit: 'cover' }}
+                                    className="mix-blend-luminosity filter grayscale"
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-tr from-[#0b0c21] via-[#0b0c21]/95 to-[#0b0c21]/70" />
+                            </motion.div>
+                        </AnimatePresence>
+                    </div>
+
                     {/* Glowing Orbs background */}
-                    <div className="absolute -top-40 -left-40 w-96 h-96 rounded-full bg-violet-600/10 blur-[100px]" />
-                    <div className="absolute -bottom-40 -right-40 w-96 h-96 rounded-full bg-emerald-600/10 blur-[100px]" />
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] rounded-full bg-blue-600/5 blur-[120px]" />
+                    <div className="absolute -top-40 -left-40 w-96 h-96 rounded-full bg-violet-600/5 blur-[100px] z-0" />
+                    <div className="absolute -bottom-40 -right-40 w-96 h-96 rounded-full bg-emerald-600/5 blur-[100px] z-0" />
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] rounded-full bg-blue-600/5 blur-[120px] z-0" />
 
                     {/* Logo & Brand branding */}
                     <div className="relative z-10 flex items-center gap-2">
