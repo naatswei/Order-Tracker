@@ -5,9 +5,8 @@ import { useRouter } from "next/navigation"
 import Image from "next/image"
 import { 
     ArrowRight, 
-    Shirt, 
-    Warehouse, 
-    Laptop, 
+    Truck, 
+    ShoppingBag, 
     LucideIcon
 } from "lucide-react"
 import { useOrganization } from "@clerk/nextjs"
@@ -27,7 +26,29 @@ interface BusinessType {
     imageSrc: string
 }
 
-// Custom Hair Icon
+// Custom Tailoring Needle & Thread Icon
+const TailoringIcon = ({ className, ...props }: React.ComponentProps<"svg">) => (
+    <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className={className}
+        {...props}
+    >
+        {/* Needle diagonal */}
+        <path d="m5 19 14-14" />
+        {/* Needle eye */}
+        <circle cx="18" cy="6" r="1.5" />
+        {/* Thread loop through eye */}
+        <path d="M18 6c2-2 4 1 2 3-3 3-8 8-8 8s-2 2-4 1" />
+    </svg>
+)
+
+// Custom Hair Bundle Icon
 const HairIcon = ({ className, ...props }: React.ComponentProps<"svg">) => (
     <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -40,13 +61,12 @@ const HairIcon = ({ className, ...props }: React.ComponentProps<"svg">) => (
         className={className}
         {...props}
     >
-        <circle cx="6" cy="6" r="3" />
-        <path d="M8.12 8.12 12 12" />
-        <path d="M20 4 8.12 15.88" />
-        <circle cx="6" cy="18" r="3" />
-        <path d="M14.8 14.8 20 20" />
-        <path d="M14 6c.5 0 .9.3.9.8v10.4c0 .5-.4.8-.9.8h-1.8c-.5 0-.9-.3-.9-.8V6.8c0-.5.4-.8.9-.8h1.8z" transform="rotate(-45 13.1 11.2)" />
-        <path d="M18 6v9" transform="rotate(-45 18 10.5)" />
+        {/* Tied bundle band at top */}
+        <rect x="9" y="3" width="6" height="2.5" rx="0.5" fill="currentColor" />
+        {/* Flowing wavy locks coming down */}
+        <path d="M10 5.5c-1 3 1 7-1 11-1 3.5 0 5 1 7" />
+        <path d="M12 5.5c-1 3 1 7-1 11-1 3.5 0 5 1 7" />
+        <path d="M14 5.5c-1 3 1 7-1 11-1 3.5 0 5 1 7" />
     </svg>
 )
 
@@ -77,7 +97,7 @@ export default function BusinessTypePage() {
             id: "tailoring",
             title: "Tailoring Hub",
             description: "Track clothing orders, customer sizing, and assign tailors.",
-            icon: Shirt,
+            icon: TailoringIcon as unknown as LucideIcon,
             colorTheme: "violet",
             imageSrc: "/images/tailoring.jpg",
         },
@@ -93,7 +113,7 @@ export default function BusinessTypePage() {
             id: "logistics",
             title: "Logistics Hub",
             description: "Manage shipping waybills, deliveries, and driver assignments.",
-            icon: Warehouse,
+            icon: Truck,
             colorTheme: "emerald",
             imageSrc: "/images/logistics.png",
         },
@@ -101,7 +121,7 @@ export default function BusinessTypePage() {
             id: "online-business",
             title: "Online Retail Hub",
             description: "Manage online client orders, pre-orders, and shipping logs.",
-            icon: Laptop,
+            icon: ShoppingBag,
             colorTheme: "blue",
             imageSrc: "/images/online.jpg",
         },
