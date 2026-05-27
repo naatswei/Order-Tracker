@@ -78,7 +78,7 @@ export default function BusinessTypePage() {
             description: "Production pipelines, custom sizing, and tailor assignments.",
             icon: Shirt,
             colorTheme: "violet",
-            imageSrc: "/images/hair.jpg",
+            imageSrc: "/images/tailoring.jpg",
         },
         {
             id: "hair-retail",
@@ -86,7 +86,7 @@ export default function BusinessTypePage() {
             description: "High-value bundles, reservation books, and retail status logs.",
             icon: HairIcon as unknown as LucideIcon,
             colorTheme: "gold",
-            imageSrc: "/images/tailoring.jpg",
+            imageSrc: "/images/hair.jpg",
         },
         {
             id: "logistics",
