@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
 import { 
@@ -55,6 +55,7 @@ export default function BusinessTypePage() {
     const [isLoading, setIsLoading] = useState(false)
     const router = useRouter()
     const { organization, isLoaded } = useOrganization()
+    const confirmButtonRef = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
         if (!isLoaded) return
@@ -208,13 +209,21 @@ export default function BusinessTypePage() {
                                         imageSrc={type.imageSrc}
                                         colorTheme={type.colorTheme}
                                         selected={selectedType === type.id}
-                                        onClick={() => setSelectedType(type.id)}
+                                        onClick={() => {
+                                            setSelectedType(type.id)
+                                            setTimeout(() => {
+                                                confirmButtonRef.current?.scrollIntoView({
+                                                    behavior: "smooth",
+                                                    block: "nearest"
+                                                })
+                                            }, 100)
+                                        }}
                                     />
                                 ))}
                             </div>
 
                             {/* Next Button wrapper */}
-                            <div className="flex justify-end pt-2 border-t border-slate-50">
+                            <div ref={confirmButtonRef} className="flex justify-end pt-2 border-t border-slate-50">
                                 <Button
                                     onClick={handleNext}
                                     disabled={!selectedType || isLoading}
