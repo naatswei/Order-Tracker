@@ -75,7 +75,7 @@ export default function BusinessTypePage() {
         {
             id: "tailoring",
             title: "Tailoring Hub",
-            description: "Production pipelines, custom sizing, and tailor assignments.",
+            description: "Track clothing orders, customer sizing, and assign tailors.",
             icon: Shirt,
             colorTheme: "violet",
             imageSrc: "/images/tailoring.jpg",
@@ -83,7 +83,7 @@ export default function BusinessTypePage() {
         {
             id: "hair-retail",
             title: "Hair Retail Hub",
-            description: "High-value bundles, reservation books, and retail status logs.",
+            description: "Track hair bundles, wig bookings, and inventory levels.",
             icon: HairIcon as unknown as LucideIcon,
             colorTheme: "gold",
             imageSrc: "/images/hair.jpg",
@@ -91,7 +91,7 @@ export default function BusinessTypePage() {
         {
             id: "logistics",
             title: "Logistics Hub",
-            description: "Supply chain milestones, waybills, and dispatch control.",
+            description: "Manage shipping waybills, deliveries, and driver assignments.",
             icon: Warehouse,
             colorTheme: "emerald",
             imageSrc: "/images/logistics.png",
@@ -99,7 +99,7 @@ export default function BusinessTypePage() {
         {
             id: "online-business",
             title: "Online Retail Hub",
-            description: "Pre-orders, e-commerce drops, and client order logs.",
+            description: "Manage online client orders, pre-orders, and shipping logs.",
             icon: Laptop,
             colorTheme: "blue",
             imageSrc: "/images/online.jpg",
