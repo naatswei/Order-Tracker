@@ -338,7 +338,7 @@ function CreateOrderContent() {
                                             : "text-slate-400 hover:text-slate-600 font-bold"
                                     }`}
                                 >
-                                    Wholesale Sales Mode (Bulk/B2B)
+                                    Wholesale Sales Mode
                                 </button>
                             </div>
                         </div>

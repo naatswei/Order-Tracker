@@ -682,7 +682,7 @@ export default function InventoryPage() {
                                     : "text-slate-500 hover:text-slate-700"
                             }`}
                         >
-                            <span className="relative z-10">Wholesale Catalog (Bulk/B2B)</span>
+                            <span className="relative z-10">Wholesale Catalog</span>
                             {saleTypeTab === "wholesale" && (
                                 <motion.div
                                     layoutId="activeSaleTypeTab"
