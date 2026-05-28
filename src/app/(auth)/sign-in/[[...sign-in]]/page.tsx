@@ -31,8 +31,8 @@ export default function SignInPage() {
                                 <Layers className="w-5 h-5" />
                             </div>
                             <div>
-                                <h3 className="font-semibold text-sm text-white/90">Decoupled Pipeline Control</h3>
-                                <p className="text-xs text-white/50 mt-1 leading-normal">Track internal team production workflows while keeping customer-facing updates clean and private.</p>
+                                <h3 className="font-semibold text-sm text-white/90">Private Team Workflows</h3>
+                                <p className="text-xs text-white/50 mt-1 leading-normal">Track your team's internal work steps while keeping customer order updates clean and simple.</p>
                             </div>
                         </div>
 
@@ -41,8 +41,8 @@ export default function SignInPage() {
                                 <Boxes className="w-5 h-5" />
                             </div>
                             <div>
-                                <h3 className="font-semibold text-sm text-white/90">Unified Stock Intelligence</h3>
-                                <p className="text-xs text-white/50 mt-1 leading-normal">Monitor active SKUs, set minimum alert thresholds, and manage catalog pricing tiers in local GH₵ rates.</p>
+                                <h3 className="font-semibold text-sm text-white/90">Smart Stock Monitoring</h3>
+                                <p className="text-xs text-white/50 mt-1 leading-normal">Monitor your inventory, set low-stock alerts, and manage prices in local GH₵.</p>
                             </div>
                         </div>
 
@@ -51,8 +51,8 @@ export default function SignInPage() {
                                 <ShieldCheck className="w-5 h-5" />
                             </div>
                             <div>
-                                <h3 className="font-semibold text-sm text-white/90">Staff Audit Logs & Security</h3>
-                                <p className="text-xs text-white/50 mt-1 leading-normal">Assign tasks, track status performance history, and view active operator details safely behind the dashboard.</p>
+                                <h3 className="font-semibold text-sm text-white/90">Staff Activity & Security</h3>
+                                <p className="text-xs text-white/50 mt-1 leading-normal">Assign tasks to your staff and track their work history safely inside your dashboard.</p>
                             </div>
                         </div>
                     </div>

@@ -26,36 +26,36 @@ export default function SignUpPage() {
 
                     {/* Features List */}
                     <div className="space-y-4 pt-4">
-                        <div className="flex items-start gap-4 p-4 rounded-xl bg-white/[0.03] border border-white/[0.06] backdrop-blur-md hover:bg-white/[0.05] transition-all">
-                            <div className="w-10 h-10 rounded-lg bg-indigo-500/10 text-indigo-400 flex items-center justify-center shrink-0 border border-indigo-500/20">
-                                <Layers className="w-5 h-5" />
-                            </div>
-                            <div>
-                                <h3 className="font-semibold text-sm text-white/90">Decoupled Pipeline Control</h3>
-                                <p className="text-xs text-white/50 mt-1 leading-normal">Track internal team production workflows while keeping customer-facing updates clean and private.</p>
-                            </div>
-                        </div>
+                         <div className="flex items-start gap-4 p-4 rounded-xl bg-white/[0.03] border border-white/[0.06] backdrop-blur-md hover:bg-white/[0.05] transition-all">
+                             <div className="w-10 h-10 rounded-lg bg-indigo-500/10 text-indigo-400 flex items-center justify-center shrink-0 border border-indigo-500/20">
+                                 <Layers className="w-5 h-5" />
+                             </div>
+                             <div>
+                                 <h3 className="font-semibold text-sm text-white/90">Private Team Workflows</h3>
+                                 <p className="text-xs text-white/50 mt-1 leading-normal">Track your team's internal work steps while keeping customer order updates clean and simple.</p>
+                             </div>
+                         </div>
 
-                        <div className="flex items-start gap-4 p-4 rounded-xl bg-white/[0.03] border border-white/[0.06] backdrop-blur-md hover:bg-white/[0.05] transition-all">
-                            <div className="w-10 h-10 rounded-lg bg-amber-500/10 text-amber-400 flex items-center justify-center shrink-0 border border-amber-500/20">
-                                <Boxes className="w-5 h-5" />
-                            </div>
-                            <div>
-                                <h3 className="font-semibold text-sm text-white/90">Unified Stock Intelligence</h3>
-                                <p className="text-xs text-white/50 mt-1 leading-normal">Monitor active SKUs, set minimum alert thresholds, and manage catalog pricing tiers in local GH₵ rates.</p>
-                            </div>
-                        </div>
+                         <div className="flex items-start gap-4 p-4 rounded-xl bg-white/[0.03] border border-white/[0.06] backdrop-blur-md hover:bg-white/[0.05] transition-all">
+                             <div className="w-10 h-10 rounded-lg bg-amber-500/10 text-amber-400 flex items-center justify-center shrink-0 border border-amber-500/20">
+                                 <Boxes className="w-5 h-5" />
+                             </div>
+                             <div>
+                                 <h3 className="font-semibold text-sm text-white/90">Smart Stock Monitoring</h3>
+                                 <p className="text-xs text-white/50 mt-1 leading-normal">Monitor your inventory, set low-stock alerts, and manage prices in local GH₵.</p>
+                             </div>
+                         </div>
 
-                        <div className="flex items-start gap-4 p-4 rounded-xl bg-white/[0.03] border border-white/[0.06] backdrop-blur-md hover:bg-white/[0.05] transition-all">
-                            <div className="w-10 h-10 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/20">
-                                <ShieldCheck className="w-5 h-5" />
-                            </div>
-                            <div>
-                                <h3 className="font-semibold text-sm text-white/90">Staff Audit Logs & Security</h3>
-                                <p className="text-xs text-white/50 mt-1 leading-normal">Assign tasks, track status performance history, and view active operator details safely behind the dashboard.</p>
-                            </div>
-                        </div>
-                    </div>
+                         <div className="flex items-start gap-4 p-4 rounded-xl bg-white/[0.03] border border-white/[0.06] backdrop-blur-md hover:bg-white/[0.05] transition-all">
+                             <div className="w-10 h-10 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/20">
+                                 <ShieldCheck className="w-5 h-5" />
+                             </div>
+                             <div>
+                                 <h3 className="font-semibold text-sm text-white/90">Staff Activity & Security</h3>
+                                 <p className="text-xs text-white/50 mt-1 leading-normal">Assign tasks to your staff and track their work history safely inside your dashboard.</p>
+                             </div>
+                         </div>
+                     </div>
                 </div>
             </div>
 
