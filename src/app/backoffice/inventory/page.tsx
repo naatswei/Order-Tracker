@@ -565,14 +565,14 @@ export default function InventoryPage() {
                             </Button>
                         </Link>
                         <div className="flex items-center gap-3 sm:gap-4">
-                            <div className="hidden sm:flex w-10 h-10 rounded-xl bg-[#191A43] items-center justify-center shadow-lg shadow-[#191A43]/20 shrink-0">
+                            <div className="hidden sm:flex w-10 h-10 rounded-xl bg-[#191A43] items-center justify-center shadow-md shadow-[#191A43]/5 shrink-0">
                                 <Package className="w-5 h-5 text-white" />
                             </div>
                             <div className="text-center sm:text-left">
-                                <h1 className="text-lg sm:text-xl font-black text-[#191A43] tracking-tight">
+                                <h1 className="text-lg sm:text-xl font-bold text-[#191A43] tracking-tight">
                                     {isLogistics ? "Pipeline Control" : "Stock Intelligence"}
                                 </h1>
-                                <p className="hidden sm:block text-[10px] text-slate-400 font-bold uppercase tracking-widest leading-none mt-1">
+                                <p className="hidden sm:block text-[10px] text-slate-400 font-semibold uppercase tracking-wider leading-none mt-1">
                                     {isLogistics ? "Shipment Flow & Backlog" : "Inventory & Asset Management"}
                                 </p>
                             </div>
@@ -586,14 +586,14 @@ export default function InventoryPage() {
                                 placeholder={`Search ${config.itemLabel || "assets"}...`}
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className="h-10 sm:h-12 pl-11 sm:pl-12 pr-4 rounded-xl sm:rounded-2xl border-slate-100 bg-slate-50/50 focus:bg-white focus:ring-2 focus:ring-[#191A43]/5 transition-all text-xs sm:text-sm font-semibold"
+                                className="h-10 sm:h-11 pl-11 sm:pl-12 pr-4 rounded-xl border-slate-100 bg-slate-50/50 focus:bg-white focus:ring-2 focus:ring-[#191A43]/5 transition-all text-xs sm:text-sm font-semibold"
                             />
                         </div>
                         {saleTypeTab === "wholesale" && (
                             <Button 
                                 variant="outline"
                                 onClick={() => setIsB2BModalOpen(true)}
-                                className="w-full sm:w-auto h-10 sm:h-12 border-slate-200 bg-white hover:bg-slate-50 text-[#191A43] rounded-xl sm:rounded-2xl px-6 gap-2 font-black uppercase tracking-widest text-xs sm:text-sm shadow-sm transition-all shrink-0"
+                                className="w-full sm:w-auto h-10 sm:h-11 border-slate-200 bg-white hover:bg-slate-50 text-[#191A43] rounded-xl px-5 gap-2 font-semibold text-xs sm:text-sm shadow-sm transition-all shrink-0"
                             >
                                 <Users className="w-4 h-4" />
                                 B2B Clients
@@ -602,14 +602,14 @@ export default function InventoryPage() {
                         <Button 
                             variant="outline"
                             onClick={() => setIsImportModalOpen(true)}
-                            className="w-full sm:w-auto h-10 sm:h-12 border-slate-200 bg-white hover:bg-slate-50 text-[#191A43] rounded-xl sm:rounded-2xl px-6 gap-2 font-black uppercase tracking-widest text-xs sm:text-sm shadow-sm transition-all shrink-0"
+                            className="w-full sm:w-auto h-10 sm:h-11 border-slate-200 bg-white hover:bg-slate-50 text-[#191A43] rounded-xl px-5 gap-2 font-semibold text-xs sm:text-sm shadow-sm transition-all shrink-0"
                         >
                             <Upload className="w-4 h-4" />
                             Import Excel/CSV
                         </Button>
                         <Button 
                             onClick={() => setIsAddModalOpen(true)}
-                            className="w-full sm:w-auto h-10 sm:h-12 bg-[#191A43] hover:bg-[#191A43]/90 text-white rounded-xl sm:rounded-2xl px-6 gap-2 font-black uppercase tracking-widest text-xs sm:text-sm shadow-xl shadow-[#191A43]/20 shrink-0"
+                            className="w-full sm:w-auto h-10 sm:h-11 bg-[#191A43] hover:bg-[#191A43]/95 text-white rounded-xl px-5 gap-2 font-semibold text-xs sm:text-sm shadow-md shadow-[#191A43]/5 shrink-0"
                         >
                             <Plus className="w-4 h-4" />
                             Add {config.itemLabel || "Asset"}
@@ -621,32 +621,32 @@ export default function InventoryPage() {
             <div className="max-w-[1600px] mx-auto px-6 sm:px-12 py-10">
                 {/* Metrics Bar */}
                 <div className="flex overflow-x-auto pb-4 -mx-6 px-6 sm:mx-0 sm:px-0 sm:grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-6 mb-8 sm:mb-12 no-scrollbar">
-                    <Card className="min-w-[280px] sm:min-w-0 border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white rounded-2xl sm:rounded-3xl overflow-hidden group hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all shrink-0">
-                        <CardContent className="p-4 sm:p-6 flex items-center gap-4 sm:gap-5">
-                            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center transition-transform group-hover:scale-110">
-                                {isLogistics ? <Truck className="w-5 h-5 sm:w-6 sm:h-6" /> : <Boxes className="w-5 h-5 sm:w-6 sm:h-6" />}
+                    <Card className="min-w-[280px] sm:min-w-0 border-none shadow-[0_4px_20px_rgb(0,0,0,0.02)] bg-white rounded-xl overflow-hidden group hover:shadow-[0_4px_20px_rgb(0,0,0,0.04)] transition-all shrink-0">
+                        <CardContent className="p-4 sm:p-5 flex items-center gap-4">
+                            <div className="w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center transition-transform group-hover:scale-105">
+                                {isLogistics ? <Truck className="w-5 h-5" /> : <Boxes className="w-5 h-5" />}
                             </div>
                             <div>
-                                <p className="text-[9px] sm:text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                                <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
                                     {isLogistics ? "Shipments Today" : "Total Units"}
                                 </p>
-                                <p className="text-xl sm:text-2xl font-black text-[#191A43]">
+                                <p className="text-lg sm:text-xl font-bold text-[#191A43] mt-0.5">
                                     {isLogistics ? stats.receivedToday : stats.totalItems}
                                 </p>
                             </div>
                         </CardContent>
                     </Card>
 
-                    <Card className="min-w-[280px] sm:min-w-0 border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white rounded-2xl sm:rounded-3xl overflow-hidden group hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all shrink-0">
-                        <CardContent className="p-4 sm:p-6 flex items-center gap-4 sm:gap-5">
-                            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center transition-transform group-hover:scale-110">
-                                <TrendingUp className="w-5 h-5 sm:w-6 sm:h-6" />
+                    <Card className="min-w-[280px] sm:min-w-0 border-none shadow-[0_4px_20px_rgb(0,0,0,0.02)] bg-white rounded-xl overflow-hidden group hover:shadow-[0_4px_20px_rgb(0,0,0,0.04)] transition-all shrink-0">
+                        <CardContent className="p-4 sm:p-5 flex items-center gap-4">
+                            <div className="w-10 h-10 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center transition-transform group-hover:scale-105">
+                                <TrendingUp className="w-5 h-5" />
                             </div>
                             <div>
-                                <p className="text-[9px] sm:text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                                <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
                                     Active SKUs
                                 </p>
-                                <p className="text-xl sm:text-2xl font-black text-[#191A43]">
+                                <p className="text-lg sm:text-xl font-bold text-[#191A43] mt-0.5">
                                     {items.length}
                                 </p>
                             </div>
@@ -655,29 +655,29 @@ export default function InventoryPage() {
 
                     <Card 
                         onClick={() => setShowOnlyLowStock(!showOnlyLowStock)}
-                        className={`min-w-[280px] sm:min-w-0 border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-2xl sm:rounded-3xl overflow-hidden cursor-pointer select-none transition-all duration-300 group ${
+                        className={`min-w-[280px] sm:min-w-0 border-none shadow-[0_4px_20px_rgb(0,0,0,0.02)] rounded-xl overflow-hidden cursor-pointer select-none transition-all duration-300 group ${
                             showOnlyLowStock 
-                                ? "ring-2 ring-red-500 bg-red-50/30 shadow-[0_8px_30px_rgba(239,68,68,0.1)]" 
-                                : "bg-white hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] hover:-translate-y-0.5"
+                                ? "ring-1 ring-red-500/50 bg-red-50/10 shadow-[0_4px_20px_rgba(239,68,68,0.05)]" 
+                                : "bg-white hover:shadow-[0_4px_20px_rgb(0,0,0,0.04)] hover:-translate-y-0.5"
                         }`}
                     >
-                        <CardContent className="p-4 sm:p-6 flex items-center justify-between gap-4 sm:gap-5">
-                            <div className="flex items-center gap-4 sm:gap-5">
-                                <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl flex items-center justify-center transition-all ${
+                        <CardContent className="p-4 sm:p-5 flex items-center justify-between gap-4">
+                            <div className="flex items-center gap-4">
+                                <div className={`w-10 h-10 rounded-lg flex items-center justify-center transition-all ${
                                     showOnlyLowStock 
-                                        ? "bg-red-500 text-white shadow-md shadow-red-500/30" 
-                                        : "bg-red-50 text-red-500 group-hover:scale-110"
+                                        ? "bg-red-500 text-white shadow-sm shadow-red-500/10" 
+                                        : "bg-red-50 text-red-500 group-hover:scale-105"
                                 }`}>
-                                    <AlertCircle className="w-5 h-5 sm:w-6 sm:h-6" />
+                                    <AlertCircle className="w-5 h-5" />
                                 </div>
                                 <div>
-                                    <p className="text-[9px] sm:text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
+                                    <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
                                         Low Stock Alerts
                                         {showOnlyLowStock && (
                                             <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
                                         )}
                                     </p>
-                                    <p className={`text-xl sm:text-2xl font-black transition-colors ${showOnlyLowStock ? "text-red-700" : "text-red-600"}`}>
+                                    <p className={`text-lg sm:text-xl font-bold mt-0.5 transition-colors ${showOnlyLowStock ? "text-red-700" : "text-red-600"}`}>
                                         {stats.lowStock}
                                     </p>
                                 </div>
@@ -690,32 +690,32 @@ export default function InventoryPage() {
                         </CardContent>
                     </Card>
 
-                    <Card className="min-w-[280px] sm:min-w-0 border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-[#191A43] rounded-2xl sm:rounded-3xl overflow-hidden group hover:scale-[1.02] transition-all shrink-0">
-                        <CardContent className="p-4 sm:p-6 flex items-center gap-4 sm:gap-5">
-                            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-white/10 text-white flex items-center justify-center transition-transform group-hover:rotate-12">
-                                <ShoppingCart className="w-5 h-5 sm:w-6 sm:h-6" />
+                    <Card className="min-w-[280px] sm:min-w-0 border-none shadow-[0_4px_20px_rgb(0,0,0,0.02)] bg-[#191A43] rounded-xl overflow-hidden group hover:scale-[1.01] transition-all shrink-0">
+                        <CardContent className="p-4 sm:p-5 flex items-center gap-4">
+                            <div className="w-10 h-10 rounded-lg bg-white/10 text-white flex items-center justify-center transition-transform group-hover:rotate-6">
+                                <ShoppingCart className="w-5 h-5" />
                             </div>
                             <div>
-                                <p className="text-[9px] sm:text-[10px] font-black text-white/50 uppercase tracking-widest">
+                                <p className="text-[10px] font-semibold text-white/60 uppercase tracking-wider">
                                     Total {displayLabel} Investment
                                 </p>
-                                <p className="text-xl sm:text-2xl font-black text-white">
+                                <p className="text-lg sm:text-xl font-bold text-white mt-0.5">
                                     GH₵ {stats.totalStockValue.toLocaleString()}
                                 </p>
                             </div>
                         </CardContent>
                     </Card>
 
-                    <Card className="min-w-[280px] sm:min-w-0 border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-[#0D2D23] rounded-2xl sm:rounded-3xl overflow-hidden group hover:scale-[1.02] transition-all shrink-0">
-                        <CardContent className="p-4 sm:p-6 flex items-center gap-4 sm:gap-5">
-                            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-white/10 text-emerald-400 flex items-center justify-center transition-transform group-hover:rotate-12">
-                                <CediIcon className="w-5 h-5 sm:w-6 sm:h-6" />
+                    <Card className="min-w-[280px] sm:min-w-0 border-none shadow-[0_4px_20px_rgb(0,0,0,0.02)] bg-[#0D2D23] rounded-xl overflow-hidden group hover:scale-[1.01] transition-all shrink-0">
+                        <CardContent className="p-4 sm:p-5 flex items-center gap-4">
+                            <div className="w-10 h-10 rounded-lg bg-white/10 text-emerald-400 flex items-center justify-center transition-transform group-hover:rotate-6">
+                                <CediIcon className="w-5 h-5" />
                             </div>
                             <div>
-                                <p className="text-[9px] sm:text-[10px] font-black text-white/50 uppercase tracking-widest">
+                                <p className="text-[10px] font-semibold text-white/60 uppercase tracking-wider">
                                     Total Amount Sold
                                 </p>
-                                <p className="text-xl sm:text-2xl font-black text-white">
+                                <p className="text-lg sm:text-xl font-bold text-white mt-0.5">
                                     GH₵ {stats.totalAmountSold.toLocaleString()}
                                 </p>
                             </div>
@@ -725,23 +725,23 @@ export default function InventoryPage() {
 
                 {/* sliding tab switcher */}
                 <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <div className="relative bg-slate-100/80 backdrop-blur-md p-1 rounded-2xl flex items-center gap-1 shadow-inner border border-slate-200/50 self-start">
+                    <div className="relative bg-slate-100/80 backdrop-blur-md p-1 rounded-xl flex items-center gap-1 shadow-inner border border-slate-200/50 self-start">
                         <button
                             onClick={() => {
                                 setSaleTypeTab("unit");
                                 setShowOnlyLowStock(false);
                             }}
-                            className={`relative px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-colors duration-300 select-none ${
+                            className={`relative px-5 py-2 rounded-lg text-xs font-semibold tracking-wide transition-colors duration-300 select-none ${
                                 saleTypeTab === "unit"
                                     ? "text-[#191A43]"
-                                    : "text-slate-400 hover:text-slate-600 font-bold"
+                                    : "text-slate-500 hover:text-slate-700"
                             }`}
                         >
                             <span className="relative z-10">Retail Catalog (Unit Sales)</span>
                             {saleTypeTab === "unit" && (
                                 <motion.div
                                     layoutId="activeSaleTypeTab"
-                                    className="absolute inset-0 bg-white rounded-xl shadow-sm z-0"
+                                    className="absolute inset-0 bg-white rounded-lg shadow-sm z-0"
                                     transition={{ type: "spring", stiffness: 380, damping: 30 }}
                                 />
                             )}
@@ -751,17 +751,17 @@ export default function InventoryPage() {
                                 setSaleTypeTab("wholesale");
                                 setShowOnlyLowStock(false);
                             }}
-                            className={`relative px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-colors duration-300 select-none ${
+                            className={`relative px-5 py-2 rounded-lg text-xs font-semibold tracking-wide transition-colors duration-300 select-none ${
                                 saleTypeTab === "wholesale"
                                     ? "text-[#191A43]"
-                                    : "text-slate-400 hover:text-slate-600 font-bold"
+                                    : "text-slate-500 hover:text-slate-700"
                             }`}
                         >
                             <span className="relative z-10">Wholesale Catalog (Bulk/B2B)</span>
                             {saleTypeTab === "wholesale" && (
                                 <motion.div
                                     layoutId="activeSaleTypeTab"
-                                    className="absolute inset-0 bg-white rounded-xl shadow-sm z-0"
+                                    className="absolute inset-0 bg-white rounded-lg shadow-sm z-0"
                                     transition={{ type: "spring", stiffness: 380, damping: 30 }}
                                 />
                             )}
@@ -796,7 +796,7 @@ export default function InventoryPage() {
                 {/* Main Content */}
                 <div className="grid grid-cols-1 gap-8">
                     {/* Stock Table */}
-                    <Card className="border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white rounded-[1.5rem] sm:rounded-[2.5rem] overflow-hidden">
+                    <Card className="border border-slate-100 shadow-[0_2px_12px_rgb(0,0,0,0.02)] bg-white rounded-xl overflow-hidden">
                         <AnimatePresence mode="wait">
                             {filteredItems.length > 0 ? (
                                 <motion.div
@@ -809,14 +809,14 @@ export default function InventoryPage() {
                                 >
                                     <table className="w-full text-left border-collapse min-w-[1000px]">
                                         <thead>
-                                            <tr className="border-b border-slate-50 bg-slate-50/50">
-                                                <th className="px-8 py-6 text-[11px] font-black text-slate-600 uppercase tracking-[0.2em]">{config.itemLabel || "Asset"} Narrative</th>
-                                                <th className="px-4 py-6 text-[11px] font-black text-slate-600 uppercase tracking-[0.2em] text-center">Initial Stock</th>
-                                                <th className="px-4 py-6 text-[11px] font-black text-slate-600 uppercase tracking-[0.2em] text-center">On Hand (Value)</th>
-                                                <th className="px-4 py-6 text-[11px] font-black text-slate-600 uppercase tracking-[0.2em] text-center">Reserved</th>
-                                                <th className="px-4 py-6 text-[11px] font-black text-slate-600 uppercase tracking-[0.2em] text-center">Available</th>
-                                                <th className="px-4 py-6 text-[11px] font-black text-slate-600 uppercase tracking-[0.2em] text-center">Sold</th>
-                                                <th className="px-8 py-6 text-[11px] font-black text-slate-600 uppercase tracking-[0.2em] text-right">Control</th>
+                                            <tr className="border-b border-slate-100 bg-slate-50/40">
+                                                <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider">{config.itemLabel || "Asset"} Narrative</th>
+                                                <th className="px-4 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider text-center">Initial Stock</th>
+                                                <th className="px-4 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider text-center">On Hand (Value)</th>
+                                                <th className="px-4 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider text-center">Reserved</th>
+                                                <th className="px-4 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider text-center">Available</th>
+                                                <th className="px-4 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider text-center">Sold</th>
+                                                <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider text-right">Control</th>
                                             </tr>
                                         </thead>
                                         <tbody className="divide-y divide-slate-50">
@@ -830,30 +830,30 @@ export default function InventoryPage() {
                                                         exit={{ opacity: 0 }}
                                                         className="group hover:bg-slate-50/50 transition-colors"
                                                     >
-                                                        <td className="px-8 py-6">
-                                                            <div className="flex items-center gap-5">
-                                                                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-white font-black text-lg shadow-lg ${getAvatarColor(item.name)}`}>
+                                                        <td className="px-6 py-4">
+                                                            <div className="flex items-center gap-4">
+                                                                <div className={`w-9 h-9 rounded-lg flex items-center justify-center text-white font-bold text-base shadow-sm ${getAvatarColor(item.name)}`}>
                                                                     {item.name[0]}
                                                                 </div>
                                                                 <div>
-                                                                    <h3 className="font-black text-[#191A43] text-base leading-tight">{item.name}</h3>
-                                                                    <div className="flex flex-col gap-1.5 mt-1.5">
+                                                                    <h3 className="font-semibold text-slate-900 text-sm leading-snug">{item.name}</h3>
+                                                                    <div className="flex flex-col gap-1 mt-1">
                                                                         {/* Category and SKU Tag Line */}
                                                                         <div className="flex items-center gap-2">
-                                                                            <Badge variant="outline" className="text-[9px] font-bold uppercase tracking-wider bg-slate-50 border-slate-100 text-slate-400 px-2 py-0">
+                                                                            <Badge variant="outline" className="text-[9px] font-semibold bg-slate-50 border-slate-100 text-slate-500 px-2 py-0.5 rounded-md">
                                                                                 {item.category || "General"}
                                                                             </Badge>
-                                                                            <span className="text-[10px] text-slate-300 font-bold uppercase tracking-widest">{item.sku || "No SKU"}</span>
-                                                                            <span className="text-[10px] text-slate-300 font-bold uppercase tracking-widest">• {item.unit || "Units"}</span>
+                                                                            <span className="text-[10px] text-slate-400 font-medium">{item.sku || "No SKU"}</span>
+                                                                            <span className="text-[10px] text-slate-400 font-medium">• {item.unit || "Units"}</span>
                                                                         </div>
                                                                         
                                                                         {/* Premium Financials & Creation Timestamp Line */}
-                                                                        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[10px]">
-                                                                            <span className="text-[#9C7E41] font-black tracking-wide bg-[#9C7E41]/5 px-2 py-0.5 rounded-md border border-[#9C7E41]/10">
+                                                                        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[10px] mt-0.5">
+                                                                            <span className="text-[#9C7E41] font-semibold tracking-wide bg-[#9C7E41]/5 px-2 py-0.5 rounded-md border border-[#9C7E41]/10">
                                                                                 Unit Cost: GH₵ {parseFloat(item.unitCost || "0").toLocaleString()}
                                                                             </span>
                                                                             <span className="text-slate-300 font-bold hidden sm:inline">•</span>
-                                                                            <span className="text-slate-400 font-semibold bg-slate-50 border border-slate-100 px-2 py-0.5 rounded-md">
+                                                                            <span className="text-slate-400 font-medium bg-slate-50 border border-slate-100 px-2 py-0.5 rounded-md">
                                                                                 Entered: {new Date(item.createdAt).toLocaleDateString(undefined, { 
                                                                                     year: 'numeric', 
                                                                                     month: 'short', 
@@ -863,29 +863,29 @@ export default function InventoryPage() {
                                                                                 })}
                                                                             </span>
                                                                         </div>
-
+ 
                                                                         {/* Wholesale Pricing Tiers */}
                                                                         {saleTypeTab === "wholesale" && item.pricingTiers && Array.isArray(item.pricingTiers) && item.pricingTiers.length > 0 && (
-                                                                            <div className="flex flex-wrap items-center gap-1.5 mt-1.5">
-                                                                                <span className="text-[9px] font-black text-emerald-600 uppercase tracking-wider bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-100/50 shrink-0">Wholesale:</span>
+                                                                            <div className="flex flex-wrap items-center gap-1.5 mt-1">
+                                                                                <span className="text-[9px] font-semibold text-emerald-600 uppercase tracking-wider bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-100/50 shrink-0">Wholesale:</span>
                                                                                 {item.pricingTiers.map((tier: any, tIdx: number) => (
-                                                                                    <Badge key={tIdx} variant="outline" className="text-[9px] font-black uppercase bg-white border-slate-200 text-slate-500 px-2 py-0.5">
+                                                                                    <Badge key={tIdx} variant="outline" className="text-[9px] font-semibold uppercase bg-white border-slate-200 text-slate-500 px-2 py-0.5">
                                                                                         {tier.minQty}{tier.maxQty ? `-${tier.maxQty}` : '+'} units: GH₵ {parseFloat(tier.price).toLocaleString()}
                                                                                     </Badge>
                                                                                 ))}
                                                                             </div>
                                                                         )}
-
+ 
                                                                         {/* Client Pricing Overrides */}
                                                                         {saleTypeTab === "wholesale" && item.clientOverrides && Array.isArray(item.clientOverrides) && item.clientOverrides.length > 0 && (
-                                                                            <div className="flex flex-col gap-1.5 mt-1.5 border-t border-slate-50 pt-1.5">
+                                                                            <div className="flex flex-col gap-1 mt-1 border-t border-slate-50 pt-1">
                                                                                 {item.clientOverrides.map((override: any, oIdx: number) => (
                                                                                     <div key={oIdx} className="flex flex-wrap items-center gap-1.5">
-                                                                                        <span className="text-[9px] font-black text-indigo-600 uppercase tracking-wider bg-indigo-50 px-1.5 py-0.5 rounded border border-indigo-100/50 shrink-0">
+                                                                                        <span className="text-[9px] font-semibold text-indigo-600 uppercase tracking-wider bg-indigo-50 px-1.5 py-0.5 rounded border border-indigo-100/50 shrink-0">
                                                                                             For {override.client?.name}:
                                                                                         </span>
                                                                                         {Array.isArray(override.pricingTiers) && override.pricingTiers.map((tier: any, tIdx: number) => (
-                                                                                            <Badge key={tIdx} variant="outline" className="text-[9px] font-black uppercase bg-white border-slate-200 text-slate-600 px-2 py-0.5">
+                                                                                            <Badge key={tIdx} variant="outline" className="text-[9px] font-semibold uppercase bg-white border-slate-200 text-slate-600 px-2 py-0.5">
                                                                                                 {tier.minQty}{tier.maxQty ? `-${tier.maxQty}` : '+'} units: GH₵ {parseFloat(tier.price).toLocaleString()}
                                                                                             </Badge>
                                                                                         ))}
@@ -897,68 +897,68 @@ export default function InventoryPage() {
                                                                 </div>
                                                             </div>
                                                         </td>
-                                                        <td className="px-4 py-6 text-center">
+                                                        <td className="px-4 py-4 text-center">
                                                             <div className="flex flex-col items-center">
-                                                                <span className="text-base font-black text-slate-400">
+                                                                <span className="text-sm font-semibold text-slate-500">
                                                                     {item.totalEntered || item.quantity}
                                                                 </span>
-                                                                <span className="text-[10px] text-slate-300 font-bold tracking-tight">GH₵ {(parseFloat(item.totalEntered || item.quantity) * parseFloat(item.unitCost || "0")).toLocaleString()}</span>
+                                                                <span className="text-[10px] text-slate-400 font-medium tracking-tight mt-0.5">GH₵ {(parseFloat(item.totalEntered || item.quantity) * parseFloat(item.unitCost || "0")).toLocaleString()}</span>
                                                             </div>
                                                         </td>
-                                                        <td className="px-4 py-6 text-center">
+                                                        <td className="px-4 py-4 text-center">
                                                             <div className="flex flex-col items-center">
-                                                                <span className="text-base font-black text-[#191A43]">
+                                                                <span className="text-sm font-semibold text-slate-800">
                                                                     {item.quantity}
                                                                 </span>
-                                                                <span className="text-[10px] text-slate-400 font-bold tracking-tight">GH₵ {(parseFloat(item.quantity) * parseFloat(item.unitCost || "0")).toLocaleString()}</span>
+                                                                <span className="text-[10px] text-slate-400 font-medium tracking-tight mt-0.5">GH₵ {(parseFloat(item.quantity) * parseFloat(item.unitCost || "0")).toLocaleString()}</span>
                                                             </div>
                                                         </td>
-                                                        <td className="px-4 py-6 text-center">
-                                                            <span className={`text-base font-black ${parseFloat(item.reserved || "0") > 0 ? "text-amber-500" : "text-slate-300"}`}>
+                                                        <td className="px-4 py-4 text-center">
+                                                            <span className={`text-sm font-semibold ${parseFloat(item.reserved || "0") > 0 ? "text-amber-600" : "text-slate-300"}`}>
                                                                 {item.reserved || "0"}
                                                             </span>
                                                         </td>
-                                                        <td className="px-4 py-6 text-center">
+                                                        <td className="px-4 py-4 text-center">
                                                             <div className="flex flex-col items-center">
-                                                                <span className={`text-xl font-black ${(parseFloat(item.quantity) - parseFloat(item.reserved || "0")) <= parseFloat(item.minStock || "0") ? "text-red-500" : "text-emerald-600"}`}>
+                                                                <span className={`text-sm font-bold ${(parseFloat(item.quantity) - parseFloat(item.reserved || "0")) <= parseFloat(item.minStock || "0") ? "text-red-600" : "text-emerald-600"}`}>
                                                                     {parseFloat(item.quantity) - parseFloat(item.reserved || "0")}
                                                                 </span>
                                                             </div>
                                                         </td>
-                                                        <td className="px-4 py-6 text-center">
+                                                        <td className="px-4 py-4 text-center">
                                                             <div className="flex flex-col items-center">
-                                                                <span className="text-base font-black text-blue-600">
+                                                                <span className="text-sm font-semibold text-blue-600">
                                                                     {item.totalSold || "0"}
                                                                 </span>
-                                                                <span className="text-[10px] text-slate-400 font-bold tracking-tight">GH₵ {(parseFloat(item.totalSold || "0") * parseFloat(item.unitCost || "0")).toLocaleString()}</span>
+                                                                <span className="text-[10px] text-slate-400 font-medium tracking-tight mt-0.5">GH₵ {(parseFloat(item.totalSold || "0") * parseFloat(item.unitCost || "0")).toLocaleString()}</span>
                                                             </div>
                                                         </td>
-                                                        <td className="px-8 py-6 text-right">
+                                                        <td className="px-6 py-4 text-right">
                                                             <div className="flex items-center justify-end gap-3">
                                                                 <Button 
                                                                     size="icon" 
                                                                     variant="ghost" 
                                                                     onClick={() => handleUpdateStock(item.id, "out", "1")}
-                                                                    className="w-10 h-10 rounded-xl hover:bg-red-50 hover:text-red-600 transition-all border border-transparent hover:border-red-100"
+                                                                    className="w-9 h-9 rounded-lg hover:bg-red-50 hover:text-red-600 transition-all border border-transparent hover:border-red-100"
                                                                 >
-                                                                    <Minus className="w-5 h-5" />
+                                                                    <Minus className="w-4 h-4" />
                                                                 </Button>
                                                                 <Button 
                                                                     size="icon" 
                                                                     variant="ghost" 
                                                                     onClick={() => handleUpdateStock(item.id, "in", "1")}
-                                                                    className="w-10 h-10 rounded-xl hover:bg-emerald-50 hover:text-emerald-600 transition-all border border-transparent hover:border-emerald-100"
+                                                                    className="w-9 h-9 rounded-lg hover:bg-emerald-50 hover:text-emerald-600 transition-all border border-transparent hover:border-emerald-100"
                                                                 >
-                                                                    <Plus className="w-5 h-5" />
+                                                                    <Plus className="w-4 h-4" />
                                                                 </Button>
-                                                                <div className="w-px h-6 bg-slate-100 mx-1" />
+                                                                <div className="w-px h-5 bg-slate-100 mx-1" />
                                                                 <Button 
                                                                     size="icon" 
                                                                     variant="ghost" 
                                                                     onClick={() => handleRemove(item.id)}
-                                                                    className="w-10 h-10 rounded-xl hover:bg-slate-100 text-slate-300 hover:text-red-500 transition-all"
+                                                                    className="w-9 h-9 rounded-lg hover:bg-slate-100 text-slate-300 hover:text-red-500 transition-all"
                                                                 >
-                                                                    <Trash2 className="w-5 h-5" />
+                                                                    <Trash2 className="w-4 h-4" />
                                                                 </Button>
                                                             </div>
                                                         </td>
@@ -1007,15 +1007,15 @@ export default function InventoryPage() {
                     </Card>
                 </div>
                 <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
-                    <DialogContent className="max-w-2xl rounded-[1.5rem] sm:rounded-[2rem] border-none shadow-2xl p-0 max-h-[90vh] overflow-y-auto no-scrollbar bg-white">
+                    <DialogContent className="max-w-2xl rounded-xl border border-slate-100 shadow-xl p-0 max-h-[90vh] overflow-y-auto no-scrollbar bg-white">
                     <DialogHeader className="p-6 sm:p-8 pb-4">
                         <div className="flex items-center gap-4 mb-4">
-                            <div className="w-12 h-12 rounded-2xl bg-[#191A43] flex items-center justify-center shadow-lg shadow-[#191A43]/20">
-                                <Plus className="w-6 h-6 text-white" />
+                            <div className="w-10 h-10 rounded-lg bg-[#191A43] flex items-center justify-center shadow-sm">
+                                <Plus className="w-5 h-5 text-white" />
                             </div>
                             <div>
-                                <DialogTitle className="text-xl font-black text-[#191A43] tracking-tight">Add New {config.itemLabel || "Asset"}</DialogTitle>
-                                <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mt-1">{config.itemLabel || "Asset"} Stock Intake & Categorization</p>
+                                <DialogTitle className="text-lg font-bold text-[#191A43] tracking-tight">Add New {config.itemLabel || "Asset"}</DialogTitle>
+                                <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider mt-1">{config.itemLabel || "Asset"} Stock Intake & Categorization</p>
                             </div>
                         </div>
                     </DialogHeader>
@@ -1023,76 +1023,76 @@ export default function InventoryPage() {
                     <form onSubmit={handleAddItem} className="p-6 sm:p-8 pt-0 space-y-4 sm:space-y-6">
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                             <div className="space-y-2 col-span-1 sm:col-span-2">
-                                <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Sale Mode Type</Label>
+                                <Label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider ml-1">Sale Mode Type</Label>
                                 <Select name="saleType" defaultValue="unit">
-                                    <SelectTrigger className="h-12 rounded-2xl border-slate-100 bg-slate-50/50 font-semibold text-xs">
+                                    <SelectTrigger className="h-10 rounded-lg border-slate-200 bg-slate-50/50 font-medium text-xs">
                                         <SelectValue placeholder="Select sale type mode" />
                                     </SelectTrigger>
-                                    <SelectContent className="rounded-xl border-slate-100 bg-white">
-                                        <SelectItem value="unit" className="text-xs font-semibold">Retail Product (Unit Sales)</SelectItem>
-                                        <SelectItem value="wholesale" className="text-xs font-semibold">Wholesale Product (Bulk / B2B Discount Tiers)</SelectItem>
+                                    <SelectContent className="rounded-lg border-slate-100 bg-white">
+                                        <SelectItem value="unit" className="text-xs font-medium">Retail Product (Unit Sales)</SelectItem>
+                                        <SelectItem value="wholesale" className="text-xs font-medium">Wholesale Product (Bulk / B2B Discount Tiers)</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
                             <div className="space-y-2">
-                                <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">{config.itemLabel || "Asset Name"}</Label>
+                                <Label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider ml-1">{config.itemLabel || "Asset Name"}</Label>
                                 <Input 
                                     name="name" 
                                     placeholder={config.inventory?.assetPlaceholder || "e.g. Silk Thread"} 
                                     required 
-                                    className="h-12 rounded-2xl border-slate-100 bg-slate-50/50 font-semibold"
+                                    className="h-10 rounded-lg border-slate-200 bg-slate-50/50 font-medium text-xs"
                                 />
                             </div>
                             <div className="space-y-2">
-                                <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">SKU / Reference</Label>
+                                <Label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider ml-1">SKU / Reference</Label>
                                 <Input 
                                     name="sku" 
                                     placeholder={config.inventory?.skuPlaceholder || "e.g. SLK-001"} 
-                                    className="h-12 rounded-2xl border-slate-100 bg-slate-50/50 font-semibold"
+                                    className="h-10 rounded-lg border-slate-200 bg-slate-50/50 font-medium text-xs"
                                 />
                             </div>
                             <div className="space-y-2">
-                                <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Category</Label>
+                                <Label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider ml-1">Category</Label>
                                 <Input 
                                     name="category" 
                                     placeholder={config.inventory?.categoryPlaceholder || "e.g. Raw Materials"} 
-                                    className="h-12 rounded-2xl border-slate-100 bg-slate-50/50 font-semibold"
+                                    className="h-10 rounded-lg border-slate-200 bg-slate-50/50 font-medium text-xs"
                                 />
                             </div>
                             <div className="space-y-2">
-                                <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Measurement Unit</Label>
+                                <Label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider ml-1">Measurement Unit</Label>
                                 <Input 
                                     name="unit" 
                                     placeholder={config.inventory?.unitPlaceholder || "e.g. Rolls, Meters"} 
-                                    className="h-12 rounded-2xl border-slate-100 bg-slate-50/50 font-semibold"
+                                    className="h-10 rounded-lg border-slate-200 bg-slate-50/50 font-medium text-xs"
                                 />
                             </div>
                             <div className="space-y-2">
-                                <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Physical Stock (Initial)</Label>
+                                <Label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider ml-1">Physical Stock (Initial)</Label>
                                 <Input 
                                     name="totalEntered" 
                                     type="number" 
                                     placeholder="0" 
-                                    className="h-12 rounded-2xl border-slate-100 bg-slate-50/50 font-semibold"
+                                    className="h-10 rounded-lg border-slate-200 bg-slate-50/50 font-medium text-xs"
                                 />
                             </div>
                             <div className="space-y-2">
-                                <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Unit Cost (GH₵)</Label>
+                                <Label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider ml-1">Unit Cost (GH₵)</Label>
                                 <Input 
                                     name="unitCost" 
                                     type="number" 
                                     placeholder="0.00" 
                                     step="0.01" 
-                                    className="h-12 rounded-2xl border-slate-100 bg-slate-50/50 font-semibold"
+                                    className="h-10 rounded-lg border-slate-200 bg-slate-50/50 font-medium text-xs"
                                 />
                             </div>
                             <div className="space-y-2">
-                                <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Minimum Alert Threshold</Label>
+                                <Label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider ml-1">Minimum Alert Threshold</Label>
                                 <Input 
                                     name="minStock" 
                                     type="number" 
                                     placeholder="5" 
-                                    className="h-12 rounded-2xl border-slate-100 bg-slate-50/50 font-semibold"
+                                    className="h-10 rounded-lg border-slate-200 bg-slate-50/50 font-medium text-xs"
                                 />
                             </div>
                         </div>
@@ -1102,13 +1102,13 @@ export default function InventoryPage() {
                                 type="button" 
                                 variant="ghost" 
                                 onClick={() => setIsAddModalOpen(false)}
-                                className="h-12 w-full sm:w-auto px-8 rounded-2xl font-bold text-slate-400 hover:text-[#191A43] text-xs uppercase tracking-widest"
+                                className="h-10 w-full sm:w-auto px-6 rounded-lg font-semibold text-slate-500 hover:text-[#191A43] text-xs uppercase tracking-wider"
                             >
                                 Cancel
                             </Button>
                             <Button 
                                 type="submit" 
-                                className="h-12 w-full sm:w-auto px-10 rounded-2xl bg-[#191A43] text-white font-bold hover:bg-[#191A43]/90 shadow-xl shadow-[#191A43]/10 text-xs uppercase tracking-widest transition-all active:scale-95"
+                                className="h-10 w-full sm:w-auto px-6 rounded-lg bg-[#191A43] text-white font-semibold hover:bg-[#191A43]/95 shadow-sm text-xs transition-all"
                             >
                                 Add {config.itemLabel || "Asset"}
                             </Button>
@@ -1124,24 +1124,24 @@ export default function InventoryPage() {
                     setSelectedImportClientId("");
                 }
             }}>
-                <DialogContent className="sm:max-w-[90vw] lg:max-w-[85vw] xl:max-w-[1200px] w-full rounded-[1.5rem] sm:rounded-[2rem] border-none shadow-2xl p-0 bg-white max-h-[90vh] overflow-y-auto no-scrollbar">
-                    <DialogHeader className="p-8 pb-4">
+                <DialogContent className="sm:max-w-[90vw] lg:max-w-[85vw] xl:max-w-[1200px] w-full rounded-xl border border-slate-100 shadow-xl p-0 bg-white max-h-[90vh] overflow-y-auto no-scrollbar">
+                    <DialogHeader className="p-6 sm:p-8 pb-4">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-4">
-                                <div className="w-12 h-12 rounded-2xl bg-[#191A43] flex items-center justify-center shadow-lg shadow-[#191A43]/20">
-                                    <FileSpreadsheet className="w-6 h-6 text-white" />
+                                <div className="w-10 h-10 rounded-lg bg-[#191A43] flex items-center justify-center shadow-sm">
+                                    <FileSpreadsheet className="w-5 h-5 text-white" />
                                 </div>
                                 <div>
-                                    <DialogTitle className="text-xl font-black text-[#191A43] tracking-tight">
+                                    <DialogTitle className="text-lg font-bold text-[#191A43] tracking-tight">
                                         {saleTypeTab === "wholesale" ? "Bulk Import" : "Import"} {config.itemLabel ? `${config.itemLabel}s` : "Assets"}
                                     </DialogTitle>
-                                    <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mt-1">Excel & CSV Ingestion Engine</p>
+                                    <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider mt-1">Excel & CSV Ingestion Engine</p>
                                 </div>
                             </div>
                             <Button
                                 onClick={downloadTemplate}
                                 variant="outline"
-                                className="h-10 border-[#191A43]/10 hover:border-[#191A43]/20 text-[#191A43] font-bold rounded-xl gap-2 text-xs uppercase tracking-wider shadow-sm hover:bg-slate-50"
+                                className="h-10 border-slate-200 hover:bg-slate-50 text-[#191A43] font-semibold rounded-lg gap-2 text-xs shadow-sm transition-all"
                             >
                                 <Download className="w-4 h-4" />
                                 Get Template
@@ -1150,23 +1150,23 @@ export default function InventoryPage() {
 
                         {/* Optional Client Dropdown */}
                         {saleTypeTab === "wholesale" && (
-                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-t border-slate-100 p-8 py-4 bg-slate-50/50 mt-4 rounded-xl">
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border border-slate-100 p-6 bg-slate-50/50 mt-4 rounded-lg">
                                 <div className="space-y-1 max-w-md text-left">
-                                    <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-0.5">Assign Custom Rates to Client (Optional)</Label>
-                                    <p className="text-[10px] text-slate-400 font-bold leading-normal mt-0.5">Select a customer account to save the spreadsheet volume discounts as their personalized pricing overrides sheet.</p>
+                                    <Label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider ml-0.5">Assign Custom Rates to Client (Optional)</Label>
+                                    <p className="text-[10px] text-slate-450 font-medium leading-normal mt-0.5">Select a customer account to save the spreadsheet volume discounts as their personalized pricing overrides sheet.</p>
                                 </div>
                                 <div className="w-full sm:w-72">
                                     <Select
                                         value={selectedImportClientId}
                                         onValueChange={setSelectedImportClientId}
                                     >
-                                        <SelectTrigger className="h-11 rounded-xl border-slate-200 bg-white font-semibold text-xs">
+                                        <SelectTrigger className="h-10 rounded-lg border-slate-200 bg-white font-medium text-xs">
                                             <SelectValue placeholder="Standard Catalog Prices (Default)" />
                                         </SelectTrigger>
-                                        <SelectContent className="rounded-xl border-slate-100 bg-white">
-                                            <SelectItem value="none" className="text-xs font-semibold">Standard Catalog Prices (Default)</SelectItem>
+                                        <SelectContent className="rounded-lg border-slate-100 bg-white">
+                                            <SelectItem value="none" className="text-xs font-medium">Standard Catalog Prices (Default)</SelectItem>
                                             {clients.map((client) => (
-                                                <SelectItem key={client.id} value={client.id} className="text-xs font-semibold">
+                                                <SelectItem key={client.id} value={client.id} className="text-xs font-medium">
                                                     {client.name} (Custom overrides)
                                                 </SelectItem>
                                             ))}
@@ -1177,7 +1177,7 @@ export default function InventoryPage() {
                         )}
                     </DialogHeader>
 
-                    <div className="p-8 pt-0 space-y-6">
+                    <div className="p-6 sm:p-8 pt-0 space-y-6">
                         {importData.length === 0 ? (
                             <div
                                 onDragEnter={handleDrag}
@@ -1185,9 +1185,9 @@ export default function InventoryPage() {
                                 onDragLeave={handleDrag}
                                 onDrop={handleDrop}
                                 onClick={() => fileInputRef.current?.click()}
-                                className={`group border-2 border-dashed rounded-3xl p-12 text-center cursor-pointer transition-all duration-300 flex flex-col items-center justify-center gap-4 ${
+                                className={`group border border-dashed rounded-lg p-12 text-center cursor-pointer transition-all duration-300 flex flex-col items-center justify-center gap-4 ${
                                     dragActive
-                                        ? "border-[#191A43] bg-[#191A43]/5 scale-[0.99]"
+                                        ? "border-[#191A43] bg-[#191A43]/5"
                                         : "border-slate-200 bg-slate-50/50 hover:border-[#191A43]/40 hover:bg-slate-50"
                                 }`}
                             >
@@ -1198,23 +1198,21 @@ export default function InventoryPage() {
                                     onChange={handleFileChange}
                                     className="hidden"
                                 />
-                                <div className={`w-16 h-16 rounded-2xl bg-white shadow-md flex items-center justify-center transition-transform group-hover:scale-110 duration-300 ${
-                                    dragActive ? "scale-105" : ""
-                                }`}>
-                                    <Upload className="w-8 h-8 text-[#191A43]" />
+                                <div className={`w-12 h-12 rounded-lg bg-white shadow-sm flex items-center justify-center transition-transform group-hover:scale-105 duration-300`}>
+                                    <Upload className="w-5 h-5 text-[#191A43]" />
                                 </div>
                                 <div className="space-y-1">
-                                    <p className="font-black text-slate-700 text-sm">Drag & drop your Excel or CSV file here</p>
+                                    <p className="font-semibold text-slate-700 text-sm">Drag & drop your Excel or CSV file here</p>
                                     <p className="text-xs text-slate-400 font-medium">or click anywhere to browse local files</p>
                                 </div>
                                 <div className="flex gap-2 mt-2">
-                                    <Badge variant="outline" className="bg-white border-slate-100 text-slate-400 font-bold uppercase tracking-wider text-[9px] px-2.5 py-0.5">
+                                    <Badge variant="outline" className="bg-white border-slate-100 text-slate-400 font-semibold tracking-wide text-[9px] px-2.5 py-0.5 rounded-md">
                                         .xlsx
                                     </Badge>
-                                    <Badge variant="outline" className="bg-white border-slate-100 text-slate-400 font-bold uppercase tracking-wider text-[9px] px-2.5 py-0.5">
+                                    <Badge variant="outline" className="bg-white border-slate-100 text-slate-400 font-semibold tracking-wide text-[9px] px-2.5 py-0.5 rounded-md">
                                         .xls
                                     </Badge>
-                                    <Badge variant="outline" className="bg-white border-slate-100 text-slate-400 font-bold uppercase tracking-wider text-[9px] px-2.5 py-0.5">
+                                    <Badge variant="outline" className="bg-white border-slate-100 text-slate-400 font-semibold tracking-wide text-[9px] px-2.5 py-0.5 rounded-md">
                                         .csv
                                     </Badge>
                                 </div>
@@ -1333,51 +1331,51 @@ export default function InventoryPage() {
 
             {/* B2B Customer Accounts Management Dialog */}
             <Dialog open={isB2BModalOpen} onOpenChange={setIsB2BModalOpen}>
-                <DialogContent className="max-w-3xl rounded-[1.5rem] sm:rounded-[2rem] border-none shadow-2xl p-0 overflow-hidden bg-white max-h-[85vh] flex flex-col">
-                    <DialogHeader className="p-8 pb-4 shrink-0">
+                <DialogContent className="max-w-3xl rounded-xl border border-slate-100 shadow-xl p-0 overflow-hidden bg-white max-h-[85vh] flex flex-col">
+                    <DialogHeader className="p-6 sm:p-8 pb-4 shrink-0">
                         <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 rounded-2xl bg-[#191A43] flex items-center justify-center shadow-lg shadow-[#191A43]/20">
-                                <Users className="w-6 h-6 text-white" />
+                            <div className="w-10 h-10 rounded-lg bg-[#191A43] flex items-center justify-center shadow-sm">
+                                <Users className="w-5 h-5 text-white" />
                             </div>
                             <div>
-                                <DialogTitle className="text-xl font-black text-[#191A43] tracking-tight">B2B Customer Accounts</DialogTitle>
-                                <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mt-1">Client Management & Custom Catalog Overrides</p>
+                                <DialogTitle className="text-lg font-bold text-[#191A43] tracking-tight">B2B Customer Accounts</DialogTitle>
+                                <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider mt-1">Client Management & Custom Catalog Overrides</p>
                             </div>
                         </div>
                     </DialogHeader>
 
                     <div className="flex-1 overflow-y-auto px-8 pb-8 no-scrollbar space-y-6">
                         {/* New Client Form */}
-                        <form onSubmit={handleCreateClient} className="p-5 bg-slate-50 border border-slate-100 rounded-2xl space-y-4 text-left">
-                            <h3 className="text-xs font-black text-[#191A43] uppercase tracking-widest">Register New Client Organization</h3>
+                        <form onSubmit={handleCreateClient} className="p-5 bg-slate-50 border border-slate-100 rounded-lg space-y-4 text-left">
+                            <h3 className="text-xs font-semibold text-[#191A43] uppercase tracking-wider">Register New Client Organization</h3>
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div className="space-y-1.5">
-                                    <Label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-0.5">Organization Name</Label>
+                                    <Label className="text-[9px] font-semibold text-slate-400 uppercase tracking-wider ml-0.5">Organization Name</Label>
                                     <Input
                                         placeholder="e.g. Acme Wholesalers Ltd"
                                         value={newClientName}
                                         onChange={(e) => setNewClientName(e.target.value)}
-                                        className="h-10 rounded-xl border-slate-200 bg-white font-semibold text-xs"
+                                        className="h-10 rounded-lg border-slate-200 bg-white font-medium text-xs"
                                         required
                                     />
                                 </div>
                                 <div className="space-y-1.5">
-                                    <Label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-0.5">Contact Email</Label>
+                                    <Label className="text-[9px] font-semibold text-slate-400 uppercase tracking-wider ml-0.5">Contact Email</Label>
                                     <Input
                                         type="email"
                                         placeholder="e.g. billing@acme.com"
                                         value={newClientEmail}
                                         onChange={(e) => setNewClientEmail(e.target.value)}
-                                        className="h-10 rounded-xl border-slate-200 bg-white font-semibold text-xs"
+                                        className="h-10 rounded-lg border-slate-200 bg-white font-medium text-xs"
                                     />
                                 </div>
                                 <div className="space-y-1.5">
-                                    <Label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-0.5">Contact Phone</Label>
+                                    <Label className="text-[9px] font-semibold text-slate-400 uppercase tracking-wider ml-0.5">Contact Phone</Label>
                                     <Input
                                         placeholder="e.g. +233 24 123 4567"
                                         value={newClientPhone}
                                         onChange={(e) => setNewClientPhone(e.target.value)}
-                                        className="h-10 rounded-xl border-slate-200 bg-white font-semibold text-xs"
+                                        className="h-10 rounded-lg border-slate-200 bg-white font-medium text-xs"
                                     />
                                 </div>
                             </div>
@@ -1385,7 +1383,7 @@ export default function InventoryPage() {
                                 <Button
                                     type="submit"
                                     disabled={isSavingClient}
-                                    className="h-10 px-6 rounded-xl bg-[#191A43] text-white text-xs font-black uppercase tracking-wider shadow-md hover:bg-[#191A43]/90 border-0"
+                                    className="h-10 px-6 rounded-lg bg-[#191A43] text-white text-xs font-semibold hover:bg-[#191A43]/95 shadow-sm border-0"
                                 >
                                     {isSavingClient ? "Registering..." : "Add Client Account"}
                                 </Button>
@@ -1394,26 +1392,26 @@ export default function InventoryPage() {
 
                         {/* Clients List */}
                         <div className="space-y-3 text-left">
-                            <h3 className="text-xs font-black text-[#191A43] uppercase tracking-widest ml-1">Active Client Organizations</h3>
+                            <h3 className="text-xs font-semibold text-[#191A43] uppercase tracking-wider ml-1">Active Client Organizations</h3>
                             {clients.length === 0 ? (
-                                <div className="py-12 border border-dashed border-slate-200 rounded-2xl flex flex-col items-center justify-center text-center">
+                                <div className="py-12 border border-dashed border-slate-200 rounded-lg flex flex-col items-center justify-center text-center">
                                     <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center mb-2">
                                         <Building2 className="w-5 h-5 text-slate-300" />
                                     </div>
-                                    <p className="text-xs font-bold text-slate-500">No B2B Customer Accounts Registered</p>
+                                    <p className="text-xs font-semibold text-slate-500">No B2B Customer Accounts Registered</p>
                                     <p className="text-[10px] text-slate-400 max-w-xs mt-0.5">Add custom corporate accounts above to build dedicated pricing overrides sheets.</p>
                                 </div>
                             ) : (
-                                <div className="divide-y divide-slate-100 border border-slate-100 rounded-2xl overflow-hidden bg-white">
+                                <div className="divide-y divide-slate-100 border border-slate-100 rounded-lg overflow-hidden bg-white">
                                     {clients.map((client) => (
                                         <div key={client.id} className="flex items-center justify-between p-4 hover:bg-slate-50 transition-colors">
                                             <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 rounded-xl bg-[#191A43]/5 text-[#191A43] flex items-center justify-center font-bold text-sm shrink-0">
+                                                <div className="w-10 h-10 rounded-lg bg-[#191A43]/5 text-[#191A43] flex items-center justify-center font-semibold text-sm shrink-0">
                                                     {client.name[0]}
                                                 </div>
                                                 <div>
-                                                    <h4 className="text-xs font-black text-[#191A43]">{client.name}</h4>
-                                                    <div className="flex items-center gap-2 mt-1 text-[10px] text-slate-400 font-bold">
+                                                    <h4 className="text-xs font-bold text-[#191A43]">{client.name}</h4>
+                                                    <div className="flex items-center gap-2 mt-1 text-[10px] text-slate-400 font-medium">
                                                         <span>{client.email || "No Email"}</span>
                                                         <span>•</span>
                                                         <span>{client.phone || "No Phone"}</span>
