@@ -20,7 +20,7 @@ export default function SignInPage() {
                             <span className="text-white">Tracker</span>
                         </div>
                         <p className="text-white/70 text-base font-medium leading-relaxed">
-                            Complete visibility over your store's inventory, production pipelines, and order lifecycles.
+                            Complete visibility over your store's inventory, operations, and total control over your business.
                         </p>
                     </div>
 
