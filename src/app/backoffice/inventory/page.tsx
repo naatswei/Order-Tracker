@@ -71,7 +71,8 @@ const CediIcon = ({ className }: { className?: string }) => (
 );
 
 export default function InventoryPage() {
-    const { organization, isLoaded } = useOrganization();
+    const { organization, membership, isLoaded } = useOrganization();
+    const isAdmin = membership?.role === "org:admin";
     const [items, setItems] = useState<any[]>([]);
     const [orders, setOrders] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -858,15 +859,19 @@ export default function InventoryPage() {
                                                                 >
                                                                     <Plus className="w-4 h-4" />
                                                                 </Button>
-                                                                <div className="w-px h-5 bg-slate-100 mx-1" />
-                                                                <Button 
-                                                                    size="icon" 
-                                                                    variant="ghost" 
-                                                                    onClick={() => handleRemove(item.id)}
-                                                                    className="w-9 h-9 rounded-lg hover:bg-slate-100 text-slate-300 hover:text-red-500 transition-all"
-                                                                >
-                                                                    <Trash2 className="w-4 h-4" />
-                                                                </Button>
+                                                                {isAdmin && (
+                                                                    <>
+                                                                        <div className="w-px h-5 bg-slate-100 mx-1" />
+                                                                        <Button 
+                                                                            size="icon" 
+                                                                            variant="ghost" 
+                                                                            onClick={() => handleRemove(item.id)}
+                                                                            className="w-9 h-9 rounded-lg hover:bg-slate-100 text-slate-300 hover:text-red-500 transition-all"
+                                                                        >
+                                                                            <Trash2 className="w-4 h-4" />
+                                                                        </Button>
+                                                                    </>
+                                                                )}
                                                             </div>
                                                         </td>
                                                     </motion.tr>

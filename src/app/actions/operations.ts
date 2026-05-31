@@ -438,8 +438,9 @@ export async function getInventoryHistory(itemId: string) {
 }
 
 export async function removeInventoryItem(id: string) {
-    const { orgId } = await auth();
+    const { orgId, orgRole } = await auth();
     if (!orgId) throw new Error("Unauthorized");
+    if (orgRole !== "org:admin") throw new Error("Only organization administrators can delete inventory items.");
 
     await db.delete(inventory).where(and(eq(inventory.id, id), eq(inventory.clerkOrgId, orgId)));
     revalidatePath("/backoffice/inventory");
