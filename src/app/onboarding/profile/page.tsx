@@ -13,10 +13,23 @@ import { Label } from "@/components/ui/label"
 import { cn } from "@/lib/utils"
 import { OnboardingHeader } from "@/components/onboarding-header"
 
+const COUNTRIES = [
+    { name: "Ghana", code: "+233", flag: "🇬🇭", minLength: 9, maxLength: 9, placeholder: "e.g. 54 870 6430" },
+    { name: "Nigeria", code: "+234", flag: "🇳🇬", minLength: 10, maxLength: 10, placeholder: "e.g. 80 1234 5678" },
+    { name: "United States", code: "+1", flag: "🇺🇸", minLength: 10, maxLength: 10, placeholder: "e.g. 202 555 0199" },
+    { name: "United Kingdom", code: "+44", flag: "🇬🇧", minLength: 10, maxLength: 10, placeholder: "e.g. 7911 123456" },
+    { name: "Kenya", code: "+254", flag: "🇰🇪", minLength: 9, maxLength: 9, placeholder: "e.g. 712 345678" },
+    { name: "South Africa", code: "+27", flag: "🇿🇦", minLength: 9, maxLength: 9, placeholder: "e.g. 82 123 4567" },
+    { name: "Canada", code: "+1", flag: "🇨🇦", minLength: 10, maxLength: 10, placeholder: "e.g. 416 555 0199" },
+];
+
 export default function BusinessProfilePage() {
     const router = useRouter()
     const { organization, isLoaded } = useOrganization()
     const [isLoading, setIsLoading] = useState(false)
+    
+    const [countryCode, setCountryCode] = useState("+233")
+    const [phoneLocal, setPhoneLocal] = useState("")
 
     useEffect(() => {
         if (!isLoaded) return
@@ -91,11 +104,15 @@ export default function BusinessProfilePage() {
         setIsLoading(true)
 
         try {
-            await updateOrgProfile(organization.id, formData)
+            const cleanPhone = phoneLocal.replace(/^0+/, "").replace(/\D/g, "")
+            const finalContact = `${countryCode} ${cleanPhone}`
+            const finalPayload = { ...formData, contact: finalContact }
+
+            await updateOrgProfile(organization.id, finalPayload)
             // Note: Logo upload to Clerk would typically happen via organization.setLogo()
             // but for parity with current flow, we'll keep the imagePreview in localStorage for local UI only
             // or we can rely on organization.imageUrl once it hits Clerk.
-            localStorage.setItem("businessProfile", JSON.stringify({ ...formData, imagePreview }))
+            localStorage.setItem("businessProfile", JSON.stringify({ ...finalPayload, imagePreview }))
 
             router.push("/onboarding/subscription")
         } catch (error) {
@@ -106,8 +123,12 @@ export default function BusinessProfilePage() {
         }
     }
 
+    const selectedCountry = COUNTRIES.find(c => c.code === countryCode) || COUNTRIES[0];
+    const cleanPhone = phoneLocal.replace(/^0+/, "").replace(/\D/g, "");
+    const isPhoneValid = cleanPhone.length === selectedCountry.minLength;
+
     const isFormValid = formData.companyName.trim() !== "" &&
-        formData.contact.trim() !== "" &&
+        isPhoneValid &&
         formData.location.trim() !== ""
 
     return (
@@ -223,15 +244,58 @@ export default function BusinessProfilePage() {
                                             <Label htmlFor="contact" className="text-primary font-medium">
                                                 Contact Number <span className="text-destructive">*</span>
                                             </Label>
-                                            <Input
-                                                id="contact"
-                                                name="contact"
-                                                placeholder="e.g. 054 870 64301"
-                                                required
-                                                value={formData.contact}
-                                                onChange={handleInputChange}
-                                                className="h-12 border-input bg-background/50 focus-visible:ring-primary transition-all duration-200"
-                                            />
+                                            <div className="flex gap-2">
+                                                <div className="relative shrink-0">
+                                                    <select
+                                                        value={countryCode}
+                                                        onChange={(e) => setCountryCode(e.target.value)}
+                                                        className="h-12 px-3 rounded-xl border border-input bg-background/50 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200 cursor-pointer pr-8"
+                                                        style={{ WebkitAppearance: 'none', MozAppearance: 'none' }}
+                                                    >
+                                                        {COUNTRIES.map((c) => (
+                                                            <option key={`${c.name}-${c.code}`} value={c.code} className="text-slate-800 bg-white">
+                                                                {c.flag} {c.code}
+                                                            </option>
+                                                        ))}
+                                                    </select>
+                                                    <div className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-muted-foreground text-[8px]">
+                                                        ▼
+                                                    </div>
+                                                </div>
+                                                <div className="flex-1 relative">
+                                                    <Input
+                                                        id="contact"
+                                                        name="contact"
+                                                        type="tel"
+                                                        placeholder={selectedCountry.placeholder}
+                                                        required
+                                                        value={phoneLocal}
+                                                        onChange={(e) => {
+                                                            const val = e.target.value.replace(/\D/g, "");
+                                                            setPhoneLocal(val);
+                                                        }}
+                                                        className={cn(
+                                                            "h-12 border-input bg-background/50 focus-visible:ring-primary transition-all duration-200 pr-10",
+                                                            phoneLocal && !isPhoneValid && "border-destructive focus-visible:ring-destructive focus-visible:border-destructive",
+                                                            phoneLocal && isPhoneValid && "border-emerald-500 focus-visible:ring-emerald-500 focus-visible:border-emerald-500"
+                                                        )}
+                                                    />
+                                                    {phoneLocal && (
+                                                        <div className="absolute right-3.5 top-1/2 -translate-y-1/2 flex items-center justify-center pointer-events-none select-none">
+                                                            {isPhoneValid ? (
+                                                                <span className="text-emerald-500 text-sm font-bold">✓</span>
+                                                            ) : (
+                                                                <span className="text-destructive text-sm font-bold">✗</span>
+                                                            )}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                            {phoneLocal && !isPhoneValid && (
+                                                <p className="text-[10px] font-medium text-destructive mt-1.5 ml-1">
+                                                    Please enter a valid subscriber number ({selectedCountry.minLength} digits).
+                                                </p>
+                                            )}
                                         </div>
 
                                         {/* Email Address */}
