@@ -717,17 +717,17 @@ export default function TrackingDetailsPage() {
                                         {/* Actions */}
                                         <div className="space-y-3 pt-2">
                                             {(order.metadata.invoice as any).invoiceStatus === "unpaid" ? (
-                                                (order.businessDetails as any)?.paystackPublicKey ? (
+                                                process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY ? (
                                                     <PaystackInvoiceCheckout
                                                         order={order}
                                                         invoice={order.metadata.invoice}
-                                                        publicKey={(order.businessDetails as any).paystackPublicKey}
+                                                        publicKey={process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY}
                                                         onSuccess={handlePaymentSuccess}
                                                     />
                                                 ) : (
                                                     <div className="p-4 rounded-2xl bg-yellow-500/10 border border-yellow-500/20 text-center">
                                                         <p className="text-xs text-yellow-400 font-light">
-                                                            Online checkout is currently unavailable for this merchant. Please contact them directly to settle this payment.
+                                                            Online checkout is currently unavailable. Please contact the merchant to settle payment.
                                                         </p>
                                                     </div>
                                                 )
