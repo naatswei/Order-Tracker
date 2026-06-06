@@ -39,6 +39,22 @@ export default function OrganizationSelectionPage() {
         }
     }, [isLoaded, organization, membershipsLoaded, userMemberships.data, setActive, router, isRestarting])
 
+    // Disable browser autofill on Clerk's organization name input
+    useEffect(() => {
+        const disableAutofill = () => {
+            const inputs = document.querySelectorAll('input');
+            inputs.forEach(input => {
+                if (input.placeholder === 'Organization name' || input.name === 'name') {
+                    input.setAttribute('autocomplete', 'off');
+                }
+            });
+        };
+
+        disableAutofill();
+        const interval = setInterval(disableAutofill, 500);
+        return () => clearInterval(interval);
+    }, []);
+
 
     if (!isLoaded || organization) {
         return <AppLoader message="Loading your workspace..." />
