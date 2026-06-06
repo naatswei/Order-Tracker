@@ -42,7 +42,7 @@ export default function SignUpPage() {
                              </div>
                              <div>
                                  <h3 className="font-semibold text-sm text-white/90">Smart Stock Monitoring</h3>
-                                 <p className="text-xs text-white/50 mt-1 leading-normal">Monitor your inventory, set low-stock alerts, and manage prices in local GH₵.</p>
+                                 <p className="text-xs text-white/50 mt-1 leading-normal">Monitor your inventory, set low-stock alerts, and manage prices in your local currency.</p>
                              </div>
                          </div>
 
