@@ -52,12 +52,57 @@ export default function ProfilePage() {
     const [subscriptionPlan, setSubscriptionPlan] = useState<string | null>(null)
     const publicKey = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || ""
 
-    // Payment settings state
-    const [paymentSettings, setPaymentSettings] = useState({
-        paystackPublicKey: "",
-        paystackSecretKey: ""
+    // Payout split settings state
+    const [payoutSettings, setPayoutSettings] = useState({
+        bankCode: "",
+        bankName: "",
+        accountNumber: "",
+        accountName: ""
     })
-    const [paymentLoading, setPaymentLoading] = useState(false)
+    const [banks, setBanks] = useState<{ name: string; code: string }[]>([])
+    const [banksLoading, setBanksLoading] = useState(false)
+    const [resolvingAccount, setResolvingAccount] = useState(false)
+    const [payoutLoading, setPayoutLoading] = useState(false)
+
+    useEffect(() => {
+        const fetchBanks = async () => {
+            setBanksLoading(true)
+            try {
+                const { getGHSBanks } = await import("@/app/actions/paystack")
+                const res = await getGHSBanks()
+                if (res.success && res.banks) {
+                    setBanks(res.banks.map((b: any) => ({ name: b.name, code: b.code })))
+                }
+            } catch (err) {
+                console.error("Failed to load GHS banks:", err)
+            } finally {
+                setBanksLoading(false)
+            }
+        }
+        fetchBanks()
+    }, [])
+
+    const handleResolveAccount = async () => {
+        if (!payoutSettings.accountNumber || !payoutSettings.bankCode) {
+            toast.error("Please select a bank and enter account number")
+            return
+        }
+        setResolvingAccount(true)
+        try {
+            const { resolveBankAccount } = await import("@/app/actions/paystack")
+            const res = await resolveBankAccount(payoutSettings.accountNumber, payoutSettings.bankCode)
+            if (res.success && res.accountName) {
+                setPayoutSettings(prev => ({ ...prev, accountName: res.accountName }))
+                toast.success("Account name verified successfully!")
+            } else {
+                toast.error(res.error || "Failed to verify account details")
+            }
+        } catch (error) {
+            toast.error("Account verification failed")
+        } finally {
+            setResolvingAccount(false)
+        }
+    }
 
     useEffect(() => {
         if (!isLoaded) return
@@ -82,10 +127,12 @@ export default function ProfilePage() {
             setSubscriptionExpiry(metadata?.subscriptionExpiry || "")
             setSubscriptionPlan(metadata?.subscriptionPlan || null)
 
-            // Payment settings
-            setPaymentSettings({
-                paystackPublicKey: (metadata?.paystackPublicKey as string) || "",
-                paystackSecretKey: (metadata?.paystackSecretKey as string) || ""
+            // Initialize payout subaccount settings
+            setPayoutSettings({
+                bankCode: (metadata?.payoutBankCode as string) || "",
+                bankName: (metadata?.payoutBankName as string) || "",
+                accountNumber: (metadata?.payoutAccountNumber as string) || "",
+                accountName: (metadata?.payoutAccountName as string) || ""
             })
         }
     }, [isLoaded, organization])
@@ -319,6 +366,113 @@ export default function ProfilePage() {
                                             >
                                                 {profileLoading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
                                                 Save Changes
+                                            </Button>
+                                        </div>
+                                    </form>
+                                </CardContent>
+                            </Card>
+
+                            {/* Payout & Settlement Settings */}
+                            <Card className="border-slate-200 shadow-sm overflow-hidden bg-white rounded-3xl mt-6">
+                                <CardHeader className="p-5 sm:p-8 pb-0">
+                                    <h2 className="text-lg font-bold text-slate-900">Payout & Settlement Settings</h2>
+                                    <p className="text-xs sm:text-sm text-slate-500 font-medium">Link your business's bank or mobile money account to receive customer payments instantly (99% payout, 1% platform commission).</p>
+                                </CardHeader>
+                                <CardContent className="p-5 sm:p-8">
+                                    <form onSubmit={async (e) => {
+                                        e.preventDefault()
+                                        if (!organization) return
+                                        if (!payoutSettings.accountName) {
+                                            toast.error("Please verify your account details first")
+                                            return
+                                        }
+                                        setPayoutLoading(true)
+                                        try {
+                                            const { saveMerchantPayoutSettings } = await import("@/app/actions/paystack")
+                                            const res = await saveMerchantPayoutSettings(organization.id, {
+                                                bankCode: payoutSettings.bankCode,
+                                                bankName: payoutSettings.bankName,
+                                                accountNumber: payoutSettings.accountNumber,
+                                                businessName: organization.name
+                                            })
+                                            if (res.success) {
+                                                toast.success("Settlement account configured successfully!")
+                                            } else {
+                                                toast.error(res.error || "Failed to configure settlement account")
+                                            }
+                                        } catch (error: any) {
+                                            console.error(error)
+                                            toast.error("Failed to update payout settings")
+                                        } finally {
+                                            setPayoutLoading(false)
+                                        }
+                                    }} className="space-y-6">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <div className="space-y-2">
+                                                <Label className="text-slate-700 font-semibold" htmlFor="payoutBank">Settlement Network / Bank</Label>
+                                                <select
+                                                    id="payoutBank"
+                                                    disabled={banksLoading}
+                                                    value={payoutSettings.bankCode}
+                                                    onChange={(e) => {
+                                                        const selected = banks.find(b => b.code === e.target.value)
+                                                        setPayoutSettings(prev => ({
+                                                            ...prev,
+                                                            bankCode: e.target.value,
+                                                            bankName: selected ? selected.name : "",
+                                                            accountName: "" // Reset name validation on bank change
+                                                        }))
+                                                    }}
+                                                    className="w-full bg-slate-50/50 border border-slate-200 focus:bg-white rounded-xl h-11 px-3 transition-colors text-slate-800 focus:outline-none"
+                                                >
+                                                    <option value="">Select Settlement Bank / Wallet</option>
+                                                    {banks.map((b) => (
+                                                        <option key={b.code} value={b.code}>{b.name}</option>
+                                                    ))}
+                                                </select>
+                                            </div>
+
+                                            <div className="space-y-2">
+                                                <Label className="text-slate-700 font-semibold" htmlFor="accountNumber">Account / Mobile Number</Label>
+                                                <div className="flex gap-2">
+                                                    <Input
+                                                        id="accountNumber"
+                                                        value={payoutSettings.accountNumber}
+                                                        onChange={(e) => setPayoutSettings(prev => ({
+                                                            ...prev,
+                                                            accountNumber: e.target.value,
+                                                            accountName: "" // Reset validation
+                                                        }))}
+                                                        placeholder="Enter account / phone number"
+                                                        className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-11 transition-colors flex-1"
+                                                    />
+                                                    <Button
+                                                        type="button"
+                                                        onClick={handleResolveAccount}
+                                                        disabled={resolvingAccount || !payoutSettings.bankCode || !payoutSettings.accountNumber}
+                                                        className="h-11 rounded-xl bg-slate-100 border border-slate-200 text-slate-700 hover:bg-slate-200 font-bold px-4"
+                                                    >
+                                                        {resolvingAccount ? <Loader2 className="w-4 h-4 animate-spin" /> : "Verify"}
+                                                    </Button>
+                                                </div>
+                                            </div>
+
+                                            {payoutSettings.accountName && (
+                                                <div className="md:col-span-2 p-3 bg-emerald-50 border border-emerald-100 rounded-xl">
+                                                    <p className="text-xs text-emerald-800 font-bold">Verified Account Name</p>
+                                                    <p className="text-sm text-emerald-900 font-medium">{payoutSettings.accountName}</p>
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        <div className="flex justify-end pt-4 border-t border-slate-100">
+                                            <Button
+                                                type="submit"
+                                                disabled={payoutLoading || !payoutSettings.accountName}
+                                                className="min-w-[140px] h-11 rounded-full bg-[#111827] hover:bg-[#1f2937] text-white font-bold shadow-[0_4px_20px_rgb(0,0,0,0.1)] transition-all hover:-translate-y-0.5 active:scale-[0.98]"
+                                            >
+                                                {payoutLoading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+                                                Save Payout Details
                                             </Button>
                                         </div>
                                     </form>

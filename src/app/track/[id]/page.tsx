@@ -38,11 +38,13 @@ function PaystackInvoiceCheckout({
     order, 
     invoice, 
     publicKey,
+    subaccountCode,
     onSuccess
 }: { 
     order: any, 
     invoice: any, 
     publicKey: string,
+    subaccountCode?: string,
     onSuccess: (ref: string) => void
 }) {
     const [isPaying, setIsPaying] = useState(false)
@@ -55,6 +57,7 @@ function PaystackInvoiceCheckout({
         amount: amountInKobo,
         publicKey: publicKey,
         currency: "GHS",
+        subaccount: subaccountCode || undefined,
         metadata: {
             orderId: order.id,
             invoiceNumber: invoice.invoiceNumber
@@ -734,17 +737,18 @@ export default function TrackingDetailsPage() {
                                         {/* Actions */}
                                         <div className="space-y-3 pt-2">
                                             {(order.metadata.invoice as any).invoiceStatus === "unpaid" ? (
-                                                process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY ? (
+                                                (process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY && (order.businessDetails as any)?.paystackSubaccountCode) ? (
                                                     <PaystackInvoiceCheckout
                                                         order={order}
                                                         invoice={order.metadata.invoice}
                                                         publicKey={process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY}
+                                                        subaccountCode={(order.businessDetails as any).paystackSubaccountCode}
                                                         onSuccess={handlePaymentSuccess}
                                                     />
                                                 ) : (
                                                     <div className="p-4 rounded-2xl bg-yellow-500/10 border border-yellow-500/20 text-center">
                                                         <p className="text-xs text-yellow-400 font-light">
-                                                            Online checkout is currently unavailable. Please contact the merchant to settle payment.
+                                                            Online checkout is pending setup by the merchant. Please contact the merchant directly to settle payment.
                                                         </p>
                                                     </div>
                                                 )
