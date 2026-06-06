@@ -18,6 +18,7 @@ import { ArrowLeft, MapPin, Clock, User, Phone, Mail, Shirt, Package, Loader2, D
 import { UserButton, OrganizationSwitcher, useOrganization } from "@clerk/nextjs"
 import { getBusinessConfig } from "@/lib/business-configs"
 import { BackofficeHeader } from "@/components/backoffice-header"
+import { cn } from "@/lib/utils"
 
 interface StaffPerformer {
     id: string;
