@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { ArrowRight, Upload, Camera, Sparkles, Loader2 } from "lucide-react"
+import { ArrowRight, Upload, Camera, Sparkles, Loader2, Search, ChevronDown, Check } from "lucide-react"
 import { useOrganization } from "@clerk/nextjs"
 import { updateOrgProfile } from "@/app/actions/org-metadata"
 import { AppLoader } from "@/components/app-loader"
@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { cn } from "@/lib/utils"
 import { OnboardingHeader } from "@/components/onboarding-header"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 
 const COUNTRIES = [
     { name: "Ghana", code: "+233", flag: "🇬🇭", minLength: 9, maxLength: 9, placeholder: "e.g. 54 870 6430" },
@@ -21,6 +22,16 @@ const COUNTRIES = [
     { name: "Kenya", code: "+254", flag: "🇰🇪", minLength: 9, maxLength: 9, placeholder: "e.g. 712 345678" },
     { name: "South Africa", code: "+27", flag: "🇿🇦", minLength: 9, maxLength: 9, placeholder: "e.g. 82 123 4567" },
     { name: "Canada", code: "+1", flag: "🇨🇦", minLength: 10, maxLength: 10, placeholder: "e.g. 416 555 0199" },
+    { name: "Germany", code: "+49", flag: "🇩🇪", minLength: 10, maxLength: 11, placeholder: "e.g. 170 1234567" },
+    { name: "France", code: "+33", flag: "🇫🇷", minLength: 9, maxLength: 9, placeholder: "e.g. 6 1234 5678" },
+    { name: "India", code: "+91", flag: "🇮🇳", minLength: 10, maxLength: 10, placeholder: "e.g. 98765 43210" },
+    { name: "China", code: "+86", flag: "🇨🇳", minLength: 11, maxLength: 11, placeholder: "e.g. 138 1234 5678" },
+    { name: "Japan", code: "+81", flag: "🇯🇵", minLength: 10, maxLength: 10, placeholder: "e.g. 90 1234 5678" },
+    { name: "Australia", code: "+61", flag: "🇦🇺", minLength: 9, maxLength: 9, placeholder: "e.g. 412 345 678" },
+    { name: "Brazil", code: "+55", flag: "🇧🇷", minLength: 11, maxLength: 11, placeholder: "e.g. 11 98765 4321" },
+    { name: "United Arab Emirates", code: "+971", flag: "🇦🇪", minLength: 9, maxLength: 9, placeholder: "e.g. 50 123 4567" },
+    { name: "Saudi Arabia", code: "+966", flag: "🇸🇦", minLength: 9, maxLength: 9, placeholder: "e.g. 50 123 4567" },
+    { name: "Singapore", code: "+65", flag: "🇸🇬", minLength: 8, maxLength: 8, placeholder: "e.g. 8123 4567" },
 ];
 
 export default function BusinessProfilePage() {
@@ -30,6 +41,21 @@ export default function BusinessProfilePage() {
     
     const [countryCode, setCountryCode] = useState("+233")
     const [phoneLocal, setPhoneLocal] = useState("")
+    const [searchQuery, setSearchQuery] = useState("")
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+    const dropdownRef = useRef<HTMLDivElement>(null)
+
+    useEffect(() => {
+        function handleClickOutside(event: MouseEvent) {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+                setIsDropdownOpen(false)
+            }
+        }
+        document.addEventListener("mousedown", handleClickOutside)
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside)
+        }
+    }, [])
 
     useEffect(() => {
         if (!isLoaded) return
@@ -125,11 +151,16 @@ export default function BusinessProfilePage() {
 
     const selectedCountry = COUNTRIES.find(c => c.code === countryCode) || COUNTRIES[0];
     const cleanPhone = phoneLocal.replace(/^0+/, "").replace(/\D/g, "");
-    const isPhoneValid = cleanPhone.length === selectedCountry.minLength;
+    const isPhoneValid = cleanPhone.length >= selectedCountry.minLength && cleanPhone.length <= selectedCountry.maxLength;
 
     const isFormValid = formData.companyName.trim() !== "" &&
         isPhoneValid &&
         formData.location.trim() !== ""
+
+    const filteredCountries = COUNTRIES.filter(c =>
+        c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        c.code.includes(searchQuery)
+    )
 
     return (
         <div className="min-h-screen bg-[#F8FAFC]">
@@ -245,22 +276,70 @@ export default function BusinessProfilePage() {
                                                 Contact Number <span className="text-destructive">*</span>
                                             </Label>
                                             <div className="flex gap-2">
-                                                <div className="relative shrink-0">
-                                                    <select
-                                                        value={countryCode}
-                                                        onChange={(e) => setCountryCode(e.target.value)}
-                                                        className="h-12 px-3 rounded-xl border border-input bg-background/50 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200 cursor-pointer pr-8"
-                                                        style={{ WebkitAppearance: 'none', MozAppearance: 'none' }}
+                                                <div className="relative shrink-0" ref={dropdownRef}>
+                                                    <Button
+                                                        type="button"
+                                                        variant="outline"
+                                                        onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                                                        className="h-12 px-4 rounded-xl border border-input bg-background/50 text-sm font-semibold flex items-center gap-2 hover:bg-slate-100 hover:text-slate-900 transition-all duration-200 cursor-pointer text-slate-800 dark:text-slate-200 shadow-sm"
                                                     >
-                                                        {COUNTRIES.map((c) => (
-                                                            <option key={`${c.name}-${c.code}`} value={c.code} className="text-slate-800 bg-white">
-                                                                {c.flag} {c.code}
-                                                            </option>
-                                                        ))}
-                                                    </select>
-                                                    <div className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-muted-foreground text-[8px]">
-                                                        ▼
-                                                    </div>
+                                                        <span className="text-lg leading-none">{selectedCountry.flag}</span>
+                                                        <span>{selectedCountry.code}</span>
+                                                        <ChevronDown className={cn("h-4 w-4 opacity-50 transition-transform duration-200", isDropdownOpen && "rotate-180")} />
+                                                    </Button>
+                                                    {isDropdownOpen && (
+                                                        <div className="absolute left-0 mt-2 p-2 w-72 rounded-2xl shadow-xl border border-slate-100 bg-white z-50 animate-in fade-in-50 slide-in-from-top-1 duration-150">
+                                                            <div className="flex items-center gap-2 px-2.5 pb-2 pt-1 border-b border-slate-100">
+                                                                <Search className="h-4 w-4 text-muted-foreground shrink-0" />
+                                                                <input
+                                                                    type="text"
+                                                                    placeholder="Search country or code..."
+                                                                    value={searchQuery}
+                                                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                                                    className="w-full bg-transparent border-0 p-0 text-sm focus:ring-0 focus:outline-none placeholder:text-muted-foreground/70 text-slate-800"
+                                                                    autoFocus
+                                                                />
+                                                            </div>
+                                                            <div className="max-h-60 overflow-y-auto mt-1 space-y-0.5 custom-scrollbar">
+                                                                {filteredCountries.length > 0 ? (
+                                                                    filteredCountries.map((c) => {
+                                                                        const isSelected = c.code === countryCode && c.name === selectedCountry.name;
+                                                                        return (
+                                                                            <button
+                                                                                key={`${c.name}-${c.code}`}
+                                                                                type="button"
+                                                                                onClick={() => {
+                                                                                    setCountryCode(c.code)
+                                                                                    setPhoneLocal("")
+                                                                                    setIsDropdownOpen(false)
+                                                                                    setSearchQuery("")
+                                                                                }}
+                                                                                className={cn(
+                                                                                    "w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-left text-sm transition-all duration-150 cursor-pointer",
+                                                                                    isSelected
+                                                                                        ? "bg-slate-100 font-semibold text-slate-900"
+                                                                                        : "hover:bg-slate-50 text-slate-700"
+                                                                                )}
+                                                                            >
+                                                                                <div className="flex items-center gap-2.5">
+                                                                                    <span className="text-lg leading-none" role="img" aria-label={c.name}>{c.flag}</span>
+                                                                                    <span className="truncate max-w-[130px] font-medium text-slate-800">{c.name}</span>
+                                                                                </div>
+                                                                                <div className="flex items-center gap-1.5 shrink-0">
+                                                                                    <span className="text-xs text-muted-foreground/80 font-mono">{c.code}</span>
+                                                                                    {isSelected && <Check className="h-4 w-4 text-primary shrink-0" />}
+                                                                                </div>
+                                                                            </button>
+                                                                        );
+                                                                    })
+                                                                ) : (
+                                                                    <div className="py-6 text-center text-xs text-muted-foreground">
+                                                                        No countries found
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    )}
                                                 </div>
                                                 <div className="flex-1 relative">
                                                     <Input
@@ -293,7 +372,7 @@ export default function BusinessProfilePage() {
                                             </div>
                                             {phoneLocal && !isPhoneValid && (
                                                 <p className="text-[10px] font-medium text-destructive mt-1.5 ml-1">
-                                                    Please enter a valid subscriber number ({selectedCountry.minLength} digits).
+                                                    Please enter a valid subscriber number ({selectedCountry.minLength === selectedCountry.maxLength ? `${selectedCountry.minLength}` : `${selectedCountry.minLength}-${selectedCountry.maxLength}`} digits).
                                                 </p>
                                             )}
                                         </div>
