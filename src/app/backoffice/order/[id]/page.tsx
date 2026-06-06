@@ -14,7 +14,7 @@ import { type Order } from "@/lib/storage"
 import { getOrderWithHistory, updateOrderStatus } from "@/app/actions/orders"
 import Link from "next/link"
 import { toast } from "sonner"
-import { ArrowLeft, MapPin, Clock, User, Phone, Mail, Shirt, Package, Loader2 } from "lucide-react"
+import { ArrowLeft, MapPin, Clock, User, Phone, Mail, Shirt, Package, Loader2, DollarSign, FileText, Plus, Trash, Download, Link2, CheckCircle } from "lucide-react"
 import { UserButton, OrganizationSwitcher, useOrganization } from "@clerk/nextjs"
 import { getBusinessConfig } from "@/lib/business-configs"
 import { BackofficeHeader } from "@/components/backoffice-header"
@@ -59,6 +59,14 @@ export default function OrderUpdatePage() {
     const [location, setLocation] = useState("")
     const [message, setMessage] = useState("")
     const [isUpdating, setIsUpdating] = useState(false)
+
+    // Invoice form state
+    const [invoiceItems, setInvoiceItems] = useState<{ name: string; quantity: number; price: number }[]>([])
+    const [tax, setTax] = useState(0)
+    const [deliveryFee, setDeliveryFee] = useState(0)
+    const [discount, setDiscount] = useState(0)
+    const [dueDate, setDueDate] = useState("")
+    const [isInvoiceGenerating, setIsInvoiceGenerating] = useState(false)
 
     // Business Config
     const { organization } = useOrganization()
@@ -120,6 +128,18 @@ export default function OrderUpdatePage() {
                         })) || []
                     }
                     setOrder(mappedOrder)
+
+                    // Pre-fill invoice items
+                    if (foundOrder.inventoryLinks && foundOrder.inventoryLinks.length > 0) {
+                        const items = foundOrder.inventoryLinks.map((link: any) => ({
+                            name: link.inventoryItem?.name || "Product",
+                            quantity: Number(link.quantity) || 1,
+                            price: Number(link.inventoryItem?.sellingPrice) || 0
+                        }))
+                        setInvoiceItems(items)
+                    } else {
+                        setInvoiceItems([{ name: foundOrder.itemType || "Garment/Service", quantity: 1, price: 0 }])
+                    }
                 }
                 setLoading(false)
             }).catch(err => {
@@ -361,8 +381,298 @@ export default function OrderUpdatePage() {
                         )}
                     </div>
 
-                    {/* Right Column - Update Form */}
-                    <div className="lg:col-span-8">
+                    {/* Right Column - Invoices & Status Update */}
+                    <div className="lg:col-span-8 space-y-6">
+                        
+                        {/* Invoice & Billing Section */}
+                        {order.metadata?.invoice ? (
+                            /* Display Existing Invoice */
+                            <Card className="bg-white border-slate-100 shadow-sm rounded-2xl overflow-hidden">
+                                <CardHeader className="flex flex-row items-center justify-between border-b border-slate-100 p-6">
+                                    <div>
+                                        <CardTitle className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                                            <FileText className="w-5 h-5 text-indigo-500" />
+                                            Invoice: {order.metadata.invoice.invoiceNumber}
+                                        </CardTitle>
+                                        <CardDescription>Created on {new Date(order.metadata.invoice.createdAt).toLocaleDateString()}</CardDescription>
+                                    </div>
+                                    <Badge className={cn(
+                                        "rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider",
+                                        order.metadata.invoice.invoiceStatus === "paid" 
+                                            ? "bg-emerald-50 border border-emerald-200 text-emerald-600 animate-pulse" 
+                                            : "bg-amber-50 border border-amber-200 text-amber-600"
+                                    )}>
+                                        {order.metadata.invoice.invoiceStatus}
+                                    </Badge>
+                                </CardHeader>
+                                <CardContent className="p-6 space-y-6">
+                                    <div className="overflow-x-auto">
+                                        <table className="w-full text-sm">
+                                            <thead>
+                                                <tr className="text-slate-400 font-bold border-b border-slate-100">
+                                                    <th className="pb-3 text-left">Item Description</th>
+                                                    <th className="pb-3 text-center">Qty</th>
+                                                    <th className="pb-3 text-right">Price</th>
+                                                    <th className="pb-3 text-right">Total</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="divide-y divide-slate-100">
+                                                {order.metadata.invoice.items?.map((item: any, idx: number) => (
+                                                    <tr key={idx} className="text-slate-700">
+                                                        <td className="py-3 font-medium">{item.name}</td>
+                                                        <td className="py-3 text-center">{item.quantity}</td>
+                                                        <td className="py-3 text-right">GH₵ {item.price.toFixed(2)}</td>
+                                                        <td className="py-3 text-right font-semibold">GH₵ {(item.price * item.quantity).toFixed(2)}</td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                    <div className="flex justify-end pt-4 border-t border-slate-100">
+                                        <div className="w-64 space-y-2.5 text-sm">
+                                            <div className="flex justify-between text-slate-500">
+                                                <span>Subtotal</span>
+                                                <span className="font-semibold">GH₵ {order.metadata.invoice.subtotal.toFixed(2)}</span>
+                                            </div>
+                                            {order.metadata.invoice.tax > 0 && (
+                                                <div className="flex justify-between text-slate-500">
+                                                    <span>Tax</span>
+                                                    <span className="font-semibold">GH₵ {order.metadata.invoice.tax.toFixed(2)}</span>
+                                                </div>
+                                            )}
+                                            {order.metadata.invoice.deliveryFee > 0 && (
+                                                <div className="flex justify-between text-slate-500">
+                                                    <span>Delivery</span>
+                                                    <span className="font-semibold">GH₵ {order.metadata.invoice.deliveryFee.toFixed(2)}</span>
+                                                </div>
+                                            )}
+                                            {order.metadata.invoice.discount > 0 && (
+                                                <div className="flex justify-between text-red-500">
+                                                    <span>Discount</span>
+                                                    <span className="font-semibold">- GH₵ {order.metadata.invoice.discount.toFixed(2)}</span>
+                                                </div>
+                                            )}
+                                            <div className="flex justify-between text-base font-black text-slate-900 border-t border-slate-100 pt-3">
+                                                <span>Total Amount Due</span>
+                                                <span>GH₵ {order.metadata.invoice.amountDue.toFixed(2)}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div className="flex flex-wrap gap-3 pt-4 border-t border-slate-100">
+                                        {order.metadata.invoice.invoiceStatus === "unpaid" && (
+                                            <Button 
+                                                onClick={async () => {
+                                                    try {
+                                                        const { markInvoiceAsPaid } = await import("@/app/actions/invoice")
+                                                        await markInvoiceAsPaid(order.id)
+                                                        toast.success("Invoice marked as paid")
+                                                        window.location.reload()
+                                                    } catch (e) {
+                                                        toast.error("Failed to mark as paid")
+                                                    }
+                                                }}
+                                                className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl h-11 px-6 text-sm font-semibold flex items-center gap-2 cursor-pointer"
+                                            >
+                                                <CheckCircle className="w-4 h-4" />
+                                                Mark as Paid
+                                            </Button>
+                                        )}
+                                        <Button 
+                                            onClick={() => {
+                                                const url = `${window.location.origin}/track/${order.id}`
+                                                navigator.clipboard.writeText(url)
+                                                toast.success("Payment/Tracking link copied to clipboard!")
+                                            }}
+                                            variant="outline"
+                                            className="border-slate-200 text-slate-700 hover:bg-slate-50 rounded-xl h-11 px-6 text-sm font-semibold flex items-center gap-2 cursor-pointer"
+                                        >
+                                            <Link2 className="w-4 h-4" />
+                                            Copy Payment Link
+                                        </Button>
+                                        <Button 
+                                            onClick={async () => {
+                                                const invoice = order.metadata?.invoice
+                                                if (!invoice) return
+                                                const { printInvoice } = await import("@/lib/pdf-generator")
+                                                printInvoice(invoice, order.customerName, order.customerPhone, order.customerEmail || "")
+                                            }}
+                                            variant="outline"
+                                            className="border-slate-200 text-slate-700 hover:bg-slate-50 rounded-xl h-11 px-6 text-sm font-semibold flex items-center gap-2 cursor-pointer"
+                                        >
+                                            <Download className="w-4 h-4" />
+                                            Print / PDF Invoice
+                                        </Button>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        ) : (
+                            /* Invoice Generation Form */
+                            <Card className="bg-white border-slate-100 shadow-sm rounded-2xl">
+                                <CardHeader className="p-6">
+                                    <CardTitle className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                                        <DollarSign className="w-5 h-5 text-emerald-500" />
+                                        Generate Invoice
+                                    </CardTitle>
+                                    <CardDescription>Create a digital payment request for this order.</CardDescription>
+                                </CardHeader>
+                                <CardContent className="p-6">
+                                    <form onSubmit={async (e) => {
+                                        e.preventDefault()
+                                        setIsInvoiceGenerating(true)
+                                        try {
+                                            const { generateInvoice } = await import("@/app/actions/invoice")
+                                            await generateInvoice(order.id, {
+                                                items: invoiceItems,
+                                                tax,
+                                                deliveryFee,
+                                                discount,
+                                                dueDate: dueDate || undefined
+                                            })
+                                            toast.success("Invoice generated successfully!")
+                                            window.location.reload()
+                                        } catch (err) {
+                                            toast.error("Failed to generate invoice")
+                                        } finally {
+                                            setIsInvoiceGenerating(false)
+                                        }
+                                    }} className="space-y-6">
+                                        <div className="space-y-4">
+                                            <div className="flex justify-between items-center">
+                                                <Label className="font-bold text-slate-700">Invoice Items</Label>
+                                                <Button 
+                                                    type="button" 
+                                                    onClick={() => setInvoiceItems(prev => [...prev, { name: "", quantity: 1, price: 0 }])}
+                                                    variant="ghost" 
+                                                    size="sm" 
+                                                    className="text-xs font-bold text-indigo-500 flex items-center gap-1 hover:bg-slate-50 cursor-pointer"
+                                                >
+                                                    <Plus className="w-3.5 h-3.5" /> Add Row
+                                                </Button>
+                                            </div>
+                                            
+                                            <div className="space-y-2">
+                                                {invoiceItems.map((item, idx) => (
+                                                    <div key={idx} className="flex gap-2 items-center">
+                                                        <Input
+                                                            value={item.name}
+                                                            onChange={(e) => {
+                                                                const val = e.target.value
+                                                                setInvoiceItems(prev => prev.map((it, i) => i === idx ? { ...it, name: val } : it))
+                                                            }}
+                                                            placeholder="Item/Service name"
+                                                            required
+                                                            className="flex-1 bg-slate-50 border-slate-200 h-10 rounded-xl"
+                                                        />
+                                                        <Input
+                                                            type="number"
+                                                            value={item.quantity || ""}
+                                                            onChange={(e) => {
+                                                                const val = Number(e.target.value) || 0
+                                                                setInvoiceItems(prev => prev.map((it, i) => i === idx ? { ...it, quantity: val } : it))
+                                                            }}
+                                                            placeholder="Qty"
+                                                            required
+                                                            min="1"
+                                                            className="w-16 bg-slate-50 border-slate-200 h-10 rounded-xl text-center"
+                                                        />
+                                                        <Input
+                                                            type="number"
+                                                            value={item.price || ""}
+                                                            onChange={(e) => {
+                                                                const val = Number(e.target.value) || 0
+                                                                setInvoiceItems(prev => prev.map((it, i) => i === idx ? { ...it, price: val } : it))
+                                                            }}
+                                                            placeholder="Price"
+                                                            required
+                                                            min="0"
+                                                            className="w-24 bg-slate-50 border-slate-200 h-10 rounded-xl text-right"
+                                                        />
+                                                        {invoiceItems.length > 1 && (
+                                                            <Button 
+                                                                type="button"
+                                                                onClick={() => setInvoiceItems(prev => prev.filter((_, i) => i !== idx))}
+                                                                variant="ghost" 
+                                                                size="icon" 
+                                                                className="text-red-500 hover:bg-red-50 hover:text-red-600 rounded-full w-9 h-9 cursor-pointer"
+                                                            >
+                                                                <Trash className="w-4 h-4" />
+                                                            </Button>
+                                                        )}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                                            <div className="space-y-2">
+                                                <Label className="text-xs font-bold text-slate-700" htmlFor="tax">Tax (GH₵)</Label>
+                                                <Input 
+                                                    type="number" 
+                                                    id="tax" 
+                                                    value={tax || ""}
+                                                    onChange={(e) => setTax(Number(e.target.value) || 0)}
+                                                    placeholder="0"
+                                                    className="bg-slate-50 border-slate-200 h-10 rounded-xl text-right"
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label className="text-xs font-bold text-slate-700" htmlFor="deliveryFee">Delivery (GH₵)</Label>
+                                                <Input 
+                                                    type="number" 
+                                                    id="deliveryFee" 
+                                                    value={deliveryFee || ""}
+                                                    onChange={(e) => setDeliveryFee(Number(e.target.value) || 0)}
+                                                    placeholder="0"
+                                                    className="bg-slate-50 border-slate-200 h-10 rounded-xl text-right"
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label className="text-xs font-bold text-slate-700" htmlFor="discount">Discount (GH₵)</Label>
+                                                <Input 
+                                                    type="number" 
+                                                    id="discount" 
+                                                    value={discount || ""}
+                                                    onChange={(e) => setDiscount(Number(e.target.value) || 0)}
+                                                    placeholder="0"
+                                                    className="bg-slate-50 border-slate-200 h-10 rounded-xl text-right text-red-500"
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label className="text-xs font-bold text-slate-700" htmlFor="dueDate">Due Date</Label>
+                                                <Input 
+                                                    type="date" 
+                                                    id="dueDate" 
+                                                    value={dueDate}
+                                                    onChange={(e) => setDueDate(e.target.value)}
+                                                    className="bg-slate-50 border-slate-200 h-10 rounded-xl"
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div className="flex justify-end pt-4 border-t border-slate-100">
+                                            <Button 
+                                                type="submit"
+                                                disabled={isInvoiceGenerating}
+                                                className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl h-11 px-8 text-sm font-semibold flex items-center justify-center gap-2 cursor-pointer"
+                                            >
+                                                {isInvoiceGenerating ? (
+                                                    <>
+                                                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                                        Generating...
+                                                    </>
+                                                ) : (
+                                                    "Generate & Save Invoice"
+                                                )}
+                                            </Button>
+                                        </div>
+                                    </form>
+                                </CardContent>
+                            </Card>
+                        )}
+
+                        {/* Status Update Form */}
                         <Card className="bg-white border-slate-100 shadow-sm rounded-2xl">
                             <CardHeader>
                                 <CardTitle className="text-lg font-bold text-slate-900">Add New Status Update</CardTitle>

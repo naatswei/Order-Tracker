@@ -52,6 +52,13 @@ export default function ProfilePage() {
     const [subscriptionPlan, setSubscriptionPlan] = useState<string | null>(null)
     const publicKey = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || ""
 
+    // Payment settings state
+    const [paymentSettings, setPaymentSettings] = useState({
+        paystackPublicKey: "",
+        paystackSecretKey: ""
+    })
+    const [paymentLoading, setPaymentLoading] = useState(false)
+
     useEffect(() => {
         if (!isLoaded) return
 
@@ -74,6 +81,12 @@ export default function ProfilePage() {
             setSubscriptionStatus(metadata?.subscriptionStatus || "inactive")
             setSubscriptionExpiry(metadata?.subscriptionExpiry || "")
             setSubscriptionPlan(metadata?.subscriptionPlan || null)
+
+            // Payment settings
+            setPaymentSettings({
+                paystackPublicKey: (metadata?.paystackPublicKey as string) || "",
+                paystackSecretKey: (metadata?.paystackSecretKey as string) || ""
+            })
         }
     }, [isLoaded, organization])
 
@@ -306,6 +319,65 @@ export default function ProfilePage() {
                                             >
                                                 {profileLoading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
                                                 Save Changes
+                                            </Button>
+                                        </div>
+                                    </form>
+                                </CardContent>
+                            </Card>
+
+                            {/* Payment Configuration */}
+                            <Card className="border-slate-200 shadow-sm overflow-hidden bg-white rounded-3xl mt-6">
+                                <CardHeader className="p-5 sm:p-8 pb-0">
+                                    <h2 className="text-lg font-bold text-slate-900">Payment Gateway Integration</h2>
+                                    <p className="text-xs sm:text-sm text-slate-500 font-medium">Link your business's Paystack account to accept customer invoice payments directly.</p>
+                                </CardHeader>
+                                <CardContent className="p-5 sm:p-8">
+                                    <form onSubmit={async (e) => {
+                                        e.preventDefault()
+                                        if (!organization) return
+                                        setPaymentLoading(true)
+                                        try {
+                                            const { updateOrgPaymentSettings } = await import("@/app/actions/invoice")
+                                            await updateOrgPaymentSettings(organization.id, paymentSettings)
+                                            toast.success("Payment gateway settings updated successfully")
+                                        } catch (error) {
+                                            console.error(error)
+                                            toast.error("Failed to update payment settings")
+                                        } finally {
+                                            setPaymentLoading(false)
+                                        }
+                                    }} className="space-y-6">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <div className="space-y-2">
+                                                <Label className="text-slate-700 font-semibold" htmlFor="paystackPublicKey">Paystack Public Key</Label>
+                                                <Input
+                                                    id="paystackPublicKey"
+                                                    value={paymentSettings.paystackPublicKey}
+                                                    onChange={(e) => setPaymentSettings(prev => ({ ...prev, paystackPublicKey: e.target.value }))}
+                                                    placeholder="pk_live_..."
+                                                    className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-11 transition-colors font-mono"
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label className="text-slate-700 font-semibold" htmlFor="paystackSecretKey">Paystack Secret Key</Label>
+                                                <Input
+                                                    id="paystackSecretKey"
+                                                    type="password"
+                                                    value={paymentSettings.paystackSecretKey}
+                                                    onChange={(e) => setPaymentSettings(prev => ({ ...prev, paystackSecretKey: e.target.value }))}
+                                                    placeholder="sk_live_..."
+                                                    className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-11 transition-colors font-mono"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="flex justify-end pt-4 border-t border-slate-100">
+                                            <Button
+                                                type="submit"
+                                                disabled={paymentLoading}
+                                                className="min-w-[140px] h-11 rounded-full bg-[#111827] hover:bg-[#1f2937] text-white font-bold shadow-[0_4px_20px_rgb(0,0,0,0.1)] transition-all hover:-translate-y-0.5 active:scale-[0.98]"
+                                            >
+                                                {paymentLoading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+                                                Save Gateway Settings
                                             </Button>
                                         </div>
                                     </form>

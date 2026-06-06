@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react"
 import { useParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
+import { usePaystackPayment } from "react-paystack"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { type Order } from "@/lib/storage"
@@ -14,7 +15,7 @@ import { getBusinessConfig } from "@/lib/business-configs"
 import { toast } from "sonner"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
-import { Loader2, Package, CheckCircle2, Clock, Truck, MapPin, Search, Send, MessageSquare, MessageSquareMore, X, ArrowRight, User, Building2, ChevronRight, ExternalLink, Calendar, Zap, Bell, BellRing, BellOff } from "lucide-react"
+import { Loader2, Package, CheckCircle2, Clock, Truck, MapPin, Search, Send, MessageSquare, MessageSquareMore, X, ArrowRight, User, Building2, ChevronRight, ExternalLink, Calendar, Zap, Bell, BellRing, BellOff, FileText, Download } from "lucide-react"
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion"
 import { SignatureLoader } from "@/components/signature-loader"
 
@@ -33,6 +34,70 @@ function urlBase64ToUint8Array(base64String: string) {
     return outputArray;
 }
 
+function PaystackInvoiceCheckout({ 
+    order, 
+    invoice, 
+    publicKey,
+    onSuccess
+}: { 
+    order: any, 
+    invoice: any, 
+    publicKey: string,
+    onSuccess: (ref: string) => void
+}) {
+    const [isPaying, setIsPaying] = useState(false)
+    
+    const amountInKobo = Math.round(invoice.amountDue * 100)
+    
+    const config = {
+        reference: `INV-PAY-${order.id}-${Date.now()}`,
+        email: order.customerEmail || `${order.customerPhone}@otracker.com`,
+        amount: amountInKobo,
+        publicKey: publicKey,
+        currency: "GHS",
+        metadata: {
+            orderId: order.id,
+            invoiceNumber: invoice.invoiceNumber
+        }
+    }
+    
+    const initializePayment = usePaystackPayment(config)
+    
+    const handlePay = () => {
+        setIsPaying(true)
+        initializePayment({
+            onSuccess: (reference: any) => {
+                setIsPaying(false)
+                onSuccess(reference.reference)
+            },
+            onClose: () => {
+                setIsPaying(false)
+                toast.error("Payment window closed.")
+            }
+        })
+    }
+
+    return (
+        <Button
+            onClick={handlePay}
+            disabled={isPaying}
+            className="w-full h-12 bg-blue-600 hover:bg-blue-500 text-white rounded-2xl font-bold tracking-wide transition-all shadow-lg shadow-blue-500/25 flex items-center justify-center gap-2"
+        >
+            {isPaying ? (
+                <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span>Processing Payment...</span>
+                </>
+            ) : (
+                <>
+                    <Zap className="w-4 h-4 text-yellow-300 fill-yellow-300" />
+                    <span>Pay Online with Paystack (GH₵ {invoice.amountDue.toFixed(2)})</span>
+                </>
+            )}
+        </Button>
+    )
+}
+
 export default function TrackingDetailsPage() {
     const params = useParams()
     const trackingId = params.id as string
@@ -48,6 +113,40 @@ export default function TrackingDetailsPage() {
     const [subscriptionLoading, setSubscriptionLoading] = useState(false)
     const [isIOS, setIsIOS] = useState(false)
     const [searchQuery, setSearchQuery] = useState("")
+
+    const handlePaymentSuccess = async (reference: string) => {
+        toast.loading("Verifying payment, please wait...")
+        try {
+            const { confirmInvoicePayment } = await import("@/app/actions/invoice")
+            const res = await confirmInvoicePayment(order!.id, reference)
+            if (res.success) {
+                toast.dismiss()
+                toast.success("Payment confirmed! Your order status has been updated.")
+                // Refresh order state
+                const foundOrder = await getOrderWithHistory(order!.id)
+                if (foundOrder) {
+                    setOrder({
+                        ...order!,
+                        currentStatus: foundOrder.currentStatus,
+                        metadata: foundOrder.metadata as any,
+                        statusHistory: (foundOrder.statusHistory as Record<string, unknown>[]).map((h) => ({
+                            id: h.id as string,
+                            status: h.status as string,
+                            location: h.location as string | null,
+                            message: h.message as string | null,
+                            timestamp: new Date(h.timestamp as string | number | Date)
+                        }))
+                    })
+                }
+            } else {
+                toast.dismiss()
+                toast.error("Payment confirmation failed. Please contact the merchant.")
+            }
+        } catch (e) {
+            toast.dismiss()
+            toast.error("An error occurred during payment confirmation.")
+        }
+    }
 
     useEffect(() => {
         if ('serviceWorker' in navigator) {
@@ -180,6 +279,7 @@ export default function TrackingDetailsPage() {
                         businessType: foundOrder.businessType,
                         businessDetails: foundOrder.businessDetails,
                         pickupDate: foundOrder.pickupDate as string,
+                        metadata: foundOrder.metadata as any,
                         statusHistory: (foundOrder.statusHistory as Record<string, unknown>[]).map((h) => ({
                             id: h.id as string,
                             status: h.status as string,
@@ -514,6 +614,151 @@ export default function TrackingDetailsPage() {
                                 </CardContent>
                             </Card>
                         </div>
+
+                        {/* Invoice & Payments Card */}
+                        {order.metadata?.invoice && (
+                            <motion.div
+                                initial={{ opacity: 0, y: 15 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="mb-12"
+                            >
+                                <Card className="bg-white/[0.03] backdrop-blur-md border border-white/[0.08] rounded-3xl overflow-hidden shadow-2xl">
+                                    <CardContent className="p-6 space-y-6">
+                                        {/* Header */}
+                                        <div className="flex items-center justify-between border-b border-white/5 pb-4">
+                                            <div className="flex items-center gap-3">
+                                                <div className="p-2.5 rounded-xl bg-[#3B82F6]/10 border border-[#3B82F6]/20 text-[#3B82F6]">
+                                                    <FileText className="w-5 h-5" />
+                                                </div>
+                                                <div>
+                                                    <h3 className="text-sm font-medium text-white tracking-wide">
+                                                        Invoice & Payment
+                                                    </h3>
+                                                    <p className="text-xs text-white/50 font-light">
+                                                        {(order.metadata.invoice as any).invoiceNumber}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <Badge
+                                                className={`rounded-full px-3 py-1 text-[10px] font-bold tracking-wider uppercase border-none ${
+                                                    (order.metadata.invoice as any).invoiceStatus === "paid"
+                                                        ? "bg-[#10B981] text-[#0A0B14] hover:bg-[#10B981]"
+                                                        : "bg-red-500/10 text-red-400 border border-red-500/20"
+                                                }`}
+                                            >
+                                                {(order.metadata.invoice as any).invoiceStatus}
+                                            </Badge>
+                                        </div>
+
+                                        {/* Invoice Details */}
+                                        <div className="grid grid-cols-2 gap-4 text-xs font-light text-white/70">
+                                            <div>
+                                                <p className="text-white/40 mb-1">Issue Date</p>
+                                                <p className="text-white font-medium">
+                                                    {new Date((order.metadata.invoice as any).createdAt).toLocaleDateString()}
+                                                </p>
+                                            </div>
+                                            <div className="text-right">
+                                                <p className="text-white/40 mb-1">Due Date</p>
+                                                <p className="text-white font-medium">
+                                                    {new Date((order.metadata.invoice as any).dueDate).toLocaleDateString()}
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        {/* Items List */}
+                                        <div className="space-y-3">
+                                            <p className="text-[10px] uppercase tracking-widest text-[#3B82F6] font-bold">Items Billed</p>
+                                            <div className="bg-white/[0.01] border border-white/5 rounded-2xl divide-y divide-white/5 overflow-hidden">
+                                                {((order.metadata.invoice as any).items || []).map((item: any, idx: number) => (
+                                                    <div key={idx} className="p-3 flex items-center justify-between text-xs font-light">
+                                                        <div className="space-y-0.5">
+                                                            <p className="text-white font-medium">{item.name}</p>
+                                                            <p className="text-white/40">Qty: {item.quantity} × GH₵ {item.price.toFixed(2)}</p>
+                                                        </div>
+                                                        <span className="text-white font-medium">
+                                                            GH₵ {(item.price * item.quantity).toFixed(2)}
+                                                        </span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        {/* Breakdown Totals */}
+                                        <div className="space-y-2 text-xs font-light border-t border-white/5 pt-4">
+                                            <div className="flex justify-between text-white/60">
+                                                <span>Subtotal</span>
+                                                <span>GH₵ {(order.metadata.invoice as any).subtotal.toFixed(2)}</span>
+                                            </div>
+                                            {(order.metadata.invoice as any).tax > 0 && (
+                                                <div className="flex justify-between text-white/60">
+                                                    <span>Tax</span>
+                                                    <span>GH₵ {(order.metadata.invoice as any).tax.toFixed(2)}</span>
+                                                </div>
+                                            )}
+                                            {(order.metadata.invoice as any).deliveryFee > 0 && (
+                                                <div className="flex justify-between text-white/60">
+                                                    <span>Delivery Fee</span>
+                                                    <span>GH₵ {(order.metadata.invoice as any).deliveryFee.toFixed(2)}</span>
+                                                </div>
+                                            )}
+                                            {(order.metadata.invoice as any).discount > 0 && (
+                                                <div className="flex justify-between text-red-400">
+                                                    <span>Discount</span>
+                                                    <span>- GH₵ {(order.metadata.invoice as any).discount.toFixed(2)}</span>
+                                                </div>
+                                            )}
+                                            <div className="flex justify-between text-sm font-bold text-white border-t border-white/5 pt-2">
+                                                <span>Amount Due</span>
+                                                <span>GH₵ {(order.metadata.invoice as any).amountDue.toFixed(2)}</span>
+                                            </div>
+                                        </div>
+
+                                        {/* Actions */}
+                                        <div className="space-y-3 pt-2">
+                                            {(order.metadata.invoice as any).invoiceStatus === "unpaid" ? (
+                                                (order.businessDetails as any)?.paystackPublicKey ? (
+                                                    <PaystackInvoiceCheckout
+                                                        order={order}
+                                                        invoice={order.metadata.invoice}
+                                                        publicKey={(order.businessDetails as any).paystackPublicKey}
+                                                        onSuccess={handlePaymentSuccess}
+                                                    />
+                                                ) : (
+                                                    <div className="p-4 rounded-2xl bg-yellow-500/10 border border-yellow-500/20 text-center">
+                                                        <p className="text-xs text-yellow-400 font-light">
+                                                            Online checkout is currently unavailable for this merchant. Please contact them directly to settle this payment.
+                                                        </p>
+                                                    </div>
+                                                )
+                                            ) : (
+                                                <div className="p-4 rounded-2xl bg-[#10B981]/10 border border-[#10B981]/20 flex items-center justify-center gap-2 text-[#10B981] font-medium text-xs">
+                                                    <CheckCircle2 className="w-4 h-4" />
+                                                    <span>Payment Settled Successfully</span>
+                                                </div>
+                                            )}
+
+                                            <Button
+                                                onClick={async () => {
+                                                    const { printInvoice } = await import("@/lib/pdf-generator")
+                                                    printInvoice(
+                                                        order.metadata!.invoice as any,
+                                                        order.customerName,
+                                                        order.customerPhone,
+                                                        order.customerEmail
+                                                    )
+                                                }}
+                                                variant="outline"
+                                                className="w-full h-11 border-white/10 text-white/80 hover:bg-white/5 rounded-2xl text-xs font-light flex items-center justify-center gap-2"
+                                            >
+                                                <Download className="w-4 h-4" />
+                                                <span>Download PDF Receipt / Invoice</span>
+                                            </Button>
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            </motion.div>
+                        )}
 
                         {/* Push Notification Card */}
                         {isPushSupported && !isSubscribed && (
