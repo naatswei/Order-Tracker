@@ -63,6 +63,23 @@ function PaystackInvoiceCheckout({
     
     const initializePayment = usePaystackPayment(config)
     
+    const [mounted, setMounted] = useState(false)
+    useEffect(() => {
+        setMounted(true)
+    }, [])
+
+    if (!mounted) {
+        return (
+            <Button
+                disabled
+                className="w-full h-12 bg-blue-600/50 text-white rounded-2xl font-bold tracking-wide flex items-center justify-center gap-2 cursor-wait"
+            >
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span>Loading checkout...</span>
+            </Button>
+        )
+    }
+    
     const handlePay = () => {
         setIsPaying(true)
         initializePayment({
