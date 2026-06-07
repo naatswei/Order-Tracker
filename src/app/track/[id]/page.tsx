@@ -101,7 +101,7 @@ function PaystackInvoiceCheckout({
         <Button
             onClick={handlePay}
             disabled={isPaying}
-            className="w-full h-12 bg-blue-600 hover:bg-blue-500 text-white rounded-2xl font-bold tracking-wide transition-all shadow-lg shadow-blue-500/25 flex items-center justify-center gap-2"
+            className="w-full min-h-12 h-auto py-3 px-4 bg-blue-600 hover:bg-blue-500 text-white rounded-2xl font-bold tracking-wide transition-all shadow-lg shadow-blue-500/25 flex items-center justify-center gap-2 text-xs sm:text-sm whitespace-normal text-center"
         >
             {isPaying ? (
                 <>
@@ -759,7 +759,7 @@ export default function TrackingDetailsPage() {
                                                 </div>
                                             )}
 
-                                            <Button
+                                            <button
                                                 onClick={async () => {
                                                     const { printInvoice } = await import("@/lib/pdf-generator")
                                                     printInvoice(
@@ -769,12 +769,11 @@ export default function TrackingDetailsPage() {
                                                         order.customerEmail
                                                     )
                                                 }}
-                                                variant="outline"
-                                                className="w-full h-11 border-white/10 text-white/80 hover:bg-white/5 rounded-2xl text-xs font-light flex items-center justify-center gap-2"
+                                                className="w-full min-h-12 h-auto py-3 px-4 border border-white/15 bg-white/5 hover:bg-white/10 text-white rounded-2xl text-xs sm:text-sm font-medium flex items-center justify-center gap-2 cursor-pointer whitespace-normal text-center transition-all"
                                             >
-                                                <Download className="w-4 h-4" />
+                                                <Download className="w-4 h-4 text-white shrink-0" />
                                                 <span>Download PDF Receipt / Invoice</span>
-                                            </Button>
+                                            </button>
                                         </div>
                                     </CardContent>
                                 </Card>

@@ -135,11 +135,12 @@ export default function OrderUpdatePage() {
                         const items = foundOrder.inventoryLinks.map((link: any) => ({
                             name: link.inventoryItem?.name || "Product",
                             quantity: Number(link.quantity) || 1,
-                            price: Number(link.inventoryItem?.sellingPrice) || 0
+                            price: Number(link.inventoryItem?.sellingPrice) || 0,
+                            isLinked: true
                         }))
                         setInvoiceItems(items)
                     } else {
-                        setInvoiceItems([{ name: foundOrder.itemType || "Garment/Service", quantity: 1, price: 0 }])
+                        setInvoiceItems([{ name: foundOrder.itemType || "Garment/Service", quantity: 1, price: 0, isLinked: false }])
                     }
                 }
                 setLoading(false)
@@ -564,7 +565,8 @@ export default function OrderUpdatePage() {
                                                             }}
                                                             placeholder="Item/Service name"
                                                             required
-                                                            className="flex-1 bg-slate-50 border-slate-200 h-10 rounded-xl"
+                                                            readOnly={(item as any).isLinked}
+                                                            className={`flex-1 h-10 rounded-xl ${(item as any).isLinked ? "bg-slate-100/80 border-slate-200 text-slate-500 cursor-not-allowed" : "bg-slate-50 border-slate-200"}`}
                                                         />
                                                         <Input
                                                             type="number"
@@ -588,7 +590,8 @@ export default function OrderUpdatePage() {
                                                             placeholder="Price"
                                                             required
                                                             min="0"
-                                                            className="w-24 bg-slate-50 border-slate-200 h-10 rounded-xl text-right"
+                                                            readOnly={(item as any).isLinked}
+                                                            className={`w-24 h-10 rounded-xl text-right ${(item as any).isLinked ? "bg-slate-100/80 border-slate-200 text-slate-500 cursor-not-allowed" : "bg-slate-50 border-slate-200"}`}
                                                         />
                                                         {invoiceItems.length > 1 && (
                                                             <Button 
