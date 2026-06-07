@@ -8,6 +8,7 @@ import { auth, clerkClient } from "@clerk/nextjs/server";
 import { getPlanLimits } from "@/lib/plan-config";
 import { linkOrderToInventory, consumeReservedStock, releaseReservedStock, syncOrderInventoryLinks, getCurrentStaffId } from "./operations";
 import { triggerOrderStatusNotification } from "@/lib/web-push";
+import { sendOrderTrackingSMS } from "@/lib/hubtel";
 
 interface OrderInput {
     id?: string;
@@ -123,6 +124,9 @@ export async function createOrder(data: OrderInput) {
     if (data.inventoryItems && data.inventoryItems.length > 0) {
         await linkOrderToInventory(orderId, data.inventoryItems);
     }
+
+    // Trigger Hubtel SMS notification to customer in the background
+    sendOrderTrackingSMS(orderId).catch(err => console.error("Error triggering tracking SMS:", err));
 
     revalidatePath("/backoffice");
     return { success: true, orderId };
