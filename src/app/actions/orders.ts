@@ -8,7 +8,7 @@ import { auth, clerkClient } from "@clerk/nextjs/server";
 import { getPlanLimits } from "@/lib/plan-config";
 import { linkOrderToInventory, consumeReservedStock, releaseReservedStock, syncOrderInventoryLinks, getCurrentStaffId } from "./operations";
 import { triggerOrderStatusNotification } from "@/lib/web-push";
-import { sendOrderTrackingSMS } from "@/lib/hubtel";
+import { sendOrderTrackingSMS } from "@/lib/bulkclix";
 
 interface OrderInput {
     id?: string;
