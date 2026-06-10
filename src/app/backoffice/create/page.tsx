@@ -484,68 +484,70 @@ function CreateOrderContent() {
                                 {selectedInventory.length > 0 && (
                                     <div className="space-y-2">
                                         {selectedInventory.map((item, index) => (
-                                            <div key={item.id} className="flex items-center gap-3 p-3 bg-white rounded-xl border border-slate-100 shadow-sm">
-                                                <div className="flex-1">
-                                                    <p className="text-sm font-black text-slate-700">{item.name}</p>
+                                            <div key={item.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 bg-white rounded-2xl border border-slate-100 shadow-sm">
+                                                <div className="flex-1 min-w-0">
+                                                    <p className="text-sm font-black text-slate-700 truncate">{item.name}</p>
                                                 </div>
-                                                <div className="flex items-center gap-2">
-                                                    <Label className="text-[10px] font-bold text-slate-400 uppercase">Qty:</Label>
-                                                    <Input 
-                                                        type="number"
-                                                        value={item.quantity}
-                                                        max={item.max}
-                                                        onChange={(e) => {
-                                                            const newItems = [...selectedInventory];
-                                                            newItems[index].quantity = e.target.value;
-                                                            setSelectedInventory(newItems);
+                                                <div className="flex flex-wrap items-center justify-between sm:justify-end gap-3 sm:gap-4 border-t border-slate-50 pt-3 sm:border-0 sm:pt-0">
+                                                    <div className="flex items-center gap-2">
+                                                        <Label className="text-[10px] font-bold text-slate-400 uppercase">Qty:</Label>
+                                                        <Input 
+                                                            type="number"
+                                                            value={item.quantity}
+                                                            max={item.max}
+                                                            onChange={(e) => {
+                                                                const newItems = [...selectedInventory];
+                                                                newItems[index].quantity = e.target.value;
+                                                                setSelectedInventory(newItems);
+                                                            }}
+                                                            className="w-16 h-8 rounded-lg bg-slate-50 border-slate-100 text-xs font-bold text-center"
+                                                        />
+                                                    </div>
+                                                    <div className="text-right flex flex-col justify-center min-w-[110px]">
+                                                         {(() => {
+                                                             const invItem = allInventory.find(inv => inv.id === item.id);
+                                                             const qty = parseFloat(item.quantity) || 1;
+                                                             const clientId = selectedClientId === "none" ? "" : selectedClientId;
+                                                             const unitPrice = resolveUnitPrice(qty, invItem, clientId);
+                                                             const standardCost = parseFloat(invItem?.unitCost || "0");
+                                                             
+                                                             // Check if this uses client-specific pricing overrides
+                                                             let isClientSpecific = false;
+                                                             if (clientId && invItem && Array.isArray(invItem.clientOverrides)) {
+                                                                 isClientSpecific = invItem.clientOverrides.some((o: any) => o.clientId === clientId);
+                                                             }
+                                                             const isDiscounted = unitPrice < standardCost;
+                                                             
+                                                             return (
+                                                                 <>
+                                                                     <p className="text-xs font-black text-[#191A43]">
+                                                                         GH₵ {(qty * unitPrice).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                                                     </p>
+                                                                     <p className="text-[9px] text-slate-400 font-bold uppercase flex items-center justify-end gap-1 mt-0.5">
+                                                                         {isClientSpecific && <span className="text-[8px] font-black text-indigo-600 bg-indigo-50 px-1 py-0.5 rounded border border-indigo-100/50">Custom</span>}
+                                                                         {!isClientSpecific && isDiscounted && <span className="text-[8px] font-extrabold text-emerald-600 bg-emerald-50 px-1 py-0.2 rounded border border-emerald-100/50">Wholesale</span>}
+                                                                         GH₵ {unitPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}/ea
+                                                                     </p>
+                                                                 </>
+                                                             );
+                                                         })()}
+                                                     </div>
+                                                    <Button
+                                                        type="button"
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        onClick={() => {
+                                                            const remaining = selectedInventory.filter((_, i) => i !== index);
+                                                            setSelectedInventory(remaining);
+                                                            if (remaining.length === 0) {
+                                                                setItemType("");
+                                                            }
                                                         }}
-                                                        className="w-16 h-8 rounded-lg bg-slate-50 border-slate-100 text-xs font-bold text-center"
-                                                    />
+                                                        className="w-8 h-8 rounded-lg hover:bg-red-50 hover:text-red-600 transition-all shrink-0"
+                                                    >
+                                                        <Trash2 className="w-4 h-4" />
+                                                    </Button>
                                                 </div>
-                                                <div className="text-right flex flex-col justify-center min-w-[140px]">
-                                                     {(() => {
-                                                         const invItem = allInventory.find(inv => inv.id === item.id);
-                                                         const qty = parseFloat(item.quantity) || 1;
-                                                         const clientId = selectedClientId === "none" ? "" : selectedClientId;
-                                                         const unitPrice = resolveUnitPrice(qty, invItem, clientId);
-                                                         const standardCost = parseFloat(invItem?.unitCost || "0");
-                                                         
-                                                         // Check if this uses client-specific pricing overrides
-                                                         let isClientSpecific = false;
-                                                         if (clientId && invItem && Array.isArray(invItem.clientOverrides)) {
-                                                             isClientSpecific = invItem.clientOverrides.some((o: any) => o.clientId === clientId);
-                                                         }
-                                                         const isDiscounted = unitPrice < standardCost;
-                                                         
-                                                         return (
-                                                             <>
-                                                                 <p className="text-xs font-black text-[#191A43]">
-                                                                     GH₵ {(qty * unitPrice).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                                                                 </p>
-                                                                 <p className="text-[9px] text-slate-400 font-bold uppercase flex items-center justify-end gap-1.5 mt-0.5">
-                                                                     {isClientSpecific && <span className="text-[8px] font-black text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded border border-indigo-100/50">Custom B2B Rate</span>}
-                                                                     {!isClientSpecific && isDiscounted && <span className="text-[8px] font-extrabold text-emerald-600 bg-emerald-50 px-1 py-0.2 rounded border border-emerald-100/50">Wholesale</span>}
-                                                                     GH₵ {unitPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}/ea
-                                                                 </p>
-                                                             </>
-                                                         );
-                                                     })()}
-                                                 </div>
-                                                <Button
-                                                    type="button"
-                                                    variant="ghost"
-                                                    size="icon"
-                                                    onClick={() => {
-                                                        const remaining = selectedInventory.filter((_, i) => i !== index);
-                                                        setSelectedInventory(remaining);
-                                                        if (remaining.length === 0) {
-                                                            setItemType("");
-                                                        }
-                                                    }}
-                                                    className="w-8 h-8 rounded-lg hover:bg-red-50 hover:text-red-600 transition-all"
-                                                >
-                                                    <Trash2 className="w-4 h-4" />
-                                                </Button>
                                             </div>
                                         ))}
                                     </div>
