@@ -459,7 +459,8 @@ function CreateOrderContent() {
                                                     <button
                                                         key={item.id}
                                                         type="button"
-                                                        onClick={() => {
+                                                        onMouseDown={(e) => {
+                                                            e.preventDefault(); // Prevents input blur from closing dropdown before action completes
                                                             if (orderMode === "unit") {
                                                                 if (!selectedInventory.find(s => s.id === item.id)) {
                                                                     setSelectedInventory([...selectedInventory, { 
