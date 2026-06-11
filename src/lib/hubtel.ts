@@ -5,7 +5,7 @@ import { eq } from "drizzle-orm"
 const HUBTEL_CLIENT_ID = process.env.HUBTEL_CLIENT_ID
 const HUBTEL_CLIENT_SECRET = process.env.HUBTEL_CLIENT_SECRET
 const HUBTEL_SENDER_ID = process.env.HUBTEL_SENDER_ID || "OTracker"
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://otracker.app"
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://www.otracker.net"
 
 function formatGhanaPhoneNumber(phone: string): string {
     // Remove all non-numeric characters

@@ -6,7 +6,7 @@ import { eq } from "drizzle-orm";
 // VAPID keys should be generated and set in environment variables
 const vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || "";
 const vapidPrivateKey = process.env.VAPID_PRIVATE_KEY || "";
-const subject = "mailto:support@otracker.app"; // Need a valid email or URL
+const subject = "mailto:support@otracker.net"; // Need a valid email or URL
 
 if (vapidPublicKey && vapidPrivateKey) {
     try {
@@ -47,7 +47,7 @@ export async function triggerOrderStatusNotification(orderId: string, statusName
         const payload = {
             title: `Order #${orderNumber} Updated`,
             body: `Your order is now: ${statusName}.`,
-            url: `${process.env.NEXT_PUBLIC_APP_URL || "https://otracker.app"}/track/${orderId}`
+            url: `${process.env.NEXT_PUBLIC_APP_URL || "https://www.otracker.net"}/track/${orderId}`
         };
 
         const promises = subscriptions.map((sub) => {

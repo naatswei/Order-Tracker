@@ -4,7 +4,7 @@ import { eq } from "drizzle-orm"
 
 const BULKCLIX_API_KEY = process.env.BULKCLIX_API_KEY
 const BULKCLIX_SENDER_ID = process.env.BULKCLIX_SENDER_ID
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://otracker.app"
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://www.otracker.net"
 
 function formatGhanaPhoneNumber(phone: string): string {
     // Remove all non-numeric characters
