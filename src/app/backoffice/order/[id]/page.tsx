@@ -570,7 +570,7 @@ export default function OrderUpdatePage() {
                                                         />
                                                         <Input
                                                             type="number"
-                                                            value={item.quantity || ""}
+                                                            value={item.quantity}
                                                             onChange={(e) => {
                                                                 const val = Number(e.target.value) || 0
                                                                 setInvoiceItems(prev => prev.map((it, i) => i === idx ? { ...it, quantity: val } : it))
@@ -578,11 +578,11 @@ export default function OrderUpdatePage() {
                                                             placeholder="Qty"
                                                             required
                                                             min="1"
-                                                            className="w-16 bg-slate-50 border-slate-200 h-10 rounded-xl text-center"
+                                                            className="w-16 bg-slate-50 border-slate-200 h-10 rounded-xl text-center focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80"
                                                         />
                                                         <Input
                                                             type="number"
-                                                            value={item.price || ""}
+                                                            value={item.price}
                                                             onChange={(e) => {
                                                                 const val = Number(e.target.value) || 0
                                                                 setInvoiceItems(prev => prev.map((it, i) => i === idx ? { ...it, price: val } : it))
@@ -590,8 +590,7 @@ export default function OrderUpdatePage() {
                                                             placeholder="Price"
                                                             required
                                                             min="0"
-                                                            readOnly={(item as any).isLinked}
-                                                            className={`w-24 h-10 rounded-xl text-right ${(item as any).isLinked ? "bg-slate-100/80 border-slate-200 text-slate-500 cursor-not-allowed" : "bg-slate-50 border-slate-200"}`}
+                                                            className="w-24 h-10 rounded-xl text-right bg-slate-50 border-slate-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80"
                                                         />
                                                         {invoiceItems.length > 1 && (
                                                             <Button 
