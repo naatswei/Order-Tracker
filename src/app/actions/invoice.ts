@@ -6,6 +6,7 @@ import { eq } from "drizzle-orm"
 import { auth, clerkClient } from "@clerk/nextjs/server"
 import { revalidatePath } from "next/cache"
 import { getCurrentStaffId } from "./operations"
+import { sendOrderStatusSMS } from "@/lib/bulkclix"
 
 export async function generateInvoice(
     orderId: string,
@@ -126,6 +127,8 @@ export async function markInvoiceAsPaid(orderId: string) {
         })
         .where(eq(orders.id, orderId))
 
+    sendOrderStatusSMS(orderId, "Payment Confirmed").catch(err => console.error("Error triggering status SMS:", err));
+
     revalidatePath("/backoffice")
     revalidatePath(`/backoffice/order/${orderId}`)
     revalidatePath(`/track/${orderId}`)
@@ -179,6 +182,8 @@ export async function confirmInvoicePayment(orderId: string, reference: string) 
             updatedAt: new Date()
         })
         .where(eq(orders.id, orderId))
+
+    sendOrderStatusSMS(orderId, "Payment Confirmed").catch(err => console.error("Error triggering status SMS:", err));
 
     await db.insert(statusHistory).values({
         id: Math.random().toString(36).substring(2, 9).toUpperCase(),

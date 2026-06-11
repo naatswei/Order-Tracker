@@ -8,7 +8,7 @@ import { auth, clerkClient } from "@clerk/nextjs/server";
 import { getPlanLimits } from "@/lib/plan-config";
 import { linkOrderToInventory, consumeReservedStock, releaseReservedStock, syncOrderInventoryLinks, getCurrentStaffId } from "./operations";
 import { triggerOrderStatusNotification } from "@/lib/web-push";
-import { sendOrderTrackingSMS } from "@/lib/bulkclix";
+import { sendOrderTrackingSMS, sendOrderStatusSMS } from "@/lib/bulkclix";
 
 interface OrderInput {
     id?: string;
@@ -182,6 +182,7 @@ export async function updateOrderStatus(orderId: string, status: string, locatio
 
     if (orderNumber) {
         triggerOrderStatusNotification(orderId, status, orderNumber).catch(console.error);
+        sendOrderStatusSMS(orderId, status).catch(err => console.error("Error triggering status SMS:", err));
     }
 
     revalidatePath("/backoffice");
@@ -369,6 +370,7 @@ export async function bulkUpdateOrderStatus(orderIds: string[], status: string, 
             } else if (lowerStatus === "cancelled" || lowerStatus === "voided") {
                 await releaseReservedStock(orderId, tx);
             }
+            sendOrderStatusSMS(orderId, status).catch(err => console.error("Error triggering status SMS:", err));
         }
     });
 
