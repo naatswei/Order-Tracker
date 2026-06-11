@@ -76,6 +76,7 @@ function CreateOrderContent() {
     const [allInventory, setAllInventory] = useState<any[]>([])
     const [selectedInventory, setSelectedInventory] = useState<{ id: string, name: string, quantity: string, max: number }[]>([])
     const [inventorySearch, setInventorySearch] = useState("")
+    const [isSearchFocused, setIsSearchFocused] = useState(false)
 
 
     // Unit Modal state
@@ -435,17 +436,26 @@ function CreateOrderContent() {
                                         placeholder="Search inventory to add items..."
                                         value={inventorySearch}
                                         onChange={(e) => setInventorySearch(e.target.value)}
+                                        onFocus={() => setIsSearchFocused(true)}
+                                        onBlur={() => setTimeout(() => setIsSearchFocused(false), 200)}
                                         className="pl-10 rounded-xl bg-white border-slate-200 h-12 text-sm"
                                     />
-                                    {inventorySearch && (
+                                    {(inventorySearch || isSearchFocused) && (
                                         <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-100 rounded-xl shadow-xl z-50 max-h-48 overflow-auto">
-                                            {allInventory
-                                                .filter(item => 
+                                            {(() => {
+                                                const filtered = allInventory.filter(item => 
                                                     (item.saleType || "unit") === orderMode &&
                                                     item.name.toLowerCase().includes(inventorySearch.toLowerCase()) && 
                                                     !selectedInventory.some(s => s.id === item.id)
-                                                )
-                                                .map(item => (
+                                                );
+                                                if (filtered.length === 0) {
+                                                    return (
+                                                        <div className="p-4 text-center text-xs text-slate-400 font-medium">
+                                                            No available items in inventory
+                                                        </div>
+                                                    );
+                                                }
+                                                return filtered.map(item => (
                                                     <button
                                                         key={item.id}
                                                         type="button"
@@ -459,7 +469,7 @@ function CreateOrderContent() {
                                                                         max: parseFloat(item.quantity) - parseFloat(item.reserved || "0")
                                                                     }]);
                                                                     setItemType(item.name);
-                                                                     toast.success(`Linked "${item.name}"`);
+                                                                    toast.success(`Linked "${item.name}"`);
                                                                 }
                                                             } else {
                                                                 setSelectedItemForUnitModal(item);
@@ -476,7 +486,8 @@ function CreateOrderContent() {
                                                         </div>
                                                         <p className="text-[10px] font-black text-emerald-500 uppercase">{parseFloat(item.quantity) - parseFloat(item.reserved || "0")} Available</p>
                                                     </button>
-                                                ))}
+                                                ));
+                                            })()}
                                         </div>
                                     )}
                                 </div>
