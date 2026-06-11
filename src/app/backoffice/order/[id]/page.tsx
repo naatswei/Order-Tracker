@@ -135,7 +135,7 @@ export default function OrderUpdatePage() {
                         const items = foundOrder.inventoryLinks.map((link: any) => ({
                             name: link.inventoryItem?.name || "Product",
                             quantity: Number(link.quantity) || 1,
-                            price: Number(link.inventoryItem?.sellingPrice) || 0,
+                            price: Number(link.inventoryItem?.sellingPrice) || Number(link.inventoryItem?.unitCost) || 0,
                             isLinked: true
                         }))
                         setInvoiceItems(items)

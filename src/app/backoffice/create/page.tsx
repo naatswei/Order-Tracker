@@ -35,9 +35,12 @@ function resolveUnitPrice(quantity: number, inventoryItem: any, clientId?: strin
         }
     }
     
-    // 2. If no overrides, fall back to standard tiers
+    // 2. If sellingPrice is 0 or unset, fall back to unitCost
+    const basePrice = parseFloat(inventoryItem.sellingPrice || "0") || parseFloat(inventoryItem.unitCost || "0");
+    
+    // 3. If no overrides, fall back to standard tiers
     if (!Array.isArray(tiers) || tiers.length === 0) {
-        return parseFloat(inventoryItem.sellingPrice || "0");
+        return basePrice;
     }
     
     const matchedTier = tiers.find((tier: any) => {
@@ -46,7 +49,7 @@ function resolveUnitPrice(quantity: number, inventoryItem: any, clientId?: strin
         return minMatch && maxMatch;
     });
     
-    return matchedTier ? parseFloat(matchedTier.price) : parseFloat(inventoryItem.sellingPrice || "0");
+    return matchedTier ? parseFloat(matchedTier.price) : basePrice;
 }
 
 function CreateOrderContent() {
