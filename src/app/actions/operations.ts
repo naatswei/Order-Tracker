@@ -447,6 +447,41 @@ export async function removeInventoryItem(id: string) {
     return { success: true };
 }
 
+export async function bulkRemoveInventoryItems(ids: string[]): Promise<{ success: boolean; blocked: { id: string; name: string }[] }> {
+    const { orgId, orgRole } = await auth();
+    if (!orgId) throw new Error("Unauthorized");
+    if (orgRole !== "org:admin") throw new Error("Only organization administrators can delete inventory items.");
+    if (!ids || ids.length === 0) throw new Error("No items selected.");
+
+    // Fetch the items to check for reserved stock
+    const itemsToDelete = await db.query.inventory.findMany({
+        where: and(
+            eq(inventory.clerkOrgId, orgId),
+            sql`${inventory.id} = ANY(ARRAY[${sql.join(ids.map(id => sql`${id}`), sql`, `)}]::text[])`
+        )
+    });
+
+    // Block items with active reservations
+    const blocked = itemsToDelete
+        .filter(item => parseFloat(item.reserved || "0") > 0)
+        .map(item => ({ id: item.id, name: item.name }));
+
+    if (blocked.length > 0) {
+        return { success: false, blocked };
+    }
+
+    // Safe to delete — none have reserved stock
+    await db.delete(inventory).where(
+        and(
+            eq(inventory.clerkOrgId, orgId),
+            sql`${inventory.id} = ANY(ARRAY[${sql.join(ids.map(id => sql`${id}`), sql`, `)}]::text[])`
+        )
+    );
+
+    revalidatePath("/backoffice/inventory");
+    return { success: true, blocked: [] };
+}
+
 // --- Order & Inventory Linking ---
 
 export async function linkOrderToInventory(orderId: string, inventoryItems: { id: string, quantity: string }[]) {

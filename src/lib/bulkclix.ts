@@ -10,12 +10,11 @@ function formatGhanaPhoneNumber(phone: string): string {
     // Remove all non-numeric characters
     let cleaned = phone.replace(/\D/g, "")
 
-    // BulkClix requires local format or standard digits (e.g. 0541088285 or 233...)
-    // Let's keep it as standard 10 digit local format (024...) or standard digits based on input
-    if (cleaned.startsWith("233") && cleaned.length === 12) {
-        return "0" + cleaned.substring(3)
-    }
+    // BulkClix requires standard international format (233...) for reliable routing
     if (cleaned.startsWith("0") && cleaned.length === 10) {
+        return "233" + cleaned.substring(1)
+    }
+    if (cleaned.startsWith("233") && cleaned.length === 12) {
         return cleaned
     }
     return cleaned

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useOrganization } from "@clerk/nextjs";
-import { getInventory, addInventoryItem, updateStock, removeInventoryItem, getInventoryHistory, bulkAddInventoryItems } from "@/app/actions/operations";
+import { getInventory, addInventoryItem, updateStock, removeInventoryItem, getInventoryHistory, bulkAddInventoryItems, bulkRemoveInventoryItems } from "@/app/actions/operations";
 import { getOrders } from "@/app/actions/orders";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -30,7 +30,10 @@ import {
     Loader2,
     FileSpreadsheet,
     DollarSign,
-    X
+    X,
+    CheckSquare,
+    Square,
+    CheckCheck
 } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
@@ -80,6 +83,11 @@ export default function InventoryPage() {
     const [businessType, setBusinessType] = useState<string | null>(null);
     const [saleTypeTab, setSaleTypeTab] = useState<"unit" | "wholesale">("unit");
     const [showOnlyLowStock, setShowOnlyLowStock] = useState(false);
+
+    // Bulk delete state
+    const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+    const [isBulkDeleteModalOpen, setIsBulkDeleteModalOpen] = useState(false);
+    const [isBulkDeleting, setIsBulkDeleting] = useState(false);
 
     // Form state
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -453,6 +461,41 @@ export default function InventoryPage() {
         }
     }
 
+    function toggleSelectItem(id: string) {
+        setSelectedIds(prev => {
+            const next = new Set(prev);
+            next.has(id) ? next.delete(id) : next.add(id);
+            return next;
+        });
+    }
+
+    function toggleSelectAll() {
+        if (selectedIds.size === filteredItems.length) {
+            setSelectedIds(new Set());
+        } else {
+            setSelectedIds(new Set(filteredItems.map((i: any) => i.id)));
+        }
+    }
+
+    async function handleBulkDelete() {
+        setIsBulkDeleting(true);
+        try {
+            const result = await bulkRemoveInventoryItems(Array.from(selectedIds));
+            if (!result.success && result.blocked.length > 0) {
+                toast.error(`Cannot delete: ${result.blocked.map(b => b.name).join(", ")} have active reservations.`);
+            } else {
+                toast.success(`${selectedIds.size} item${selectedIds.size > 1 ? "s" : ""} deleted successfully`);
+                setSelectedIds(new Set());
+                setIsBulkDeleteModalOpen(false);
+                loadData();
+            }
+        } catch (error: any) {
+            toast.error(error.message || "Failed to delete items");
+        } finally {
+            setIsBulkDeleting(false);
+        }
+    }
+
     const filteredItems = items.filter(item => {
         const matchesTab = (item.saleType || "unit") === saleTypeTab;
         const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -736,6 +779,19 @@ export default function InventoryPage() {
                                     <table className="w-full text-left border-collapse min-w-[1000px]">
                                         <thead>
                                             <tr className="border-b border-slate-100 bg-slate-50/40">
+                                                {isAdmin && (
+                                                    <th className="pl-6 py-4 w-10">
+                                                        <button
+                                                            onClick={toggleSelectAll}
+                                                            className="text-slate-400 hover:text-[#191A43] transition-colors"
+                                                            title={selectedIds.size === filteredItems.length && filteredItems.length > 0 ? "Deselect all" : "Select all"}
+                                                        >
+                                                            {selectedIds.size === filteredItems.length && filteredItems.length > 0
+                                                                ? <CheckSquare className="w-4 h-4 text-[#191A43]" />
+                                                                : <Square className="w-4 h-4" />}
+                                                        </button>
+                                                    </th>
+                                                )}
                                                 <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider">{config.itemLabel || "Asset"} Narrative</th>
                                                 <th className="px-4 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider text-center">Initial Stock</th>
                                                 <th className="px-4 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider text-center">On Hand (Value)</th>
@@ -754,8 +810,20 @@ export default function InventoryPage() {
                                                         initial={{ opacity: 0 }}
                                                         animate={{ opacity: 1 }}
                                                         exit={{ opacity: 0 }}
-                                                        className="group hover:bg-slate-50/50 transition-colors"
+                                                        className={`group hover:bg-slate-50/50 transition-colors ${selectedIds.has(item.id) ? "bg-[#191A43]/[0.03] ring-1 ring-inset ring-[#191A43]/10" : ""}`}
                                                     >
+                                                        {isAdmin && (
+                                                            <td className="pl-6 py-4 w-10">
+                                                                <button
+                                                                    onClick={() => toggleSelectItem(item.id)}
+                                                                    className="text-slate-300 hover:text-[#191A43] transition-colors"
+                                                                >
+                                                                    {selectedIds.has(item.id)
+                                                                        ? <CheckSquare className="w-4 h-4 text-[#191A43]" />
+                                                                        : <Square className="w-4 h-4" />}
+                                                                </button>
+                                                            </td>
+                                                        )}
                                                         <td className="px-6 py-4">
                                                             <div className="flex items-center gap-4">
                                                                 <div className={`w-9 h-9 rounded-lg flex items-center justify-center text-white font-bold text-base shadow-sm ${getAvatarColor(item.name)}`}>
@@ -918,6 +986,100 @@ export default function InventoryPage() {
                         </AnimatePresence>
                     </Card>
                 </div>
+
+                {/* Bulk Delete Floating Action Bar */}
+                <AnimatePresence>
+                    {selectedIds.size > 0 && (
+                        <motion.div
+                            initial={{ opacity: 0, y: 24 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: 24 }}
+                            transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                            className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50"
+                        >
+                            <div className="flex items-center gap-3 bg-[#191A43] text-white px-5 py-3 rounded-2xl shadow-2xl shadow-[#191A43]/30 border border-white/10">
+                                <div className="flex items-center gap-2">
+                                    <CheckCheck className="w-4 h-4 text-indigo-300" />
+                                    <span className="text-sm font-bold">{selectedIds.size} item{selectedIds.size > 1 ? "s" : ""} selected</span>
+                                </div>
+                                <div className="w-px h-5 bg-white/20" />
+                                <button
+                                    onClick={() => setSelectedIds(new Set())}
+                                    className="text-xs font-semibold text-white/60 hover:text-white transition-colors"
+                                >
+                                    Clear
+                                </button>
+                                <Button
+                                    onClick={() => setIsBulkDeleteModalOpen(true)}
+                                    className="h-8 bg-red-500 hover:bg-red-600 text-white rounded-xl px-4 gap-2 text-xs font-bold shadow-md shadow-red-500/20 transition-all"
+                                >
+                                    <Trash2 className="w-3.5 h-3.5" />
+                                    Delete Selected
+                                </Button>
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+
+                {/* Bulk Delete Confirmation Modal */}
+                <Dialog open={isBulkDeleteModalOpen} onOpenChange={setIsBulkDeleteModalOpen}>
+                    <DialogContent className="max-w-md rounded-2xl border border-slate-100 shadow-xl p-0 bg-white">
+                        <DialogHeader className="p-6 pb-4">
+                            <div className="flex items-center gap-3 mb-1">
+                                <div className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center">
+                                    <Trash2 className="w-5 h-5 text-red-500" />
+                                </div>
+                                <div>
+                                    <DialogTitle className="text-base font-bold text-[#191A43]">Confirm Bulk Delete</DialogTitle>
+                                    <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider mt-0.5">This action cannot be undone</p>
+                                </div>
+                            </div>
+                        </DialogHeader>
+                        <div className="px-6 pb-2">
+                            <p className="text-sm text-slate-600 mb-3">
+                                You are about to permanently delete <span className="font-bold text-[#191A43]">{selectedIds.size} item{selectedIds.size > 1 ? "s" : ""}</span> from your inventory:
+                            </p>
+                            <div className="bg-slate-50 rounded-xl border border-slate-100 p-3 max-h-40 overflow-y-auto space-y-1.5">
+                                {filteredItems
+                                    .filter((item: any) => selectedIds.has(item.id))
+                                    .map((item: any) => (
+                                        <div key={item.id} className="flex items-center justify-between">
+                                            <span className="text-xs font-semibold text-slate-700">{item.name}</span>
+                                            {parseFloat(item.reserved || "0") > 0 && (
+                                                <span className="text-[10px] font-bold text-amber-600 bg-amber-50 border border-amber-100 px-2 py-0.5 rounded-full">
+                                                    {item.reserved} reserved — blocked
+                                                </span>
+                                            )}
+                                        </div>
+                                    ))
+                                }
+                            </div>
+                            {filteredItems.filter((item: any) => selectedIds.has(item.id) && parseFloat(item.reserved || "0") > 0).length > 0 && (
+                                <p className="text-xs text-amber-700 bg-amber-50 border border-amber-100 rounded-lg px-3 py-2 mt-3 font-medium">
+                                    ⚠️ Items with active reservations cannot be deleted. Deselect them or release the reservations first.
+                                </p>
+                            )}
+                        </div>
+                        <div className="flex items-center justify-end gap-3 p-6 pt-4">
+                            <Button
+                                variant="outline"
+                                onClick={() => setIsBulkDeleteModalOpen(false)}
+                                className="h-9 rounded-xl border-slate-200 text-xs font-bold"
+                                disabled={isBulkDeleting}
+                            >
+                                Cancel
+                            </Button>
+                            <Button
+                                onClick={handleBulkDelete}
+                                disabled={isBulkDeleting || filteredItems.filter((item: any) => selectedIds.has(item.id) && parseFloat(item.reserved || "0") > 0).length > 0}
+                                className="h-9 bg-red-500 hover:bg-red-600 text-white rounded-xl px-4 gap-2 text-xs font-bold shadow-md shadow-red-500/20"
+                            >
+                                {isBulkDeleting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
+                                {isBulkDeleting ? "Deleting..." : `Delete ${selectedIds.size} Item${selectedIds.size > 1 ? "s" : ""}`}
+                            </Button>
+                        </div>
+                    </DialogContent>
+                </Dialog>
                 <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
                     <DialogContent className="max-w-2xl rounded-xl border border-slate-100 shadow-xl p-0 max-h-[90vh] overflow-y-auto no-scrollbar bg-white">
                     <DialogHeader className="p-6 sm:p-8 pb-4">
