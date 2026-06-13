@@ -115,7 +115,8 @@ export async function saveMerchantPayoutSettings(
                     business_name: data.businessName,
                     settlement_bank: data.bankCode,
                     account_number: data.accountNumber,
-                    percentage_charge: 1 // Platform fee is 1%
+                    percentage_charge: 1, // OTracker platform fee: 1%
+                    bearer: "subaccount"  // merchant's subaccount bears Paystack transaction fee
                 })
             })
         } else {
@@ -129,7 +130,8 @@ export async function saveMerchantPayoutSettings(
                     business_name: data.businessName,
                     settlement_bank: data.bankCode,
                     account_number: data.accountNumber,
-                    percentage_charge: 1 // Platform fee is 1%
+                    percentage_charge: 1, // OTracker platform fee: 1%
+                    bearer: "subaccount"  // merchant's subaccount bears Paystack transaction fee
                 })
             })
         }
