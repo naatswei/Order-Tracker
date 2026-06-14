@@ -1,7 +1,7 @@
 "use server"
 
 import { db } from "@/db";
-import { orders, staff, workflows, statusHistory, inventory, inventoryTransactions, orderInventoryLinks, clientOrganizations, clientPricingOverrides } from "@/db/schema";
+import { orders, staff, staffAttendance, workflows, statusHistory, inventory, inventoryTransactions, orderInventoryLinks, clientOrganizations, clientPricingOverrides } from "@/db/schema";
 import { eq, desc, and, asc, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { auth, currentUser, clerkClient } from "@clerk/nextjs/server";
@@ -85,7 +85,7 @@ export async function syncCurrentUserStaff() {
 
 // --- Staff Management ---
 
-export async function addStaff(data: { name: string, role?: string, email?: string, phone?: string, department?: string, reportsToId?: string }) {
+export async function addStaff(data: { name: string, role?: string, email?: string, phone?: string, department?: string, reportsToId?: string, pinCode?: string }) {
     const { userId, orgId } = await auth();
     if (!userId || !orgId) throw new Error("Unauthorized");
 
@@ -97,6 +97,7 @@ export async function addStaff(data: { name: string, role?: string, email?: stri
         phone: data.phone || null,
         department: data.department || null,
         reportsToId: data.reportsToId || null,
+        pinCode: data.pinCode || null,
         clerkOrgId: orgId,
     });
 
@@ -104,7 +105,7 @@ export async function addStaff(data: { name: string, role?: string, email?: stri
     return { success: true };
 }
 
-export async function updateStaff(id: string, data: Partial<{ name: string, role: string, email: string, phone: string, department: string, reportsToId: string }>) {
+export async function updateStaff(id: string, data: Partial<{ name: string, role: string, email: string, phone: string, department: string, reportsToId: string, pinCode: string }>) {
     const { orgId } = await auth();
     if (!orgId) throw new Error("Unauthorized");
 
@@ -130,6 +131,46 @@ export async function removeStaff(id: string) {
     await db.delete(staff).where(and(eq(staff.id, id), eq(staff.clerkOrgId, orgId)));
     revalidatePath("/backoffice/staff");
     return { success: true };
+}
+
+export async function clockIn(pinCode: string) {
+    const { orgId } = await auth();
+    if (!orgId) return { success: false, error: "Unauthorized" };
+
+    const matchedStaff = await db.query.staff.findFirst({
+        where: and(eq(staff.clerkOrgId, orgId), eq(staff.pinCode, pinCode))
+    });
+
+    if (!matchedStaff) return { success: false, error: "Invalid PIN code" };
+
+    await db.insert(staffAttendance).values({
+        id: `att_${nanoid(10)}`,
+        staffId: matchedStaff.id,
+        clerkOrgId: orgId,
+        type: "clock_in"
+    });
+
+    return { success: true, staffName: matchedStaff.name };
+}
+
+export async function clockOut(pinCode: string) {
+    const { orgId } = await auth();
+    if (!orgId) return { success: false, error: "Unauthorized" };
+
+    const matchedStaff = await db.query.staff.findFirst({
+        where: and(eq(staff.clerkOrgId, orgId), eq(staff.pinCode, pinCode))
+    });
+
+    if (!matchedStaff) return { success: false, error: "Invalid PIN code" };
+
+    await db.insert(staffAttendance).values({
+        id: `att_${nanoid(10)}`,
+        staffId: matchedStaff.id,
+        clerkOrgId: orgId,
+        type: "clock_out"
+    });
+
+    return { success: true, staffName: matchedStaff.name };
 }
 
 // --- Workflow Management ---

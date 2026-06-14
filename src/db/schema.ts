@@ -30,10 +30,19 @@ export const staff = pgTable("staff", {
     department: text("department"),
     reportsToId: text("reports_to_id"),
     photoUrl: text("photo_url"),
+    pinCode: text("pin_code"), // 4-digit PIN for clock-in
     clerkUserId: text("clerk_user_id"), // To link a logged-in user to their staff profile
     clerkOrgId: text("clerk_org_id").notNull(),
     branchId: text("branch_id").references(() => branches.id, { onDelete: "set null" }),
     createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const staffAttendance = pgTable("staff_attendance", {
+    id: text("id").primaryKey(),
+    staffId: text("staff_id").references(() => staff.id, { onDelete: "cascade" }).notNull(),
+    clerkOrgId: text("clerk_org_id").notNull(),
+    type: text("type").notNull(), // "clock_in" or "clock_out"
+    timestamp: timestamp("timestamp").defaultNow().notNull(),
 });
 
 export const branches = pgTable("branches", {
@@ -106,6 +115,7 @@ export const ordersRelations = relations(orders, ({ many, one }) => ({
 
 export const staffRelations = relations(staff, ({ many, one }) => ({
     assignedOrders: many(orders),
+    attendance: many(staffAttendance),
     manager: one(staff, {
         fields: [staff.reportsToId],
         references: [staff.id],
@@ -113,6 +123,13 @@ export const staffRelations = relations(staff, ({ many, one }) => ({
     }),
     subordinates: many(staff, {
         relationName: "reporting",
+    }),
+}));
+
+export const staffAttendanceRelations = relations(staffAttendance, ({ one }) => ({
+    staff: one(staff, {
+        fields: [staffAttendance.staffId],
+        references: [staff.id],
     }),
 }));
 

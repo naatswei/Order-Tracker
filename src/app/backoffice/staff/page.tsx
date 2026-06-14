@@ -75,6 +75,7 @@ export default function StaffPage() {
     const [searchQuery, setSearchQuery] = useState("");
     const [selectedDepartment, setSelectedDepartment] = useState("all");
     const [phone, setPhone] = useState("");
+    const [pinCode, setPinCode] = useState("");
 
     useEffect(() => {
         let isMounted = true;
@@ -116,7 +117,8 @@ export default function StaffPage() {
                 email: email || undefined,
                 phone: phone || undefined,
                 department: department || undefined, 
-                reportsToId: reportsToId === "none" ? undefined : reportsToId 
+                reportsToId: reportsToId === "none" ? undefined : reportsToId,
+                pinCode: pinCode || undefined
             });
             toast.success("New team member deployed!", {
                 style: { background: "#191A43", color: "#fff", border: "none" }
@@ -127,6 +129,7 @@ export default function StaffPage() {
             setPhone("");
             setDepartment("");
             setReportsToId("");
+            setPinCode("");
             loadStaff();
             setIsEnrollModalOpen(false);
         } catch (error: any) {
@@ -149,7 +152,8 @@ export default function StaffPage() {
                 email: editingStaff.email,
                 phone: editingStaff.phone,
                 department: editingStaff.department,
-                reportsToId: editingStaff.reportsToId === "none" ? null : editingStaff.reportsToId
+                reportsToId: editingStaff.reportsToId === "none" ? null : editingStaff.reportsToId,
+                pinCode: editingStaff.pinCode
             });
             toast.success("Profile updated successfully", {
                 style: { background: "#191A43", color: "#fff", border: "none" }
@@ -596,15 +600,28 @@ export default function StaffPage() {
                                         className="h-10 rounded-xl bg-slate-50 border-slate-100 font-bold"
                                     />
                                 </div>
-                                <div className="space-y-2">
+                                <div className="space-y-1.5 flex-1">
                                     <Label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Department</Label>
                                     <Input 
+                                        placeholder="e.g. Sales, Delivery" 
                                         value={editingStaff.department || ""} 
                                         onChange={(e) => setEditingStaff({...editingStaff, department: e.target.value})}
-                                        className="h-10 rounded-xl bg-slate-50 border-slate-100 font-bold"
+                                        className="h-11 rounded-xl bg-slate-50/50 border-slate-200 focus-visible:ring-[#191A43] font-medium"
                                     />
                                 </div>
-                                <div className="col-span-2 space-y-2">
+                            </div>
+                            <div className="space-y-1.5">
+                                <Label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">4-Digit PIN (For Clock-In)</Label>
+                                <Input 
+                                    placeholder="e.g. 1234" 
+                                    maxLength={4}
+                                    type="password"
+                                    value={editingStaff.pinCode || ""} 
+                                    onChange={(e) => setEditingStaff({...editingStaff, pinCode: e.target.value})}
+                                    className="h-11 rounded-xl bg-slate-50/50 border-slate-200 focus-visible:ring-[#191A43] font-black tracking-widest text-center"
+                                />
+                            </div>
+                            <div className="col-span-2 space-y-2">
                                     <Label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Reports To</Label>
                                     <Select 
                                         value={editingStaff.reportsToId || "none"} 
@@ -741,6 +758,17 @@ export default function StaffPage() {
                                     value={phone} 
                                     onChange={(e) => setPhone(e.target.value)}
                                     className="h-10 rounded-xl bg-slate-50 border-slate-100 font-bold"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">4-Digit PIN (For Clock-In)</Label>
+                                <Input 
+                                    placeholder="e.g. 1234" 
+                                    maxLength={4}
+                                    type="password"
+                                    value={pinCode} 
+                                    onChange={(e) => setPinCode(e.target.value)}
+                                    className="h-10 rounded-xl bg-slate-50 border-slate-100 font-bold text-center tracking-widest"
                                 />
                             </div>
                             <div className="space-y-2">
