@@ -303,19 +303,6 @@ export default function OrderUpdatePage() {
                                         </div>
                                     )}
 
-                                    {/* WhatsApp Notification Button */}
-                                    <div className="pt-6 border-t border-slate-100 mt-2">
-                                        <a 
-                                            href={`https://wa.me/${(order.customerPhone || '').replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`Hello ${order.customerName},\n\nYour order #${order.orderNumber} status is now: *${order.currentStatus}*.\n\nTrack your order here: https://www.otracker.net/track/${order.id}`)}`}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="flex items-center justify-center w-full gap-2 px-4 py-2.5 bg-[#25D366] hover:bg-[#20bd5a] text-white text-sm font-bold rounded-xl transition-colors shadow-sm shadow-[#25D366]/20"
-                                        >
-                                            <MessageCircle className="w-4 h-4" />
-                                            Send WhatsApp Update
-                                        </a>
-                                        <p className="text-[10px] text-slate-400 text-center mt-2 font-medium">Clicking this will open WhatsApp with a pre-written message.</p>
-                                    </div>
                                 </div>
                             </div>
                         </Card>
