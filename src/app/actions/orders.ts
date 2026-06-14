@@ -49,87 +49,92 @@ async function validateSubscription(orgId: string) {
     return { planName, orgName: org.name };
 }
 
-export async function createOrder(data: OrderInput) {
-    const { userId, orgId } = await auth();
+export async function createOrder(data: OrderInput): Promise<{ success: boolean; orderId?: string; error?: string }> {
+    try {
+        const { userId, orgId } = await auth();
 
-    if (!userId) {
-        throw new Error("Unauthorized");
-    }
+        if (!userId) {
+            return { success: false, error: "Unauthorized" };
+        }
 
-    let orgName = "Order";
+        let orgName = "Order";
 
-    // Enforce subscription check and order limit
-    if (orgId) {
-        const { planName, orgName: validatedOrgName } = await validateSubscription(orgId);
-        orgName = validatedOrgName;
+        // Enforce subscription check and order limit
+        if (orgId) {
+            const { planName, orgName: validatedOrgName } = await validateSubscription(orgId);
+            orgName = validatedOrgName;
 
-        const limits = getPlanLimits(planName);
+            const limits = getPlanLimits(planName);
 
-        if (limits.maxOrders !== Infinity) {
-            const [result] = await db.select({ value: count() }).from(orders).where(eq(orders.clerkOrgId, orgId));
-            if (result.value >= limits.maxOrders) {
-                throw new Error(`Order limit reached (${limits.maxOrders}). Please upgrade your plan to create more orders.`);
+            if (limits.maxOrders !== Infinity) {
+                const [result] = await db.select({ value: count() }).from(orders).where(eq(orders.clerkOrgId, orgId));
+                if (result.value >= limits.maxOrders) {
+                    return { success: false, error: `Order limit reached (${limits.maxOrders}). Please upgrade your plan to create more orders.` };
+                }
             }
         }
-    }
 
-    // Auto-generate order number
-    let initials = "ORD";
-    if (orgName) {
-        const words = orgName.split(/\s+/);
-        if (words.length > 1) {
-            initials = words.map(w => w[0]).join("").toUpperCase().substring(0, 3);
-        } else {
-            initials = orgName.substring(0, 2).toUpperCase();
+        // Auto-generate order number
+        let initials = "ORD";
+        if (orgName) {
+            const words = orgName.split(/\s+/);
+            if (words.length > 1) {
+                initials = words.map(w => w[0]).join("").toUpperCase().substring(0, 3);
+            } else {
+                initials = orgName.substring(0, 2).toUpperCase();
+            }
         }
+
+        const [countResult] = await db.select({ value: count() })
+            .from(orders)
+            .where(eq(orders.clerkOrgId, orgId || "unknown"));
+
+        const sequenceNumber = (countResult?.value || 0) + 1;
+        const paddedSequence = String(sequenceNumber).padStart(5, '0');
+        const generatedOrderNumber = `${initials}-${paddedSequence}`;
+
+        const orderId = data.id || Math.random().toString(36).substring(2, 9).toUpperCase();
+
+        await db.insert(orders).values({
+            id: orderId,
+            orderNumber: generatedOrderNumber,
+            customerName: data.customerName,
+            customerEmail: data.customerEmail || null,
+            customerPhone: data.customerPhone,
+            itemType: data.itemType || data.garmentType || "Other",
+            pickupDate: data.pickupDate || null,
+            measurements: data.measurements || null,
+            metadata: data.metadata || {},
+            businessType: data.businessType,
+            currentStatus: data.currentStatus || "Order Received",
+            clerkOrgId: orgId || null,
+            userId: userId || null,
+        });
+
+        // Add initial status history
+        const staffId = orgId ? await getCurrentStaffId(orgId, userId) : null;
+        await db.insert(statusHistory).values({
+            id: Math.random().toString(36).substring(2, 9).toUpperCase(),
+            orderId: orderId,
+            status: data.currentStatus || "Order Received",
+            location: "Main Office",
+            message: "Order created successfully",
+            staffId: staffId,
+        });
+        // Link inventory items if any
+        if (data.inventoryItems && data.inventoryItems.length > 0) {
+            await linkOrderToInventory(orderId, data.inventoryItems);
+        }
+
+        // Trigger Hubtel SMS notification to customer in the background
+        sendOrderTrackingSMS(orderId).catch(err => console.error("Error triggering tracking SMS:", err));
+
+        revalidatePath("/backoffice");
+        return { success: true, orderId };
+    } catch (error: any) {
+        console.error("Server Action Error (createOrder):", error);
+        return { success: false, error: error?.message || "Failed to create order" };
     }
-
-    const [countResult] = await db.select({ value: count() })
-        .from(orders)
-        .where(eq(orders.clerkOrgId, orgId || "unknown"));
-
-    const sequenceNumber = (countResult?.value || 0) + 1;
-    const paddedSequence = String(sequenceNumber).padStart(5, '0');
-    const generatedOrderNumber = `${initials}-${paddedSequence}`;
-
-    const orderId = data.id || Math.random().toString(36).substring(2, 9).toUpperCase();
-
-    await db.insert(orders).values({
-        id: orderId,
-        orderNumber: generatedOrderNumber,
-        customerName: data.customerName,
-        customerEmail: data.customerEmail || null,
-        customerPhone: data.customerPhone,
-        itemType: data.itemType || data.garmentType || "Other",
-        pickupDate: data.pickupDate || null,
-        measurements: data.measurements || null,
-        metadata: data.metadata || {},
-        businessType: data.businessType,
-        currentStatus: data.currentStatus || "Order Received",
-        clerkOrgId: orgId || null,
-        userId: userId || null,
-    });
-
-    // Add initial status history
-    const staffId = orgId ? await getCurrentStaffId(orgId, userId) : null;
-    await db.insert(statusHistory).values({
-        id: Math.random().toString(36).substring(2, 9).toUpperCase(),
-        orderId: orderId,
-        status: data.currentStatus || "Order Received",
-        location: "Main Office",
-        message: "Order created successfully",
-        staffId: staffId,
-    });
-    // Link inventory items if any
-    if (data.inventoryItems && data.inventoryItems.length > 0) {
-        await linkOrderToInventory(orderId, data.inventoryItems);
-    }
-
-    // Trigger Hubtel SMS notification to customer in the background
-    sendOrderTrackingSMS(orderId).catch(err => console.error("Error triggering tracking SMS:", err));
-
-    revalidatePath("/backoffice");
-    return { success: true, orderId };
 }
 
 export async function updateOrderStatus(orderId: string, status: string, location: string, message: string) {
@@ -242,38 +247,45 @@ export async function getOrderById(id: string) {
     return order;
 }
 
-export async function updateOrder(id: string, data: Partial<OrderInput>) {
-    const { userId, orgId } = await auth();
-    if (!userId) throw new Error("Unauthorized");
-
-    if (orgId) {
-        await validateSubscription(orgId);
-    }
-
-    await db.transaction(async (tx) => {
-        await tx.update(orders)
-            .set({
-                orderNumber: data.orderNumber,
-                customerName: data.customerName,
-                customerEmail: data.customerEmail || null,
-                customerPhone: data.customerPhone,
-                itemType: data.itemType || data.garmentType,
-                pickupDate: data.pickupDate || null,
-                measurements: data.measurements || null,
-                metadata: data.metadata || {},
-                updatedAt: new Date(),
-            })
-            .where(eq(orders.id, id));
-
-        // Sync inventory links if provided
-        if (data.inventoryItems) {
-            await syncOrderInventoryLinks(id, data.inventoryItems, tx);
+export async function updateOrder(id: string, data: Partial<OrderInput>): Promise<{ success: boolean; error?: string }> {
+    try {
+        const { userId, orgId } = await auth();
+        if (!userId) {
+            return { success: false, error: "Unauthorized" };
         }
-    });
 
-    revalidatePath("/backoffice");
-    revalidatePath(`/track/${id}`);
-    return { success: true };
+        if (orgId) {
+            await validateSubscription(orgId);
+        }
+
+        await db.transaction(async (tx) => {
+            await tx.update(orders)
+                .set({
+                    orderNumber: data.orderNumber,
+                    customerName: data.customerName,
+                    customerEmail: data.customerEmail || null,
+                    customerPhone: data.customerPhone,
+                    itemType: data.itemType || data.garmentType,
+                    pickupDate: data.pickupDate || null,
+                    measurements: data.measurements || null,
+                    metadata: data.metadata || {},
+                    updatedAt: new Date(),
+                })
+                .where(eq(orders.id, id));
+
+            // Sync inventory links if provided
+            if (data.inventoryItems) {
+                await syncOrderInventoryLinks(id, data.inventoryItems, tx);
+            }
+        });
+
+        revalidatePath("/backoffice");
+        revalidatePath(`/track/${id}`);
+        return { success: true };
+    } catch (error: any) {
+        console.error("Server Action Error (updateOrder):", error);
+        return { success: false, error: error?.message || "Failed to update order" };
+    }
 }
 
 export async function getOrderWithHistory(id: string) {

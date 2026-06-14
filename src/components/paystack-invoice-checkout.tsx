@@ -23,7 +23,7 @@ export default function PaystackInvoiceCheckout({
     
     const amountInKobo = Math.round(invoice.amountDue * 100)
     
-    const config = {
+    const config: any = {
         reference: `INV-PAY-${order.id}-${Date.now()}`,
         email: order.customerEmail || `${order.customerPhone}@otracker.com`,
         amount: amountInKobo,

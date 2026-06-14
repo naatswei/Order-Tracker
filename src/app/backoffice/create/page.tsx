@@ -238,8 +238,9 @@ function CreateOrderContent() {
             : (parseInt(quantity) || 1);
 
         try {
+            let res;
             if (editingId) {
-                await updateOrder(editingId, {
+                res = await updateOrder(editingId, {
                     orderNumber,
                     customerName,
                     customerEmail,
@@ -250,9 +251,14 @@ function CreateOrderContent() {
                     metadata: { ...metadata, quantity: totalQty },
                     inventoryItems: selectedInventory.map(item => ({ id: item.id, quantity: item.quantity })),
                 })
+                if (res?.error) {
+                    toast.error(res.error)
+                    setIsSaving(false)
+                    return
+                }
                 toast.success("Order details updated")
             } else {
-                await createOrder({
+                res = await createOrder({
                     orderNumber,
                     customerName,
                     customerEmail,
@@ -265,6 +271,11 @@ function CreateOrderContent() {
                     currentStatus: config.defaultStatus,
                     inventoryItems: selectedInventory.map(item => ({ id: item.id, quantity: item.quantity })),
                 })
+                if (res?.error) {
+                    toast.error(res.error)
+                    setIsSaving(false)
+                    return
+                }
                 toast.success("New order created")
             }
             // Do NOT setIsSaving(false) on success to prevent double-clicks during route transition

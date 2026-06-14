@@ -530,7 +530,7 @@ export default function TrackingDetailsPage() {
                                     <Badge className="bg-[#3B82F6] hover:bg-[#3B82F6] text-white text-[11px] px-4 py-1.5 rounded-full border-none font-medium tracking-wider uppercase">
                                         {order.currentStatus}
                                     </Badge>
-                                    <span className="text-xs text-white/50 font-light tracking-widest uppercase">{order.garmentType}</span>
+                                    <span className="text-xs text-white/50 font-light tracking-widest uppercase">{order.itemType}</span>
                                 </div>
                             </div>
                         </motion.div>
@@ -562,7 +562,7 @@ export default function TrackingDetailsPage() {
                         </div>
 
                         {/* Invoice & Payments Card */}
-                        {order.metadata?.invoice && (
+                        {(order.metadata as any)?.invoice && (
                             <motion.div
                                 initial={{ opacity: 0, y: 15 }}
                                 animate={{ opacity: 1, y: 0 }}
@@ -581,18 +581,18 @@ export default function TrackingDetailsPage() {
                                                         Invoice & Payment
                                                     </h3>
                                                     <p className="text-xs text-white/50 font-light">
-                                                        {(order.metadata.invoice as any).invoiceNumber}
+                                                        {((order.metadata as any).invoice as any).invoiceNumber}
                                                     </p>
                                                 </div>
                                             </div>
                                             <Badge
                                                 className={`rounded-full px-3 py-1 text-[10px] font-bold tracking-wider uppercase border-none ${
-                                                    (order.metadata.invoice as any).invoiceStatus === "paid"
+                                                    ((order.metadata as any).invoice as any).invoiceStatus === "paid"
                                                         ? "bg-[#10B981] text-[#0A0B14] hover:bg-[#10B981]"
                                                         : "bg-red-500/10 text-red-400 border border-red-500/20"
                                                 }`}
                                             >
-                                                {(order.metadata.invoice as any).invoiceStatus}
+                                                {((order.metadata as any).invoice as any).invoiceStatus}
                                             </Badge>
                                         </div>
 
@@ -601,13 +601,13 @@ export default function TrackingDetailsPage() {
                                             <div>
                                                 <p className="text-white/40 mb-1">Issue Date</p>
                                                 <p className="text-white font-medium">
-                                                    {new Date((order.metadata.invoice as any).createdAt).toLocaleDateString()}
+                                                    {new Date(((order.metadata as any).invoice as any).createdAt).toLocaleDateString()}
                                                 </p>
                                             </div>
                                             <div className="text-right">
                                                 <p className="text-white/40 mb-1">Due Date</p>
                                                 <p className="text-white font-medium">
-                                                    {new Date((order.metadata.invoice as any).dueDate).toLocaleDateString()}
+                                                    {new Date(((order.metadata as any).invoice as any).dueDate).toLocaleDateString()}
                                                 </p>
                                             </div>
                                         </div>
@@ -616,7 +616,7 @@ export default function TrackingDetailsPage() {
                                         <div className="space-y-3">
                                             <p className="text-[10px] uppercase tracking-widest text-[#3B82F6] font-bold">Items Billed</p>
                                             <div className="bg-white/[0.01] border border-white/5 rounded-2xl divide-y divide-white/5 overflow-hidden">
-                                                {((order.metadata.invoice as any).items || []).map((item: any, idx: number) => (
+                                                {(((order.metadata as any).invoice as any).items || []).map((item: any, idx: number) => (
                                                     <div key={idx} className="p-3 flex items-center justify-between text-xs font-light">
                                                         <div className="space-y-0.5">
                                                             <p className="text-white font-medium">{item.name}</p>
@@ -634,39 +634,39 @@ export default function TrackingDetailsPage() {
                                         <div className="space-y-2 text-xs font-light border-t border-white/5 pt-4">
                                             <div className="flex justify-between text-white/60">
                                                 <span>Subtotal</span>
-                                                <span>GH₵ {(order.metadata.invoice as any).subtotal.toFixed(2)}</span>
+                                                <span>GH₵ {((order.metadata as any).invoice as any).subtotal.toFixed(2)}</span>
                                             </div>
-                                            {(order.metadata.invoice as any).tax > 0 && (
+                                            {((order.metadata as any).invoice as any).tax > 0 && (
                                                 <div className="flex justify-between text-white/60">
                                                     <span>Tax</span>
-                                                    <span>GH₵ {(order.metadata.invoice as any).tax.toFixed(2)}</span>
+                                                    <span>GH₵ {((order.metadata as any).invoice as any).tax.toFixed(2)}</span>
                                                 </div>
                                             )}
-                                            {(order.metadata.invoice as any).deliveryFee > 0 && (
+                                            {((order.metadata as any).invoice as any).deliveryFee > 0 && (
                                                 <div className="flex justify-between text-white/60">
                                                     <span>Delivery Fee</span>
-                                                    <span>GH₵ {(order.metadata.invoice as any).deliveryFee.toFixed(2)}</span>
+                                                    <span>GH₵ {((order.metadata as any).invoice as any).deliveryFee.toFixed(2)}</span>
                                                 </div>
                                             )}
-                                            {(order.metadata.invoice as any).discount > 0 && (
+                                            {((order.metadata as any).invoice as any).discount > 0 && (
                                                 <div className="flex justify-between text-red-400">
                                                     <span>Discount</span>
-                                                    <span>- GH₵ {(order.metadata.invoice as any).discount.toFixed(2)}</span>
+                                                    <span>- GH₵ {((order.metadata as any).invoice as any).discount.toFixed(2)}</span>
                                                 </div>
                                             )}
                                             <div className="flex justify-between text-sm font-bold text-white border-t border-white/5 pt-2">
                                                 <span>Amount Due</span>
-                                                <span>GH₵ {(order.metadata.invoice as any).amountDue.toFixed(2)}</span>
+                                                <span>GH₵ {((order.metadata as any).invoice as any).amountDue.toFixed(2)}</span>
                                             </div>
                                         </div>
 
                                         {/* Actions */}
                                         <div className="space-y-3 pt-2">
-                                            {(order.metadata.invoice as any).invoiceStatus === "unpaid" ? (
+                                            {((order.metadata as any).invoice as any).invoiceStatus === "unpaid" ? (
                                                 (process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY && (order.businessDetails as any)?.paystackSubaccountCode) ? (
                                                     <PaystackInvoiceCheckout
                                                         order={order}
-                                                        invoice={order.metadata.invoice}
+                                                        invoice={(order.metadata as any).invoice}
                                                         publicKey={process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY}
                                                         subaccountCode={(order.businessDetails as any).paystackSubaccountCode}
                                                         onSuccess={handlePaymentSuccess}

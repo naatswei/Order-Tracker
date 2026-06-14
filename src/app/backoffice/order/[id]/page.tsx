@@ -62,7 +62,7 @@ export default function OrderUpdatePage() {
     const [isUpdating, setIsUpdating] = useState(false)
 
     // Invoice form state
-    const [invoiceItems, setInvoiceItems] = useState<{ name: string; quantity: number; price: number }[]>([])
+    const [invoiceItems, setInvoiceItems] = useState<{ name: string; quantity: number; price: number; isLinked?: boolean }[]>([])
     const [tax, setTax] = useState(0)
     const [deliveryFee, setDeliveryFee] = useState(0)
     const [discount, setDiscount] = useState(0)
@@ -405,24 +405,24 @@ export default function OrderUpdatePage() {
                     <div className="lg:col-span-8 space-y-6">
                         
                         {/* Invoice & Billing Section */}
-                        {order.metadata?.invoice ? (
+                        {(order.metadata as any)?.invoice ? (
                             /* Display Existing Invoice */
                             <Card className="bg-white border-slate-100 shadow-sm rounded-2xl overflow-hidden">
                                 <CardHeader className="flex flex-row items-center justify-between border-b border-slate-100 p-6">
                                     <div>
                                         <CardTitle className="text-lg font-bold text-slate-900 flex items-center gap-2">
                                             <FileText className="w-5 h-5 text-indigo-500" />
-                                            Invoice: {order.metadata.invoice.invoiceNumber}
+                                            Invoice: {(order.metadata as any).invoice.invoiceNumber}
                                         </CardTitle>
-                                        <CardDescription>Created on {new Date(order.metadata.invoice.createdAt).toLocaleDateString()}</CardDescription>
+                                        <CardDescription>Created on {new Date((order.metadata as any).invoice.createdAt).toLocaleDateString()}</CardDescription>
                                     </div>
                                     <Badge className={cn(
                                         "rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider",
-                                        order.metadata.invoice.invoiceStatus === "paid" 
+                                        (order.metadata as any).invoice.invoiceStatus === "paid" 
                                             ? "bg-emerald-50 border border-emerald-200 text-emerald-600 animate-pulse" 
                                             : "bg-amber-50 border border-amber-200 text-amber-600"
                                     )}>
-                                        {order.metadata.invoice.invoiceStatus}
+                                        {(order.metadata as any).invoice.invoiceStatus}
                                     </Badge>
                                 </CardHeader>
                                 <CardContent className="p-6 space-y-6">
@@ -437,7 +437,7 @@ export default function OrderUpdatePage() {
                                                 </tr>
                                             </thead>
                                             <tbody className="divide-y divide-slate-100">
-                                                {order.metadata.invoice.items?.map((item: any, idx: number) => (
+                                                {(order.metadata as any).invoice.items?.map((item: any, idx: number) => (
                                                     <tr key={idx} className="text-slate-700">
                                                         <td className="py-3 font-medium">{item.name}</td>
                                                         <td className="py-3 text-center">{item.quantity}</td>
@@ -453,35 +453,35 @@ export default function OrderUpdatePage() {
                                         <div className="w-64 space-y-2.5 text-sm">
                                             <div className="flex justify-between text-slate-500">
                                                 <span>Subtotal</span>
-                                                <span className="font-semibold">GH₵ {order.metadata.invoice.subtotal.toFixed(2)}</span>
+                                                <span className="font-semibold">GH₵ {(order.metadata as any).invoice.subtotal.toFixed(2)}</span>
                                             </div>
-                                            {order.metadata.invoice.tax > 0 && (
+                                            {(order.metadata as any).invoice.tax > 0 && (
                                                 <div className="flex justify-between text-slate-500">
                                                     <span>Tax</span>
-                                                    <span className="font-semibold">GH₵ {order.metadata.invoice.tax.toFixed(2)}</span>
+                                                    <span className="font-semibold">GH₵ {(order.metadata as any).invoice.tax.toFixed(2)}</span>
                                                 </div>
                                             )}
-                                            {order.metadata.invoice.deliveryFee > 0 && (
+                                            {(order.metadata as any).invoice.deliveryFee > 0 && (
                                                 <div className="flex justify-between text-slate-500">
                                                     <span>Delivery</span>
-                                                    <span className="font-semibold">GH₵ {order.metadata.invoice.deliveryFee.toFixed(2)}</span>
+                                                    <span className="font-semibold">GH₵ {(order.metadata as any).invoice.deliveryFee.toFixed(2)}</span>
                                                 </div>
                                             )}
-                                            {order.metadata.invoice.discount > 0 && (
+                                            {(order.metadata as any).invoice.discount > 0 && (
                                                 <div className="flex justify-between text-red-500">
                                                     <span>Discount</span>
-                                                    <span className="font-semibold">- GH₵ {order.metadata.invoice.discount.toFixed(2)}</span>
+                                                    <span className="font-semibold">- GH₵ {(order.metadata as any).invoice.discount.toFixed(2)}</span>
                                                 </div>
                                             )}
                                             <div className="flex justify-between text-base font-black text-slate-900 border-t border-slate-100 pt-3">
                                                 <span>Total Amount Due</span>
-                                                <span>GH₵ {order.metadata.invoice.amountDue.toFixed(2)}</span>
+                                                <span>GH₵ {(order.metadata as any).invoice.amountDue.toFixed(2)}</span>
                                             </div>
                                         </div>
                                     </div>
                                     
                                     <div className="flex flex-wrap gap-3 pt-4 border-t border-slate-100">
-                                        {order.metadata.invoice.invoiceStatus === "unpaid" && (
+                                        {(order.metadata as any).invoice.invoiceStatus === "unpaid" && (
                                             <Button 
                                                 onClick={async () => {
                                                     try {
@@ -513,7 +513,7 @@ export default function OrderUpdatePage() {
                                         </Button>
                                         <Button 
                                             onClick={async () => {
-                                                const invoice = order.metadata?.invoice
+                                                const invoice = (order.metadata as any)?.invoice
                                                 if (!invoice) return
                                                 const { printInvoice } = await import("@/lib/pdf-generator")
                                                 printInvoice(invoice, order.customerName, order.customerPhone, order.customerEmail || "")
