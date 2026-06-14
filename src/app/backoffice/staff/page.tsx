@@ -28,7 +28,8 @@ import {
     Phone,
     MessageCircle,
     Search,
-    Filter
+    Filter,
+    RefreshCw
 } from "lucide-react";
 import {
   Select,
@@ -611,14 +612,25 @@ export default function StaffPage() {
                                 </div>
                                 <div className="space-y-1.5">
                                     <Label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">4-Digit PIN (For Clock-In)</Label>
-                                    <Input 
-                                        placeholder="e.g. 1234" 
-                                        maxLength={4}
-                                        type="password"
-                                        value={editingStaff.pinCode || ""} 
-                                        onChange={(e) => setEditingStaff({...editingStaff, pinCode: e.target.value})}
-                                        className="h-11 rounded-xl bg-slate-50/50 border-slate-200 focus-visible:ring-[#191A43] font-black tracking-widest text-center"
-                                    />
+                                    <div className="flex gap-2">
+                                        <Input 
+                                            placeholder="e.g. 1234" 
+                                            maxLength={4}
+                                            type="password"
+                                            value={editingStaff.pinCode || ""} 
+                                            onChange={(e) => setEditingStaff({...editingStaff, pinCode: e.target.value.replace(/[^0-9]/g, '')})}
+                                            className="h-11 rounded-xl bg-slate-50/50 border-slate-200 focus-visible:ring-[#191A43] font-black tracking-widest text-center"
+                                        />
+                                        <Button 
+                                            type="button"
+                                            variant="outline"
+                                            onClick={() => setEditingStaff({...editingStaff, pinCode: Math.floor(1000 + Math.random() * 9000).toString()})}
+                                            className="h-11 px-3 rounded-xl border-slate-200 hover:bg-slate-50 hover:text-[#191A43] transition-colors"
+                                            title="Generate Random PIN"
+                                        >
+                                            <RefreshCw className="w-4 h-4" />
+                                        </Button>
+                                    </div>
                                 </div>
                                 <div className="col-span-2 space-y-2">
                                     <Label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Reports To</Label>
@@ -761,14 +773,25 @@ export default function StaffPage() {
                             </div>
                             <div className="space-y-2">
                                 <Label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">4-Digit PIN (For Clock-In)</Label>
-                                <Input 
-                                    placeholder="e.g. 1234" 
-                                    maxLength={4}
-                                    type="password"
-                                    value={pinCode} 
-                                    onChange={(e) => setPinCode(e.target.value)}
-                                    className="h-10 rounded-xl bg-slate-50 border-slate-100 font-bold text-center tracking-widest"
-                                />
+                                <div className="flex gap-2">
+                                    <Input 
+                                        placeholder="e.g. 1234" 
+                                        maxLength={4}
+                                        type="password"
+                                        value={pinCode} 
+                                        onChange={(e) => setPinCode(e.target.value.replace(/[^0-9]/g, ''))}
+                                        className="h-10 rounded-xl bg-slate-50 border-slate-100 font-bold text-center tracking-widest"
+                                    />
+                                    <Button 
+                                        type="button"
+                                        variant="outline"
+                                        onClick={() => setPinCode(Math.floor(1000 + Math.random() * 9000).toString())}
+                                        className="h-10 px-3 rounded-xl border-slate-200 hover:bg-slate-50 hover:text-[#191A43] transition-colors"
+                                        title="Generate Random PIN"
+                                    >
+                                        <RefreshCw className="w-4 h-4" />
+                                    </Button>
+                                </div>
                             </div>
                             <div className="space-y-2">
                                 <Label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Reports To</Label>

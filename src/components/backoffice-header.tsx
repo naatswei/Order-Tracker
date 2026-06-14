@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
-import { Package, Mail, Menu, X, LayoutDashboard, ClipboardList, Settings, ChevronRight, Users } from "lucide-react"
+import { Package, Mail, Menu, X, LayoutDashboard, ClipboardList, Settings, ChevronRight, Users, Clock } from "lucide-react"
 import { OrganizationSwitcher, UserButton, useOrganization, ClerkLoading } from "@clerk/nextjs"
 import { Button } from "@/components/ui/button"
 import { motion, AnimatePresence } from "framer-motion"
@@ -107,10 +107,9 @@ export function BackofficeHeader({ config }: BackofficeHeaderProps) {
                     <div className="flex items-center gap-3 lg:gap-5">
                     {/* Action Items */}
                     <div className="flex items-center gap-2">
-                        <Button asChild variant="default" size="sm" className="h-8 px-4 rounded-full bg-[#191A43] hover:bg-slate-800 text-white font-bold text-xs shadow-md transition-all gap-1.5" title="Clock In/Out">
+                        <Button asChild variant="ghost" size="icon" className="relative h-8 w-8 rounded-full bg-[#191A43] hover:bg-slate-800 border border-slate-200 shadow-sm transition-all text-white hover:text-white" title="Clock In/Out">
                             <Link href="/backoffice/clock-in">
-                                <Users className="w-3.5 h-3.5" />
-                                Clock In
+                                <Clock className="w-4 h-4" />
                             </Link>
                         </Button>
                         <Button asChild variant="ghost" size="icon" className="relative h-8 w-8 rounded-full bg-white hover:bg-slate-50 border border-slate-200 shadow-sm transition-all text-slate-600 hover:text-slate-900" title="Inbox">
