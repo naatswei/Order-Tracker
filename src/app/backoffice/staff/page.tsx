@@ -609,19 +609,18 @@ export default function StaffPage() {
                                         className="h-11 rounded-xl bg-slate-50/50 border-slate-200 focus-visible:ring-[#191A43] font-medium"
                                     />
                                 </div>
-                            </div>
-                            <div className="space-y-1.5">
-                                <Label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">4-Digit PIN (For Clock-In)</Label>
-                                <Input 
-                                    placeholder="e.g. 1234" 
-                                    maxLength={4}
-                                    type="password"
-                                    value={editingStaff.pinCode || ""} 
-                                    onChange={(e) => setEditingStaff({...editingStaff, pinCode: e.target.value})}
-                                    className="h-11 rounded-xl bg-slate-50/50 border-slate-200 focus-visible:ring-[#191A43] font-black tracking-widest text-center"
-                                />
-                            </div>
-                            <div className="col-span-2 space-y-2">
+                                <div className="space-y-1.5">
+                                    <Label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">4-Digit PIN (For Clock-In)</Label>
+                                    <Input 
+                                        placeholder="e.g. 1234" 
+                                        maxLength={4}
+                                        type="password"
+                                        value={editingStaff.pinCode || ""} 
+                                        onChange={(e) => setEditingStaff({...editingStaff, pinCode: e.target.value})}
+                                        className="h-11 rounded-xl bg-slate-50/50 border-slate-200 focus-visible:ring-[#191A43] font-black tracking-widest text-center"
+                                    />
+                                </div>
+                                <div className="col-span-2 space-y-2">
                                     <Label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Reports To</Label>
                                     <Select 
                                         value={editingStaff.reportsToId || "none"} 
