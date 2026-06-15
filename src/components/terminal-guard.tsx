@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Lock, Unlock, Loader2, Fingerprint } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 
 export const TerminalSessionContext = createContext<{
     activeStaff: { staffId: string, name: string } | null;
@@ -22,6 +22,10 @@ export function TerminalGuard({ children, hasSession, sessionData }: { children:
     const [isLoading, setIsLoading] = useState(false);
     const [isLocked, setIsLocked] = useState(!hasSession);
     const router = useRouter();
+    const pathname = usePathname();
+
+    // Bypass lock screen on the Staff Management page so Admins can set their PIN
+    const isBypassed = pathname === "/backoffice/staff" || pathname === "/backoffice/profile";
 
     // If the server tells us there's a session, we are unlocked.
     useEffect(() => {
@@ -55,13 +59,13 @@ export function TerminalGuard({ children, hasSession, sessionData }: { children:
     return (
         <TerminalSessionContext.Provider value={{ activeStaff: sessionData }}>
             {/* The main app content */}
-            <div className={`transition-all duration-500 ${isLocked ? 'blur-md pointer-events-none' : ''}`}>
+            <div className={`transition-all duration-500 ${(isLocked && !isBypassed) ? 'blur-md pointer-events-none' : ''}`}>
                 {children}
             </div>
 
             {/* The Lock Screen Overlay */}
             <AnimatePresence>
-                {isLocked && (
+                {(isLocked && !isBypassed) && (
                     <motion.div 
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
