@@ -2,13 +2,16 @@
 
 import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
-import { Package, Mail, Menu, X, LayoutDashboard, ClipboardList, Settings, ChevronRight, Users, Clock } from "lucide-react"
+import { Package, Mail, Menu, X, LayoutDashboard, ClipboardList, Settings, ChevronRight, Users, Clock, Lock } from "lucide-react"
 import { OrganizationSwitcher, UserButton, useOrganization, ClerkLoading } from "@clerk/nextjs"
 import { Button } from "@/components/ui/button"
 import { motion, AnimatePresence } from "framer-motion"
 import { getUnreadCount } from "@/app/actions/messages"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
+import { useTerminalSession } from "./terminal-guard"
+import { lockTerminal } from "@/app/actions/operations"
+import { toast } from "sonner"
 
 interface BackofficeHeaderProps {
     config: {
@@ -22,10 +25,21 @@ export function BackofficeHeader({ config }: BackofficeHeaderProps) {
     const [isMenuOpen, setIsMenuOpen] = useState(false)
     const [unreadCount, setUnreadCount] = useState(0)
     const { organization } = useOrganization()
+    const { activeStaff } = useTerminalSession()
     const prevCountRef = useRef(0)
     const pathname = usePathname()
+    const router = useRouter()
 
     const toggleMenu = () => setIsMenuOpen(!isMenuOpen)
+
+    const handleLock = async () => {
+        try {
+            await lockTerminal();
+            router.refresh();
+        } catch (e) {
+            toast.error("Failed to lock terminal");
+        }
+    };
 
     useEffect(() => {
         if (!organization?.id) return
@@ -107,10 +121,8 @@ export function BackofficeHeader({ config }: BackofficeHeaderProps) {
                     <div className="flex items-center gap-3 lg:gap-5">
                     {/* Action Items */}
                     <div className="flex items-center gap-2">
-                        <Button asChild variant="ghost" size="icon" className="relative h-8 w-8 rounded-full bg-[#191A43] hover:bg-slate-800 border border-slate-200 shadow-sm transition-all text-white hover:text-white" title="Clock In/Out">
-                            <Link href="/backoffice/clock-in">
-                                <Clock className="w-4 h-4" />
-                            </Link>
+                        <Button onClick={handleLock} variant="ghost" size="icon" className="relative h-8 w-8 rounded-full bg-[#191A43] hover:bg-slate-800 border border-slate-200 shadow-sm transition-all text-white hover:text-white" title="Lock Terminal">
+                            <Lock className="w-3.5 h-3.5" />
                         </Button>
                         <Button asChild variant="ghost" size="icon" className="relative h-8 w-8 rounded-full bg-white hover:bg-slate-50 border border-slate-200 shadow-sm transition-all text-slate-600 hover:text-slate-900" title="Inbox">
                             <Link href="/backoffice/inbox">
@@ -131,7 +143,13 @@ export function BackofficeHeader({ config }: BackofficeHeaderProps) {
                     <div className="w-[1px] h-6 bg-slate-200" />
 
                     {/* Identity & Workspace */}
-                    <div className="flex items-center gap-3 bg-white border border-slate-200 shadow-sm rounded-full py-1 pr-1 pl-3 transition-colors hover:border-slate-300 min-w-[200px] justify-end">
+                    {activeStaff && (
+                        <div className="hidden sm:flex flex-col items-end mr-2">
+                            <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Active Staff</span>
+                            <span className="text-xs font-black text-[#191A43] truncate max-w-[120px]">{activeStaff.name}</span>
+                        </div>
+                    )}
+                    <div className="flex items-center gap-3 bg-white border border-slate-200 shadow-sm rounded-full py-1 pr-1 pl-3 transition-colors hover:border-slate-300 min-w-[160px] sm:min-w-[200px] justify-end">
                         <ClerkLoading>
                             <div className="flex items-center gap-2 pr-2">
                                 <div className="w-24 h-4 bg-slate-50 animate-pulse rounded-full" />

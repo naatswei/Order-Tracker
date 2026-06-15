@@ -133,6 +133,8 @@ export async function removeStaff(id: string) {
     return { success: true };
 }
 
+import { setStaffSession, clearStaffSession } from "@/lib/session";
+
 export async function clockIn(pinCode: string) {
     const { orgId } = await auth();
     if (!orgId) return { success: false, error: "Unauthorized" };
@@ -149,6 +151,8 @@ export async function clockIn(pinCode: string) {
         clerkOrgId: orgId,
         type: "clock_in"
     });
+
+    await setStaffSession(matchedStaff.id, matchedStaff.name);
 
     return { success: true, staffName: matchedStaff.name };
 }
@@ -170,7 +174,28 @@ export async function clockOut(pinCode: string) {
         type: "clock_out"
     });
 
+    await clearStaffSession();
+
     return { success: true, staffName: matchedStaff.name };
+}
+
+export async function unlockTerminal(pinCode: string) {
+    const { orgId } = await auth();
+    if (!orgId) return { success: false, error: "Unauthorized" };
+
+    const matchedStaff = await db.query.staff.findFirst({
+        where: and(eq(staff.clerkOrgId, orgId), eq(staff.pinCode, pinCode))
+    });
+
+    if (!matchedStaff) return { success: false, error: "Invalid PIN code" };
+
+    await setStaffSession(matchedStaff.id, matchedStaff.name);
+    return { success: true, staffName: matchedStaff.name };
+}
+
+export async function lockTerminal() {
+    await clearStaffSession();
+    return { success: true };
 }
 
 // --- Workflow Management ---

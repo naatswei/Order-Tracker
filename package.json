@@ -19,6 +19,7 @@
     "date-fns": "^4.1.0",
     "drizzle-orm": "^0.45.1",
     "framer-motion": "^12.34.3",
+    "jose": "^6.2.3",
     "lucide-react": "^0.575.0",
     "nanoid": "^5.1.6",
     "next": "16.1.6",
