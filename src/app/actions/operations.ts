@@ -101,6 +101,19 @@ export async function addStaff(data: { name: string, role?: string, email?: stri
         clerkOrgId: orgId,
     });
 
+    if (data.email) {
+        try {
+            const client = await clerkClient();
+            await client.organizations.createOrganizationInvitation({
+                organizationId: orgId,
+                emailAddress: data.email,
+                role: data.role === "Business Owner" ? "org:admin" : "org:member"
+            });
+        } catch (err) {
+            console.error("Failed to send Clerk invitation:", err);
+        }
+    }
+
     revalidatePath("/backoffice/staff");
     return { success: true };
 }

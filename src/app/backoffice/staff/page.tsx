@@ -38,6 +38,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { useUser } from "@clerk/nextjs"
 import {
     Dialog,
     DialogContent,
@@ -53,6 +54,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { SignatureLoader } from "@/components/signature-loader";
 
 export default function StaffPage() {
+    const { user } = useUser();
     const [staffList, setStaffList] = useState<any[]>([]);
     const [name, setName] = useState("");
     const [role, setRole] = useState("");
@@ -448,7 +450,20 @@ export default function StaffPage() {
                                                     </div>
                                                     
                                                     <div className="space-y-0.5 w-full">
-                                                        <h3 className="text-[15px] font-black text-slate-800 truncate">{person.name}</h3>
+                                                        <div className="flex items-center justify-center gap-2">
+                                                            <h3 className="text-[15px] font-black text-slate-800 truncate">{person.name}</h3>
+                                                            {user && (user.id === person.clerkUserId || user.emailAddresses.some(e => e.emailAddress.toLowerCase() === person.email?.toLowerCase())) && (
+                                                                <span className="px-2 py-0.5 bg-blue-100 text-blue-700 rounded-md text-[9px] font-black uppercase tracking-wider">You</span>
+                                                            )}
+                                                        </div>
+                                                        {user && (user.id === person.clerkUserId || user.emailAddresses.some(e => e.emailAddress.toLowerCase() === person.email?.toLowerCase())) && !person.pinCode && (
+                                                            <div className="w-full flex justify-center mt-1 mb-2">
+                                                                <div className="flex items-center gap-1.5 px-3 py-1 bg-red-50 border border-red-100 rounded-full text-red-600">
+                                                                    <AlertTriangle className="w-3 h-3" />
+                                                                    <span className="text-[9px] font-black uppercase tracking-wider animate-pulse">Set PIN to unlock terminal</span>
+                                                                </div>
+                                                            </div>
+                                                        )}
                                                         <div className="flex flex-wrap items-center justify-center gap-2">
                                                             <span className="px-3 py-1 bg-slate-100 rounded-full text-[10px] font-black text-slate-500 uppercase tracking-wider">{person.role || "Team Member"}</span>
                                                             {person.department && (
