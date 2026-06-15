@@ -11,9 +11,7 @@ export default async function BackofficeLayout({
 
     return (
         <BackofficeGuard>
-            <TerminalGuard hasSession={!!session} sessionData={session}>
-                {children}
-            </TerminalGuard>
+            {children}
         </BackofficeGuard>
     )
 }
