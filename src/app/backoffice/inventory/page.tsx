@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { 
     Package, 
     Plus, 
-    Minus, 
+
     ArrowLeft,
     ArrowUpRight, 
     ArrowDownLeft, 
@@ -976,13 +976,6 @@ export default function InventoryPage() {
                                                         </td>
                                                         <td className="px-6 py-4 text-right">
                                                             <div className="flex items-center justify-end gap-3">
-                                                                <StockAdjuster 
-                                                                    item={item} 
-                                                                    handleUpdateStock={handleUpdateStock} 
-                                                                    type="out" 
-                                                                    icon={Minus} 
-                                                                    hoverClass="hover:bg-red-50 hover:text-red-600 hover:border-red-100" 
-                                                                />
                                                                 <StockAdjuster 
                                                                     item={item} 
                                                                     handleUpdateStock={handleUpdateStock} 
