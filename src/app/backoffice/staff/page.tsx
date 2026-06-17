@@ -631,7 +631,8 @@ export default function StaffPage() {
                                         <Input 
                                             placeholder="e.g. 1234" 
                                             maxLength={4}
-                                            type="password"
+                                            type="text"
+                                            autoComplete="off"
                                             value={editingStaff.pinCode || ""} 
                                             onChange={(e) => setEditingStaff({...editingStaff, pinCode: e.target.value.replace(/[^0-9]/g, '')})}
                                             className="h-11 rounded-xl bg-slate-50/50 border-slate-200 focus-visible:ring-[#191A43] font-black tracking-widest text-center"
@@ -792,7 +793,8 @@ export default function StaffPage() {
                                     <Input 
                                         placeholder="e.g. 1234" 
                                         maxLength={4}
-                                        type="password"
+                                        type="text"
+                                        autoComplete="off"
                                         value={pinCode} 
                                         onChange={(e) => setPinCode(e.target.value.replace(/[^0-9]/g, ''))}
                                         className="h-10 rounded-xl bg-slate-50 border-slate-100 font-bold text-center tracking-widest"
