@@ -48,6 +48,11 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog";
 import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover";
+import {
     Select,
     SelectContent,
     SelectItem,
@@ -72,6 +77,66 @@ const CediIcon = ({ className }: { className?: string }) => (
         <line x1="12" y1="3" x2="12" y2="21" />
     </svg>
 );
+
+const StockAdjuster = ({ 
+    item, 
+    handleUpdateStock, 
+    type, 
+    icon: Icon, 
+    hoverClass 
+}: { 
+    item: any; 
+    handleUpdateStock: (id: string, type: "in" | "out", amount: string) => void; 
+    type: "in" | "out"; 
+    icon: any; 
+    hoverClass: string; 
+}) => {
+    const [amount, setAmount] = useState("");
+    const [isOpen, setIsOpen] = useState(false);
+
+    const onSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!amount || isNaN(Number(amount)) || Number(amount) <= 0) return;
+        handleUpdateStock(item.id, type, amount);
+        setAmount("");
+        setIsOpen(false);
+    };
+
+    return (
+        <Popover open={isOpen} onOpenChange={setIsOpen}>
+            <PopoverTrigger asChild>
+                <Button 
+                    size="icon" 
+                    variant="ghost" 
+                    className={`w-9 h-9 rounded-lg transition-all border border-transparent ${hoverClass}`}
+                >
+                    <Icon className="w-4 h-4" />
+                </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-52 p-3 shadow-xl border-slate-100 rounded-xl" side="top">
+                <form onSubmit={onSubmit} className="flex flex-col gap-2">
+                    <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">
+                        {type === "in" ? "Add Stock Amount" : "Remove Stock Amount"}
+                    </p>
+                    <div className="flex gap-2">
+                        <Input 
+                            type="number" 
+                            placeholder="Qty..." 
+                            value={amount} 
+                            onChange={e => setAmount(e.target.value)}
+                            className="h-8 text-xs font-medium rounded-lg border-slate-200"
+                            min="1"
+                            autoFocus
+                        />
+                        <Button type="submit" size="sm" className="h-8 px-3 rounded-lg bg-[#191A43] hover:bg-[#191A43]/90 text-white font-semibold text-xs shadow-sm">
+                            {type === "in" ? "Add" : "Remove"}
+                        </Button>
+                    </div>
+                </form>
+            </PopoverContent>
+        </Popover>
+    );
+};
 
 export default function InventoryPage() {
     const { organization, membership, isLoaded } = useOrganization();
@@ -911,22 +976,20 @@ export default function InventoryPage() {
                                                         </td>
                                                         <td className="px-6 py-4 text-right">
                                                             <div className="flex items-center justify-end gap-3">
-                                                                <Button 
-                                                                    size="icon" 
-                                                                    variant="ghost" 
-                                                                    onClick={() => handleUpdateStock(item.id, "out", "1")}
-                                                                    className="w-9 h-9 rounded-lg hover:bg-red-50 hover:text-red-600 transition-all border border-transparent hover:border-red-100"
-                                                                >
-                                                                    <Minus className="w-4 h-4" />
-                                                                </Button>
-                                                                <Button 
-                                                                    size="icon" 
-                                                                    variant="ghost" 
-                                                                    onClick={() => handleUpdateStock(item.id, "in", "1")}
-                                                                    className="w-9 h-9 rounded-lg hover:bg-emerald-50 hover:text-emerald-600 transition-all border border-transparent hover:border-emerald-100"
-                                                                >
-                                                                    <Plus className="w-4 h-4" />
-                                                                </Button>
+                                                                <StockAdjuster 
+                                                                    item={item} 
+                                                                    handleUpdateStock={handleUpdateStock} 
+                                                                    type="out" 
+                                                                    icon={Minus} 
+                                                                    hoverClass="hover:bg-red-50 hover:text-red-600 hover:border-red-100" 
+                                                                />
+                                                                <StockAdjuster 
+                                                                    item={item} 
+                                                                    handleUpdateStock={handleUpdateStock} 
+                                                                    type="in" 
+                                                                    icon={Plus} 
+                                                                    hoverClass="hover:bg-emerald-50 hover:text-emerald-600 hover:border-emerald-100" 
+                                                                />
                                                                 {isAdmin && (
                                                                     <>
                                                                         <div className="w-px h-5 bg-slate-100 mx-1" />
