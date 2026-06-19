@@ -35,6 +35,8 @@ export function BackofficeHeader({ config }: BackofficeHeaderProps) {
     const handleLock = async () => {
         try {
             await lockTerminal();
+            toast.success("Terminal locked successfully");
+            router.push("/backoffice/clock-in");
             router.refresh();
         } catch (e) {
             toast.error("Failed to lock terminal");
