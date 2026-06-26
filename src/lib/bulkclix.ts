@@ -43,7 +43,7 @@ export async function sendOrderTrackingSMS(orderId: string): Promise<{ success: 
         const trackingLink = `${APP_URL}/track/${orderId}`
         
         // Build professional SMS message
-        const message = `Hello ${order.customerName}, your order #${order.orderNumber} (${order.itemType}) has been registered. Track its real-time progress here: ${trackingLink}`
+        const message = `Hello ${order.customerName}, your order #${order.orderNumber} (${order.itemType}) has been received! Track its real-time progress here: ${trackingLink}`
 
         const response = await fetch("https://api.bulkclix.com/api/v1/sms-api/send", {
             method: "POST",
