@@ -492,6 +492,7 @@ function CreateOrderContent() {
                                                                 setIsUnitModalOpen(true);
                                                             }
                                                             setInventorySearch("");
+                                                            setIsSearchFocused(false);
                                                         }}
                                                         className="w-full px-4 py-3 text-left hover:bg-slate-50 flex items-center justify-between border-b border-slate-50 last:border-0"
                                                     >
