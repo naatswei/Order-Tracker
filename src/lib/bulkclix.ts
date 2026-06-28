@@ -47,7 +47,8 @@ export async function sendOrderTrackingSMS(orderId: string): Promise<{ success: 
             return { success: false, error: "Invalid phone number" }
         }
 
-        const trackingLink = `${APP_URL}/track/${orderId}`
+        // Strip https:// to help prevent large rich link previews
+        const trackingLink = `${APP_URL}/track/${orderId}`.replace(/^https?:\/\//, "")
         
         let itemsList = ""
         if (order.inventoryLinks && order.inventoryLinks.length > 0) {
@@ -57,7 +58,7 @@ export async function sendOrderTrackingSMS(orderId: string): Promise<{ success: 
         }
 
         // Build professional SMS message
-        const message = `Hello ${order.customerName}, your order #${order.orderNumber} has been received!\n\nItems:${itemsList}\n\nTrack progress and view available store items here:\n${trackingLink}\n(Automated message)`
+        const message = `Hello ${order.customerName}, your order #${order.orderNumber} has been received!\n\nItems:${itemsList}\n\nTrack progress and view available store items here:\n${trackingLink}`
 
         const response = await fetch("https://api.bulkclix.com/api/v1/sms-api/send", {
             method: "POST",
@@ -107,10 +108,11 @@ export async function sendOrderStatusSMS(orderId: string, status: string): Promi
             return { success: false, error: "Invalid phone number" }
         }
 
-        const trackingLink = `${APP_URL}/track/${orderId}`
+        // Strip https:// to help prevent large rich link previews
+        const trackingLink = `${APP_URL}/track/${orderId}`.replace(/^https?:\/\//, "")
         
         // Build status update SMS message
-        const message = `Hello ${order.customerName}, your order #${order.orderNumber} status is now: ${status}.\n\nTrack progress and view available store items here:\n${trackingLink}\n(Automated message)`
+        const message = `Hello ${order.customerName}, your order #${order.orderNumber} status is now: ${status}.\n\nTrack progress and view available store items here:\n${trackingLink}`
 
         const response = await fetch("https://api.bulkclix.com/api/v1/sms-api/send", {
             method: "POST",
