@@ -28,7 +28,14 @@ export async function sendOrderTrackingSMS(orderId: string): Promise<{ success: 
 
     try {
         const order = await db.query.orders.findFirst({
-            where: eq(orders.id, orderId)
+            where: eq(orders.id, orderId),
+            with: {
+                inventoryLinks: {
+                    with: {
+                        inventoryItem: true
+                    }
+                }
+            }
         })
 
         if (!order) {
@@ -42,8 +49,21 @@ export async function sendOrderTrackingSMS(orderId: string): Promise<{ success: 
 
         const trackingLink = `${APP_URL}/track/${orderId}`
         
+        let itemsStr = order.itemType || "Items"
+        if (order.inventoryLinks && order.inventoryLinks.length > 0) {
+            const stockItems = order.inventoryLinks.map((link: any) => `${link.quantity}x ${link.inventoryItem.name}`).join(", ")
+            if (order.itemType && order.itemType.trim() !== "" && order.itemType.toLowerCase() !== "stock items") {
+                itemsStr = `${order.itemType} & ${stockItems}`
+            } else {
+                itemsStr = stockItems
+            }
+            if (itemsStr.length > 60) {
+                itemsStr = itemsStr.substring(0, 57) + "..."
+            }
+        }
+
         // Build professional SMS message
-        const message = `Hello ${order.customerName}, your order #${order.orderNumber} (${order.itemType}) has been received! Track its real-time progress here: ${trackingLink}`
+        const message = `Hello ${order.customerName}, your order #${order.orderNumber} (${itemsStr}) has been received! Track its real-time progress here: ${trackingLink}`
 
         const response = await fetch("https://api.bulkclix.com/api/v1/sms-api/send", {
             method: "POST",
