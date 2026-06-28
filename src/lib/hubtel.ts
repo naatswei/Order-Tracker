@@ -65,7 +65,7 @@ export async function sendOrderTrackingSMS(orderId: string): Promise<{ success: 
         }
 
         // Build a professional SMS body
-        const message = `Hello ${order.customerName}, your order #${order.orderNumber} (${itemsStr}) has been received! Track its real-time progress here: ${trackingLink}`
+        const message = `Hello ${order.customerName}, your order #${order.orderNumber} (${itemsStr}) has been received! Track progress and view available store items here: ${trackingLink}`
 
         const authStr = `${HUBTEL_CLIENT_ID}:${HUBTEL_CLIENT_SECRET}`
         const encodedAuth = Buffer.from(authStr).toString("base64")
