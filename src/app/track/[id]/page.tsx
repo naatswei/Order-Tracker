@@ -1046,21 +1046,26 @@ export default function TrackingDetailsPage() {
                                 initial={{ opacity: 0, scale: 0.95 }}
                                 whileInView={{ opacity: 1, scale: 1 }}
                                 viewport={{ once: true }}
-                                className="relative group overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-white/[0.05] to-transparent border border-white/10 p-10 sm:p-14"
+                                className="relative group overflow-hidden rounded-[2rem] bg-gradient-to-br from-white/[0.05] to-transparent border border-white/10 p-8 sm:p-10 max-w-2xl mx-auto"
                             >
                                 {/* Decorative Glow */}
                                 <div className="absolute -top-24 -right-24 w-48 h-48 bg-[#3B82F6]/20 rounded-full blur-[80px] group-hover:bg-[#3B82F6]/30 transition-colors duration-700" />
                                 
-                                <div className="relative z-10 space-y-8">
-                                    <h2 className="text-2xl sm:text-3xl font-light text-white tracking-tight leading-tight">
-                                        Want to sign up your business on <span className="text-[#CE0003] font-bold">O</span><span className="font-bold">Tracker</span>?
-                                    </h2>
+                                <div className="relative z-10 space-y-6">
+                                    <div className="space-y-2">
+                                        <h2 className="text-xl sm:text-2xl font-light text-white tracking-tight leading-tight">
+                                            Manage your business from anywhere.
+                                        </h2>
+                                        <p className="text-sm text-white/60 font-light">
+                                            Sign up your business on <span className="text-[#CE0003] font-bold">O</span><span className="font-bold text-white/80">Tracker</span> now.
+                                        </p>
+                                    </div>
 
-                                    <div className="flex flex-col items-center gap-4">
+                                    <div className="flex flex-col items-center gap-3">
                                         <Link href="/sign-up">
-                                            <Button className="bg-white text-[#0A0B14] hover:bg-white/90 h-12 px-10 rounded-full font-bold text-sm transition-all shadow-[0_0_30px_rgba(255,255,255,0.1)] active:scale-95 group/btn">
+                                            <Button className="bg-white text-[#0A0B14] hover:bg-white/90 h-10 px-8 rounded-full font-bold text-xs transition-all shadow-[0_0_30px_rgba(255,255,255,0.1)] active:scale-95 group/btn">
                                                 Sign up now
-                                                <ChevronRight className="ml-2 w-4 h-4 transition-transform group-hover/btn:translate-x-1" />
+                                                <ChevronRight className="ml-2 w-3 h-3 transition-transform group-hover/btn:translate-x-1" />
                                             </Button>
                                         </Link>
                                         <p className="text-[10px] text-white/30 uppercase tracking-[0.3em] font-medium">Contact: 0577064301</p>
