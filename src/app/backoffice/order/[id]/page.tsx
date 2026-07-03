@@ -67,6 +67,7 @@ export default function OrderUpdatePage() {
     const [deliveryFee, setDeliveryFee] = useState(0)
     const [discount, setDiscount] = useState(0)
     const [dueDate, setDueDate] = useState("")
+    const [paymentMethod, setPaymentMethod] = useState<"online" | "cash">("online")
     const [isInvoiceGenerating, setIsInvoiceGenerating] = useState(false)
 
     // Business Config
@@ -535,7 +536,8 @@ export default function OrderUpdatePage() {
                                                 tax,
                                                 deliveryFee,
                                                 discount,
-                                                dueDate: dueDate || undefined
+                                                dueDate: dueDate || undefined,
+                                                paymentMethod
                                             })
                                             toast.success("Invoice generated successfully!")
                                             window.location.reload()
@@ -647,15 +649,34 @@ export default function OrderUpdatePage() {
                                                     className="bg-slate-50 border-slate-200 h-10 rounded-xl text-right text-red-500"
                                                 />
                                             </div>
-                                            <div className="space-y-2">
-                                                <Label className="text-xs font-bold text-slate-700" htmlFor="dueDate">Due Date</Label>
+                                            <div>
+                                                <Label className="text-slate-600 mb-1 block">Due Date</Label>
                                                 <Input 
                                                     type="date" 
-                                                    id="dueDate" 
-                                                    value={dueDate}
-                                                    onChange={(e) => setDueDate(e.target.value)}
-                                                    className="bg-slate-50 border-slate-200 h-10 rounded-xl"
+                                                    value={dueDate} 
+                                                    onChange={(e) => setDueDate(e.target.value)} 
+                                                    className="bg-slate-50 border-slate-200 h-11 rounded-xl text-slate-700 w-full focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80"
                                                 />
+                                            </div>
+                                            
+                                            <div className="col-span-full">
+                                                <Label className="text-slate-600 mb-2 block">Expected Payment Method</Label>
+                                                <div className="grid grid-cols-2 gap-3">
+                                                    <div 
+                                                        onClick={() => setPaymentMethod("online")}
+                                                        className={`border rounded-xl p-3 cursor-pointer flex flex-col gap-1 transition-all ${paymentMethod === "online" ? "bg-blue-50 border-blue-200 ring-2 ring-blue-500/20" : "bg-slate-50 border-slate-200 hover:bg-slate-100"}`}
+                                                    >
+                                                        <span className={`text-sm font-bold ${paymentMethod === "online" ? "text-blue-700" : "text-slate-700"}`}>Online Payment</span>
+                                                        <span className="text-[10px] text-slate-500 leading-tight">Customer can pay via Momo/Card on the tracking link</span>
+                                                    </div>
+                                                    <div 
+                                                        onClick={() => setPaymentMethod("cash")}
+                                                        className={`border rounded-xl p-3 cursor-pointer flex flex-col gap-1 transition-all ${paymentMethod === "cash" ? "bg-emerald-50 border-emerald-200 ring-2 ring-emerald-500/20" : "bg-slate-50 border-slate-200 hover:bg-slate-100"}`}
+                                                    >
+                                                        <span className={`text-sm font-bold ${paymentMethod === "cash" ? "text-emerald-700" : "text-slate-700"}`}>Cash / Manual</span>
+                                                        <span className="text-[10px] text-slate-500 leading-tight">Hide the "Pay Online" button from the tracking link</span>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
 

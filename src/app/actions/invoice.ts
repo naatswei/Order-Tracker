@@ -16,6 +16,7 @@ export async function generateInvoice(
         deliveryFee?: number
         discount?: number
         dueDate?: string
+        paymentMethod?: "online" | "cash"
     }
 ) {
     const { userId, orgId } = await auth()
@@ -44,6 +45,7 @@ export async function generateInvoice(
         invoice: {
             invoiceNumber,
             invoiceStatus: "unpaid",
+            paymentMethod: data.paymentMethod || "online",
             dueDate: data.dueDate || new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
             items,
             subtotal,

@@ -663,7 +663,14 @@ export default function TrackingDetailsPage() {
                                         {/* Actions */}
                                         <div className="space-y-3 pt-2">
                                             {((order.metadata as any).invoice as any).invoiceStatus === "unpaid" ? (
-                                                (process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY && (order.businessDetails as any)?.paystackSubaccountCode) ? (
+                                                ((order.metadata as any).invoice as any).paymentMethod === "cash" ? (
+                                                    <div className="p-4 rounded-2xl bg-slate-800 border border-slate-700/50 text-center flex flex-col gap-1">
+                                                        <span className="text-white text-sm font-semibold">Cash / Manual Payment</span>
+                                                        <p className="text-[11px] text-white/50 font-light">
+                                                            This invoice is set for manual settlement. Please arrange payment directly with the merchant.
+                                                        </p>
+                                                    </div>
+                                                ) : (process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY && (order.businessDetails as any)?.paystackSubaccountCode) ? (
                                                     <PaystackInvoiceCheckout
                                                         order={order}
                                                         invoice={(order.metadata as any).invoice}
