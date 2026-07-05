@@ -626,6 +626,49 @@ function CreateOrderContent() {
                                         ))}
                                     </div>
                                 )}
+
+                                {/* Order Total Summary */}
+                                {selectedInventory.length > 0 && (
+                                    <div className="mt-4 bg-white rounded-2xl border border-slate-200/80 overflow-hidden shadow-sm">
+                                        <div className="px-5 py-3 bg-slate-50/80 border-b border-slate-100">
+                                            <h4 className="text-[10px] font-black text-[#191A43] uppercase tracking-widest">Order Summary</h4>
+                                        </div>
+                                        <div className="px-5 py-3 space-y-2">
+                                            {selectedInventory.map((item) => {
+                                                const invItem = allInventory.find(inv => inv.id === item.id);
+                                                const qty = parseFloat(item.quantity) || 1;
+                                                const clientId = selectedClientId === "none" ? "" : selectedClientId;
+                                                const unitPrice = resolveUnitPrice(qty, invItem, clientId);
+                                                const lineTotal = qty * unitPrice;
+                                                return (
+                                                    <div key={item.id} className="flex items-center justify-between text-xs">
+                                                        <span className="text-slate-600 font-medium truncate mr-4">
+                                                            {item.name} <span className="text-slate-400">× {qty}</span>
+                                                        </span>
+                                                        <span className="font-bold text-slate-700 whitespace-nowrap">
+                                                            GH₵ {lineTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                                        </span>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                        <div className="px-5 py-3.5 bg-[#191A43] flex items-center justify-between rounded-b-2xl">
+                                            <span className="text-xs font-black text-white/70 uppercase tracking-wider">Order Total</span>
+                                            <span className="text-lg font-black text-white">
+                                                GH₵ {(() => {
+                                                    const total = selectedInventory.reduce((sum, item) => {
+                                                        const invItem = allInventory.find(inv => inv.id === item.id);
+                                                        const qty = parseFloat(item.quantity) || 1;
+                                                        const clientId = selectedClientId === "none" ? "" : selectedClientId;
+                                                        const unitPrice = resolveUnitPrice(qty, invItem, clientId);
+                                                        return sum + (qty * unitPrice);
+                                                    }, 0);
+                                                    return total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                                                })()}
+                                            </span>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
 
                             {/* Additional Specifications / Details */}
