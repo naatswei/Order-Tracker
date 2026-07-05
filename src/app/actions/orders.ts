@@ -24,6 +24,8 @@ interface OrderInput {
     businessType: string;
     currentStatus?: string;
     inventoryItems?: { id: string, quantity: string }[];
+    paymentMethod?: "online" | "cash";
+    invoiceItems?: { name: string; quantity: number; price: number }[];
 }
 
 async function validateSubscription(orgId: string) {
@@ -126,7 +128,24 @@ export async function createOrder(data: OrderInput): Promise<{ success: boolean;
             await linkOrderToInventory(orderId, data.inventoryItems);
         }
 
-        // Trigger Hubtel SMS notification to customer in the background
+        // Generate invoice if paymentMethod is provided
+        if (data.paymentMethod) {
+            const { generateInvoice, markInvoiceAsPaid } = await import("./invoice");
+            try {
+                await generateInvoice(orderId, {
+                    items: data.invoiceItems || [],
+                    paymentMethod: data.paymentMethod
+                });
+
+                if (data.paymentMethod === "cash") {
+                    await markInvoiceAsPaid(orderId, true); // silent = true
+                }
+            } catch (invoiceErr) {
+                console.error("Error generating/paying invoice inside createOrder server action:", invoiceErr);
+            }
+        }
+
+        // Trigger Hubtel/BulkClix SMS notification to customer in the background
         sendOrderTrackingSMS(orderId).catch(err => console.error("Error triggering tracking SMS:", err));
 
         revalidatePath("/backoffice");

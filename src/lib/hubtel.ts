@@ -59,8 +59,20 @@ export async function sendOrderTrackingSMS(orderId: string): Promise<{ success: 
             itemsList = "\n- " + order.itemType
         }
 
+        // Query invoice from metadata if exists
+        const invoice = (order.metadata as any)?.invoice
+        let paymentInfo = ""
+        if (invoice) {
+            const amount = parseFloat(invoice.amountDue || "0").toFixed(2)
+            if (invoice.invoiceStatus === "paid") {
+                paymentInfo = `\nTotal Paid: GH₵ ${amount} (Cash)`
+            } else {
+                paymentInfo = `\nTotal Due: GH₵ ${amount}`
+            }
+        }
+
         // Build a professional SMS body
-        const message = `Hello ${order.customerName}, your order #${order.orderNumber} has been received!\n\nItems:${itemsList}\n\nTrack progress and view available store items here:\n${trackingLink}`
+        const message = `Hello ${order.customerName}, your order #${order.orderNumber} has been received!\n\nItems:${itemsList}${paymentInfo}\n\nTrack progress and view invoice details here:\n${trackingLink}`
 
         const authStr = `${HUBTEL_CLIENT_ID}:${HUBTEL_CLIENT_SECRET}`
         const encodedAuth = Buffer.from(authStr).toString("base64")

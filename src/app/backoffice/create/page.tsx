@@ -9,7 +9,6 @@ import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { generateTrackingId, type Order } from "@/lib/storage"
 import { createOrder, getOrderWithHistory, updateOrder } from "@/app/actions/orders"
-import { generateInvoice, markInvoiceAsPaid } from "@/app/actions/invoice"
 import { getInventory, getClientOrganizations } from "@/app/actions/operations"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import Link from "next/link"
@@ -260,6 +259,13 @@ function CreateOrderContent() {
                 }
                 toast.success("Order details updated")
             } else {
+                const invoiceItems = selectedInventory.map(item => {
+                    const inv = allInventory.find(i => i.id === item.id)
+                    const qty = parseInt(item.quantity) || 1
+                    const price = inv ? resolveUnitPrice(qty, inv, selectedClientId !== "none" ? selectedClientId : undefined) : 0
+                    return { name: item.name, quantity: qty, price }
+                })
+
                 res = await createOrder({
                     orderNumber,
                     customerName,
@@ -272,6 +278,8 @@ function CreateOrderContent() {
                     businessType: localStorage.getItem("businessType") || "tailoring",
                     currentStatus: config.defaultStatus,
                     inventoryItems: selectedInventory.map(item => ({ id: item.id, quantity: item.quantity })),
+                    paymentMethod,
+                    invoiceItems,
                 })
                 if (res?.error) {
                     toast.error(res.error)
@@ -279,25 +287,8 @@ function CreateOrderContent() {
                     return
                 }
 
-                // If cash payment, auto-generate invoice and mark as paid
-                if (paymentMethod === "cash" && res.orderId) {
-                    try {
-                        const invoiceItems = selectedInventory.map(item => {
-                            const inv = allInventory.find(i => i.id === item.id)
-                            const qty = parseInt(item.quantity) || 1
-                            const price = inv ? resolveUnitPrice(qty, inv, selectedClientId !== "none" ? selectedClientId : undefined) : 0
-                            return { name: item.name, quantity: qty, price }
-                        })
-                        await generateInvoice(res.orderId, {
-                            items: invoiceItems,
-                            paymentMethod: "cash",
-                        })
-                        await markInvoiceAsPaid(res.orderId)
-                        toast.success("Order created & marked as paid (Cash)")
-                    } catch (invoiceErr) {
-                        console.error("Auto-invoice error:", invoiceErr)
-                        toast.success("Order created, but auto-invoice failed. You can generate it manually.")
-                    }
+                if (paymentMethod === "cash") {
+                    toast.success("Order created & marked as paid (Cash)")
                 } else {
                     toast.success("New order created")
                 }

@@ -82,7 +82,7 @@ export async function generateInvoice(
     return { success: true }
 }
 
-export async function markInvoiceAsPaid(orderId: string) {
+export async function markInvoiceAsPaid(orderId: string, silent: boolean = false) {
     const { userId, orgId } = await auth()
     if (!userId) throw new Error("Unauthorized")
 
@@ -129,7 +129,9 @@ export async function markInvoiceAsPaid(orderId: string) {
         })
         .where(eq(orders.id, orderId))
 
-    sendOrderStatusSMS(orderId, "Payment Confirmed").catch(err => console.error("Error triggering status SMS:", err));
+    if (!silent) {
+        sendOrderStatusSMS(orderId, "Payment Confirmed").catch(err => console.error("Error triggering status SMS:", err));
+    }
 
     revalidatePath("/backoffice")
     revalidatePath(`/backoffice/order/${orderId}`)
