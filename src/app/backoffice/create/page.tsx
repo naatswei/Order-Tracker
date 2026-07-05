@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { generateTrackingId, type Order } from "@/lib/storage"
 import { createOrder, getOrderWithHistory, updateOrder } from "@/app/actions/orders"
+import { generateInvoice, markInvoiceAsPaid } from "@/app/actions/invoice"
 import { getInventory, getClientOrganizations } from "@/app/actions/operations"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import Link from "next/link"
@@ -69,6 +70,7 @@ function CreateOrderContent() {
     const [metadata, setMetadata] = useState<Record<string, unknown>>({})
     const [quantity, setQuantity] = useState("1")
     const [isSaving, setIsSaving] = useState(false)
+    const [paymentMethod, setPaymentMethod] = useState<"online" | "cash">("online")
     
     // B2B Customer Pricing
     const [clients, setClients] = useState<any[]>([])
@@ -276,7 +278,29 @@ function CreateOrderContent() {
                     setIsSaving(false)
                     return
                 }
-                toast.success("New order created")
+
+                // If cash payment, auto-generate invoice and mark as paid
+                if (paymentMethod === "cash" && res.orderId) {
+                    try {
+                        const invoiceItems = selectedInventory.map(item => {
+                            const inv = allInventory.find(i => i.id === item.id)
+                            const qty = parseInt(item.quantity) || 1
+                            const price = inv ? resolveUnitPrice(qty, inv, selectedClientId !== "none" ? selectedClientId : undefined) : 0
+                            return { name: item.name, quantity: qty, price }
+                        })
+                        await generateInvoice(res.orderId, {
+                            items: invoiceItems,
+                            paymentMethod: "cash",
+                        })
+                        await markInvoiceAsPaid(res.orderId)
+                        toast.success("Order created & marked as paid (Cash)")
+                    } catch (invoiceErr) {
+                        console.error("Auto-invoice error:", invoiceErr)
+                        toast.success("Order created, but auto-invoice failed. You can generate it manually.")
+                    }
+                } else {
+                    toast.success("New order created")
+                }
             }
             // Do NOT setIsSaving(false) on success to prevent double-clicks during route transition
             router.push("/backoffice")
@@ -430,6 +454,29 @@ function CreateOrderContent() {
                                             disabled={!canCreateOrder}
                                             className="h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80"
                                         />
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Payment Method Selector */}
+                            <div className="bg-slate-50/50 p-6 rounded-3xl border border-slate-100/80 space-y-4">
+                                <h3 className="text-xs font-black text-[#191A43] uppercase tracking-wider flex items-center gap-2">
+                                    Expected Payment Method
+                                </h3>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div 
+                                        onClick={() => setPaymentMethod("online")}
+                                        className={`border rounded-2xl p-4 cursor-pointer flex flex-col gap-1.5 transition-all ${paymentMethod === "online" ? "bg-blue-50 border-blue-200 ring-2 ring-blue-500/20" : "bg-white border-slate-200 hover:bg-slate-50"}`}
+                                    >
+                                        <span className={`text-sm font-bold ${paymentMethod === "online" ? "text-blue-700" : "text-slate-700"}`}>Online Payment</span>
+                                        <span className="text-xs text-slate-500 leading-tight">Customer will receive a payment link via SMS</span>
+                                    </div>
+                                    <div 
+                                        onClick={() => setPaymentMethod("cash")}
+                                        className={`border rounded-2xl p-4 cursor-pointer flex flex-col gap-1.5 transition-all ${paymentMethod === "cash" ? "bg-emerald-50 border-emerald-200 ring-2 ring-emerald-500/20" : "bg-white border-slate-200 hover:bg-slate-50"}`}
+                                    >
+                                        <span className={`text-sm font-bold ${paymentMethod === "cash" ? "text-emerald-700" : "text-slate-700"}`}>Cash / Manual Payment</span>
+                                        <span className="text-xs text-slate-500 leading-tight">Order marked as paid immediately. No payment link.</span>
                                     </div>
                                 </div>
                             </div>

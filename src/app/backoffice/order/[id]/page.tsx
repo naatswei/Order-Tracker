@@ -504,7 +504,7 @@ export default function OrderUpdatePage() {
                                                 const invoice = (order.metadata as any)?.invoice
                                                 if (!invoice) return
                                                 const { printInvoice } = await import("@/lib/pdf-generator")
-                                                printInvoice(invoice, order.customerName, order.customerPhone, order.customerEmail || "")
+                                                printInvoice(invoice, order.customerName, order.customerPhone, order.customerEmail || "", organization?.name || "Business")
                                             }}
                                             variant="outline"
                                             className="border-slate-200 text-slate-700 hover:bg-slate-50 rounded-xl h-11 px-6 text-sm font-semibold flex items-center gap-2 cursor-pointer"

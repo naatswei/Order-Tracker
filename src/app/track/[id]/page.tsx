@@ -699,7 +699,8 @@ export default function TrackingDetailsPage() {
                                                         order.metadata!.invoice as any,
                                                         order.customerName,
                                                         order.customerPhone,
-                                                        order.customerEmail
+                                                        order.customerEmail,
+                                                        order.businessDetails?.name || "Business"
                                                     )
                                                 }}
                                                 className="w-full min-h-12 h-auto py-3 px-4 border border-white/15 bg-white/5 hover:bg-white/10 text-white rounded-2xl text-xs sm:text-sm font-medium flex items-center justify-center gap-2 cursor-pointer whitespace-normal text-center transition-all"

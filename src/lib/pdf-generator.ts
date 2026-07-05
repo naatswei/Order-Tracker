@@ -11,7 +11,7 @@ export interface InvoiceData {
     amountDue: number;
 }
 
-export function printInvoice(invoice: InvoiceData, customerName: string, customerPhone: string, customerEmail?: string) {
+export function printInvoice(invoice: InvoiceData, customerName: string, customerPhone: string, customerEmail?: string, businessName: string = "Business") {
     if (typeof window === "undefined") return;
     
     const printWindow = window.open("", "_blank");
@@ -49,8 +49,7 @@ export function printInvoice(invoice: InvoiceData, customerName: string, custome
             <body>
                 <div class="header">
                     <div>
-                        <div class="logo">OTracker</div>
-                        <p style="margin: 5px 0 0 0; font-size: 14px; color: #64748b;">Premium Order Tracking & Invoicing</p>
+                        <div class="logo">${businessName}</div>
                     </div>
                     <div>
                         <div class="invoice-title">INVOICE</div>
@@ -98,7 +97,7 @@ export function printInvoice(invoice: InvoiceData, customerName: string, custome
                     </div>
                 </div>
                 <div class="footer">
-                    Thank you for your business! Powered by OTracker.
+                    Thank you for your business! — ${businessName}
                 </div>
                 <script>
                     window.onload = function() { window.print(); }
