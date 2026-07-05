@@ -26,6 +26,9 @@ interface OrderInput {
     inventoryItems?: { id: string, quantity: string }[];
     paymentMethod?: "online" | "cash";
     invoiceItems?: { name: string; quantity: number; price: number }[];
+    tax?: number;
+    deliveryFee?: number;
+    discount?: number;
 }
 
 async function validateSubscription(orgId: string) {
@@ -133,9 +136,9 @@ export async function createOrder(data: OrderInput): Promise<{ success: boolean;
             const { generateInvoice, markInvoiceAsPaid } = await import("./invoice");
             try {
                 // Fetch defaults from Clerk organization metadata
-                let defaultTax = 0;
-                let defaultDelivery = 0;
-                let defaultDiscount = 0;
+                let defaultTax = data.tax || 0;
+                let defaultDelivery = data.deliveryFee || 0;
+                let defaultDiscount = data.discount || 0;
 
                 if (orgId) {
                     const client = await clerkClient();
@@ -145,9 +148,9 @@ export async function createOrder(data: OrderInput): Promise<{ success: boolean;
                     const subtotal = (data.invoiceItems || []).reduce((sum, item) => sum + (item.price * item.quantity), 0);
                     const taxPercent = parseFloat(metadata.defaultTaxRate || "0");
                     
-                    defaultTax = (subtotal * taxPercent) / 100;
-                    defaultDelivery = parseFloat(metadata.defaultDeliveryFee || "0");
-                    defaultDiscount = parseFloat(metadata.defaultDiscount || "0");
+                    defaultTax = data.tax !== undefined ? data.tax : ((subtotal * taxPercent) / 100);
+                    defaultDelivery = data.deliveryFee !== undefined ? data.deliveryFee : parseFloat(metadata.defaultDeliveryFee || "0");
+                    defaultDiscount = data.discount !== undefined ? data.discount : parseFloat(metadata.defaultDiscount || "0");
                 }
 
                 await generateInvoice(orderId, {

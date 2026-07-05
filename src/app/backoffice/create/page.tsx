@@ -89,10 +89,49 @@ function CreateOrderContent() {
     const [modalQuantity, setModalQuantity] = useState("1")
     const [selectedTierIndex, setSelectedTierIndex] = useState<number | null>(null)
 
+    // Invoice defaults form state
+    const [tax, setTax] = useState(0)
+    const [isTaxEdited, setIsTaxEdited] = useState(false)
+    const [deliveryFee, setDeliveryFee] = useState(0)
+    const [discount, setDiscount] = useState(0)
+
     // Business Config
     const { organization } = useOrganization()
     const [businessType, setBusinessType] = useState<string | null>(null)
     const config = getBusinessConfig(businessType)
+
+    // Initialize defaults from organization settings
+    useEffect(() => {
+        if (!organization) return
+        const metadata = organization.publicMetadata as any || {}
+        const defaultDelivery = parseFloat(metadata.defaultDeliveryFee || "0")
+        const defaultDisc = parseFloat(metadata.defaultDiscount || "0")
+        
+        setDeliveryFee(defaultDelivery)
+        setDiscount(defaultDisc)
+    }, [organization])
+
+    // Calculate subtotal from selected inventory
+    const subtotal = selectedInventory.reduce((sum, item) => {
+        const invItem = allInventory.find(inv => inv.id === item.id);
+        const qty = parseFloat(item.quantity) || 1;
+        const clientId = selectedClientId === "none" ? "" : selectedClientId;
+        const unitPrice = resolveUnitPrice(qty, invItem, clientId);
+        return sum + (qty * unitPrice);
+    }, 0);
+
+    // Auto-calculate tax based on defaultTaxRate percent and subtotal
+    useEffect(() => {
+        if (isTaxEdited || !organization) return
+        const metadata = organization.publicMetadata as any || {}
+        const defaultTaxRatePercent = parseFloat(metadata.defaultTaxRate || "0")
+        if (defaultTaxRatePercent > 0) {
+            const computedTax = (subtotal * defaultTaxRatePercent) / 100
+            setTax(Number(computedTax.toFixed(2)))
+        } else {
+            setTax(0)
+        }
+    }, [subtotal, organization, isTaxEdited])
 
     useEffect(() => {
         // 1. Initial load from localStorage for immediate UI consistency
@@ -280,6 +319,9 @@ function CreateOrderContent() {
                     inventoryItems: selectedInventory.map(item => ({ id: item.id, quantity: item.quantity })),
                     paymentMethod,
                     invoiceItems,
+                    tax,
+                    deliveryFee,
+                    discount,
                 })
                 if (res?.error) {
                     toast.error(res.error)
@@ -624,7 +666,7 @@ function CreateOrderContent() {
                                         <div className="px-5 py-3 bg-slate-50/80 border-b border-slate-100">
                                             <h4 className="text-[10px] font-black text-[#191A43] uppercase tracking-widest">Order Summary</h4>
                                         </div>
-                                        <div className="px-5 py-3 space-y-2">
+                                        <div className="px-5 py-3 space-y-2 border-b border-slate-100/50">
                                             {selectedInventory.map((item) => {
                                                 const invItem = allInventory.find(inv => inv.id === item.id);
                                                 const qty = parseFloat(item.quantity) || 1;
@@ -643,19 +685,34 @@ function CreateOrderContent() {
                                                 );
                                             })}
                                         </div>
+                                        <div className="px-5 py-3 space-y-1.5 text-xs border-b border-slate-100/35">
+                                            <div className="flex justify-between items-center text-slate-500">
+                                                <span>Subtotal</span>
+                                                <span className="font-semibold text-slate-700">GH₵ {subtotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                                            </div>
+                                            {tax > 0 && (
+                                                <div className="flex justify-between items-center text-slate-500">
+                                                    <span>Tax</span>
+                                                    <span className="font-semibold text-slate-700">GH₵ {tax.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                                                </div>
+                                            )}
+                                            {deliveryFee > 0 && (
+                                                <div className="flex justify-between items-center text-slate-500">
+                                                    <span>Delivery Fee</span>
+                                                    <span className="font-semibold text-slate-700">GH₵ {deliveryFee.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                                                </div>
+                                            )}
+                                            {discount > 0 && (
+                                                <div className="flex justify-between items-center text-red-500">
+                                                    <span>Discount</span>
+                                                    <span className="font-semibold">-GH₵ {discount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                                                </div>
+                                            )}
+                                        </div>
                                         <div className="px-5 py-3.5 bg-[#191A43] flex items-center justify-between rounded-b-2xl">
                                             <span className="text-xs font-black text-white/70 uppercase tracking-wider">Order Total</span>
                                             <span className="text-lg font-black text-white">
-                                                GH₵ {(() => {
-                                                    const total = selectedInventory.reduce((sum, item) => {
-                                                        const invItem = allInventory.find(inv => inv.id === item.id);
-                                                        const qty = parseFloat(item.quantity) || 1;
-                                                        const clientId = selectedClientId === "none" ? "" : selectedClientId;
-                                                        const unitPrice = resolveUnitPrice(qty, invItem, clientId);
-                                                        return sum + (qty * unitPrice);
-                                                    }, 0);
-                                                    return total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-                                                })()}
+                                                GH₵ {(subtotal + tax + deliveryFee - discount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                             </span>
                                         </div>
                                     </div>
@@ -713,6 +770,54 @@ function CreateOrderContent() {
                                             placeholder="Select a date"
                                             disabled={!canCreateOrder}
                                             fromDate={new Date(new Date().setHours(0, 0, 0, 0))}
+                                        />
+                                    </div>
+
+                                    {/* Tax Input */}
+                                    <div className="space-y-2">
+                                        <Label htmlFor="tax" className="ml-1 text-xs font-semibold text-muted-foreground tracking-wider">Tax (GH₵)</Label>
+                                        <Input 
+                                            type="number" 
+                                            id="tax" 
+                                            step="0.01"
+                                            value={tax || ""}
+                                            onChange={(e) => {
+                                                setTax(Number(e.target.value) || 0)
+                                                setIsTaxEdited(true)
+                                            }}
+                                            placeholder="0.00"
+                                            disabled={!canCreateOrder}
+                                            className="h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80 text-sm"
+                                        />
+                                    </div>
+
+                                    {/* Delivery Fee Input */}
+                                    <div className="space-y-2">
+                                        <Label htmlFor="deliveryFee" className="ml-1 text-xs font-semibold text-muted-foreground tracking-wider">Delivery Fee (GH₵)</Label>
+                                        <Input 
+                                            type="number" 
+                                            id="deliveryFee" 
+                                            step="0.01"
+                                            value={deliveryFee || ""}
+                                            onChange={(e) => setDeliveryFee(Number(e.target.value) || 0)}
+                                            placeholder="0.00"
+                                            disabled={!canCreateOrder}
+                                            className="h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80 text-sm"
+                                        />
+                                    </div>
+
+                                    {/* Discount Input */}
+                                    <div className="space-y-2">
+                                        <Label htmlFor="discount" className="ml-1 text-xs font-semibold text-muted-foreground tracking-wider">Discount (GH₵)</Label>
+                                        <Input 
+                                            type="number" 
+                                            id="discount" 
+                                            step="0.01"
+                                            value={discount || ""}
+                                            onChange={(e) => setDiscount(Number(e.target.value) || 0)}
+                                            placeholder="0.00"
+                                            disabled={!canCreateOrder}
+                                            className="h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80 text-sm"
                                         />
                                     </div>
 
