@@ -107,7 +107,7 @@ export default function StatusFilterPage() {
             {/* Header */}
             <BackofficeHeader config={config} />
 
-            <div className="container mx-auto px-4 pt-16 sm:pt-20 pb-8 sm:pb-12 max-w-[1400px] space-y-6 sm:space-y-8">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-16 sm:pt-20 pb-8 sm:pb-12 max-w-[1400px] space-y-6 sm:space-y-8">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     {/* Back Button */}
                     <Button asChild variant="outline"

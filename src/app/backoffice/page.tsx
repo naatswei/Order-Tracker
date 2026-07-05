@@ -168,13 +168,13 @@ export default function BackofficePage() {
             {/* Renewal Banner */}
             {needsRenewal && <RenewalBanner status={renewalStatus} />}
 
-            <div className="container mx-auto px-4 pt-16 sm:pt-20 pb-8 sm:pb-12 max-w-[1400px] space-y-8 sm:space-y-[70px]">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-16 sm:pt-20 pb-8 sm:pb-12 max-w-[1400px] space-y-8 sm:space-y-[70px]">
                 {/* Actions Bar */}
                 <div className="space-y-3">
                     <h2 className="text-[10px] uppercase font-bold tracking-[0.2em] text-[#191A43] ml-1">Track Order</h2>
-                    <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
+                    <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
                         {/* Search Input */}
-                        <div className="relative w-full md:flex-1 md:max-w-xl">
+                        <div className="relative w-full lg:flex-1 lg:max-w-xl">
                             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                                 <Input
                                     placeholder={config.searchPlaceholder}
@@ -185,7 +185,7 @@ export default function BackofficePage() {
                             </div>
     
                             {/* Action Buttons */}
-                            <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
+                            <div className="flex flex-wrap items-center gap-3 w-full lg:w-auto">
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
                                         <Button variant="outline" className="h-11 rounded-full bg-white border border-slate-200 text-slate-700 hover:bg-white hover:border-slate-300 hover:text-slate-900 gap-2 px-5 shadow-[0_4px_20px_rgb(0,0,0,0.02)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] hover:-translate-y-0.5 transition-all duration-300 md:flex-none text-sm font-semibold">
@@ -219,7 +219,7 @@ export default function BackofficePage() {
                                     asChild={!needsRenewal}
                                     disabled={needsRenewal}
                                     className={cn(
-                                        "flex-1 md:flex-none h-11 rounded-full text-white gap-2 px-6 shadow-[0_4px_20px_rgb(0,0,0,0.08)] text-sm font-bold border-0 transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.15)] hover:-translate-y-0.5 active:scale-[0.98]",
+                                        "flex-1 lg:flex-none h-11 rounded-full text-white gap-2 px-6 shadow-[0_4px_20px_rgb(0,0,0,0.08)] text-sm font-bold border-0 transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.15)] hover:-translate-y-0.5 active:scale-[0.98]",
                                         needsRenewal && "opacity-50 cursor-not-allowed"
                                     )}
                                     style={{ backgroundColor: !needsRenewal ? config.theme.primary : "#94a3b8" }}

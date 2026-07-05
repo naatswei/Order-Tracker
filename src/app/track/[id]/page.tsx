@@ -507,7 +507,7 @@ export default function TrackingDetailsPage() {
                         </div>
                     </motion.header>
 
-                    <main className="container mx-auto px-6 pt-24 pb-32 max-w-2xl relative z-10">
+                    <main className="container mx-auto px-4 sm:px-6 pt-24 pb-32 max-w-3xl relative z-10">
                         {/* Order Hero */}
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}

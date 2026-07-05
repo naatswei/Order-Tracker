@@ -93,7 +93,7 @@ export function BackofficeHeader({ config }: BackofficeHeaderProps) {
                 </Link>
 
                 {/* Desktop Navigation */}
-                <div className="hidden md:flex items-center gap-6">
+                <div className="hidden lg:flex items-center gap-6">
                     <nav className="flex items-center gap-1 bg-slate-50/50 p-1 rounded-xl border border-slate-100/50">
                         {navLinks.map((link) => {
                             const isActive = pathname === link.href || pathname.startsWith(link.href + "/");
@@ -184,7 +184,7 @@ export function BackofficeHeader({ config }: BackofficeHeaderProps) {
             </div>
 
                 {/* Mobile Menu Button */}
-                <div className="md:hidden flex items-center gap-2">
+                <div className="lg:hidden flex items-center gap-2">
                     <Button asChild variant="ghost" size="icon" className="relative h-9 w-9 rounded-full bg-slate-100/50 hover:bg-slate-200/50 border border-slate-200 shadow-sm transition-colors">
                         <Link href="/backoffice/inbox">
                             <Mail className="w-4 h-4 text-slate-600" />
@@ -212,7 +212,7 @@ export function BackofficeHeader({ config }: BackofficeHeaderProps) {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -8 }}
                         transition={{ duration: 0.2, ease: "easeOut" }}
-                        className="md:hidden absolute top-full left-0 right-0 bg-white border-t border-slate-100 shadow-[0_20px_60px_rgb(0,0,0,0.08)] overflow-visible z-50"
+                        className="lg:hidden absolute top-full left-0 right-0 bg-white border-t border-slate-100 shadow-[0_20px_60px_rgb(0,0,0,0.08)] overflow-visible z-50"
                     >
                         <div className="px-5 py-5 space-y-4">
                             {/* Quick Navigation Links */}
