@@ -64,6 +64,7 @@ export default function OrderUpdatePage() {
     // Invoice form state
     const [invoiceItems, setInvoiceItems] = useState<{ name: string; quantity: number; price: number; isLinked?: boolean }[]>([])
     const [tax, setTax] = useState(0)
+    const [isTaxEdited, setIsTaxEdited] = useState(false)
     const [deliveryFee, setDeliveryFee] = useState(0)
     const [discount, setDiscount] = useState(0)
     const [dueDate, setDueDate] = useState("")
@@ -89,6 +90,31 @@ export default function OrderUpdatePage() {
             }
         }
     }, [organization])
+
+    // Initialize defaults from organization settings
+    useEffect(() => {
+        if (!organization) return
+        const metadata = organization.publicMetadata as any || {}
+        const defaultDelivery = parseFloat(metadata.defaultDeliveryFee || "0")
+        const defaultDisc = parseFloat(metadata.defaultDiscount || "0")
+        
+        setDeliveryFee(defaultDelivery)
+        setDiscount(defaultDisc)
+    }, [organization])
+
+    // Auto-calculate tax based on defaultTaxRate percent and subtotal
+    useEffect(() => {
+        if (isTaxEdited || !organization) return
+        const metadata = organization.publicMetadata as any || {}
+        const defaultTaxRatePercent = parseFloat(metadata.defaultTaxRate || "0")
+        if (defaultTaxRatePercent > 0) {
+            const subtotal = invoiceItems.reduce((sum, item) => sum + (item.price * item.quantity), 0)
+            const computedTax = (subtotal * defaultTaxRatePercent) / 100
+            setTax(Number(computedTax.toFixed(2)))
+        } else {
+            setTax(0)
+        }
+    }, [invoiceItems, organization, isTaxEdited])
 
     useEffect(() => {
         if (orderId) {
@@ -622,7 +648,10 @@ export default function OrderUpdatePage() {
                                                     type="number" 
                                                     id="tax" 
                                                     value={tax || ""}
-                                                    onChange={(e) => setTax(Number(e.target.value) || 0)}
+                                                    onChange={(e) => {
+                                                        setTax(Number(e.target.value) || 0)
+                                                        setIsTaxEdited(true)
+                                                    }}
                                                     placeholder="0"
                                                     className="bg-slate-50 border-slate-200 h-10 rounded-xl text-right"
                                                 />

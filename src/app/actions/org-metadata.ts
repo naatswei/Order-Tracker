@@ -90,3 +90,22 @@ export async function updateOrgSubscriptionStatus(
     })
     return { success: true }
 }
+
+export async function updateOrgInvoiceSettings(orgId: string, settings: { defaultTaxRate?: string; defaultDeliveryFee?: string; defaultDiscount?: string }) {
+    const { userId } = await auth()
+    if (!userId) throw new Error('Unauthorized')
+
+    const client = await clerkClient()
+    const org = await client.organizations.getOrganization({ organizationId: orgId })
+
+    await client.organizations.updateOrganizationMetadata(orgId, {
+        publicMetadata: {
+            ...(org.publicMetadata || {}),
+            defaultTaxRate: settings.defaultTaxRate || "0",
+            defaultDeliveryFee: settings.defaultDeliveryFee || "0",
+            defaultDiscount: settings.defaultDiscount || "0"
+        }
+    })
+
+    return { success: true }
+}

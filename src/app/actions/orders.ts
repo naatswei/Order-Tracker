@@ -132,9 +132,30 @@ export async function createOrder(data: OrderInput): Promise<{ success: boolean;
         if (data.paymentMethod) {
             const { generateInvoice, markInvoiceAsPaid } = await import("./invoice");
             try {
+                // Fetch defaults from Clerk organization metadata
+                let defaultTax = 0;
+                let defaultDelivery = 0;
+                let defaultDiscount = 0;
+
+                if (orgId) {
+                    const client = await clerkClient();
+                    const org = await client.organizations.getOrganization({ organizationId: orgId });
+                    const metadata = org.publicMetadata as any || {};
+                    
+                    const subtotal = (data.invoiceItems || []).reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                    const taxPercent = parseFloat(metadata.defaultTaxRate || "0");
+                    
+                    defaultTax = (subtotal * taxPercent) / 100;
+                    defaultDelivery = parseFloat(metadata.defaultDeliveryFee || "0");
+                    defaultDiscount = parseFloat(metadata.defaultDiscount || "0");
+                }
+
                 await generateInvoice(orderId, {
                     items: data.invoiceItems || [],
-                    paymentMethod: data.paymentMethod
+                    paymentMethod: data.paymentMethod,
+                    tax: defaultTax,
+                    deliveryFee: defaultDelivery,
+                    discount: defaultDiscount
                 });
 
                 if (data.paymentMethod === "cash") {

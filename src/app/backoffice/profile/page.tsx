@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react"
 import { useOrganization, useUser, OrganizationProfile } from "@clerk/nextjs"
 import { useRouter } from "next/navigation"
-import { updateOrgProfile, updateOrgSubscriptionStatus } from "@/app/actions/org-metadata"
+import { updateOrgProfile, updateOrgSubscriptionStatus, updateOrgInvoiceSettings } from "@/app/actions/org-metadata"
 import { Card, CardContent, CardHeader, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -41,6 +41,11 @@ export default function ProfilePage() {
         location: "",
         email: "",
         website: ""
+    })
+    const [invoiceSettings, setInvoiceSettings] = useState({
+        defaultTaxRate: "0",
+        defaultDeliveryFee: "0",
+        defaultDiscount: "0"
     })
 
     const [businessType, setBusinessType] = useState<string | null>(null)
@@ -134,6 +139,13 @@ export default function ProfilePage() {
                 accountNumber: (metadata?.payoutAccountNumber as string) || "",
                 accountName: (metadata?.payoutAccountName as string) || ""
             })
+
+            // Initialize invoice defaults settings
+            setInvoiceSettings({
+                defaultTaxRate: (metadata?.defaultTaxRate as string) || "0",
+                defaultDeliveryFee: (metadata?.defaultDeliveryFee as string) || "0",
+                defaultDiscount: (metadata?.defaultDiscount as string) || "0"
+            })
         }
     }, [isLoaded, organization])
 
@@ -167,7 +179,8 @@ export default function ProfilePage() {
         setProfileLoading(true)
         try {
             await updateOrgProfile(organization.id, formData)
-            toast.success("Profile updated successfully")
+            await updateOrgInvoiceSettings(organization.id, invoiceSettings)
+            toast.success("Profile and settings updated successfully")
         } catch (error) {
             console.error(error)
             toast.error("Failed to update profile")
@@ -355,6 +368,52 @@ export default function ProfilePage() {
                                                     onChange={handleInputChange}
                                                     className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-11 transition-colors"
                                                 />
+                                            </div>
+                                        </div>
+
+                                        {/* Default Invoice Settings */}
+                                        <div className="pt-6 border-t border-slate-100 space-y-4">
+                                            <div>
+                                                <h4 className="text-sm font-bold text-slate-900">Default Invoice Settings</h4>
+                                                <p className="text-xs text-slate-500">Configure default values to automatically pre-fill when generating invoices.</p>
+                                            </div>
+                                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                                <div className="space-y-2">
+                                                    <Label className="text-xs text-slate-700 font-semibold" htmlFor="defaultTaxRate">Default Tax Rate (%)</Label>
+                                                    <Input
+                                                        id="defaultTaxRate"
+                                                        name="defaultTaxRate"
+                                                        type="number"
+                                                        step="0.01"
+                                                        value={invoiceSettings.defaultTaxRate}
+                                                        onChange={(e) => setInvoiceSettings(prev => ({ ...prev, defaultTaxRate: e.target.value }))}
+                                                        className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-11 transition-colors text-sm"
+                                                    />
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <Label className="text-xs text-slate-700 font-semibold" htmlFor="defaultDeliveryFee">Default Delivery Fee (GH₵)</Label>
+                                                    <Input
+                                                        id="defaultDeliveryFee"
+                                                        name="defaultDeliveryFee"
+                                                        type="number"
+                                                        step="0.01"
+                                                        value={invoiceSettings.defaultDeliveryFee}
+                                                        onChange={(e) => setInvoiceSettings(prev => ({ ...prev, defaultDeliveryFee: e.target.value }))}
+                                                        className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-11 transition-colors text-sm"
+                                                    />
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <Label className="text-xs text-slate-700 font-semibold" htmlFor="defaultDiscount">Default Discount (GH₵)</Label>
+                                                    <Input
+                                                        id="defaultDiscount"
+                                                        name="defaultDiscount"
+                                                        type="number"
+                                                        step="0.01"
+                                                        value={invoiceSettings.defaultDiscount}
+                                                        onChange={(e) => setInvoiceSettings(prev => ({ ...prev, defaultDiscount: e.target.value }))}
+                                                        className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-11 transition-colors text-sm"
+                                                    />
+                                                </div>
                                             </div>
                                         </div>
 
