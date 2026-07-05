@@ -89,9 +89,8 @@ function CreateOrderContent() {
     const [modalQuantity, setModalQuantity] = useState("1")
     const [selectedTierIndex, setSelectedTierIndex] = useState<number | null>(null)
 
-    // Invoice defaults form state
+    // Invoice defaults state
     const [tax, setTax] = useState(0)
-    const [isTaxEdited, setIsTaxEdited] = useState(false)
     const [deliveryFee, setDeliveryFee] = useState(0)
     const [discount, setDiscount] = useState(0)
 
@@ -122,7 +121,7 @@ function CreateOrderContent() {
 
     // Auto-calculate tax based on defaultTaxRate percent and subtotal
     useEffect(() => {
-        if (isTaxEdited || !organization) return
+        if (!organization) return
         const metadata = organization.publicMetadata as any || {}
         const defaultTaxRatePercent = parseFloat(metadata.defaultTaxRate || "0")
         if (defaultTaxRatePercent > 0) {
@@ -131,7 +130,7 @@ function CreateOrderContent() {
         } else {
             setTax(0)
         }
-    }, [subtotal, organization, isTaxEdited])
+    }, [subtotal, organization])
 
     useEffect(() => {
         // 1. Initial load from localStorage for immediate UI consistency
@@ -773,24 +772,6 @@ function CreateOrderContent() {
                                         />
                                     </div>
 
-                                    {/* Tax Input */}
-                                    <div className="space-y-2">
-                                        <Label htmlFor="tax" className="ml-1 text-xs font-semibold text-muted-foreground tracking-wider">Tax (GH₵)</Label>
-                                        <Input 
-                                            type="number" 
-                                            id="tax" 
-                                            step="0.01"
-                                            value={tax || ""}
-                                            onChange={(e) => {
-                                                setTax(Number(e.target.value) || 0)
-                                                setIsTaxEdited(true)
-                                            }}
-                                            placeholder="0.00"
-                                            disabled={!canCreateOrder}
-                                            className="h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80 text-sm"
-                                        />
-                                    </div>
-
                                     {/* Delivery Fee Input */}
                                     <div className="space-y-2">
                                         <Label htmlFor="deliveryFee" className="ml-1 text-xs font-semibold text-muted-foreground tracking-wider">Delivery Fee (GH₵)</Label>
@@ -800,21 +781,6 @@ function CreateOrderContent() {
                                             step="0.01"
                                             value={deliveryFee || ""}
                                             onChange={(e) => setDeliveryFee(Number(e.target.value) || 0)}
-                                            placeholder="0.00"
-                                            disabled={!canCreateOrder}
-                                            className="h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80 text-sm"
-                                        />
-                                    </div>
-
-                                    {/* Discount Input */}
-                                    <div className="space-y-2">
-                                        <Label htmlFor="discount" className="ml-1 text-xs font-semibold text-muted-foreground tracking-wider">Discount (GH₵)</Label>
-                                        <Input 
-                                            type="number" 
-                                            id="discount" 
-                                            step="0.01"
-                                            value={discount || ""}
-                                            onChange={(e) => setDiscount(Number(e.target.value) || 0)}
                                             placeholder="0.00"
                                             disabled={!canCreateOrder}
                                             className="h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80 text-sm"
