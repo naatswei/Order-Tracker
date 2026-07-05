@@ -607,6 +607,17 @@ export async function consumeReservedStock(orderId: string, providedTx?: any) {
     if (!orgId) throw new Error("Unauthorized");
 
     const logic = async (tx: any) => {
+        const order = await tx.query.orders.findFirst({
+            where: eq(orders.id, orderId)
+        });
+        if (!order) return;
+
+        const metadata = (order.metadata as any) || {};
+        if (metadata.stockConsumed) {
+            console.log(`Stock for order ${orderId} already consumed. Skipping.`);
+            return;
+        }
+
         const links = await tx.select().from(orderInventoryLinks).where(and(eq(orderInventoryLinks.orderId, orderId), eq(orderInventoryLinks.clerkOrgId, orgId)));
         
         for (const link of links) {
@@ -627,10 +638,21 @@ export async function consumeReservedStock(orderId: string, providedTx?: any) {
                 inventoryId: link.inventoryId,
                 type: "out",
                 quantity: link.quantity,
-                note: `Delivered: Deducted from physical stock for Order #${orderId}`,
+                note: `Delivered/Paid: Deducted from physical stock for Order #${orderId}`,
                 clerkOrgId: orgId,
             });
         }
+
+        // Set stockConsumed flag in metadata
+        await tx.update(orders)
+            .set({
+                metadata: {
+                    ...metadata,
+                    stockConsumed: true
+                },
+                updatedAt: new Date()
+            })
+            .where(eq(orders.id, orderId));
     };
 
     if (providedTx) {
@@ -648,25 +670,67 @@ export async function releaseReservedStock(orderId: string, providedTx?: any) {
     if (!orgId) throw new Error("Unauthorized");
 
     const logic = async (tx: any) => {
+        const order = await tx.query.orders.findFirst({
+            where: eq(orders.id, orderId)
+        });
+        if (!order) return;
+
+        const metadata = (order.metadata as any) || {};
+        const isConsumed = !!metadata.stockConsumed;
+
         const links = await tx.select().from(orderInventoryLinks).where(and(eq(orderInventoryLinks.orderId, orderId), eq(orderInventoryLinks.clerkOrgId, orgId)));
         
         for (const link of links) {
-            // Simply subtract from reserved (stock is still there)
-            await tx.update(inventory)
-                .set({ 
-                    reserved: sql`(${inventory.reserved}::float - ${parseFloat(link.quantity)})::text`,
+            const qty = parseFloat(link.quantity);
+            if (isConsumed) {
+                // If it was already consumed, add back to physical quantity, decrement totalSold
+                await tx.update(inventory)
+                    .set({ 
+                        quantity: sql`(${inventory.quantity}::float + ${qty})::text`,
+                        totalSold: sql`(${inventory.totalSold}::float - ${qty})::text`,
+                        updatedAt: new Date()
+                    })
+                    .where(and(eq(inventory.id, link.inventoryId), eq(inventory.clerkOrgId, orgId)));
+
+                await tx.insert(inventoryTransactions).values({
+                    id: `tr_${nanoid(10)}`,
+                    inventoryId: link.inventoryId,
+                    type: "in",
+                    quantity: link.quantity,
+                    note: `Returned to stock: Order #${orderId} cancelled after payment/delivery`,
+                    clerkOrgId: orgId,
+                });
+            } else {
+                // Simply subtract from reserved (stock is still there)
+                await tx.update(inventory)
+                    .set({ 
+                        reserved: sql`(${inventory.reserved}::float - ${qty})::text`,
+                        updatedAt: new Date()
+                    })
+                    .where(and(eq(inventory.id, link.inventoryId), eq(inventory.clerkOrgId, orgId)));
+
+                await tx.insert(inventoryTransactions).values({
+                    id: `tr_${nanoid(10)}`,
+                    inventoryId: link.inventoryId,
+                    type: "adjustment",
+                    quantity: link.quantity,
+                    note: `Reservation released for Order #${orderId}`,
+                    clerkOrgId: orgId,
+                });
+            }
+        }
+
+        if (isConsumed) {
+            // Set stockConsumed flag back to false in metadata
+            await tx.update(orders)
+                .set({
+                    metadata: {
+                        ...metadata,
+                        stockConsumed: false
+                    },
                     updatedAt: new Date()
                 })
-                .where(and(eq(inventory.id, link.inventoryId), eq(inventory.clerkOrgId, orgId)));
-
-            await tx.insert(inventoryTransactions).values({
-                id: `tr_${nanoid(10)}`,
-                inventoryId: link.inventoryId,
-                type: "adjustment",
-                quantity: link.quantity,
-                note: `Reservation released for Order #${orderId}`,
-                clerkOrgId: orgId,
-            });
+                .where(eq(orders.id, orderId));
         }
     };
 

@@ -129,6 +129,10 @@ export async function markInvoiceAsPaid(orderId: string, silent: boolean = false
         })
         .where(eq(orders.id, orderId))
 
+    // Consume stock since payment is confirmed
+    const { consumeReservedStock } = await import("./operations");
+    await consumeReservedStock(orderId);
+
     if (!silent) {
         sendOrderStatusSMS(orderId, "Payment Confirmed").catch(err => console.error("Error triggering status SMS:", err));
     }
@@ -186,6 +190,10 @@ export async function confirmInvoicePayment(orderId: string, reference: string) 
             updatedAt: new Date()
         })
         .where(eq(orders.id, orderId))
+
+    // Consume stock since payment is confirmed
+    const { consumeReservedStock } = await import("./operations");
+    await consumeReservedStock(orderId);
 
     sendOrderStatusSMS(orderId, "Payment Confirmed").catch(err => console.error("Error triggering status SMS:", err));
 
