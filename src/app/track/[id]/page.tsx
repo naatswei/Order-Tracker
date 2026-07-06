@@ -654,6 +654,10 @@ export default function TrackingDetailsPage() {
                                                     <span>- GH₵ {((order.metadata as any).invoice as any).discount.toFixed(2)}</span>
                                                 </div>
                                             )}
+                                            <div className="flex justify-between text-white/50 border-t border-white/5 pt-2">
+                                                <span>Payment Method</span>
+                                                <span className="font-semibold uppercase text-[10px] bg-white/10 px-2 py-0.5 rounded text-white/95">{((order.metadata as any).invoice as any).paymentMethod || "online"}</span>
+                                            </div>
                                             <div className="flex justify-between text-sm font-bold text-white border-t border-white/5 pt-2">
                                                 <span>Amount Due</span>
                                                 <span>GH₵ {((order.metadata as any).invoice as any).amountDue.toFixed(2)}</span>

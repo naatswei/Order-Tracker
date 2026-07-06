@@ -9,6 +9,7 @@ export interface InvoiceData {
     deliveryFee?: number;
     discount?: number;
     amountDue: number;
+    paymentMethod?: "online" | "cash";
 }
 
 export function printInvoice(invoice: InvoiceData, customerName: string, customerPhone: string, customerEmail?: string, businessName: string = "Business") {
@@ -67,6 +68,7 @@ export function printInvoice(invoice: InvoiceData, customerName: string, custome
                         <h4>Invoice Details:</h4>
                         <p>Date Issued: ${new Date(invoice.createdAt).toLocaleDateString()}</p>
                         <p>Due Date: ${new Date(invoice.dueDate).toLocaleDateString()}</p>
+                        <p>Payment Method: <strong style="text-transform: uppercase;">${invoice.paymentMethod || "online"}</strong></p>
                         <p>Status: <strong style="color: ${invoice.invoiceStatus === 'paid' ? '#16a34a' : '#dc2626'}">${invoice.invoiceStatus.toUpperCase()}</strong></p>
                     </div>
                 </div>

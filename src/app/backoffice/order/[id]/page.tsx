@@ -487,6 +487,10 @@ export default function OrderUpdatePage() {
                                                     <span className="font-semibold">- GH₵ {(order.metadata as any).invoice.discount.toFixed(2)}</span>
                                                 </div>
                                             )}
+                                            <div className="flex justify-between text-slate-500 border-t border-slate-100/50 pt-2.5">
+                                                <span>Payment Method</span>
+                                                <span className="font-semibold uppercase text-xs text-slate-700 bg-slate-100 px-2 py-0.5 rounded">{(order.metadata as any).invoice.paymentMethod || "online"}</span>
+                                            </div>
                                             <div className="flex justify-between text-base font-black text-slate-900 border-t border-slate-100 pt-3">
                                                 <span>Total Amount Due</span>
                                                 <span>GH₵ {(order.metadata as any).invoice.amountDue.toFixed(2)}</span>
