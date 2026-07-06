@@ -160,7 +160,8 @@ export default function OperationsPage() {
     const filteredOrders = orders.filter(order => 
         order.customerName.toLowerCase().includes(searchQuery.toLowerCase()) ||
         order.orderNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        order.itemType.toLowerCase().includes(searchQuery.toLowerCase())
+        order.itemType.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (order.customerPhone && order.customerPhone.toLowerCase().includes(searchQuery.toLowerCase()))
     );
 
     return (

@@ -150,12 +150,14 @@ export default function BackofficePage() {
         const customerName = order.customerName || ""
         const orderNumber = order.orderNumber || ""
         const orderId = order.id || ""
+        const customerPhone = order.customerPhone || ""
         const q = (searchQuery || "").toLowerCase()
 
         const matchesSearch =
             customerName.toLowerCase().includes(q) ||
             orderNumber.toLowerCase().includes(q) ||
-            orderId.toLowerCase().includes(q)
+            orderId.toLowerCase().includes(q) ||
+            customerPhone.toLowerCase().includes(q)
 
         return matchesSearch
     })

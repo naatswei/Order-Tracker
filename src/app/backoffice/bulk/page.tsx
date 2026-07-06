@@ -179,7 +179,8 @@ function BulkUpdateContent() {
                 filteredOrders = filteredOrders.filter(o =>
                     o.customerName.toLowerCase().includes(query) ||
                     o.orderNumber.toLowerCase().includes(query) ||
-                    o.id.toLowerCase().includes(query)
+                    o.id.toLowerCase().includes(query) ||
+                    (o.customerPhone && o.customerPhone.toLowerCase().includes(query))
                 )
             }
 
