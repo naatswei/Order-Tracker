@@ -601,7 +601,7 @@ export default function InventoryPage() {
         <div className="min-h-screen bg-[#FBFBFF] pb-20">
             {/* Header Area */}
             <div className="bg-white/80 border-b border-slate-100 sticky top-0 z-50 backdrop-blur-xl">
-                <div className="max-w-[1600px] mx-auto px-4 sm:px-12 py-4 sm:py-5 flex flex-col lg:flex-row lg:items-center justify-between gap-4 lg:gap-6">
+                <div className="max-w-[1600px] mx-auto px-4 sm:px-12 py-4 sm:py-5 flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6">
                     <div className="relative flex items-center justify-center sm:justify-start w-full sm:w-auto">
                         <Link href="/backoffice" className="absolute left-0 sm:relative sm:mr-6">
                             <Button variant="ghost" size="icon" className="h-9 w-9 sm:h-10 sm:w-10 rounded-xl border border-slate-100 bg-white hover:bg-slate-50 shadow-sm transition-all text-slate-400 hover:text-[#191A43]" title="Back to Dashboard">
@@ -623,7 +623,7 @@ export default function InventoryPage() {
                         </div>
                     </div>
 
-                    <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 w-full lg:w-auto">
+                    <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 w-full sm:w-auto">
                         <div className="relative w-full sm:w-80">
                             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-400" />
                             <Input 
@@ -833,17 +833,15 @@ export default function InventoryPage() {
                     <Card className="border border-slate-100 shadow-[0_2px_12px_rgb(0,0,0,0.02)] bg-white rounded-xl overflow-hidden">
                         <AnimatePresence mode="wait">
                             {filteredItems.length > 0 ? (
-                                <>
-                                    {/* Desktop Table View */}
-                                    <motion.div
-                                        key={`table-${saleTypeTab}`}
-                                        initial={{ opacity: 0, y: 10 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        exit={{ opacity: 0, y: -10 }}
-                                        transition={{ duration: 0.2 }}
-                                        className="hidden lg:block overflow-x-auto no-scrollbar"
-                                    >
-                                        <table className="w-full text-left border-collapse min-w-[1000px]">
+                                <motion.div
+                                    key={`table-${saleTypeTab}`}
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: -10 }}
+                                    transition={{ duration: 0.2 }}
+                                    className="overflow-x-auto no-scrollbar"
+                                >
+                                    <table className="w-full text-left border-collapse min-w-[1000px]">
                                         <thead>
                                             <tr className="border-b border-slate-100 bg-slate-50/40">
                                                 {isAdmin && (
@@ -1012,148 +1010,7 @@ export default function InventoryPage() {
                                             </AnimatePresence>
                                         </tbody>
                                     </table>
-                                    </motion.div>
-
-                                    {/* Mobile/Tablet Card View */}
-                                    <motion.div
-                                        key={`cards-${saleTypeTab}`}
-                                        initial={{ opacity: 0, y: 10 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        exit={{ opacity: 0, y: -10 }}
-                                        transition={{ duration: 0.2 }}
-                                        className="lg:hidden grid grid-cols-1 md:grid-cols-2 gap-4 p-4 sm:p-6 bg-slate-50/50"
-                                    >
-                                        {filteredItems.map((item) => {
-                                            const avail = parseFloat(item.quantity) - parseFloat(item.reserved || "0");
-                                            const isLowStock = avail <= parseFloat(item.minStock || "0");
-                                            return (
-                                                <div 
-                                                    key={item.id} 
-                                                    className={`bg-white rounded-xl border border-slate-100 p-4 shadow-sm flex flex-col justify-between transition-all ${
-                                                        selectedIds.has(item.id) ? "ring-2 ring-[#191A43] bg-[#191A43]/[0.01]" : ""
-                                                    }`}
-                                                >
-                                                    <div>
-                                                        {/* Top Row: Select, Avatar, Name, Control actions */}
-                                                        <div className="flex items-start justify-between gap-3">
-                                                            <div className="flex items-center gap-3">
-                                                                {isAdmin && (
-                                                                    <button
-                                                                        onClick={() => toggleSelectItem(item.id)}
-                                                                        className="text-slate-300 hover:text-[#191A43] transition-colors shrink-0"
-                                                                    >
-                                                                        {selectedIds.has(item.id)
-                                                                            ? <CheckSquare className="w-4 h-4 text-[#191A43]" />
-                                                                            : <Square className="w-4 h-4" />}
-                                                                    </button>
-                                                                )}
-                                                                <div className={`w-9 h-9 rounded-lg flex items-center justify-center text-white font-bold text-base shadow-sm shrink-0 ${getAvatarColor(item.name)}`}>
-                                                                    {item.name[0]}
-                                                                </div>
-                                                                <div>
-                                                                    <h3 className="font-bold text-slate-900 text-sm leading-snug">{item.name}</h3>
-                                                                    <span className="text-[10px] text-slate-400 font-medium">{item.sku || "No SKU"} • {item.unit || "Units"}</span>
-                                                                </div>
-                                                            </div>
-
-                                                            {/* Available Badge */}
-                                                            <Badge className={`text-[9px] font-bold px-2.5 py-0.5 rounded-full shrink-0 ${
-                                                                isLowStock 
-                                                                    ? "bg-red-50 text-red-600 border border-red-100 hover:bg-red-50" 
-                                                                    : "bg-emerald-50 text-emerald-600 border border-emerald-100 hover:bg-emerald-50"
-                                                            }`} variant="outline">
-                                                                {isLowStock ? "Low Stock" : "In Stock"}
-                                                            </Badge>
-                                                        </div>
-
-                                                        {/* Category and Price tag row */}
-                                                        <div className="flex items-center gap-2 mt-3 flex-wrap">
-                                                            <Badge variant="outline" className="text-[9px] font-semibold bg-slate-50 border-slate-100 text-slate-500 px-2 py-0.5 rounded-md">
-                                                                {item.category || "General"}
-                                                            </Badge>
-                                                            <span className="text-[10px] text-[#9C7E41] font-semibold bg-[#9C7E41]/5 px-2 py-0.5 rounded-md border border-[#9C7E41]/10">
-                                                                Cost: GH₵ {parseFloat(item.unitCost || "0").toLocaleString()}
-                                                            </span>
-                                                        </div>
-
-                                                        {/* Stock Info Stats Grid */}
-                                                        <div className="grid grid-cols-3 gap-2 mt-4 bg-slate-50/50 p-2.5 rounded-lg border border-slate-100/80">
-                                                            <div className="text-center">
-                                                                <p className="text-[9px] text-slate-400 font-semibold uppercase tracking-wider">On Hand</p>
-                                                                <p className="text-xs font-bold text-slate-800 mt-0.5">{item.quantity}</p>
-                                                                <p className="text-[8px] text-slate-400 font-medium">GH₵ {(parseFloat(item.quantity) * parseFloat(item.unitCost || "0")).toLocaleString()}</p>
-                                                            </div>
-                                                            <div className="text-center border-x border-slate-100">
-                                                                <p className="text-[9px] text-slate-400 font-semibold uppercase tracking-wider">Reserved</p>
-                                                                <p className={`text-xs font-bold mt-0.5 ${parseFloat(item.reserved || "0") > 0 ? "text-amber-600" : "text-slate-400"}`}>
-                                                                    {item.reserved || "0"}
-                                                                </p>
-                                                            </div>
-                                                            <div className="text-center">
-                                                                <p className="text-[9px] text-slate-400 font-semibold uppercase tracking-wider">Available</p>
-                                                                <p className={`text-xs font-black mt-0.5 ${isLowStock ? "text-red-600" : "text-emerald-600"}`}>
-                                                                    {avail}
-                                                                </p>
-                                                            </div>
-                                                        </div>
-
-                                                        {/* Extra Info: Sold / Initial */}
-                                                        <div className="flex justify-between items-center text-[10px] mt-2.5 px-1 text-slate-500">
-                                                            <span>Initial: <strong>{item.totalEntered || item.quantity}</strong></span>
-                                                            <span>Sold: <strong className="text-blue-600">{item.totalSold || "0"}</strong> (GH₵ {(parseFloat(item.totalSold || "0") * parseFloat(item.unitCost || "0")).toLocaleString()})</span>
-                                                        </div>
-
-                                                        {/* Wholesale pricing tiers */}
-                                                        {saleTypeTab === "wholesale" && item.pricingTiers && Array.isArray(item.pricingTiers) && item.pricingTiers.length > 0 && (
-                                                            <div className="mt-3 pt-2.5 border-t border-slate-100/60">
-                                                                <p className="text-[9px] font-bold text-emerald-600 uppercase tracking-wider mb-1.5">Wholesale Tiers:</p>
-                                                                <div className="flex flex-wrap gap-1">
-                                                                    {item.pricingTiers.map((tier: any, tIdx: number) => (
-                                                                        <Badge key={tIdx} variant="outline" className="text-[9px] font-medium bg-white border-slate-200 text-slate-500 px-1.5 py-0.5">
-                                                                            {tier.minQty}{tier.maxQty ? `-${tier.maxQty}` : '+'}: GH₵ {parseFloat(tier.price).toLocaleString()}
-                                                                        </Badge>
-                                                                    ))}
-                                                                </div>
-                                                            </div>
-                                                        )}
-                                                    </div>
-
-                                                    {/* Bottom Row: Adjusters & Controls */}
-                                                    <div className="flex items-center justify-between gap-2 mt-4 pt-3 border-t border-slate-100/60">
-                                                        <div className="flex items-center gap-1">
-                                                            <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider mr-1">Adjust:</span>
-                                                            <StockAdjuster 
-                                                                item={item} 
-                                                                handleUpdateStock={handleUpdateStock} 
-                                                                type="out" 
-                                                                icon={Minus} 
-                                                                hoverClass="hover:bg-red-50 hover:text-red-600 hover:border-red-100" 
-                                                            />
-                                                            <StockAdjuster 
-                                                                item={item} 
-                                                                handleUpdateStock={handleUpdateStock} 
-                                                                type="in" 
-                                                                icon={Plus} 
-                                                                hoverClass="hover:bg-emerald-50 hover:text-emerald-600 hover:border-emerald-100" 
-                                                            />
-                                                        </div>
-
-                                                        {isAdmin && (
-                                                            <Button 
-                                                                size="icon" 
-                                                                variant="ghost" 
-                                                                onClick={() => handleRemove(item.id)}
-                                                                className="w-9 h-9 rounded-lg hover:bg-red-50 hover:text-red-500 transition-all text-slate-300"
-                                                            >
-                                                                <Trash2 className="w-4 h-4" />
-                                                            </Button>
-                                                        )}
-                                                    </div>
-                                                </div>
-                                            );
-                                        })}
-                                    </motion.div>
-                                </>
+                                </motion.div>
                             ) : (
                                 <motion.div
                                     key={showOnlyLowStock ? `empty-low-stock-${saleTypeTab}` : `empty-${saleTypeTab}`}
