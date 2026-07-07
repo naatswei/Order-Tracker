@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useOrganization } from "@clerk/nextjs";
-import { getInventory, addInventoryItem, updateStock, removeInventoryItem, getInventoryHistory, bulkAddInventoryItems, bulkRemoveInventoryItems } from "@/app/actions/operations";
+import { getInventory, addInventoryItem, editInventoryItem, updateStock, removeInventoryItem, getInventoryHistory, bulkAddInventoryItems, bulkRemoveInventoryItems } from "@/app/actions/operations";
 import { getOrders } from "@/app/actions/orders";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -25,6 +25,7 @@ import {
     Scissors,
     History,
     Trash2,
+    Edit,
     Upload,
     Download,
     Loader2,
@@ -156,6 +157,8 @@ export default function InventoryPage() {
 
     // Form state
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [editingItem, setEditingItem] = useState<any | null>(null);
 
     // Bulk Import states
     const [isImportModalOpen, setIsImportModalOpen] = useState(false);
@@ -502,6 +505,38 @@ export default function InventoryPage() {
         } catch (error: any) {
             console.error("Inventory Error:", error);
             toast.error("Deployment Failed: " + (error.message || "Check connection"));
+        }
+    }
+
+    async function handleEditItem(e: React.FormEvent<HTMLFormElement>) {
+        e.preventDefault();
+        if (!editingItem) return;
+        const formData = new FormData(e.currentTarget);
+        
+        const data = {
+            name: formData.get("name") as string,
+            quantity: (formData.get("quantity") as string) || "0",
+            sku: formData.get("sku") as string,
+            unit: formData.get("unit") as string,
+            category: formData.get("category") as string,
+            minStock: (formData.get("minStock") as string) || "0",
+            unitCost: (formData.get("unitCost") as string) || "0",
+        };
+
+        if (!data.name) {
+            toast.error("Asset name is required");
+            return;
+        }
+
+        try {
+            await editInventoryItem(editingItem.id, data);
+            toast.success("Item updated successfully");
+            setIsEditModalOpen(false);
+            setEditingItem(null);
+            loadData();
+        } catch (error: any) {
+            console.error("Inventory Edit Error:", error);
+            toast.error("Failed to edit item: " + (error.message || "Check connection"));
         }
     }
 
@@ -996,6 +1031,18 @@ export default function InventoryPage() {
                                                                         <Button 
                                                                             size="icon" 
                                                                             variant="ghost" 
+                                                                            onClick={() => {
+                                                                                setEditingItem(item);
+                                                                                setIsEditModalOpen(true);
+                                                                            }}
+                                                                            className="w-9 h-9 rounded-lg hover:bg-slate-100 text-slate-300 hover:text-[#191A43] transition-all"
+                                                                            title="Edit Item"
+                                                                        >
+                                                                            <Edit className="w-4 h-4" />
+                                                                        </Button>
+                                                                        <Button 
+                                                                            size="icon" 
+                                                                            variant="ghost" 
                                                                             onClick={() => handleRemove(item.id)}
                                                                             className="w-9 h-9 rounded-lg hover:bg-slate-100 text-slate-300 hover:text-red-500 transition-all"
                                                                         >
@@ -1251,6 +1298,120 @@ export default function InventoryPage() {
                             </Button>
                         </div>
                     </form>
+                </DialogContent>
+            </Dialog>
+
+            <Dialog open={isEditModalOpen} onOpenChange={(open) => {
+                setIsEditModalOpen(open);
+                if (!open) setEditingItem(null);
+            }}>
+                <DialogContent className="max-w-2xl rounded-xl border border-slate-100 shadow-xl p-0 max-h-[90vh] overflow-y-auto no-scrollbar bg-white">
+                <DialogHeader className="p-6 sm:p-8 pb-4">
+                    <div className="flex items-center gap-4 mb-4">
+                        <div className="w-10 h-10 rounded-lg bg-[#191A43] flex items-center justify-center shadow-sm">
+                            <Edit className="w-5 h-5 text-white" />
+                        </div>
+                        <div>
+                            <DialogTitle className="text-lg font-bold text-[#191A43] tracking-tight">Edit {config.itemLabel || "Asset"}</DialogTitle>
+                            <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider mt-1">Modify {config.itemLabel || "Asset"} parameters</p>
+                        </div>
+                    </div>
+                </DialogHeader>
+
+                {editingItem && (
+                    <form onSubmit={handleEditItem} className="p-6 sm:p-8 pt-0 space-y-4 sm:space-y-6">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                            <div className="space-y-2">
+                                <Label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider ml-1">{config.itemLabel || "Asset Name"}</Label>
+                                <Input 
+                                    name="name" 
+                                    defaultValue={editingItem.name}
+                                    placeholder={config.inventory?.assetPlaceholder || "e.g. Silk Thread"} 
+                                    required 
+                                    className="h-10 rounded-lg border-slate-200 bg-slate-50/50 font-medium text-xs"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider ml-1">SKU / Reference</Label>
+                                <Input 
+                                    name="sku" 
+                                    defaultValue={editingItem.sku || ""}
+                                    placeholder={config.inventory?.skuPlaceholder || "e.g. SLK-001"} 
+                                    className="h-10 rounded-lg border-slate-200 bg-slate-50/50 font-medium text-xs"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider ml-1">Category</Label>
+                                <Input 
+                                    name="category" 
+                                    defaultValue={editingItem.category || ""}
+                                    placeholder={config.inventory?.categoryPlaceholder || "e.g. Raw Materials"} 
+                                    className="h-10 rounded-lg border-slate-200 bg-slate-50/50 font-medium text-xs"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider ml-1">Measurement Unit</Label>
+                                <Input 
+                                    name="unit" 
+                                    defaultValue={editingItem.unit || ""}
+                                    placeholder={config.inventory?.unitPlaceholder || "e.g. Rolls, Meters"} 
+                                    className="h-10 rounded-lg border-slate-200 bg-slate-50/50 font-medium text-xs"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider ml-1">Physical Stock (Current)</Label>
+                                <Input 
+                                    name="quantity" 
+                                    type="number" 
+                                    defaultValue={editingItem.quantity}
+                                    placeholder="0" 
+                                    className="h-10 rounded-lg border-slate-200 bg-slate-50/50 font-medium text-xs"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider ml-1">Unit Cost (GH₵)</Label>
+                                <Input 
+                                    name="unitCost" 
+                                    type="number" 
+                                    defaultValue={editingItem.unitCost || "0.00"}
+                                    placeholder="0.00" 
+                                    step="0.01" 
+                                    className="h-10 rounded-lg border-slate-200 bg-slate-50/50 font-medium text-xs"
+                                />
+                            </div>
+                            <div className="space-y-2 col-span-1 sm:col-span-2">
+                                <Label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider ml-1">Minimum Alert Threshold</Label>
+                                <Input 
+                                    name="minStock" 
+                                    type="number" 
+                                    defaultValue={editingItem.minStock || "0"}
+                                    placeholder="5" 
+                                    className="h-10 rounded-lg border-slate-200 bg-slate-50/50 font-medium text-xs"
+                                />
+                            </div>
+                        </div>
+
+                        <div className="flex flex-col-reverse sm:flex-row justify-end gap-3 pt-4">
+                            <Button 
+                                type="button" 
+                                variant="ghost" 
+                                onClick={() => {
+                                    setIsEditModalOpen(false);
+                                    setEditingItem(null);
+                                }}
+                                className="h-10 w-full sm:w-auto px-6 rounded-lg font-semibold text-slate-500 hover:text-[#191A43] text-xs uppercase tracking-wider"
+                            >
+                                Cancel
+                            </Button>
+                            <Button 
+                                type="submit" 
+                                className="h-10 w-full sm:w-auto px-6 rounded-lg bg-[#191A43] text-white font-semibold hover:bg-[#191A43]/95 shadow-sm text-xs transition-all"
+                            >
+                                Save Changes
+                            </Button>
+                        </div>
+                    </form>
+                )}
                 </DialogContent>
             </Dialog>
 

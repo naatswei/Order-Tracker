@@ -913,4 +913,65 @@ export async function saveClientPricingOverrides(clientId: string, overrides: { 
     return { success: true };
 }
 
+export async function editInventoryItem(
+    itemId: string, 
+    data: { 
+        name: string, 
+        sku?: string, 
+        category?: string, 
+        unit?: string, 
+        quantity?: string, 
+        minStock?: string, 
+        unitCost?: string, 
+        pricingTiers?: any 
+    }
+) {
+    const { orgId, orgRole } = await auth();
+    if (!orgId) throw new Error("Unauthorized");
+    if (orgRole !== "org:admin") throw new Error("Only organization administrators can edit inventory items.");
+
+    await db.transaction(async (tx) => {
+        const items = await tx.select().from(inventory).where(and(eq(inventory.id, itemId), eq(inventory.clerkOrgId, orgId)));
+        if (items.length === 0) throw new Error("Item not found");
+        
+        const oldItem = items[0];
+        const oldQty = parseFloat(oldItem.quantity);
+        const newQty = parseFloat(data.quantity || oldItem.quantity);
+        const diffQty = newQty - oldQty;
+        
+        const currentEntered = parseFloat(oldItem.totalEntered || oldItem.quantity);
+        const newEntered = currentEntered + diffQty;
+
+        await tx.update(inventory)
+            .set({
+                name: data.name,
+                sku: data.sku || null,
+                category: data.category || null,
+                unit: data.unit || null,
+                quantity: newQty.toString(),
+                totalEntered: newEntered.toString(),
+                minStock: data.minStock || "0",
+                unitCost: data.unitCost || "0",
+                pricingTiers: data.pricingTiers || null,
+                updatedAt: new Date(),
+            })
+            .where(and(eq(inventory.id, itemId), eq(inventory.clerkOrgId, orgId)));
+
+        if (diffQty !== 0) {
+            // Add adjustment transaction
+            await tx.insert(inventoryTransactions).values({
+                id: `tr_${nanoid(10)}`,
+                inventoryId: itemId,
+                type: "adjustment",
+                quantity: Math.abs(diffQty).toString(),
+                note: `Initial entry correction (from ${oldQty} to ${newQty})`,
+                clerkOrgId: orgId,
+            });
+        }
+    });
+
+    revalidatePath("/backoffice/inventory");
+    return { success: true };
+}
+
 
