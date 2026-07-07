@@ -41,7 +41,7 @@ export const BUSINESS_CONFIGS: Record<string, BusinessConfig> = {
     tailoring: {
         id: "tailoring",
         title: "Tailoring",
-        itemLabel: "Garment Type",
+        itemLabel: "Product Name",
         itemPlaceholder: "Dress, Suit, etc.",
         statuses: [
             "Order Received", "Measurement Taken", "Production", "Quality Checks",
@@ -75,7 +75,7 @@ export const BUSINESS_CONFIGS: Record<string, BusinessConfig> = {
     "hair-retail": {
         id: "hair-retail",
         title: "Hair Retail",
-        itemLabel: "Hair/Product Type",
+        itemLabel: "Product Name",
         itemPlaceholder: "Frontal Wig, Bundles, etc.",
         statuses: [
             "Order Received", "Payment Verified", "Processing", "Wigging/Styling",
@@ -112,7 +112,7 @@ export const BUSINESS_CONFIGS: Record<string, BusinessConfig> = {
     logistics: {
         id: "logistics",
         title: "Logistics",
-        itemLabel: "Package Type",
+        itemLabel: "Product Name",
         itemPlaceholder: "Box, Document, Pallet, etc.",
         statuses: [
             "Shipment Booked", "Picked Up", "In Transit", "Arriving at Facility",

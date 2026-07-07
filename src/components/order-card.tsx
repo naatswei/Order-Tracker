@@ -52,24 +52,24 @@ export function OrderCard({ order, copiedId, onCopy, businessType, needsRenewal 
 
                                 <div className="space-y-2 text-[15px]">
                                     <div className="flex gap-2 items-center">
-                                        <span className="text-slate-400 text-sm font-medium w-28 shrink-0 whitespace-nowrap">Customer:</span>
+                                        <span className="text-slate-400 text-sm font-medium w-32 shrink-0 whitespace-nowrap">Customer:</span>
                                         <span className="font-semibold text-slate-800">{order.customerName}</span>
                                     </div>
                                     <div className="flex gap-2 items-center">
-                                        <span className="text-slate-400 text-sm font-medium w-28 shrink-0 whitespace-nowrap">Contact:</span>
+                                        <span className="text-slate-400 text-sm font-medium w-32 shrink-0 whitespace-nowrap">Contact:</span>
                                         <span className="font-semibold text-slate-800">{order.customerPhone}</span>
                                     </div>
                                     <div className="flex gap-2 items-center">
-                                        <span className="text-slate-400 text-sm font-medium w-28 shrink-0 whitespace-nowrap">{config.itemLabel}:</span>
+                                        <span className="text-slate-400 text-sm font-medium w-32 shrink-0 whitespace-nowrap">{config.itemLabel}:</span>
                                         <span className="font-semibold text-slate-800 capitalize">{order.itemType || order.garmentType}</span>
                                     </div>
                                     <div className="flex gap-2 items-center">
-                                        <span className="text-slate-400 text-sm font-medium w-28 shrink-0 whitespace-nowrap">{config.orderLabel === "Tracking Number" ? "Delivery Date" : "Delivery Date"}:</span>
+                                        <span className="text-slate-400 text-sm font-medium w-32 shrink-0 whitespace-nowrap">{config.orderLabel === "Tracking Number" ? "Delivery Date" : "Delivery Date"}:</span>
                                         <span className="font-semibold text-red-500" suppressHydrationWarning>{order.pickupDate ? new Date(order.pickupDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}</span>
                                     </div>
                                     {order.inventoryItems && order.inventoryItems.length > 0 && (
                                         <div className="flex gap-2 items-start pt-1">
-                                            <span className="text-slate-400 text-sm font-medium w-28 shrink-0 whitespace-nowrap pt-0.5">Stock Sold:</span>
+                                            <span className="text-slate-400 text-sm font-medium w-32 shrink-0 whitespace-nowrap pt-0.5">Stock Sold:</span>
                                             <div className="flex flex-wrap gap-1.5">
                                                 {order.inventoryItems.map((item, idx) => (
                                                     <Badge key={idx} variant="outline" className="text-xs font-bold bg-emerald-50/50 border-emerald-100 text-emerald-600 px-2 py-0.5 rounded-lg flex items-center gap-1">
