@@ -88,6 +88,12 @@ function CreateOrderContent() {
     const [selectedItemForUnitModal, setSelectedItemForUnitModal] = useState<any>(null)
     const [modalQuantity, setModalQuantity] = useState("1")
     const [selectedTierIndex, setSelectedTierIndex] = useState<number | null>(null)
+    
+    // Hair Retail specs modal state
+    const [isSpecModalOpen, setIsSpecModalOpen] = useState(false)
+    const [selectedItemForSpecModal, setSelectedItemForSpecModal] = useState<any>(null)
+    const [specLength, setSpecLength] = useState("")
+    const [specColor, setSpecColor] = useState("")
 
     // Invoice defaults state
     const [tax, setTax] = useState(0)
@@ -554,7 +560,12 @@ function CreateOrderContent() {
                                                         type="button"
                                                         onMouseDown={(e) => {
                                                             e.preventDefault(); // Prevents input blur from closing dropdown before action completes
-                                                            if (orderMode === "unit") {
+                                                            if (businessType === "hair-retail") {
+                                                                setSelectedItemForSpecModal(item);
+                                                                setSpecLength(metadata.length || "");
+                                                                setSpecColor(metadata.color || "");
+                                                                setIsSpecModalOpen(true);
+                                                            } else if (orderMode === "unit") {
                                                                 if (!selectedInventory.find(s => s.id === item.id)) {
                                                                     setSelectedInventory([...selectedInventory, { 
                                                                         id: item.id, 
@@ -593,6 +604,25 @@ function CreateOrderContent() {
                                             <div key={item.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 bg-white rounded-2xl border border-slate-100 shadow-sm">
                                                 <div className="flex-1 min-w-0">
                                                     <p className="text-sm font-black text-slate-700 truncate">{item.name}</p>
+                                                    {businessType === "hair-retail" && (
+                                                        <div className="mt-1 flex flex-wrap items-center gap-2 text-[10px] font-semibold text-slate-500">
+                                                            {metadata.length && <span className="bg-slate-50 px-2 py-0.5 rounded-lg border border-slate-100">Length: {metadata.length}</span>}
+                                                            {metadata.color && <span className="bg-slate-50 px-2 py-0.5 rounded-lg border border-slate-100">Color/Density: {metadata.color}</span>}
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => {
+                                                                    const invItem = allInventory.find(i => i.id === item.id) || item;
+                                                                    setSelectedItemForSpecModal(invItem);
+                                                                    setSpecLength(metadata.length || "");
+                                                                    setSpecColor(metadata.color || "");
+                                                                    setIsSpecModalOpen(true);
+                                                                }}
+                                                                className="text-[#9C7E41] hover:underline pl-1 font-bold"
+                                                            >
+                                                                Edit Specs
+                                                            </button>
+                                                        </div>
+                                                    )}
                                                 </div>
                                                 <div className="flex flex-wrap items-center justify-between sm:justify-end gap-3 sm:gap-4 border-t border-slate-50 pt-3 sm:border-0 sm:pt-0">
                                                     <div className="flex items-center gap-2">
@@ -792,6 +822,9 @@ function CreateOrderContent() {
                                         ?.filter(field => {
                                             // Hide 'quantity' and 'sku' when inventory item is linked OR if it's a retail business
                                             if (selectedInventory.length > 0 || isRetailBusiness) {
+                                                if (businessType === "hair-retail" && selectedInventory.length > 0) {
+                                                    return field.id !== "quantity" && field.id !== "sku" && field.id !== "length" && field.id !== "color";
+                                                }
                                                 return field.id !== "quantity" && field.id !== "sku";
                                             }
                                             return true;
@@ -1136,6 +1169,80 @@ function CreateOrderContent() {
                             }}
                             className="w-full text-white rounded-xl h-12 font-bold shadow-md hover:brightness-95 border-0"
                             style={{ backgroundColor: config.theme.secondary }}
+                        >
+                            Confirm & Link to Order
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            {/* Hair Retail Product Specifications Modal */}
+            <Dialog open={isSpecModalOpen} onOpenChange={setIsSpecModalOpen}>
+                <DialogContent className="sm:max-w-md border-0 bg-white shadow-2xl rounded-3xl p-6 overflow-hidden">
+                    <DialogHeader>
+                        <div className="flex items-center gap-2 mb-1">
+                            <div className="p-2 bg-slate-50 rounded-xl">
+                                <ShoppingBag className="w-5 h-5 text-slate-700" />
+                            </div>
+                            <div>
+                                <DialogTitle className="text-lg font-black text-slate-800 tracking-tight">Product Specifications</DialogTitle>
+                                <DialogDescription className="text-xs text-slate-400 font-bold uppercase tracking-wider mt-0.5">
+                                    {selectedItemForSpecModal?.name}
+                                </DialogDescription>
+                            </div>
+                        </div>
+                    </DialogHeader>
+
+                    {selectedItemForSpecModal && (
+                        <div className="space-y-4 pt-2">
+                            <div className="space-y-2">
+                                <Label className="text-xs font-semibold text-muted-foreground ml-1">Wig Length</Label>
+                                <Input 
+                                    value={specLength} 
+                                    onChange={(e) => setSpecLength(e.target.value)} 
+                                    placeholder="e.g., 22 inches" 
+                                    className="h-12 rounded-xl bg-slate-50/50 border-slate-100 font-medium text-sm text-slate-850"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label className="text-xs font-semibold text-muted-foreground ml-1">Hair Color / Density</Label>
+                                <Input 
+                                    value={specColor} 
+                                    onChange={(e) => setSpecColor(e.target.value)} 
+                                    placeholder="e.g., Natural Black, 180%" 
+                                    className="h-12 rounded-xl bg-slate-50/50 border-slate-100 font-medium text-sm text-slate-850"
+                                />
+                            </div>
+                        </div>
+                    )}
+
+                    <DialogFooter className="mt-6 flex flex-col gap-2">
+                        <Button
+                            type="button"
+                            onClick={() => {
+                                if (!selectedItemForSpecModal) return;
+                                
+                                const limit = parseFloat(selectedItemForSpecModal.quantity) - parseFloat(selectedItemForSpecModal.reserved || "0");
+                                const allowedMax = limit;
+
+                                setSelectedInventory([{
+                                    id: selectedItemForSpecModal.id,
+                                    name: selectedItemForSpecModal.name,
+                                    quantity: "1",
+                                    max: allowedMax
+                                }]);
+
+                                setMetadata(prev => ({
+                                    ...prev,
+                                    length: specLength,
+                                    color: specColor
+                                }));
+
+                                setItemType(selectedItemForSpecModal.name);
+                                setIsSpecModalOpen(false);
+                                toast.success(`Linked "${selectedItemForSpecModal.name}" with custom specs`);
+                            }}
+                            className="w-full text-white rounded-xl h-12 font-bold shadow-md hover:brightness-95 border-0 bg-[#191A43] hover:bg-[#191A43]/90"
                         >
                             Confirm & Link to Order
                         </Button>
