@@ -73,13 +73,11 @@ export function OrderCard({ order, copiedId, onCopy, businessType, needsRenewal 
                                             <div className="flex flex-wrap gap-1.5">
                                                 {order.inventoryItems.map((item, idx) => {
                                                     let displayName = item.name;
-                                                    if (order.businessType === "hair-retail") {
-                                                        const parts = [];
-                                                        if (item.sku) parts.push(item.sku);
-                                                        if (item.unit) parts.push(item.unit);
-                                                        if (parts.length > 0) {
-                                                            displayName = `${item.name} (${parts.join(" | ")})`;
-                                                        }
+                                                    const parts = [];
+                                                    if (item.sku) parts.push(item.sku);
+                                                    if (item.unit) parts.push(item.unit);
+                                                    if (parts.length > 0) {
+                                                        displayName = `${item.name} (${parts.join(" | ")})`;
                                                     }
                                                     return (
                                                         <Badge key={idx} variant="outline" className="text-xs font-bold bg-emerald-50/50 border-emerald-100 text-emerald-600 px-2 py-0.5 rounded-lg flex items-center gap-1">

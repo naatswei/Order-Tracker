@@ -303,7 +303,7 @@ function CreateOrderContent() {
                     const price = inv ? resolveUnitPrice(qty, inv, selectedClientId !== "none" ? selectedClientId : undefined) : 0
                     
                     let displayName = item.name;
-                    if (businessType === "hair-retail" && inv) {
+                    if (inv) {
                         const parts = [];
                         if (inv.sku) parts.push(inv.sku);
                         if (inv.unit) parts.push(inv.unit);
