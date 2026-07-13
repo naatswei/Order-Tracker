@@ -13,6 +13,7 @@ import { getInventory, getClientOrganizations } from "@/app/actions/operations"
 import { initiateMomoCharge } from "@/app/actions/paystack"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { detectGhanaNetworkProvider } from "@/lib/utils"
 import Link from "next/link"
 import { OrganizationSwitcher, useOrganization } from "@clerk/nextjs"
 import { BackofficeHeader } from "@/components/backoffice-header"
@@ -239,6 +240,16 @@ function CreateOrderContent() {
     useEffect(() => {
         // Deliberate linking is managed via autocomplete and stock usage search
     }, [itemType, allInventory, editingId]);
+
+    // Auto-detect Momo network provider from phone number
+    useEffect(() => {
+        if (momoPhone) {
+            const detected = detectGhanaNetworkProvider(momoPhone);
+            if (detected) {
+                setMomoProvider(detected);
+            }
+        }
+    }, [momoPhone]);
 
     const isSubscriptionActive = 
         organization?.publicMetadata?.subscriptionStatus === "active" || 
@@ -578,6 +589,7 @@ function CreateOrderContent() {
                                                     <Select 
                                                         value={momoProvider} 
                                                         onValueChange={(val: 'mtn' | 'vod' | 'tgo') => setMomoProvider(val)}
+                                                        disabled={!!detectGhanaNetworkProvider(momoPhone)}
                                                     >
                                                         <SelectTrigger id="momoProvider" className="h-11 rounded-xl bg-white border-zinc-200 focus:border-blue-400 text-sm font-medium">
                                                             <SelectValue placeholder="Select provider" />

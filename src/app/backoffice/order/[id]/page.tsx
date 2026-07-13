@@ -15,6 +15,7 @@ import { getOrderWithHistory, updateOrderStatus } from "@/app/actions/orders"
 import { initiateMomoCharge } from "@/app/actions/paystack"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
+import { detectGhanaNetworkProvider } from "@/lib/utils"
 import Link from "next/link"
 import { toast } from "sonner"
 import { ArrowLeft, MapPin, Clock, User, Phone, Mail, Shirt, Package, Loader2, DollarSign, FileText, Plus, Trash, Download, Link2, CheckCircle, MessageCircle } from "lucide-react"
@@ -124,6 +125,16 @@ export default function OrderUpdatePage() {
             setTax(0)
         }
     }, [invoiceItems, organization, isTaxEdited])
+
+    // Auto-detect Momo network provider from phone number
+    useEffect(() => {
+        if (momoPhone) {
+            const detected = detectGhanaNetworkProvider(momoPhone);
+            if (detected) {
+                setMomoProvider(detected);
+            }
+        }
+    }, [momoPhone]);
 
     useEffect(() => {
         if (orderId) {
@@ -899,6 +910,7 @@ export default function OrderUpdatePage() {
                             <Select 
                                 value={momoProvider} 
                                 onValueChange={(val: 'mtn' | 'vod' | 'tgo') => setMomoProvider(val)}
+                                disabled={!!detectGhanaNetworkProvider(momoPhone)}
                             >
                                 <SelectTrigger id="orderMomoProvider" className="h-12 rounded-xl bg-slate-50/50 border-slate-100 font-medium text-sm text-slate-850">
                                     <SelectValue placeholder="Select provider" />
