@@ -5,7 +5,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export function detectGhanaNetworkProvider(phone: string): 'mtn' | 'vod' | 'tgo' | null {
+export function detectGhanaNetworkProvider(phone: string): 'mtn' | 'vod' | 'atl' | null {
   const cleanPhone = phone.replace(/\D/g, "");
   let localPhone = cleanPhone;
   if (cleanPhone.startsWith("233")) {
@@ -20,7 +20,7 @@ export function detectGhanaNetworkProvider(phone: string): 'mtn' | 'vod' | 'tgo'
     return 'vod';
   }
   if (["026", "056", "027", "057"].includes(prefix)) {
-    return 'tgo';
+    return 'atl';
   }
   return null;
 }

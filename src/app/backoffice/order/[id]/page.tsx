@@ -78,7 +78,7 @@ export default function OrderUpdatePage() {
     // Momo Prompt modal state
     const [isMomoModalOpen, setIsMomoModalOpen] = useState(false)
     const [momoPhone, setMomoPhone] = useState("")
-    const [momoProvider, setMomoProvider] = useState<'mtn' | 'vod' | 'tgo'>("mtn")
+    const [momoProvider, setMomoProvider] = useState<'mtn' | 'vod' | 'atl'>("mtn")
     const [isMomoCharging, setIsMomoCharging] = useState(false)
 
     // Business Config
@@ -909,7 +909,7 @@ export default function OrderUpdatePage() {
                             <Label htmlFor="orderMomoProvider" className="text-xs font-semibold text-muted-foreground ml-1">Network Provider</Label>
                             <Select 
                                 value={momoProvider} 
-                                onValueChange={(val: 'mtn' | 'vod' | 'tgo') => setMomoProvider(val)}
+                                onValueChange={(val: 'mtn' | 'vod' | 'atl') => setMomoProvider(val)}
                                 disabled={!!detectGhanaNetworkProvider(momoPhone)}
                             >
                                 <SelectTrigger id="orderMomoProvider" className="h-12 rounded-xl bg-slate-50/50 border-slate-100 font-medium text-sm text-slate-850">
@@ -918,7 +918,7 @@ export default function OrderUpdatePage() {
                                 <SelectContent className="rounded-xl border-zinc-100 shadow-xl bg-white">
                                      <SelectItem value="mtn" className="rounded-lg">MTN Ghana</SelectItem>
                                      <SelectItem value="vod" className="rounded-lg">Telecel (Vodafone)</SelectItem>
-                                     <SelectItem value="tgo" className="rounded-lg">AT (AirtelTigo)</SelectItem>
+                                     <SelectItem value="atl" className="rounded-lg">AT (AirtelTigo)</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>

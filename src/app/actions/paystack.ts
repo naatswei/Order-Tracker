@@ -5,6 +5,7 @@ import { clerkClient } from '@clerk/nextjs/server'
 import { db } from '@/db'
 import { orders } from '@/db/schema'
 import { eq } from 'drizzle-orm'
+import { detectGhanaNetworkProvider } from '@/lib/utils'
 
 const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY
 
@@ -164,12 +165,29 @@ export async function saveMerchantPayoutSettings(
     }
 }
 
-export async function initiateMomoCharge(orderId: string, phone: string, provider: 'mtn' | 'vod' | 'tgo') {
+export async function initiateMomoCharge(orderId: string, phone: string, provider?: 'mtn' | 'vod' | 'atl') {
     if (!PAYSTACK_SECRET_KEY) {
         throw new Error('Paystack secret key is not configured.')
     }
 
     try {
+        // Normalize phone number to local 10-digit format (e.g. 0577064301)
+        const cleanPhone = phone.replace(/\D/g, "")
+        let localPhone = cleanPhone
+        if (cleanPhone.startsWith("233")) {
+            localPhone = "0" + cleanPhone.substring(3)
+        } else if (!cleanPhone.startsWith("0") && cleanPhone.length === 9) {
+            localPhone = "0" + cleanPhone
+        }
+
+        // Auto-detect provider if missing or fallback to match detected value
+        const detectedProvider = detectGhanaNetworkProvider(localPhone)
+        const finalProvider = provider || detectedProvider
+
+        if (!finalProvider) {
+            return { success: false, error: 'Could not detect network provider for phone number: ' + phone }
+        }
+
         const order = await db.query.orders.findFirst({
             where: eq(orders.id, orderId),
         })
@@ -200,8 +218,8 @@ export async function initiateMomoCharge(orderId: string, phone: string, provide
             email,
             currency: 'GHS',
             mobile_money: {
-                phone,
-                provider,
+                phone: localPhone,
+                provider: finalProvider,
             },
             metadata: {
                 orderId: order.id,

@@ -77,7 +77,7 @@ function CreateOrderContent() {
     // Direct Momo Prompt state
     const [triggerMomoPrompt, setTriggerMomoPrompt] = useState(false)
     const [momoPhone, setMomoPhone] = useState("")
-    const [momoProvider, setMomoProvider] = useState<'mtn' | 'vod' | 'tgo'>("mtn")
+    const [momoProvider, setMomoProvider] = useState<'mtn' | 'vod' | 'atl'>("mtn")
     
     // B2B Customer Pricing
     const [clients, setClients] = useState<any[]>([])
@@ -588,7 +588,7 @@ function CreateOrderContent() {
                                                     <Label htmlFor="momoProvider" className="ml-1 text-xs font-semibold text-muted-foreground">Network Provider</Label>
                                                     <Select 
                                                         value={momoProvider} 
-                                                        onValueChange={(val: 'mtn' | 'vod' | 'tgo') => setMomoProvider(val)}
+                                                        onValueChange={(val: 'mtn' | 'vod' | 'atl') => setMomoProvider(val)}
                                                         disabled={!!detectGhanaNetworkProvider(momoPhone)}
                                                     >
                                                         <SelectTrigger id="momoProvider" className="h-11 rounded-xl bg-white border-zinc-200 focus:border-blue-400 text-sm font-medium">
@@ -597,7 +597,7 @@ function CreateOrderContent() {
                                                         <SelectContent className="rounded-xl border-zinc-100 shadow-xl">
                                                              <SelectItem value="mtn" className="rounded-lg">MTN Ghana</SelectItem>
                                                              <SelectItem value="vod" className="rounded-lg">Telecel (Vodafone)</SelectItem>
-                                                             <SelectItem value="tgo" className="rounded-lg">AT (AirtelTigo)</SelectItem>
+                                                             <SelectItem value="atl" className="rounded-lg">AT (AirtelTigo)</SelectItem>
                                                         </SelectContent>
                                                     </Select>
                                                 </div>
