@@ -2,6 +2,9 @@
 
 import { updateOrgSubscriptionStatus } from './org-metadata'
 import { clerkClient } from '@clerk/nextjs/server'
+import { db } from '@/db'
+import { orders } from '@/db/schema'
+import { eq } from 'drizzle-orm'
 
 const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY
 
@@ -158,5 +161,80 @@ export async function saveMerchantPayoutSettings(
     } catch (error: any) {
         console.error("Failed to configure payout subaccount:", error)
         return { success: false, error: error.message || "An unexpected error occurred." }
+    }
+}
+
+export async function initiateMomoCharge(orderId: string, phone: string, provider: 'mtn' | 'vod' | 'tgo') {
+    if (!PAYSTACK_SECRET_KEY) {
+        throw new Error('Paystack secret key is not configured.')
+    }
+
+    try {
+        const order = await db.query.orders.findFirst({
+            where: eq(orders.id, orderId),
+        })
+
+        if (!order) {
+            return { success: false, error: 'Order not found' }
+        }
+
+        const invoice = (order.metadata as any)?.invoice
+        if (!invoice) {
+            return { success: false, error: 'No invoice generated for this order yet.' }
+        }
+
+        // Amount in GHS pesewas (multiplied by 100)
+        const amount = Math.round(invoice.amountDue * 100)
+        const email = order.customerEmail || 'customer@email.com'
+
+        // Determine if subaccount code is present
+        let subaccountCode: string | undefined = undefined
+        if (order.clerkOrgId) {
+            const client = await clerkClient()
+            const org = await client.organizations.getOrganization({ organizationId: order.clerkOrgId })
+            subaccountCode = (org.publicMetadata as any)?.paystackSubaccountCode
+        }
+
+        const requestBody: any = {
+            amount,
+            email,
+            currency: 'GHS',
+            mobile_money: {
+                phone,
+                provider,
+            },
+            metadata: {
+                orderId: order.id,
+            },
+        }
+
+        if (subaccountCode) {
+            requestBody.subaccount = subaccountCode
+        }
+
+        const response = await fetch('https://api.paystack.co/charge', {
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(requestBody),
+        })
+
+        const resData = await response.json()
+
+        if (resData.status) {
+            return { 
+                success: true, 
+                message: resData.message || 'Momo prompt initiated.',
+                reference: resData.data.reference,
+                status: resData.data.status
+            }
+        } else {
+            return { success: false, error: resData.message || 'Momo prompt failed to trigger.' }
+        }
+    } catch (error: any) {
+        console.error('Error initiating Mobile Money charge:', error)
+        return { success: false, error: error?.message || 'Failed to initiate Mobile Money charge' }
     }
 }

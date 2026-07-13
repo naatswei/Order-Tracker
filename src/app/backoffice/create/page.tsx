@@ -10,6 +10,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { generateTrackingId, type Order } from "@/lib/storage"
 import { createOrder, getOrderWithHistory, updateOrder } from "@/app/actions/orders"
 import { getInventory, getClientOrganizations } from "@/app/actions/operations"
+import { initiateMomoCharge } from "@/app/actions/paystack"
+import { Checkbox } from "@/components/ui/checkbox"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import Link from "next/link"
 import { OrganizationSwitcher, useOrganization } from "@clerk/nextjs"
@@ -70,6 +72,11 @@ function CreateOrderContent() {
     const [quantity, setQuantity] = useState("1")
     const [isSaving, setIsSaving] = useState(false)
     const [paymentMethod, setPaymentMethod] = useState<"online" | "cash">("online")
+    
+    // Direct Momo Prompt state
+    const [triggerMomoPrompt, setTriggerMomoPrompt] = useState(false)
+    const [momoPhone, setMomoPhone] = useState("")
+    const [momoProvider, setMomoProvider] = useState<'mtn' | 'vod' | 'tgo'>("mtn")
     
     // B2B Customer Pricing
     const [clients, setClients] = useState<any[]>([])
@@ -342,7 +349,18 @@ function CreateOrderContent() {
                 if (paymentMethod === "cash") {
                     toast.success("Order created & marked as paid (Cash)")
                 } else {
-                    toast.success("New order created")
+                    if (triggerMomoPrompt && res.orderId) {
+                        const chargePhone = momoPhone || customerPhone
+                        toast.loading("Initiating Mobile Money Prompt...", { id: "momo-charge" })
+                        const chargeRes = await initiateMomoCharge(res.orderId, chargePhone, momoProvider)
+                        if (chargeRes.success) {
+                            toast.success("Mobile Money Prompt sent successfully to customer!", { id: "momo-charge" })
+                        } else {
+                            toast.error(`Could not trigger prompt: ${chargeRes.error}`, { id: "momo-charge" })
+                        }
+                    } else {
+                        toast.success("New order created")
+                    }
                 }
             }
             // Do NOT setIsSaving(false) on success to prevent double-clicks during route transition
@@ -522,6 +540,59 @@ function CreateOrderContent() {
                                         <span className="text-xs text-slate-500 leading-tight">Order marked as paid immediately. No payment link.</span>
                                     </div>
                                 </div>
+
+                                {paymentMethod === "online" && (
+                                    <div className="mt-4 p-5 bg-blue-50/40 rounded-2xl border border-blue-100/60 space-y-4">
+                                        <div className="flex items-center gap-3">
+                                            <Checkbox
+                                                id="triggerMomoPrompt"
+                                                checked={triggerMomoPrompt}
+                                                onCheckedChange={(checked) => {
+                                                    setTriggerMomoPrompt(!!checked)
+                                                    if (checked && !momoPhone) {
+                                                        setMomoPhone(customerPhone)
+                                                    }
+                                                }}
+                                                className="rounded-md border-slate-300 text-blue-600 focus:ring-blue-500/20"
+                                            />
+                                            <Label htmlFor="triggerMomoPrompt" className="text-xs font-bold text-slate-700 cursor-pointer">
+                                                Trigger instant Mobile Money PIN Prompt on customer's phone
+                                            </Label>
+                                        </div>
+
+                                        {triggerMomoPrompt && (
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                                                <div className="space-y-2">
+                                                    <Label htmlFor="momoPhone" className="ml-1 text-xs font-semibold text-muted-foreground">Momo Phone Number</Label>
+                                                    <Input
+                                                        id="momoPhone"
+                                                        type="tel"
+                                                        placeholder="e.g. 0244000000"
+                                                        value={momoPhone}
+                                                        onChange={(e) => setMomoPhone(e.target.value)}
+                                                        className="h-11 rounded-xl bg-white border-zinc-200 focus-visible:border-blue-400 text-sm font-medium"
+                                                    />
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <Label htmlFor="momoProvider" className="ml-1 text-xs font-semibold text-muted-foreground">Network Provider</Label>
+                                                    <Select 
+                                                        value={momoProvider} 
+                                                        onValueChange={(val: 'mtn' | 'vod' | 'tgo') => setMomoProvider(val)}
+                                                    >
+                                                        <SelectTrigger id="momoProvider" className="h-11 rounded-xl bg-white border-zinc-200 focus:border-blue-400 text-sm font-medium">
+                                                            <SelectValue placeholder="Select provider" />
+                                                        </SelectTrigger>
+                                                        <SelectContent className="rounded-xl border-zinc-100 shadow-xl">
+                                                             <SelectItem value="mtn" className="rounded-lg">MTN Ghana</SelectItem>
+                                                             <SelectItem value="vod" className="rounded-lg">Telecel (Vodafone)</SelectItem>
+                                                             <SelectItem value="tgo" className="rounded-lg">AT (AirtelTigo)</SelectItem>
+                                                        </SelectContent>
+                                                    </Select>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
                             </div>
 
                             {/* Stock Usage & Product Selection */}

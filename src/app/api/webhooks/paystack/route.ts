@@ -36,8 +36,13 @@ export async function POST(req: Request) {
             const { reference, metadata } = event.data
             const orgId = metadata?.orgId
             const planName = metadata?.planName
+            const orderId = metadata?.orderId
 
-            if (orgId && planName) {
+            if (orderId) {
+                const { confirmInvoicePayment } = await import('@/app/actions/invoice')
+                await confirmInvoicePayment(orderId, reference)
+                console.log(`Webhook: Successfully confirmed payment for Order: ${orderId}`)
+            } else if (orgId && planName) {
                 // Calculate expiry logic (sharing logic with other parts)
                 const now = new Date()
                 let expiryDays = 30

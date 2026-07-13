@@ -12,6 +12,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { type Order } from "@/lib/storage"
 import { getOrderWithHistory, updateOrderStatus } from "@/app/actions/orders"
+import { initiateMomoCharge } from "@/app/actions/paystack"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
 import Link from "next/link"
 import { toast } from "sonner"
 import { ArrowLeft, MapPin, Clock, User, Phone, Mail, Shirt, Package, Loader2, DollarSign, FileText, Plus, Trash, Download, Link2, CheckCircle, MessageCircle } from "lucide-react"
@@ -70,6 +73,12 @@ export default function OrderUpdatePage() {
     const [dueDate, setDueDate] = useState("")
     const [paymentMethod, setPaymentMethod] = useState<"online" | "cash">("online")
     const [isInvoiceGenerating, setIsInvoiceGenerating] = useState(false)
+    
+    // Momo Prompt modal state
+    const [isMomoModalOpen, setIsMomoModalOpen] = useState(false)
+    const [momoPhone, setMomoPhone] = useState("")
+    const [momoProvider, setMomoProvider] = useState<'mtn' | 'vod' | 'tgo'>("mtn")
+    const [isMomoCharging, setIsMomoCharging] = useState(false)
 
     // Business Config
     const { organization } = useOrganization()
@@ -522,22 +531,34 @@ export default function OrderUpdatePage() {
                                     
                                     <div className="flex flex-wrap gap-3 pt-4 border-t border-slate-100">
                                         {(order.metadata as any).invoice.invoiceStatus === "unpaid" && (
-                                            <Button 
-                                                onClick={async () => {
-                                                    try {
-                                                        const { markInvoiceAsPaid } = await import("@/app/actions/invoice")
-                                                        await markInvoiceAsPaid(order.id)
-                                                        toast.success("Invoice marked as paid")
-                                                        window.location.reload()
-                                                    } catch (e) {
-                                                        toast.error("Failed to mark as paid")
-                                                    }
-                                                }}
-                                                className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl h-11 px-6 text-sm font-semibold flex items-center gap-2 cursor-pointer"
-                                            >
-                                                <CheckCircle className="w-4 h-4" />
-                                                Mark as Paid
-                                            </Button>
+                                            <>
+                                                <Button 
+                                                    onClick={async () => {
+                                                        try {
+                                                            const { markInvoiceAsPaid } = await import("@/app/actions/invoice")
+                                                            await markInvoiceAsPaid(order.id)
+                                                            toast.success("Invoice marked as paid")
+                                                            window.location.reload()
+                                                        } catch (e) {
+                                                            toast.error("Failed to mark as paid")
+                                                        }
+                                                    }}
+                                                    className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl h-11 px-6 text-sm font-semibold flex items-center gap-2 cursor-pointer"
+                                                >
+                                                    <CheckCircle className="w-4 h-4" />
+                                                    Mark as Paid
+                                                </Button>
+                                                <Button
+                                                    onClick={() => {
+                                                        setMomoPhone(order.customerPhone || "")
+                                                        setIsMomoModalOpen(true)
+                                                    }}
+                                                    className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl h-11 px-6 text-sm font-semibold flex items-center gap-2 cursor-pointer border-0"
+                                                >
+                                                    <DollarSign className="w-4 h-4" />
+                                                    Trigger Momo Prompt
+                                                </Button>
+                                            </>
                                         )}
                                         <Button 
                                             onClick={() => {
@@ -845,6 +866,79 @@ export default function OrderUpdatePage() {
                     </div>
                 </div>
             </div>
+            
+            <Dialog open={isMomoModalOpen} onOpenChange={setIsMomoModalOpen}>
+                <DialogContent className="sm:max-w-md border-0 bg-white shadow-2xl rounded-3xl p-6 overflow-hidden">
+                    <DialogHeader>
+                        <div className="flex items-center gap-2 mb-1">
+                            <div className="p-2 bg-blue-50 rounded-xl">
+                                <DollarSign className="w-5 h-5 text-blue-600" />
+                            </div>
+                            <div>
+                                <DialogTitle className="text-lg font-black text-slate-800 tracking-tight">Initiate Mobile Money Payment</DialogTitle>
+                                <DialogDescription className="text-xs text-slate-400 font-bold uppercase tracking-wider mt-0.5">
+                                    Trigger direct Momo PIN prompt to customer phone
+                                </DialogDescription>
+                            </div>
+                        </div>
+                    </DialogHeader>
+
+                    <div className="space-y-4 pt-2">
+                        <div className="space-y-2">
+                            <Label htmlFor="orderMomoPhone" className="text-xs font-semibold text-muted-foreground ml-1">Momo Phone Number</Label>
+                            <Input 
+                                id="orderMomoPhone"
+                                value={momoPhone} 
+                                onChange={(e) => setMomoPhone(e.target.value)} 
+                                placeholder="e.g. 0244000000" 
+                                className="h-12 rounded-xl bg-slate-50/50 border-slate-100 font-medium text-sm text-slate-850"
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="orderMomoProvider" className="text-xs font-semibold text-muted-foreground ml-1">Network Provider</Label>
+                            <Select 
+                                value={momoProvider} 
+                                onValueChange={(val: 'mtn' | 'vod' | 'tgo') => setMomoProvider(val)}
+                            >
+                                <SelectTrigger id="orderMomoProvider" className="h-12 rounded-xl bg-slate-50/50 border-slate-100 font-medium text-sm text-slate-850">
+                                    <SelectValue placeholder="Select provider" />
+                                </SelectTrigger>
+                                <SelectContent className="rounded-xl border-zinc-100 shadow-xl bg-white">
+                                     <SelectItem value="mtn" className="rounded-lg">MTN Ghana</SelectItem>
+                                     <SelectItem value="vod" className="rounded-lg">Telecel (Vodafone)</SelectItem>
+                                     <SelectItem value="tgo" className="rounded-lg">AT (AirtelTigo)</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    </div>
+
+                    <DialogFooter className="mt-6 flex flex-col gap-2">
+                        <Button
+                            type="button"
+                            disabled={isMomoCharging || !momoPhone}
+                            onClick={async () => {
+                                setIsMomoCharging(true)
+                                try {
+                                    const res = await initiateMomoCharge(orderId, momoPhone, momoProvider)
+                                    if (res.success) {
+                                        toast.success("Mobile Money Prompt sent successfully to customer!")
+                                        setIsMomoModalOpen(false)
+                                    } else {
+                                        toast.error(`Could not trigger prompt: ${res.error}`)
+                                    }
+                                } catch (e) {
+                                    toast.error("An error occurred while triggering the prompt.")
+                                } finally {
+                                    setIsMomoCharging(false)
+                                }
+                            }}
+                            className="w-full text-white rounded-xl h-12 font-bold shadow-md hover:brightness-95 border-0 bg-blue-600 hover:bg-blue-700"
+                        >
+                            {isMomoCharging ? "Sending Prompt..." : "Send Momo Prompt"}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     )
 }
