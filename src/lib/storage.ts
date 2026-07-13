@@ -11,6 +11,7 @@ export interface InventoryItem {
     name: string
     quantity: string
     sku?: string | null
+    unit?: string | null
     category?: string | null
     availability?: "In Stock" | "Out of Stock"
 }

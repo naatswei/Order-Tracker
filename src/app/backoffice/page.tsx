@@ -124,6 +124,7 @@ export default function BackofficePage() {
                     name: link.inventoryItem?.name,
                     quantity: link.quantity,
                     sku: link.inventoryItem?.sku,
+                    unit: link.inventoryItem?.unit,
                     category: link.inventoryItem?.category
                 })) || []
             }))

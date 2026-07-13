@@ -71,11 +71,22 @@ export function OrderCard({ order, copiedId, onCopy, businessType, needsRenewal 
                                         <div className="flex gap-2 items-start pt-1">
                                             <span className="text-slate-400 text-sm font-medium w-32 shrink-0 whitespace-nowrap pt-0.5">Stock Sold:</span>
                                             <div className="flex flex-wrap gap-1.5">
-                                                {order.inventoryItems.map((item, idx) => (
-                                                    <Badge key={idx} variant="outline" className="text-xs font-bold bg-emerald-50/50 border-emerald-100 text-emerald-600 px-2 py-0.5 rounded-lg flex items-center gap-1">
-                                                        <span className="font-black">{item.quantity}</span> x <span>{item.name}</span>
-                                                    </Badge>
-                                                ))}
+                                                {order.inventoryItems.map((item, idx) => {
+                                                    let displayName = item.name;
+                                                    if (order.businessType === "hair-retail") {
+                                                        const parts = [];
+                                                        if (item.sku) parts.push(item.sku);
+                                                        if (item.unit) parts.push(item.unit);
+                                                        if (parts.length > 0) {
+                                                            displayName = `${item.name} (${parts.join(" | ")})`;
+                                                        }
+                                                    }
+                                                    return (
+                                                        <Badge key={idx} variant="outline" className="text-xs font-bold bg-emerald-50/50 border-emerald-100 text-emerald-600 px-2 py-0.5 rounded-lg flex items-center gap-1">
+                                                            <span className="font-black">{item.quantity}</span> x <span>{displayName}</span>
+                                                        </Badge>
+                                                    );
+                                                })}
                                             </div>
                                         </div>
                                     )}

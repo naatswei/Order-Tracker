@@ -301,7 +301,18 @@ function CreateOrderContent() {
                     const inv = allInventory.find(i => i.id === item.id)
                     const qty = parseInt(item.quantity) || 1
                     const price = inv ? resolveUnitPrice(qty, inv, selectedClientId !== "none" ? selectedClientId : undefined) : 0
-                    return { name: item.name, quantity: qty, price }
+                    
+                    let displayName = item.name;
+                    if (businessType === "hair-retail" && inv) {
+                        const parts = [];
+                        if (inv.sku) parts.push(inv.sku);
+                        if (inv.unit) parts.push(inv.unit);
+                        if (parts.length > 0) {
+                            displayName = `${item.name} (${parts.join(" | ")})`;
+                        }
+                    }
+                    
+                    return { name: displayName, quantity: qty, price }
                 })
 
                 res = await createOrder({

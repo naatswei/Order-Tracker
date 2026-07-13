@@ -152,6 +152,7 @@ export default function OrderUpdatePage() {
                             name: link.inventoryItem?.name,
                             quantity: link.quantity,
                             sku: link.inventoryItem?.sku,
+                            unit: link.inventoryItem?.unit,
                             category: link.inventoryItem?.category
                         })) || []
                     }
@@ -159,16 +160,28 @@ export default function OrderUpdatePage() {
 
                     // Pre-fill invoice items
                     if (foundOrder.inventoryLinks && foundOrder.inventoryLinks.length > 0) {
-                        const items = foundOrder.inventoryLinks.map((link: any) => ({
-                            name: link.inventoryItem?.name || "Product",
-                            quantity: Number(link.quantity) || 1,
-                            price: (() => {
-                                    const selling = parseFloat(link.inventoryItem?.sellingPrice || "0");
-                                    const cost = parseFloat(link.inventoryItem?.unitCost || "0");
-                                    return selling > 0 ? selling : cost;
-                                })(),
-                            isLinked: true
-                        }))
+                        const items = foundOrder.inventoryLinks.map((link: any) => {
+                            const inv = link.inventoryItem;
+                            let displayName = inv?.name || "Product";
+                            if (foundOrder.businessType === "hair-retail" && inv) {
+                                const parts = [];
+                                if (inv.sku) parts.push(inv.sku);
+                                if (inv.unit) parts.push(inv.unit);
+                                if (parts.length > 0) {
+                                    displayName = `${inv.name} (${parts.join(" | ")})`;
+                                }
+                            }
+                            return {
+                                name: displayName,
+                                quantity: Number(link.quantity) || 1,
+                                price: (() => {
+                                        const selling = parseFloat(inv?.sellingPrice || "0");
+                                        const cost = parseFloat(inv?.unitCost || "0");
+                                        return selling > 0 ? selling : cost;
+                                    })(),
+                                isLinked: true
+                            };
+                        })
                         setInvoiceItems(items)
                     } else {
                         setInvoiceItems([{ name: foundOrder.itemType || "Garment/Service", quantity: 1, price: 0, isLinked: false }])
@@ -321,11 +334,22 @@ export default function OrderUpdatePage() {
                                         <div className="pt-4 border-t border-slate-100 mt-4 space-y-2">
                                             <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Stock Items Sold</div>
                                             <div className="flex flex-wrap gap-1.5">
-                                                {order.inventoryItems.map((item, idx) => (
-                                                    <Badge key={idx} variant="outline" className="text-xs font-bold bg-emerald-50/50 border-emerald-100 text-emerald-600 px-2 py-0.5 rounded-lg flex items-center gap-1">
-                                                        <span className="font-black">{item.quantity}</span> x <span>{item.name}</span>
-                                                    </Badge>
-                                                ))}
+                                                 {order.inventoryItems.map((item, idx) => {
+                                                     let displayName = item.name;
+                                                     if (order.businessType === "hair-retail") {
+                                                         const parts = [];
+                                                         if (item.sku) parts.push(item.sku);
+                                                         if (item.unit) parts.push(item.unit);
+                                                         if (parts.length > 0) {
+                                                             displayName = `${item.name} (${parts.join(" | ")})`;
+                                                         }
+                                                     }
+                                                     return (
+                                                         <Badge key={idx} variant="outline" className="text-xs font-bold bg-emerald-50/50 border-emerald-100 text-emerald-600 px-2 py-0.5 rounded-lg flex items-center gap-1">
+                                                             <span className="font-black">{item.quantity}</span> x <span>{displayName}</span>
+                                                         </Badge>
+                                                     );
+                                                 })}
                                             </div>
                                         </div>
                                     )}
