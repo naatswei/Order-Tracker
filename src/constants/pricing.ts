@@ -61,9 +61,9 @@ export const PRICING_PLANS = [
 export const FREE_TRIAL_PLAN = {
     id: "free-trial",
     name: "Free Trial",
-    description: "Try everything for 14 days",
+    description: "Try everything for 1 month",
     price: 0,
-    durationDays: 14,
+    durationDays: 30,
     features: [
         "Full application access",
         "Unlimited team members",
@@ -72,7 +72,7 @@ export const FREE_TRIAL_PLAN = {
         "Standard dashboard",
         "Email support"
     ],
-    buttonText: "Start 14-Day Free Trial",
+    buttonText: "Start 1-Month Free Trial",
     buttonVariant: "secondary" as const,
     glowColor: "bg-pink-400/20",
     popular: false,

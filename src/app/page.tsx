@@ -55,7 +55,7 @@ function LandingCTA() {
               <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
                 <Link href="/sign-up">
                   <Button className="w-full sm:w-auto bg-white text-[#191A43] hover:bg-slate-50 rounded-2xl h-16 md:h-20 px-10 md:px-14 text-lg md:text-xl font-black shadow-[0_20px_40px_rgba(255,255,255,0.1)] transition-all active:scale-95 flex items-center justify-center gap-3 group/btn">
-                    Start Your 14-Day Free Trial
+                    Start Your 1-Month Free Trial
                     <ArrowRight className="w-6 h-6 group-hover/btn:translate-x-1 transition-transform" />
                   </Button>
                 </Link>

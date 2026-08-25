@@ -139,7 +139,7 @@ export default function SubscriptionPage() {
     }
 
     const getPlanPeriodLabel = (plan: any) => {
-        if (plan.id === 'free-trial') return "/14 days";
+        if (plan.id === 'free-trial') return "/1 month";
         if (plan.id === '1-month') return "/month";
         if (plan.id === '3-months') return "/3 months";
         return "/year";

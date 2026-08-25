@@ -126,7 +126,7 @@ function BulkUpdateContent() {
                         <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100 text-left space-y-3 relative z-10">
                             <p className="text-xs font-bold text-slate-900 uppercase tracking-wider">Premium Feature</p>
                             <p className="text-sm text-slate-600">
-                                Bulk order updates are available on the <strong className="text-slate-900">2 Weeks</strong> plan and above. Upgrade your workspace to unlock this feature.
+                                Bulk order updates are available on the <strong className="text-slate-900">Free Trial</strong> plan and above. Upgrade your workspace to unlock this feature.
                             </p>
                         </div>
 

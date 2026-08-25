@@ -46,7 +46,7 @@ export async function POST(req: Request) {
                 // Calculate expiry logic (sharing logic with other parts)
                 const now = new Date()
                 let expiryDays = 30
-                if (planName === "Free Trial") expiryDays = 14
+                if (planName === "Free Trial") expiryDays = 30
                 if (planName === "Yearly") expiryDays = 365
 
                 const expiryDate = new Date(now.getTime() + expiryDays * 24 * 60 * 60 * 1000).toISOString()

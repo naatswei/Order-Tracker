@@ -703,10 +703,10 @@ function CreateOrderContent() {
                                             <div key={item.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 bg-white rounded-2xl border border-slate-100 shadow-sm">
                                                 <div className="flex-1 min-w-0">
                                                     <p className="text-sm font-black text-slate-700 truncate">{item.name}</p>
-                                                    {businessType === "hair-retail" && (metadata.length || metadata.color) && (
+                                                    {businessType === "hair-retail" && (Boolean(metadata.length) || Boolean(metadata.color)) && (
                                                         <div className="mt-1 flex flex-wrap items-center gap-2 text-[10px] font-semibold text-slate-500">
-                                                            {metadata.length && <span className="bg-slate-50 px-2 py-0.5 rounded-lg border border-slate-100">Length: {metadata.length}</span>}
-                                                            {metadata.color && <span className="bg-slate-50 px-2 py-0.5 rounded-lg border border-slate-100">Color: {metadata.color}</span>}
+                                                            {Boolean(metadata.length) && <span className="bg-slate-50 px-2 py-0.5 rounded-lg border border-slate-100">Length: {String(metadata.length)}</span>}
+                                                            {Boolean(metadata.color) && <span className="bg-slate-50 px-2 py-0.5 rounded-lg border border-slate-100">Color: {String(metadata.color)}</span>}
                                                         </div>
                                                     )}
                                                 </div>
