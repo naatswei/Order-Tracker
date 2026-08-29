@@ -560,8 +560,18 @@ export default function InventoryPage() {
         }
 
         try {
-            await editInventoryItem(editingItem.id, data);
-            toast.success("Item updated successfully");
+            const res = await editInventoryItem(editingItem.id, data);
+            if (res?.restockAlert) {
+                if (res.restockAlert.sent > 0) {
+                    toast.success(`Item updated! Restock SMS sent to ${res.restockAlert.sent} customer(s).`);
+                } else if (res.restockAlert.reason) {
+                    toast.info(`Item updated. (${res.restockAlert.reason})`);
+                } else {
+                    toast.success("Item updated successfully");
+                }
+            } else {
+                toast.success("Item updated successfully");
+            }
             setIsEditModalOpen(false);
             setEditingItem(null);
             loadData();
@@ -573,8 +583,18 @@ export default function InventoryPage() {
 
     async function handleUpdateStock(id: string, type: "in" | "out", amount: string) {
         try {
-            await updateStock(id, type, amount, `Manual stock ${type}`);
-            toast.success(`Stock updated`);
+            const res = await updateStock(id, type, amount, `Manual stock ${type}`);
+            if (res?.restockAlert) {
+                if (res.restockAlert.sent > 0) {
+                    toast.success(`Stock updated! Restock SMS sent to ${res.restockAlert.sent} customer(s).`);
+                } else if (res.restockAlert.reason) {
+                    toast.info(`Stock updated. (${res.restockAlert.reason})`);
+                } else {
+                    toast.success(`Stock updated`);
+                }
+            } else {
+                toast.success(`Stock updated`);
+            }
             loadData();
         } catch (error) {
             toast.error("Failed to update stock");

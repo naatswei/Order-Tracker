@@ -461,6 +461,7 @@ export async function updateStock(itemId: string, type: "in" | "out" | "adjustme
     if (!orgId) throw new Error("Unauthorized");
 
     let previousQty = 0;
+    let previousAvailable = 0;
     let finalQty = 0;
 
     await db.transaction(async (tx) => {
@@ -468,7 +469,9 @@ export async function updateStock(itemId: string, type: "in" | "out" | "adjustme
         if (items.length === 0) throw new Error("Item not found");
         
         const currentQty = parseFloat(items[0].quantity);
+        const currentReserved = parseFloat(items[0].reserved || "0");
         previousQty = currentQty;
+        previousAvailable = currentQty - currentReserved;
         const changeQty = parseFloat(quantity);
         const currentEntered = parseFloat(items[0].totalEntered || "0");
         const currentSold = parseFloat(items[0].totalSold || "0");
@@ -510,15 +513,16 @@ export async function updateStock(itemId: string, type: "in" | "out" | "adjustme
     });
 
     // Trigger restock SMS notifications if stock went from 0 → positive
-    if (type === "in" && previousQty <= 0 && finalQty > 0) {
-        // Fire-and-forget: don't block the vendor's stock-in action
-        void sendRestockNotificationSMS(itemId, orgId).catch((err) =>
-            console.error("Restock notification error (non-blocking):", err)
-        );
+    let restockAlert: any = null;
+    if (type === "in" && (previousQty <= 0 || previousAvailable <= 0) && finalQty > 0) {
+        restockAlert = await sendRestockNotificationSMS(itemId, orgId).catch((err) => {
+            console.error("Restock notification error:", err);
+            return { success: false, reason: err?.message || String(err) };
+        });
     }
 
     revalidatePath("/backoffice/inventory");
-    return { success: true };
+    return { success: true, restockAlert };
 }
 
 export async function getInventoryHistory(itemId: string) {
@@ -946,6 +950,7 @@ export async function editInventoryItem(
     if (orgRole !== "org:admin") throw new Error("Only organization administrators can edit inventory items.");
 
     let oldQty = 0;
+    let oldAvailable = 0;
     let newQty = 0;
 
     await db.transaction(async (tx) => {
@@ -954,6 +959,7 @@ export async function editInventoryItem(
         
         const oldItem = items[0];
         oldQty = parseFloat(oldItem.quantity);
+        oldAvailable = oldQty - parseFloat(oldItem.reserved || "0");
         newQty = parseFloat(data.quantity || oldItem.quantity);
         const diffQty = newQty - oldQty;
         
@@ -989,14 +995,16 @@ export async function editInventoryItem(
     });
 
     // Trigger restock SMS notifications if stock went from 0 → positive via edit
-    if (oldQty <= 0 && newQty > 0) {
-        void sendRestockNotificationSMS(itemId, orgId).catch((err) =>
-            console.error("Restock notification error (non-blocking):", err)
-        );
+    let restockAlert: any = null;
+    if ((oldQty <= 0 || oldAvailable <= 0) && newQty > 0) {
+        restockAlert = await sendRestockNotificationSMS(itemId, orgId).catch((err) => {
+            console.error("Restock notification error:", err);
+            return { success: false, reason: err?.message || String(err) };
+        });
     }
 
     revalidatePath("/backoffice/inventory");
-    return { success: true };
+    return { success: true, restockAlert };
 }
 
 // --- Stock Notification Helpers ---

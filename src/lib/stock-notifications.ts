@@ -24,19 +24,47 @@ function formatGhanaPhoneNumber(phone: string): string {
 }
 
 /**
+ * Ensures the stock_notification_log table exists in PostgreSQL without requiring manual migration pushes.
+ */
+export async function ensureNotificationTable() {
+    try {
+        await db.execute(sql`
+            CREATE TABLE IF NOT EXISTS "stock_notification_log" (
+                "id" text PRIMARY KEY NOT NULL,
+                "inventory_id" text NOT NULL,
+                "clerk_org_id" text NOT NULL,
+                "customer_phone" text NOT NULL,
+                "customer_name" text,
+                "sent_at" timestamp DEFAULT now() NOT NULL
+            );
+        `)
+    } catch (e) {
+        console.warn("Could not ensure stock_notification_log table exists:", e)
+    }
+}
+
+/**
  * Finds customers who have ordered a specific inventory item 3+ times,
- * excluding those already notified within the 7-day cooldown window.
+ * either through formal orderInventoryLinks or matching by itemType name.
+ * Excludes customers already notified within the 7-day cooldown window.
  */
 export async function getEligibleCustomers(
     inventoryId: string,
     orgId: string
-): Promise<{ phone: string; name: string }[]> {
-    // 1. Get all orders linked to this inventory item, grouped by customer phone
-    const customerOrders = await db
+): Promise<{ customers: { phone: string; name: string }[]; maxOrdersFound: number }> {
+    await ensureNotificationTable()
+
+    // 1. Get the inventory item to also allow matching on item name
+    const item = await db.query.inventory.findFirst({
+        where: and(eq(inventory.id, inventoryId), eq(inventory.clerkOrgId, orgId)),
+    })
+
+    // 2. Fetch orders linked through orderInventoryLinks
+    const linkedOrders = await db
         .select({
             customerPhone: orders.customerPhone,
             customerName: orders.customerName,
-            orderCount: sql<number>`count(DISTINCT ${orders.id})`.as("order_count"),
+            orderId: orders.id,
         })
         .from(orderInventoryLinks)
         .innerJoin(orders, eq(orderInventoryLinks.orderId, orders.id))
@@ -46,90 +74,152 @@ export async function getEligibleCustomers(
                 eq(orderInventoryLinks.clerkOrgId, orgId)
             )
         )
-        .groupBy(orders.customerPhone, orders.customerName)
-        .having(sql`count(DISTINCT ${orders.id}) >= 3`)
 
-    if (customerOrders.length === 0) return []
-
-    // 2. Filter out customers notified within the cooldown period
-    const cooldownDate = new Date(Date.now() - NOTIFICATION_COOLDOWN_MS)
-
-    const recentlyNotified = await db
-        .select({ customerPhone: stockNotificationLog.customerPhone })
-        .from(stockNotificationLog)
-        .where(
-            and(
-                eq(stockNotificationLog.inventoryId, inventoryId),
-                eq(stockNotificationLog.clerkOrgId, orgId),
-                gt(stockNotificationLog.sentAt, cooldownDate)
+    // 3. Fetch orders matching item name directly (in case vendor typed item into order without inventory linking)
+    let namedOrders: { customerPhone: string; customerName: string; orderId: string }[] = []
+    if (item?.name) {
+        namedOrders = await db
+            .select({
+                customerPhone: orders.customerPhone,
+                customerName: orders.customerName,
+                orderId: orders.id,
+            })
+            .from(orders)
+            .where(
+                and(
+                    eq(orders.clerkOrgId, orgId),
+                    sql`lower(${orders.itemType}) = lower(${item.name})`
+                )
             )
-        )
+    }
 
-    const notifiedSet = new Set(recentlyNotified.map((r) => r.customerPhone))
+    // 4. Group and count distinct orders per formatted phone number
+    const phoneOrderMap = new Map<string, { name: string; orderIds: Set<string> }>()
 
-    // 3. Deduplicate by phone number and exclude recently notified
-    const phoneMap = new Map<string, string>()
-    for (const c of customerOrders) {
-        const formatted = formatGhanaPhoneNumber(c.customerPhone)
-        if (!notifiedSet.has(formatted) && !notifiedSet.has(c.customerPhone) && !phoneMap.has(formatted)) {
-            phoneMap.set(formatted, c.customerName)
+    for (const ord of [...linkedOrders, ...namedOrders]) {
+        if (!ord.customerPhone) continue
+        const formatted = formatGhanaPhoneNumber(ord.customerPhone)
+        if (!formatted) continue
+
+        if (!phoneOrderMap.has(formatted)) {
+            phoneOrderMap.set(formatted, {
+                name: ord.customerName || "Customer",
+                orderIds: new Set<string>(),
+            })
+        }
+        phoneOrderMap.get(formatted)!.orderIds.add(ord.orderId)
+    }
+
+    let maxOrdersFound = 0
+    for (const val of phoneOrderMap.values()) {
+        if (val.orderIds.size > maxOrdersFound) {
+            maxOrdersFound = val.orderIds.size
         }
     }
 
-    return Array.from(phoneMap.entries()).map(([phone, name]) => ({ phone, name }))
+    // Filter to customers with at least 3 orders
+    const qualifiedPhones: { phone: string; name: string }[] = []
+    for (const [phone, data] of phoneOrderMap.entries()) {
+        if (data.orderIds.size >= 3) {
+            qualifiedPhones.push({ phone, name: data.name })
+        }
+    }
+
+    if (qualifiedPhones.length === 0) {
+        return { customers: [], maxOrdersFound }
+    }
+
+    // 5. Exclude customers notified within the cooldown period
+    let notifiedSet = new Set<string>()
+    try {
+        const cooldownDate = new Date(Date.now() - NOTIFICATION_COOLDOWN_MS)
+        const recentlyNotified = await db
+            .select({ customerPhone: stockNotificationLog.customerPhone })
+            .from(stockNotificationLog)
+            .where(
+                and(
+                    eq(stockNotificationLog.inventoryId, inventoryId),
+                    eq(stockNotificationLog.clerkOrgId, orgId),
+                    gt(stockNotificationLog.sentAt, cooldownDate)
+                )
+            )
+        notifiedSet = new Set(recentlyNotified.map((r) => r.customerPhone))
+    } catch (e) {
+        console.warn("Could not query cooldown table; proceeding without cooldown check:", e)
+    }
+
+    const filtered = qualifiedPhones.filter((c) => !notifiedSet.has(c.phone))
+    return { customers: filtered, maxOrdersFound }
 }
 
 /**
  * Returns the count of eligible customers waiting for a restock notification.
- * Used by the backoffice UI to show the "📲 X customers waiting" indicator.
+ * Used by the backoffice UI to show the "📲 X waiting" indicator.
  */
 export async function getWaitingCustomerCount(
     inventoryId: string,
     orgId: string
 ): Promise<number> {
-    const customers = await getEligibleCustomers(inventoryId, orgId)
+    const { customers } = await getEligibleCustomers(inventoryId, orgId)
     return customers.length
 }
 
 /**
  * Sends restock SMS notifications to all eligible customers for a given inventory item.
- * This should only be called when stock transitions from 0 → positive.
- * Runs as fire-and-forget to avoid blocking the vendor's stock-in action.
+ * Called when stock transitions from 0 → positive.
  */
 export async function sendRestockNotificationSMS(
     inventoryId: string,
     orgId: string
-): Promise<{ success: boolean; sent: number; errors: number }> {
+): Promise<{ success: boolean; sent: number; errors: number; eligible: number; reason?: string }> {
     if (!BULKCLIX_API_KEY || !BULKCLIX_SENDER_ID) {
         console.warn("BulkClix credentials missing. Restock notifications skipped.")
-        return { success: false, sent: 0, errors: 0 }
+        return {
+            success: false,
+            sent: 0,
+            errors: 0,
+            eligible: 0,
+            reason: "BulkClix credentials not configured in environment variables",
+        }
     }
 
     try {
-        // 1. Get the inventory item details
         const item = await db.query.inventory.findFirst({
             where: and(eq(inventory.id, inventoryId), eq(inventory.clerkOrgId, orgId)),
         })
 
         if (!item) {
-            console.error(`Inventory item ${inventoryId} not found for restock notification.`)
-            return { success: false, sent: 0, errors: 0 }
+            return {
+                success: false,
+                sent: 0,
+                errors: 0,
+                eligible: 0,
+                reason: "Inventory item not found",
+            }
         }
 
-        // 2. Get eligible customers
-        const customers = await getEligibleCustomers(inventoryId, orgId)
+        const { customers, maxOrdersFound } = await getEligibleCustomers(inventoryId, orgId)
 
         if (customers.length === 0) {
-            console.log(`No eligible customers for restock notification on "${item.name}".`)
-            return { success: true, sent: 0, errors: 0 }
+            let reason = "No customers with 3+ orders found for this item."
+            if (maxOrdersFound > 0) {
+                reason = `Customers found for this item, but highest order count is ${maxOrdersFound} (requires 3+ orders to trigger).`
+            }
+            console.log(`[Restock SMS] ${reason}`)
+            return {
+                success: true,
+                sent: 0,
+                errors: 0,
+                eligible: 0,
+                reason,
+            }
         }
 
-        console.log(`Sending restock SMS for "${item.name}" to ${customers.length} customers...`)
+        console.log(`[Restock SMS] Sending for "${item.name}" to ${customers.length} eligible customer(s)...`)
 
         let sent = 0
         let errors = 0
 
-        // 3. Send SMS to each customer and log the notification
         for (const customer of customers) {
             try {
                 const message = `Hi ${customer.name}, great news! ${item.name} is back in stock. Order now: ${APP_URL.replace(/^https?:\/\//, "")}`
@@ -153,30 +243,44 @@ export async function sendRestockNotificationSMS(
                     response.ok &&
                     (data.message === "Request Sent" || data.status === "success" || data.status === "Pending")
                 ) {
-                    // Log successful notification
-                    await db.insert(stockNotificationLog).values({
-                        id: `sn_${nanoid(10)}`,
-                        inventoryId: inventoryId,
-                        clerkOrgId: orgId,
-                        customerPhone: customer.phone,
-                        customerName: customer.name,
-                    })
+                    try {
+                        await db.insert(stockNotificationLog).values({
+                            id: `sn_${nanoid(10)}`,
+                            inventoryId: inventoryId,
+                            clerkOrgId: orgId,
+                            customerPhone: customer.phone,
+                            customerName: customer.name,
+                        })
+                    } catch (dbErr) {
+                        console.warn("Could not log sent notification to DB:", dbErr)
+                    }
                     sent++
-                    console.log(`  ✓ SMS sent to ${customer.phone} (${customer.name})`)
+                    console.log(`[Restock SMS] ✓ Sent to ${customer.phone} (${customer.name})`)
                 } else {
-                    console.error(`  ✗ SMS failed for ${customer.phone}:`, data)
+                    console.error(`[Restock SMS] ✗ Failed for ${customer.phone}:`, data)
                     errors++
                 }
             } catch (smsError) {
-                console.error(`  ✗ SMS error for ${customer.phone}:`, smsError)
+                console.error(`[Restock SMS] ✗ Error for ${customer.phone}:`, smsError)
                 errors++
             }
         }
 
-        console.log(`Restock notification complete for "${item.name}": ${sent} sent, ${errors} failed.`)
-        return { success: true, sent, errors }
-    } catch (error) {
+        return {
+            success: sent > 0,
+            sent,
+            errors,
+            eligible: customers.length,
+            reason: sent > 0 ? `Sent to ${sent} customer(s)` : "Failed to deliver SMS via BulkClix",
+        }
+    } catch (error: any) {
         console.error("Failed to send restock notifications:", error)
-        return { success: false, sent: 0, errors: 0 }
+        return {
+            success: false,
+            sent: 0,
+            errors: 0,
+            eligible: 0,
+            reason: error?.message || "Internal error sending notifications",
+        }
     }
 }
