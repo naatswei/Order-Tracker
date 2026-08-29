@@ -488,7 +488,7 @@ function CreateOrderContent() {
                                 <h3 className="text-xs font-black text-[#191A43] uppercase tracking-wider flex items-center gap-2">
                                     Customer Information
                                 </h3>
-                                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                                <div className="grid sm:grid-cols-2 gap-6">
                                     <div className="space-y-2">
                                         <Label htmlFor={`${businessType}-customerName`} className="ml-1 text-xs font-semibold text-muted-foreground tracking-wider">Customer Name <span className="text-red-500">*</span></Label>
                                         <Input
@@ -510,19 +510,6 @@ function CreateOrderContent() {
                                             value={customerPhone}
                                             onChange={(e) => setCustomerPhone(e.target.value)}
                                             placeholder="0577064301"
-                                            disabled={!canCreateOrder}
-                                            className="h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80"
-                                        />
-                                    </div>
-
-                                    <div className="space-y-2">
-                                        <Label htmlFor={`${businessType}-customerEmail`} className="ml-1 text-xs font-semibold text-muted-foreground tracking-wider">Customer Email</Label>
-                                        <Input
-                                            id={`${businessType}-customerEmail`}
-                                            type="email"
-                                            value={customerEmail}
-                                            onChange={(e) => setCustomerEmail(e.target.value)}
-                                            placeholder="naa@gmail.com"
                                             disabled={!canCreateOrder}
                                             className="h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80"
                                         />
