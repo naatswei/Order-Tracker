@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useOrganization } from "@clerk/nextjs";
-import { getInventory, addInventoryItem, editInventoryItem, updateStock, removeInventoryItem, getInventoryHistory, bulkAddInventoryItems, bulkRemoveInventoryItems } from "@/app/actions/operations";
+import { getInventory, addInventoryItem, editInventoryItem, updateStock, removeInventoryItem, getInventoryHistory, bulkAddInventoryItems, bulkRemoveInventoryItems, getWaitingCustomers } from "@/app/actions/operations";
 import { getOrders } from "@/app/actions/orders";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -34,7 +34,8 @@ import {
     X,
     CheckSquare,
     Square,
-    CheckCheck
+    CheckCheck,
+    MessageSquare
 } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
@@ -166,6 +167,9 @@ export default function InventoryPage() {
     const [isImporting, setIsImporting] = useState(false);
     const [dragActive, setDragActive] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
+
+    // Stock notification: tracks how many loyal customers are waiting per out-of-stock item
+    const [waitingCounts, setWaitingCounts] = useState<Record<string, number>>({});
 
     const handleDrag = (e: React.DragEvent) => {
         e.preventDefault();
@@ -475,6 +479,33 @@ export default function InventoryPage() {
             setIsLoading(false);
         }
     }
+
+    // Fetch waiting customer counts for out-of-stock items
+    useEffect(() => {
+        if (items.length === 0) return;
+        const outOfStockItems = items.filter(
+            (item: any) => (parseFloat(item.quantity) - parseFloat(item.reserved || "0")) <= 0
+        );
+        if (outOfStockItems.length === 0) {
+            setWaitingCounts({});
+            return;
+        }
+        // Fetch counts in parallel, max 10 at a time to avoid overwhelming the server
+        const fetchCounts = async () => {
+            const counts: Record<string, number> = {};
+            const batch = outOfStockItems.slice(0, 10);
+            await Promise.all(
+                batch.map(async (item: any) => {
+                    try {
+                        const count = await getWaitingCustomers(item.id);
+                        if (count > 0) counts[item.id] = count;
+                    } catch {}
+                })
+            );
+            setWaitingCounts(counts);
+        };
+        fetchCounts();
+    }, [items]);
 
     async function handleAddItem(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
@@ -999,6 +1030,12 @@ export default function InventoryPage() {
                                                                 <span className={`text-sm font-bold ${(parseFloat(item.quantity) - parseFloat(item.reserved || "0")) <= parseFloat(item.minStock || "0") ? "text-red-600" : "text-emerald-600"}`}>
                                                                     {parseFloat(item.quantity) - parseFloat(item.reserved || "0")}
                                                                 </span>
+                                                                {(parseFloat(item.quantity) - parseFloat(item.reserved || "0")) <= 0 && waitingCounts[item.id] > 0 && (
+                                                                    <span className="flex items-center gap-1 mt-1 text-[10px] font-medium text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded-full">
+                                                                        <MessageSquare className="w-2.5 h-2.5" />
+                                                                        {waitingCounts[item.id]} waiting
+                                                                    </span>
+                                                                )}
                                                             </div>
                                                         </td>
                                                         <td className="px-4 py-4 text-center">

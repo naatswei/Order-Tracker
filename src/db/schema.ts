@@ -260,3 +260,23 @@ export const clientPricingOverridesRelations = relations(clientPricingOverrides,
         references: [clientOrganizations.id],
     }),
 }));
+
+// --- Stock Restock Notification Log ---
+
+export const stockNotificationLog = pgTable("stock_notification_log", {
+    id: text("id").primaryKey(),
+    inventoryId: text("inventory_id")
+        .references(() => inventory.id, { onDelete: "cascade" })
+        .notNull(),
+    clerkOrgId: text("clerk_org_id").notNull(),
+    customerPhone: text("customer_phone").notNull(),
+    customerName: text("customer_name"),
+    sentAt: timestamp("sent_at").defaultNow().notNull(),
+});
+
+export const stockNotificationLogRelations = relations(stockNotificationLog, ({ one }) => ({
+    inventoryItem: one(inventory, {
+        fields: [stockNotificationLog.inventoryId],
+        references: [inventory.id],
+    }),
+}));

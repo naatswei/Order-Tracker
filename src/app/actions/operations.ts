@@ -7,6 +7,7 @@ import { revalidatePath } from "next/cache";
 import { auth, currentUser, clerkClient } from "@clerk/nextjs/server";
 import { getBusinessConfig } from "@/lib/business-configs";
 import { nanoid } from "nanoid";
+import { sendRestockNotificationSMS, getWaitingCustomerCount } from "@/lib/stock-notifications";
 
 // --- Helpers ---
 
@@ -459,11 +460,15 @@ export async function updateStock(itemId: string, type: "in" | "out" | "adjustme
     const { orgId } = await auth();
     if (!orgId) throw new Error("Unauthorized");
 
+    let previousQty = 0;
+    let finalQty = 0;
+
     await db.transaction(async (tx) => {
         const items = await tx.select().from(inventory).where(and(eq(inventory.id, itemId), eq(inventory.clerkOrgId, orgId)));
         if (items.length === 0) throw new Error("Item not found");
         
         const currentQty = parseFloat(items[0].quantity);
+        previousQty = currentQty;
         const changeQty = parseFloat(quantity);
         const currentEntered = parseFloat(items[0].totalEntered || "0");
         const currentSold = parseFloat(items[0].totalSold || "0");
@@ -483,6 +488,8 @@ export async function updateStock(itemId: string, type: "in" | "out" | "adjustme
             newQty = changeQty;
         }
 
+        finalQty = newQty;
+
         await tx.update(inventory)
             .set({ 
                 quantity: newQty.toString(), 
@@ -501,6 +508,14 @@ export async function updateStock(itemId: string, type: "in" | "out" | "adjustme
             clerkOrgId: orgId,
         });
     });
+
+    // Trigger restock SMS notifications if stock went from 0 → positive
+    if (type === "in" && previousQty <= 0 && finalQty > 0) {
+        // Fire-and-forget: don't block the vendor's stock-in action
+        void sendRestockNotificationSMS(itemId, orgId).catch((err) =>
+            console.error("Restock notification error (non-blocking):", err)
+        );
+    }
 
     revalidatePath("/backoffice/inventory");
     return { success: true };
@@ -930,13 +945,16 @@ export async function editInventoryItem(
     if (!orgId) throw new Error("Unauthorized");
     if (orgRole !== "org:admin") throw new Error("Only organization administrators can edit inventory items.");
 
+    let oldQty = 0;
+    let newQty = 0;
+
     await db.transaction(async (tx) => {
         const items = await tx.select().from(inventory).where(and(eq(inventory.id, itemId), eq(inventory.clerkOrgId, orgId)));
         if (items.length === 0) throw new Error("Item not found");
         
         const oldItem = items[0];
-        const oldQty = parseFloat(oldItem.quantity);
-        const newQty = parseFloat(data.quantity || oldItem.quantity);
+        oldQty = parseFloat(oldItem.quantity);
+        newQty = parseFloat(data.quantity || oldItem.quantity);
         const diffQty = newQty - oldQty;
         
         const currentEntered = parseFloat(oldItem.totalEntered || oldItem.quantity);
@@ -970,8 +988,22 @@ export async function editInventoryItem(
         }
     });
 
+    // Trigger restock SMS notifications if stock went from 0 → positive via edit
+    if (oldQty <= 0 && newQty > 0) {
+        void sendRestockNotificationSMS(itemId, orgId).catch((err) =>
+            console.error("Restock notification error (non-blocking):", err)
+        );
+    }
+
     revalidatePath("/backoffice/inventory");
     return { success: true };
 }
 
+// --- Stock Notification Helpers ---
 
+export async function getWaitingCustomers(inventoryId: string): Promise<number> {
+    const { orgId } = await auth();
+    if (!orgId) return 0;
+
+    return await getWaitingCustomerCount(inventoryId, orgId);
+}
