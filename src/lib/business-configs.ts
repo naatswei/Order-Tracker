@@ -112,8 +112,8 @@ export const BUSINESS_CONFIGS: Record<string, BusinessConfig> = {
     logistics: {
         id: "logistics",
         title: "Logistics",
-        itemLabel: "Product Name",
-        itemPlaceholder: "Box, Document, Pallet, etc.",
+        itemLabel: "Package Description",
+        itemPlaceholder: "Box, Document, Pallet, Gadget, etc.",
         statuses: [
             "Shipment Booked", "Picked Up", "In Transit", "Arriving at Facility",
             "Sorting", "Dispatched", "Delivered", "Held at Customs",

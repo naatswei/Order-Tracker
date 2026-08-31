@@ -374,9 +374,9 @@ export async function getOrderWithHistory(id: string) {
         }
     }
 
-    // Fetch all inventory items for this business to show public availability
+    // Fetch all inventory items for this business to show public availability (skip for logistics)
     let allBusinessInventory: any[] = [];
-    if (order.clerkOrgId) {
+    if (order.clerkOrgId && order.businessType !== "logistics") {
         allBusinessInventory = await db.select()
             .from(inventory)
             .where(eq(inventory.clerkOrgId, order.clerkOrgId))

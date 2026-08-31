@@ -846,7 +846,7 @@ export default function TrackingDetailsPage() {
                         )}
                         
                         {/* Item Availability Section */}
-                        {order.inventoryItems && order.inventoryItems.length > 0 && (
+                        {order.businessType !== "logistics" && order.inventoryItems && order.inventoryItems.length > 0 && (
                             <div className="mb-20 space-y-8">
                                 <div className="flex flex-col items-center gap-5 text-center mb-14 pt-12">
                                     <div className="px-8 py-3.5 rounded-full bg-[#3B82F6] border border-[#2563EB] shadow-[0_4px_25px_rgba(59,130,246,0.3)] inline-flex items-center gap-3 group transition-all duration-500 hover:bg-[#2563EB] cursor-default">

@@ -595,6 +595,7 @@ function CreateOrderContent() {
                             </div>
 
                             {/* Stock Usage & Product Selection */}
+                            {businessType !== "logistics" && (
                             <div className="bg-slate-50/30 p-6 rounded-3xl border border-slate-100/60 space-y-4">
                                 <div className="flex items-center justify-between">
                                     <Label className="ml-1 text-xs font-black text-[#191A43] uppercase tracking-widest flex items-center gap-2">
@@ -828,6 +829,7 @@ function CreateOrderContent() {
                                     </div>
                                 )}
                             </div>
+                            )}
 
                             {/* Additional Specifications / Details */}
                             <div className="bg-slate-50/10 p-6 rounded-3xl border border-slate-100/50 space-y-4">

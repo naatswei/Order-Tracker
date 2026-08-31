@@ -70,9 +70,11 @@ export function BackofficeHeader({ config }: BackofficeHeaderProps) {
         return () => clearInterval(interval)
     }, [organization?.id])
 
+    const isLogistics = (organization?.publicMetadata?.businessType as string) === "logistics";
+
     const navLinks = [
         { href: "/backoffice/operations", label: "Operations", icon: ClipboardList },
-        { href: "/backoffice/inventory", label: "Inventory", icon: Package },
+        ...(!isLogistics ? [{ href: "/backoffice/inventory", label: "Inventory", icon: Package }] : []),
         { href: "/backoffice/staff", label: "Team", icon: Users },
     ]
 

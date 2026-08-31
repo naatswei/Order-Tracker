@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { useOrganization } from "@clerk/nextjs";
 import { getInventory, addInventoryItem, editInventoryItem, updateStock, removeInventoryItem, getInventoryHistory, bulkAddInventoryItems, bulkRemoveInventoryItems, getWaitingCustomers } from "@/app/actions/operations";
 import { getOrders } from "@/app/actions/orders";
@@ -141,6 +142,7 @@ const StockAdjuster = ({
 };
 
 export default function InventoryPage() {
+    const router = useRouter();
     const { organization, membership, isLoaded } = useOrganization();
     const isAdmin = membership?.role === "org:admin";
     const [items, setItems] = useState<any[]>([]);
@@ -442,6 +444,10 @@ export default function InventoryPage() {
         if (!isLoaded || !organization) return;
         
         const type = organization.publicMetadata?.businessType as string || "tailoring";
+        if (type === "logistics") {
+            router.replace("/backoffice/operations");
+            return;
+        }
         setBusinessType(type);
         loadData();
     }, [isLoaded, organization?.id]);
