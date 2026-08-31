@@ -4,6 +4,7 @@ import { db } from "@/db"
 import { orders, orderInventoryLinks, inventory, stockNotificationLog } from "@/db/schema"
 import { eq, and, sql, gt } from "drizzle-orm"
 import { nanoid } from "nanoid"
+import { clerkClient } from "@clerk/nextjs/server"
 
 const BULKCLIX_API_KEY = process.env.BULKCLIX_API_KEY
 const BULKCLIX_SENDER_ID = process.env.BULKCLIX_SENDER_ID
@@ -13,9 +14,9 @@ const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://www.otracker.net"
 const NOTIFICATION_COOLDOWN_MS = 7 * 24 * 60 * 60 * 1000
 
 // Minimum orders required for a customer to receive a restock alert.
-// Defaults to 1 (any past customer) so test orders qualify immediately.
+// Reverted to 3 (loyal customers who ordered 3+ times).
 // Can be customized via RESTOCK_MIN_ORDERS env variable.
-const MIN_ORDERS_THRESHOLD = parseInt(process.env.RESTOCK_MIN_ORDERS || "1", 10) || 1
+const MIN_ORDERS_THRESHOLD = parseInt(process.env.RESTOCK_MIN_ORDERS || "3", 10) || 3
 
 function formatGhanaPhoneNumber(phone: string): string {
     let cleaned = phone.replace(/\D/g, "")
@@ -222,12 +223,23 @@ export async function sendRestockNotificationSMS(
 
         console.log(`[Restock SMS] Sending for "${item.name}" to ${customers.length} eligible customer(s)...`)
 
+        let storeName = "our store"
+        try {
+            const client = await clerkClient()
+            const org = await client.organizations.getOrganization({ organizationId: orgId })
+            if (org?.name) {
+                storeName = org.name
+            }
+        } catch (e) {
+            console.warn("Could not fetch store name from Clerk:", e)
+        }
+
         let sent = 0
         let errors = 0
 
         for (const customer of customers) {
             try {
-                const message = `Hi ${customer.name}, great news! ${item.name} is back in stock. Order now: ${APP_URL.replace(/^https?:\/\//, "")}`
+                const message = `Hi ${customer.name}, great news! ${item.name} is back in stock from your favorite store ${storeName}.`
 
                 const response = await fetch("https://api.bulkclix.com/api/v1/sms-api/send", {
                     method: "POST",
