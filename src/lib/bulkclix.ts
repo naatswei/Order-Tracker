@@ -190,11 +190,14 @@ export async function sendRiderAssignmentSMS(
 
         const trackingLink = `${APP_URL}/track/${orderId}`.replace(/^https?:\/\//, "")
         
-        // Destination if present
+        // Destination and Map Directions link if present
         const destination = order.measurements ? `\nDestination: ${order.measurements}` : ""
+        const mapsLink = order.measurements 
+            ? `\nDirections: https://maps.google.com/?q=${encodeURIComponent(order.measurements)}`
+            : ""
 
-        // SMS formatted for rider with customer phone number
-        const message = `Hi ${staffMember.name}, new delivery assigned!\n\nWaybill: #${order.orderNumber}\nPackage: ${order.itemType || "Shipment"}\nCustomer: ${order.customerName} (${order.customerPhone})${destination}\n\nTrack: ${trackingLink}`
+        // SMS formatted for rider with customer phone number and map directions
+        const message = `Hi ${staffMember.name}, new delivery assigned!\n\nWaybill: #${order.orderNumber}\nPackage: ${order.itemType || "Shipment"}\nCustomer: ${order.customerName} (${order.customerPhone})${destination}${mapsLink}\n\nTrack: ${trackingLink}`
 
         const response = await fetch("https://api.bulkclix.com/api/v1/sms-api/send", {
             method: "POST",
