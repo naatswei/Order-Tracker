@@ -38,7 +38,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { useUser } from "@clerk/nextjs"
+import { useUser, useOrganization } from "@clerk/nextjs"
 import {
     Dialog,
     DialogContent,
@@ -55,6 +55,9 @@ import { SignatureLoader } from "@/components/signature-loader";
 
 export default function StaffPage() {
     const { user } = useUser();
+    const { organization } = useOrganization();
+    const businessType = (organization?.publicMetadata?.businessType as string) || "tailoring";
+    const isLogistics = businessType === "logistics";
     const [staffList, setStaffList] = useState<any[]>([]);
     const [name, setName] = useState("");
     const [role, setRole] = useState("");
@@ -566,7 +569,7 @@ export default function StaffPage() {
 
             {/* Edit Staff Dialog */}
             <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-                <DialogContent className="max-w-lg rounded-[1.5rem] border-white/50 bg-white/90 backdrop-blur-xl shadow-2xl p-0 overflow-hidden">
+                <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto rounded-[1.5rem] border-white/50 bg-white/90 backdrop-blur-xl shadow-2xl p-0">
                     <DialogHeader className="p-6 pb-0">
                         <div className="flex items-center gap-3 mb-2">
                             <div className="w-10 h-10 rounded-xl bg-[#191A43] flex items-center justify-center shadow-lg shadow-[#191A43]/20">
@@ -725,7 +728,7 @@ export default function StaffPage() {
 
             {/* Enroll Staff Dialog */}
             <Dialog open={isEnrollModalOpen} onOpenChange={setIsEnrollModalOpen}>
-                <DialogContent className="max-w-2xl rounded-[1.5rem] border-white/50 bg-white/90 backdrop-blur-xl shadow-2xl p-0 overflow-hidden">
+                <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto rounded-[1.5rem] border-white/50 bg-white/90 backdrop-blur-xl shadow-2xl p-0">
                     <DialogHeader className="p-6 pb-0">
                         <div className="flex items-center gap-3 mb-2">
                             <div className="w-10 h-10 rounded-xl bg-[#191A43] flex items-center justify-center shadow-lg shadow-[#191A43]/20">
@@ -753,7 +756,7 @@ export default function StaffPage() {
                             <div className="space-y-2">
                                 <Label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Email Address</Label>
                                 <Input 
-                                    placeholder="e.g. kofi@hubtel.com" 
+                                    placeholder="e.g. kofi.mensah@gmail.com" 
                                     type="email"
                                     value={email} 
                                     onChange={(e) => setEmail(e.target.value)}
@@ -763,7 +766,7 @@ export default function StaffPage() {
                             <div className="space-y-2">
                                 <Label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Core Role</Label>
                                 <Input 
-                                    placeholder="e.g. Senior Tailor" 
+                                    placeholder={isLogistics ? "e.g. Dispatch Rider, Courier" : "e.g. Senior Tailor, Stylist"} 
                                     value={role} 
                                     onChange={(e) => setRole(e.target.value)}
                                     className="h-10 rounded-xl bg-slate-50 border-slate-100 font-bold"
@@ -772,14 +775,17 @@ export default function StaffPage() {
                             <div className="space-y-2">
                                 <Label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Department</Label>
                                 <Input 
-                                    placeholder="e.g. Couture" 
+                                    placeholder={isLogistics ? "e.g. Delivery Fleet, Dispatch" : "e.g. Production, Alterations"} 
                                     value={department} 
                                     onChange={(e) => setDepartment(e.target.value)}
                                     className="h-10 rounded-xl bg-slate-50 border-slate-100 font-bold"
                                 />
                             </div>
                             <div className="space-y-2">
-                                <Label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Phone Number</Label>
+                                <Label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1 flex items-center justify-between">
+                                    <span>Phone Number</span>
+                                    {isLogistics && <span className="text-blue-500 font-bold lowercase tracking-normal text-[9px]">required for sms alerts</span>}
+                                </Label>
                                 <Input 
                                     placeholder="e.g. 0541234567" 
                                     value={phone} 
