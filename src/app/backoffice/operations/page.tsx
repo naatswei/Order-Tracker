@@ -28,7 +28,9 @@ import {
     UserPlus,
     Ruler,
     ShoppingBag,
-    FlaskConical
+    FlaskConical,
+    Phone,
+    Copy
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -338,6 +340,31 @@ export default function OperationsPage() {
                                                                         <p className="text-[10px] font-black text-[#CE0003] uppercase tracking-wider">{order.orderNumber}</p>
                                                                         <h3 className="font-black text-[#191A43] leading-tight">{order.customerName}</h3>
                                                                         <p className="text-xs text-slate-500 font-medium">{order.itemType}</p>
+                                                                        {order.customerPhone && (
+                                                                            <div className="flex items-center gap-1.5 pt-1">
+                                                                                <a
+                                                                                    href={`tel:${order.customerPhone}`}
+                                                                                    className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-slate-100/80 hover:bg-blue-50 text-[11px] font-bold text-slate-700 hover:text-blue-600 transition-colors group/phone"
+                                                                                    title="Click to call customer"
+                                                                                    onClick={(e) => e.stopPropagation()}
+                                                                                >
+                                                                                    <Phone className="w-3 h-3 text-slate-400 group-hover/phone:text-blue-500" />
+                                                                                    <span>{order.customerPhone}</span>
+                                                                                </a>
+                                                                                <button
+                                                                                    type="button"
+                                                                                    onClick={(e) => {
+                                                                                        e.stopPropagation();
+                                                                                        navigator.clipboard.writeText(order.customerPhone);
+                                                                                        toast.success("Phone number copied!");
+                                                                                    }}
+                                                                                    className="p-1 rounded-md text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-all"
+                                                                                    title="Copy phone number"
+                                                                                >
+                                                                                    <Copy className="w-3 h-3" />
+                                                                                </button>
+                                                                            </div>
+                                                                        )}
                                                                     </div>
                                                                     <Badge variant="outline" className="bg-slate-50 border-slate-100 text-[10px] font-bold text-slate-500 rounded-lg">
                                                                         {order.deliveryDate && !isNaN(new Date(order.deliveryDate).getTime()) 

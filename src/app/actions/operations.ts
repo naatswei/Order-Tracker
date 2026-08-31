@@ -8,6 +8,7 @@ import { auth, currentUser, clerkClient } from "@clerk/nextjs/server";
 import { getBusinessConfig } from "@/lib/business-configs";
 import { nanoid } from "nanoid";
 import { sendRestockNotificationSMS, getWaitingCustomerCount } from "@/lib/stock-notifications";
+import { sendRiderAssignmentSMS } from "@/lib/bulkclix";
 
 // --- Helpers ---
 
@@ -317,6 +318,10 @@ export async function assignOrder(orderId: string, staffId: string | null) {
     await db.update(orders)
         .set({ assignedStaffId: staffId, updatedAt: new Date() })
         .where(and(eq(orders.id, orderId), eq(orders.clerkOrgId, orgId)));
+
+    if (staffId) {
+        sendRiderAssignmentSMS(orderId, staffId, orgId).catch(err => console.error("Error sending rider assignment SMS:", err));
+    }
 
     revalidatePath("/backoffice");
     revalidatePath("/backoffice/operations");

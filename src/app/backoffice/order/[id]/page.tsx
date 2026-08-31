@@ -18,7 +18,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { detectGhanaNetworkProvider } from "@/lib/utils"
 import Link from "next/link"
 import { toast } from "sonner"
-import { ArrowLeft, MapPin, Clock, User, Phone, Mail, Shirt, Package, Loader2, DollarSign, FileText, Plus, Trash, Download, Link2, CheckCircle, MessageCircle } from "lucide-react"
+import { ArrowLeft, MapPin, Clock, User, Phone, Mail, Shirt, Package, Loader2, DollarSign, FileText, Plus, Trash, Download, Link2, CheckCircle, MessageCircle, Copy } from "lucide-react"
 import { UserButton, OrganizationSwitcher, useOrganization } from "@clerk/nextjs"
 import { getBusinessConfig } from "@/lib/business-configs"
 import { BackofficeHeader } from "@/components/backoffice-header"
@@ -342,9 +342,26 @@ export default function OrderUpdatePage() {
                                         <Shirt className="w-4 h-4 text-slate-400" />
                                         <span className="text-[13px] sm:text-sm text-slate-600 font-medium capitalize">{order.garmentType}</span>
                                     </div>
-                                    <div className="flex items-center gap-3">
-                                        <Phone className="w-4 h-4 text-slate-400" />
-                                        <span className="text-[13px] sm:text-sm text-slate-600 font-medium">{order.customerPhone}</span>
+                                    <div className="flex items-center justify-between group">
+                                        <a 
+                                            href={`tel:${order.customerPhone}`} 
+                                            className="flex items-center gap-3 text-[13px] sm:text-sm text-slate-700 hover:text-blue-600 font-medium transition-colors"
+                                            title="Tap to call customer"
+                                        >
+                                            <Phone className="w-4 h-4 text-slate-400 group-hover:text-blue-500 transition-colors" />
+                                            <span className="hover:underline underline-offset-4">{order.customerPhone}</span>
+                                        </a>
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                navigator.clipboard.writeText(order.customerPhone);
+                                                toast.success("Phone number copied to clipboard!");
+                                            }}
+                                            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-all opacity-80 group-hover:opacity-100"
+                                            title="Copy phone number"
+                                        >
+                                            <Copy className="w-3.5 h-3.5" />
+                                        </button>
                                     </div>
                                     <div className="flex items-center gap-3">
                                         <Mail className="w-4 h-4 text-slate-400" />

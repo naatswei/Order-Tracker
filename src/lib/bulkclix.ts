@@ -1,6 +1,7 @@
 import { db } from "@/db"
-import { orders } from "@/db/schema"
+import { orders, staff } from "@/db/schema"
 import { eq } from "drizzle-orm"
+import { clerkClient } from "@clerk/nextjs/server"
 
 const BULKCLIX_API_KEY = process.env.BULKCLIX_API_KEY
 const BULKCLIX_SENDER_ID = process.env.BULKCLIX_SENDER_ID
@@ -150,6 +151,89 @@ export async function sendOrderStatusSMS(orderId: string, status: string): Promi
         }
     } catch (error: any) {
         console.error("Failed to send BulkClix status SMS:", error)
+        return { success: false, error: error?.message || "Internal SMS sending error" }
+    }
+}
+
+export async function sendRiderAssignmentSMS(
+    orderId: string, 
+    staffId: string, 
+    orgId?: string
+): Promise<{ success: boolean; error?: string }> {
+    if (!BULKCLIX_API_KEY || !BULKCLIX_SENDER_ID) {
+        console.warn("BulkClix API Key or Sender ID is not set. Rider SMS skipped.")
+        return { success: false, error: "BulkClix credentials missing" }
+    }
+
+    try {
+        const [order, staffMember] = await Promise.all([
+            db.query.orders.findFirst({
+                where: eq(orders.id, orderId),
+            }),
+            db.query.staff.findFirst({
+                where: eq(staff.id, staffId),
+            })
+        ])
+
+        if (!order || !staffMember) {
+            return { success: false, error: "Order or staff member not found" }
+        }
+
+        if (!staffMember.phone) {
+            console.warn(`Staff member ${staffMember.name} has no phone number recorded. SMS skipped.`)
+            return { success: false, error: "Staff phone number not found" }
+        }
+
+        const formattedRiderPhone = formatGhanaPhoneNumber(staffMember.phone)
+        if (!formattedRiderPhone) {
+            return { success: false, error: "Invalid staff phone number" }
+        }
+
+        // Fetch store name from Clerk
+        let storeName = "our hub"
+        const targetOrgId = order.clerkOrgId || orgId
+        if (targetOrgId) {
+            try {
+                const client = await clerkClient()
+                const org = await client.organizations.getOrganization({ organizationId: targetOrgId })
+                if (org?.name) storeName = org.name
+            } catch (e) {
+                console.warn("Could not fetch store name from Clerk:", e)
+            }
+        }
+
+        const trackingLink = `${APP_URL}/track/${orderId}`.replace(/^https?:\/\//, "")
+        
+        // Notes / instructions / delivery destination if present
+        const destination = order.measurements ? `\nDestination/Notes: ${order.measurements}` : ""
+
+        // SMS formatted for rider with customer phone number
+        const message = `Hi ${staffMember.name}, new delivery assigned!\n\nWaybill: #${order.orderNumber}\nPackage: ${order.itemType || "Shipment"}\nCustomer: ${order.customerName} (${order.customerPhone})${destination}\nStore: ${storeName}\n\nTrack: ${trackingLink}`
+
+        const response = await fetch("https://api.bulkclix.com/api/v1/sms-api/send", {
+            method: "POST",
+            headers: {
+                "x-api-key": BULKCLIX_API_KEY,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                sender_id: BULKCLIX_SENDER_ID,
+                message: message,
+                recipients: [formattedRiderPhone]
+            })
+        })
+
+        const data = await response.json()
+
+        if (response.ok && (data.message === "Request Sent" || data.status === "success" || data.status === "Pending")) {
+            console.log(`BulkClix Rider Assignment SMS sent to ${formattedRiderPhone} (${staffMember.name}) for order ${order.orderNumber}`)
+            return { success: true }
+        } else {
+            console.error("BulkClix Rider SMS API failure:", data)
+            return { success: false, error: data.message || "BulkClix API error" }
+        }
+    } catch (error: any) {
+        console.error("Failed to send BulkClix rider assignment SMS:", error)
         return { success: false, error: error?.message || "Internal SMS sending error" }
     }
 }
