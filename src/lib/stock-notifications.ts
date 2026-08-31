@@ -12,6 +12,11 @@ const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://www.otracker.net"
 // 7-day cooldown in milliseconds
 const NOTIFICATION_COOLDOWN_MS = 7 * 24 * 60 * 60 * 1000
 
+// Minimum orders required for a customer to receive a restock alert.
+// Defaults to 1 (any past customer) so test orders qualify immediately.
+// Can be customized via RESTOCK_MIN_ORDERS env variable.
+const MIN_ORDERS_THRESHOLD = parseInt(process.env.RESTOCK_MIN_ORDERS || "1", 10) || 1
+
 function formatGhanaPhoneNumber(phone: string): string {
     let cleaned = phone.replace(/\D/g, "")
     if (cleaned.startsWith("0") && cleaned.length === 10) {
@@ -117,10 +122,10 @@ export async function getEligibleCustomers(
         }
     }
 
-    // Filter to customers with at least 3 orders
+    // Filter to customers with at least MIN_ORDERS_THRESHOLD order(s)
     const qualifiedPhones: { phone: string; name: string }[] = []
     for (const [phone, data] of phoneOrderMap.entries()) {
-        if (data.orderIds.size >= 3) {
+        if (data.orderIds.size >= MIN_ORDERS_THRESHOLD) {
             qualifiedPhones.push({ phone, name: data.name })
         }
     }
@@ -201,9 +206,9 @@ export async function sendRestockNotificationSMS(
         const { customers, maxOrdersFound } = await getEligibleCustomers(inventoryId, orgId)
 
         if (customers.length === 0) {
-            let reason = "No customers with 3+ orders found for this item."
+            let reason = `No customers with ${MIN_ORDERS_THRESHOLD}+ order(s) found for this item.`
             if (maxOrdersFound > 0) {
-                reason = `Customers found for this item, but highest order count is ${maxOrdersFound} (requires 3+ orders to trigger).`
+                reason = `Customers found for this item, but highest order count is ${maxOrdersFound} (requires ${MIN_ORDERS_THRESHOLD}+ order(s) to trigger).`
             }
             console.log(`[Restock SMS] ${reason}`)
             return {
