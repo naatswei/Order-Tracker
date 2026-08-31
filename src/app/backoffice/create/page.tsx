@@ -423,6 +423,7 @@ function CreateOrderContent() {
                     </CardHeader>
                     <CardContent className="pt-8">
                         {/* sliding tab switcher */}
+                        {businessType !== "logistics" && (
                         <div className="mb-6 flex justify-start">
                             <div className="bg-slate-100/80 backdrop-blur-md p-1 rounded-2xl flex flex-wrap items-center gap-1 shadow-inner border border-slate-200/50">
                                 <button
@@ -453,10 +454,11 @@ function CreateOrderContent() {
                                 </button>
                             </div>
                         </div>
+                        )}
 
                         <form onSubmit={handleSubmit} className="space-y-6">
                             {/* B2B Client Account Selector */}
-                            {orderMode === "wholesale" && (
+                            {businessType !== "logistics" && orderMode === "wholesale" && (
                                 <div className="p-5 bg-slate-50/70 border border-slate-100 rounded-3xl flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                                     <div className="space-y-1 text-left">
                                         <Label className="text-[10px] font-black text-[#191A43] uppercase tracking-widest ml-0.5">B2B Customer Pricing Account</Label>

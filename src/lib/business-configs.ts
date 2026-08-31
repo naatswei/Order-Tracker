@@ -112,7 +112,7 @@ export const BUSINESS_CONFIGS: Record<string, BusinessConfig> = {
     logistics: {
         id: "logistics",
         title: "Logistics",
-        itemLabel: "Package Description",
+        itemLabel: "Package Type",
         itemPlaceholder: "Box, Document, Pallet, Gadget, etc.",
         statuses: [
             "Shipment Booked", "Picked Up", "In Transit", "Arriving at Facility",

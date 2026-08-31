@@ -245,12 +245,14 @@ export default function OperationsPage() {
                             </DialogContent>
                         </Dialog>
 
-                        <Link href="/backoffice/create" className="flex-1 lg:flex-none">
-                            <Button className="w-full h-10 px-6 rounded-xl bg-[#191A43] hover:bg-[#191A43]/90 text-white font-bold transition-all shadow-lg shadow-[#191A43]/10 text-xs">
-                                <Plus className="w-4 h-4 mr-2" />
-                                {config.operationsLabel}
-                            </Button>
-                        </Link>
+                        {!isLogistics && (
+                            <Link href="/backoffice/create" className="flex-1 lg:flex-none">
+                                <Button className="w-full h-10 px-6 rounded-xl bg-[#191A43] hover:bg-[#191A43]/90 text-white font-bold transition-all shadow-lg shadow-[#191A43]/10 text-xs">
+                                    <Plus className="w-4 h-4 mr-2" />
+                                    {config.operationsLabel}
+                                </Button>
+                            </Link>
+                        )}
                     </div>
                 </div>
             </div>
