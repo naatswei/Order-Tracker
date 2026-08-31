@@ -1,7 +1,6 @@
 import { db } from "@/db"
 import { orders, staff } from "@/db/schema"
 import { eq } from "drizzle-orm"
-import { clerkClient } from "@clerk/nextjs/server"
 
 const BULKCLIX_API_KEY = process.env.BULKCLIX_API_KEY
 const BULKCLIX_SENDER_ID = process.env.BULKCLIX_SENDER_ID
@@ -189,26 +188,13 @@ export async function sendRiderAssignmentSMS(
             return { success: false, error: "Invalid staff phone number" }
         }
 
-        // Fetch store name from Clerk
-        let storeName = "our hub"
-        const targetOrgId = order.clerkOrgId || orgId
-        if (targetOrgId) {
-            try {
-                const client = await clerkClient()
-                const org = await client.organizations.getOrganization({ organizationId: targetOrgId })
-                if (org?.name) storeName = org.name
-            } catch (e) {
-                console.warn("Could not fetch store name from Clerk:", e)
-            }
-        }
-
         const trackingLink = `${APP_URL}/track/${orderId}`.replace(/^https?:\/\//, "")
         
-        // Notes / instructions / delivery destination if present
-        const destination = order.measurements ? `\nDestination/Notes: ${order.measurements}` : ""
+        // Destination if present
+        const destination = order.measurements ? `\nDestination: ${order.measurements}` : ""
 
         // SMS formatted for rider with customer phone number
-        const message = `Hi ${staffMember.name}, new delivery assigned!\n\nWaybill: #${order.orderNumber}\nPackage: ${order.itemType || "Shipment"}\nCustomer: ${order.customerName} (${order.customerPhone})${destination}\nStore: ${storeName}\n\nTrack: ${trackingLink}`
+        const message = `Hi ${staffMember.name}, new delivery assigned!\n\nWaybill: #${order.orderNumber}\nPackage: ${order.itemType || "Shipment"}\nCustomer: ${order.customerName} (${order.customerPhone})${destination}\n\nTrack: ${trackingLink}`
 
         const response = await fetch("https://api.bulkclix.com/api/v1/sms-api/send", {
             method: "POST",
