@@ -7,7 +7,7 @@ import dynamic from "next/dynamic"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { type Order } from "@/lib/storage"
-import { getOrderWithHistory } from "@/app/actions/orders"
+import { getOrderWithHistory, getOrderDeliveryPin } from "@/app/actions/orders"
 import { submitCustomerMessage, getThreadMessages, updateTypingStatus, getTypingStatus } from "@/app/actions/messages"
 import { savePushSubscription } from "@/app/actions/push"
 import Link from "next/link"
@@ -15,7 +15,7 @@ import { getBusinessConfig } from "@/lib/business-configs"
 import { toast } from "sonner"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
-import { Loader2, Package, CheckCircle2, Clock, Truck, MapPin, Search, Send, MessageSquare, MessageSquareMore, X, ArrowRight, User, Building2, ChevronRight, ExternalLink, Calendar, Zap, Bell, BellRing, BellOff, FileText, Download, Navigation, Phone } from "lucide-react"
+import { Loader2, Package, CheckCircle2, Clock, Truck, MapPin, Search, Send, MessageSquare, MessageSquareMore, X, ArrowRight, User, Building2, ChevronRight, ExternalLink, Calendar, Zap, Bell, BellRing, BellOff, FileText, Download, Navigation, Phone, ShieldCheck, Copy, Check } from "lucide-react"
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion"
 import { SignatureLoader } from "@/components/signature-loader"
 
@@ -59,6 +59,10 @@ export default function TrackingDetailsPage() {
     const [subscriptionLoading, setSubscriptionLoading] = useState(false)
     const [isIOS, setIsIOS] = useState(false)
     const [searchQuery, setSearchQuery] = useState("")
+    const [showOtpModal, setShowOtpModal] = useState(true)
+    const [copiedOtp, setCopiedOtp] = useState(false)
+    
+    const deliveryPin = order ? getOrderDeliveryPin(order) : ""
 
     const handlePaymentSuccess = async (reference: string) => {
         toast.loading("Verifying payment, please wait...")
@@ -525,10 +529,17 @@ export default function TrackingDetailsPage() {
                                         {order.orderNumber}
                                     </h1>
                                     {order.businessType === "logistics" ? (
-                                        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-sky-500/15 border border-sky-500/30 text-sky-300 text-xs font-mono">
-                                            <span className="text-[10px] font-black text-sky-400 uppercase tracking-wider">Delivery Code:</span>
-                                            <span className="text-white font-black tracking-widest text-sm">{order.id.slice(0, 8).toUpperCase()}</span>
-                                        </div>
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowOtpModal(true)}
+                                            className="inline-flex items-center gap-2.5 px-4 py-2 rounded-2xl bg-sky-500/15 border border-sky-500/30 hover:bg-sky-500/25 transition-all text-sky-300 text-xs font-mono group"
+                                            title="Click to view full Delivery OTP"
+                                        >
+                                            <span className="w-2 h-2 rounded-full bg-sky-400 animate-pulse" />
+                                            <span className="text-[10px] font-black text-sky-400 uppercase tracking-wider">Delivery PIN:</span>
+                                            <span className="text-white font-black tracking-widest text-sm sm:text-base">{deliveryPin}</span>
+                                            <span className="text-[10px] text-sky-300/70 underline ml-1 group-hover:text-white font-sans">View OTP</span>
+                                        </button>
                                     ) : (
                                         <p className="text-white/60 font-light tracking-wide">Ref: {order.id.slice(0, 8).toUpperCase()}</p>
                                     )}
@@ -1162,6 +1173,87 @@ export default function TrackingDetailsPage() {
                             </motion.div>
                         </div>
                     </main>
+
+                    {/* Delivery OTP Popup Modal for Logistics */}
+                    <AnimatePresence>
+                        {order && order.businessType === "logistics" && showOtpModal && (
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md"
+                            >
+                                <motion.div
+                                    initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                                    animate={{ scale: 1, opacity: 1, y: 0 }}
+                                    exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                                    transition={{ type: "spring", damping: 25, stiffness: 350 }}
+                                    className="relative w-full max-w-sm rounded-[2.5rem] bg-[#0E121F] border border-sky-500/30 p-6 sm:p-7 text-center shadow-[0_20px_60px_rgba(0,0,0,0.7)] space-y-5"
+                                >
+                                    {/* Close Button */}
+                                    <button
+                                        onClick={() => setShowOtpModal(false)}
+                                        className="absolute top-5 right-5 p-2 rounded-full text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
+                                    >
+                                        <X className="w-5 h-5" />
+                                    </button>
+
+                                    {/* Icon Header */}
+                                    <div className="w-16 h-16 rounded-3xl bg-sky-500/15 border border-sky-500/30 flex items-center justify-center mx-auto text-sky-400 shadow-inner">
+                                        <ShieldCheck className="w-8 h-8" />
+                                    </div>
+
+                                    <div className="space-y-1.5">
+                                        <span className="text-[10px] font-black uppercase tracking-[0.25em] text-sky-400 block">
+                                            Delivery Verification
+                                        </span>
+                                        <h3 className="text-xl font-black text-white tracking-tight">
+                                            Your Handover OTP
+                                        </h3>
+                                        <p className="text-xs text-slate-300 font-medium leading-relaxed max-w-xs mx-auto">
+                                            Share this 4-digit numeric code with your dispatch rider upon delivery to confirm package handover.
+                                        </p>
+                                    </div>
+
+                                    {/* 4-Digit Boxes */}
+                                    <div className="flex justify-center items-center gap-2.5 pt-2">
+                                        {deliveryPin.split("").map((digit: string, i: number) => (
+                                            <div
+                                                key={i}
+                                                className="w-14 h-16 rounded-2xl bg-black/70 border-2 border-sky-500/40 flex items-center justify-center text-3xl font-mono font-black text-white shadow-xl shadow-sky-500/10"
+                                            >
+                                                {digit}
+                                            </div>
+                                        ))}
+                                    </div>
+
+                                    {/* Actions */}
+                                    <div className="pt-2 space-y-2.5">
+                                        <Button
+                                            onClick={() => {
+                                                navigator.clipboard.writeText(deliveryPin)
+                                                setCopiedOtp(true)
+                                                toast.success("Delivery PIN copied to clipboard")
+                                                setTimeout(() => setCopiedOtp(false), 2000)
+                                            }}
+                                            variant="outline"
+                                            className="w-full h-12 rounded-2xl bg-white/5 hover:bg-white/10 border-white/10 text-xs font-bold text-slate-200 flex items-center justify-center gap-2"
+                                        >
+                                            {copiedOtp ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+                                            <span>{copiedOtp ? "Copied PIN" : "Copy 4-Digit PIN"}</span>
+                                        </Button>
+
+                                        <Button
+                                            onClick={() => setShowOtpModal(false)}
+                                            className="w-full h-12 rounded-2xl bg-sky-600 hover:bg-sky-500 text-white text-xs font-black uppercase tracking-wider shadow-lg shadow-sky-600/30"
+                                        >
+                                            Got It
+                                        </Button>
+                                    </div>
+                                </motion.div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
                 </>
             )}
 

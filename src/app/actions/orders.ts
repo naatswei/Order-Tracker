@@ -100,6 +100,12 @@ export async function createOrder(data: OrderInput): Promise<{ success: boolean;
 
         const orderId = data.id || Math.random().toString(36).substring(2, 9).toUpperCase();
 
+        // Auto-generate numeric 4-digit OTP for logistics if not already provided
+        const orderMetadata = { ...(data.metadata || {}) };
+        if (data.businessType === "logistics" && !orderMetadata.deliveryPin) {
+            orderMetadata.deliveryPin = String(Math.floor(1000 + Math.random() * 9000));
+        }
+
         await db.insert(orders).values({
             id: orderId,
             orderNumber: generatedOrderNumber,
@@ -109,7 +115,7 @@ export async function createOrder(data: OrderInput): Promise<{ success: boolean;
             itemType: data.itemType || data.garmentType || "Other",
             pickupDate: data.pickupDate || null,
             measurements: data.measurements || null,
-            metadata: data.metadata || {},
+            metadata: orderMetadata,
             businessType: data.businessType,
             currentStatus: data.currentStatus || "Order Received",
             clerkOrgId: orgId || null,
@@ -442,6 +448,22 @@ const ALLOWED_RIDER_STATUSES = [
     "Delivered",
 ] as const;
 
+// Helper to retrieve or deterministically generate a 4-digit numeric delivery PIN
+export function getOrderDeliveryPin(order: any): string {
+    const meta = (typeof order?.metadata === "object" && order?.metadata !== null) ? order.metadata as Record<string, unknown> : {};
+    if (meta.deliveryPin && typeof meta.deliveryPin === "string" && meta.deliveryPin.trim().length > 0) {
+        return meta.deliveryPin.trim();
+    }
+    // Deterministic 4-digit numeric fallback from order ID so it stays identical across all visits
+    let hash = 0;
+    const str = String(order?.id || order?.orderNumber || "1234");
+    for (let i = 0; i < str.length; i++) {
+        hash = ((hash << 5) - hash) + str.charCodeAt(i);
+        hash |= 0;
+    }
+    return (Math.abs(hash) % 9000 + 1000).toString();
+}
+
 export async function riderUpdateStatus(
     orderId: string, 
     status: string,
@@ -473,23 +495,22 @@ export async function riderUpdateStatus(
             return { success: false, error: `Order is already ${order.currentStatus}` };
         }
 
-        // Proof of Delivery: Validate customer's Ref number on delivery handover
+        // Proof of Delivery: Validate customer's numeric delivery PIN on delivery handover
         if (status === "Delivered") {
             if (!verificationCode || verificationCode.trim() === "") {
-                return { success: false, error: "Please enter the customer's Ref number to confirm delivery." };
+                return { success: false, error: "Please enter the customer's 4-digit delivery PIN to confirm delivery." };
             }
-            const cleanEntered = verificationCode.trim().toUpperCase().replace(/[^A-Z0-9]/g, "");
+            const cleanEntered = verificationCode.trim().replace(/\D/g, "");
+            const expectedPin = getOrderDeliveryPin(order);
             const expectedRef = order.id.slice(0, 8).toUpperCase().replace(/[^A-Z0-9]/g, "");
-            const cleanOrderNumber = order.orderNumber.toUpperCase().replace(/[^A-Z0-9]/g, "");
 
-            const isMatch = cleanEntered === expectedRef || 
-                            cleanEntered === cleanOrderNumber || 
-                            order.id.toUpperCase().startsWith(cleanEntered);
+            const isMatch = cleanEntered === expectedPin || 
+                            verificationCode.trim().toUpperCase().replace(/[^A-Z0-9]/g, "") === expectedRef;
 
             if (!isMatch) {
                 return { 
                     success: false, 
-                    error: "Incorrect code. Please ask the customer for the Ref number shown on their tracking link." 
+                    error: "Incorrect delivery PIN. Please ask the recipient for the 4-digit code shown on their tracking link." 
                 };
             }
         }

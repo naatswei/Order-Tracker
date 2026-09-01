@@ -73,6 +73,8 @@ function CreateOrderContent() {
     // Logistics location state
     const [pickupLocation, setPickupLocation] = useState("")
     const [deliveryLocation, setDeliveryLocation] = useState("")
+    const [recipientName, setRecipientName] = useState("")
+    const [recipientPhone, setRecipientPhone] = useState("")
     const [quantity, setQuantity] = useState("1")
     const [isSaving, setIsSaving] = useState(false)
     const [paymentMethod, setPaymentMethod] = useState<"online" | "cash">("online")
@@ -181,9 +183,11 @@ function CreateOrderContent() {
                     setMeasurements(orderToEdit.measurements || "")
                     const editMeta = orderToEdit.metadata as Record<string, unknown> || {}
                     setMetadata(editMeta)
-                    // Restore logistics locations from metadata
+                    // Restore logistics locations and recipient from metadata
                     if (editMeta.pickupLocation) setPickupLocation(editMeta.pickupLocation as string)
                     if (editMeta.deliveryLocation) setDeliveryLocation(editMeta.deliveryLocation as string)
+                    if (editMeta.recipientName) setRecipientName(editMeta.recipientName as string)
+                    if (editMeta.recipientPhone) setRecipientPhone(editMeta.recipientPhone as string)
                     setQuantity(String(editMeta.quantity || "1"))
 
                     // Load inventory links
@@ -311,7 +315,7 @@ function CreateOrderContent() {
                     itemType: finalItemType,
                     pickupDate: pickupDate ? format(pickupDate, "yyyy-MM-dd") : "",
                     measurements: businessType === "logistics" && deliveryLocation ? deliveryLocation : measurements,
-                    metadata: { ...metadata, quantity: totalQty, ...(businessType === "logistics" ? { pickupLocation, deliveryLocation } : {}) },
+                    metadata: { ...metadata, quantity: totalQty, ...(businessType === "logistics" ? { pickupLocation, deliveryLocation, recipientName, recipientPhone } : {}) },
                     inventoryItems: selectedInventory.map(item => ({ id: item.id, quantity: item.quantity })),
                 })
                 if (res?.error) {
@@ -347,7 +351,7 @@ function CreateOrderContent() {
                     itemType: finalItemType,
                     pickupDate: pickupDate ? format(pickupDate, "yyyy-MM-dd") : "",
                     measurements: businessType === "logistics" && deliveryLocation ? deliveryLocation : measurements,
-                    metadata: { ...metadata, quantity: totalQty, ...(businessType === "logistics" ? { pickupLocation, deliveryLocation } : {}) },
+                    metadata: { ...metadata, quantity: totalQty, ...(businessType === "logistics" ? { pickupLocation, deliveryLocation, recipientName, recipientPhone } : {}) },
                     businessType: localStorage.getItem("businessType") || "tailoring",
                     currentStatus: config.defaultStatus,
                     inventoryItems: selectedInventory.map(item => ({ id: item.id, quantity: item.quantity })),
@@ -491,38 +495,112 @@ function CreateOrderContent() {
                                 </div>
                             )}
 
-                            {/* Customer Information */}
-                            <div className="bg-slate-50/50 p-6 rounded-3xl border border-slate-100/80 space-y-4">
+                            {/* Customer / Logistics Contacts */}
+                            <div className="bg-slate-50/50 p-6 rounded-3xl border border-slate-100/80 space-y-5">
                                 <h3 className="text-xs font-black text-[#191A43] uppercase tracking-wider flex items-center gap-2">
-                                    Customer Information
+                                    {businessType === "logistics" ? "Pickup & Dropoff Contacts" : "Customer Information"}
                                 </h3>
-                                <div className="grid sm:grid-cols-2 gap-6">
-                                    <div className="space-y-2">
-                                        <Label htmlFor={`${businessType}-customerName`} className="ml-1 text-xs font-semibold text-muted-foreground tracking-wider">Customer Name <span className="text-red-500">*</span></Label>
-                                        <Input
-                                            id={`${businessType}-customerName`}
-                                            value={customerName}
-                                            onChange={(e) => setCustomerName(e.target.value)}
-                                            placeholder="Naa"
-                                            required
-                                            disabled={!canCreateOrder}
-                                            className="h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80"
-                                        />
-                                    </div>
 
-                                    <div className="space-y-2">
-                                        <Label htmlFor={`${businessType}-customerPhone`} className="ml-1 text-xs font-semibold text-muted-foreground tracking-wider">Customer Contact</Label>
-                                        <Input
-                                            id={`${businessType}-customerPhone`}
-                                            type="tel"
-                                            value={customerPhone}
-                                            onChange={(e) => setCustomerPhone(e.target.value)}
-                                            placeholder="0577064301"
-                                            disabled={!canCreateOrder}
-                                            className="h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80"
-                                        />
+                                {businessType === "logistics" ? (
+                                    <div className="space-y-5">
+                                        {/* Pickup Contact (Sender) */}
+                                        <div className="p-4 rounded-2xl bg-white border border-slate-100 space-y-3">
+                                            <span className="text-[10px] font-black uppercase tracking-wider text-emerald-600 flex items-center gap-1.5">
+                                                <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                                                1. Pickup Contact (Sender)
+                                            </span>
+                                            <div className="grid sm:grid-cols-2 gap-4">
+                                                <div className="space-y-1.5">
+                                                    <Label htmlFor="senderName" className="ml-1 text-xs font-semibold text-muted-foreground">Sender Name <span className="text-red-500">*</span></Label>
+                                                    <Input
+                                                        id="senderName"
+                                                        value={customerName}
+                                                        onChange={(e) => setCustomerName(e.target.value)}
+                                                        placeholder="e.g. Ama Mensah"
+                                                        required
+                                                        disabled={!canCreateOrder}
+                                                        className="h-11 rounded-xl bg-slate-50/50 border-zinc-200 text-sm font-medium"
+                                                    />
+                                                </div>
+                                                <div className="space-y-1.5">
+                                                    <Label htmlFor="senderPhone" className="ml-1 text-xs font-semibold text-muted-foreground">Sender Contact</Label>
+                                                    <Input
+                                                        id="senderPhone"
+                                                        type="tel"
+                                                        value={customerPhone}
+                                                        onChange={(e) => setCustomerPhone(e.target.value)}
+                                                        placeholder="e.g. 0577000000"
+                                                        disabled={!canCreateOrder}
+                                                        className="h-11 rounded-xl bg-slate-50/50 border-zinc-200 text-sm font-medium"
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Dropoff Contact (Recipient) */}
+                                        <div className="p-4 rounded-2xl bg-white border border-slate-100 space-y-3">
+                                            <span className="text-[10px] font-black uppercase tracking-wider text-sky-600 flex items-center gap-1.5">
+                                                <span className="w-2 h-2 rounded-full bg-sky-500" />
+                                                2. Dropoff Contact (Recipient)
+                                            </span>
+                                            <div className="grid sm:grid-cols-2 gap-4">
+                                                <div className="space-y-1.5">
+                                                    <Label htmlFor="recipientName" className="ml-1 text-xs font-semibold text-muted-foreground">Recipient Name <span className="text-red-500">*</span></Label>
+                                                    <Input
+                                                        id="recipientName"
+                                                        value={recipientName}
+                                                        onChange={(e) => setRecipientName(e.target.value)}
+                                                        placeholder="e.g. Kofi Boateng"
+                                                        required
+                                                        disabled={!canCreateOrder}
+                                                        className="h-11 rounded-xl bg-slate-50/50 border-zinc-200 text-sm font-medium"
+                                                    />
+                                                </div>
+                                                <div className="space-y-1.5">
+                                                    <Label htmlFor="recipientPhone" className="ml-1 text-xs font-semibold text-muted-foreground">Recipient Contact <span className="text-red-500">*</span></Label>
+                                                    <Input
+                                                        id="recipientPhone"
+                                                        type="tel"
+                                                        value={recipientPhone}
+                                                        onChange={(e) => setRecipientPhone(e.target.value)}
+                                                        placeholder="e.g. 0244000000"
+                                                        required
+                                                        disabled={!canCreateOrder}
+                                                        className="h-11 rounded-xl bg-slate-50/50 border-zinc-200 text-sm font-medium"
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
+                                ) : (
+                                    <div className="grid sm:grid-cols-2 gap-6">
+                                        <div className="space-y-2">
+                                            <Label htmlFor={`${businessType}-customerName`} className="ml-1 text-xs font-semibold text-muted-foreground tracking-wider">Customer Name <span className="text-red-500">*</span></Label>
+                                            <Input
+                                                id={`${businessType}-customerName`}
+                                                value={customerName}
+                                                onChange={(e) => setCustomerName(e.target.value)}
+                                                placeholder="Naa"
+                                                required
+                                                disabled={!canCreateOrder}
+                                                className="h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80"
+                                            />
+                                        </div>
+
+                                        <div className="space-y-2">
+                                            <Label htmlFor={`${businessType}-customerPhone`} className="ml-1 text-xs font-semibold text-muted-foreground tracking-wider">Customer Contact</Label>
+                                            <Input
+                                                id={`${businessType}-customerPhone`}
+                                                type="tel"
+                                                value={customerPhone}
+                                                onChange={(e) => setCustomerPhone(e.target.value)}
+                                                placeholder="0577064301"
+                                                disabled={!canCreateOrder}
+                                                className="h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80"
+                                            />
+                                        </div>
+                                    </div>
+                                )}
                             </div>
 
                             {/* Payment Method Selector */}

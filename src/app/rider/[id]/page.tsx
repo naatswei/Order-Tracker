@@ -12,7 +12,8 @@ import {
     Copy, 
     Check, 
     Lock,
-    ArrowRight
+    ArrowRight,
+    Phone
 } from "lucide-react"
 import { toast } from "sonner"
 import { SignatureLoader } from "@/components/signature-loader"
@@ -257,9 +258,34 @@ export default function RiderActionPage() {
                                 </Button>
                             )}
 
-                            {/* Step 2: Handover Confirmation with Customer Ref Code */}
+                            {/* Step 2: Handover Confirmation with Customer Numeric Delivery PIN */}
                             {activeStep >= 2 && (
                                 <div className="space-y-4">
+                                    {/* Dropoff Customer Contact Quick Call */}
+                                    {((order.metadata as any)?.recipientPhone || order.customerPhone) && (
+                                        <div className="flex items-center justify-between bg-white p-3.5 rounded-2xl shadow-[0_4px_20px_rgb(0,0,0,0.04)] border border-black/[0.04]">
+                                            <div className="flex items-center gap-3 min-w-0">
+                                                <div className="w-9 h-9 rounded-xl bg-neutral-100 flex items-center justify-center text-black font-black shrink-0">
+                                                    <Phone className="w-4 h-4" />
+                                                </div>
+                                                <div className="min-w-0">
+                                                    <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider block">
+                                                        {(order.metadata as any)?.recipientName ? "Dropoff Recipient" : "Customer Contact"}
+                                                    </span>
+                                                    <span className="text-xs font-black text-black truncate block">
+                                                        {(order.metadata as any)?.recipientName || order.customerName} ({(order.metadata as any)?.recipientPhone || order.customerPhone})
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <a
+                                                href={`tel:${(order.metadata as any)?.recipientPhone || order.customerPhone}`}
+                                                className="px-4 py-2 rounded-xl bg-black text-white text-xs font-black uppercase tracking-wider hover:bg-neutral-800 transition-colors shrink-0 shadow-sm"
+                                            >
+                                                Call
+                                            </a>
+                                        </div>
+                                    )}
+
                                     {/* Action Button */}
                                     <Button
                                         onClick={() => handleStatusUpdate("Delivered", verificationCode)}
@@ -267,25 +293,27 @@ export default function RiderActionPage() {
                                         className="w-full h-16 sm:h-20 rounded-3xl bg-black hover:bg-neutral-900 text-white text-base sm:text-lg font-black uppercase tracking-wider shadow-[0_10px_30px_rgba(0,0,0,0.2)] transition-all active:scale-[0.98] border-none disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center gap-3"
                                     >
                                         <CheckCircle2 className="w-6 h-6" />
-                                        <span>{isUpdating ? "Verifying Code..." : "Confirm Delivery"}</span>
+                                        <span>{isUpdating ? "Verifying PIN..." : "Confirm Delivery"}</span>
                                     </Button>
 
-                                    {/* Dedicated Code Box */}
+                                    {/* Dedicated Numeric OTP Box */}
                                     <div className="bg-white rounded-3xl p-4 shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-black/[0.04]">
                                         <div className="flex items-center gap-2 px-1 mb-2">
                                             <Lock className="w-3.5 h-3.5 text-neutral-400" />
                                             <span className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-400 font-mono">
-                                                Customer Ref Code
+                                                Customer Delivery PIN (OTP)
                                             </span>
                                         </div>
                                         <input
                                             type="text"
+                                            inputMode="numeric"
+                                            pattern="[0-9]*"
                                             value={verificationCode}
-                                            onChange={(e) => setVerificationCode(e.target.value.toUpperCase())}
-                                            placeholder="ENTER CODE (e.g. 4B2A8C1D)"
-                                            maxLength={12}
-                                            autoComplete="off"
-                                            className="w-full h-14 px-4 text-center font-mono text-xl sm:text-2xl font-black tracking-[0.25em] text-black bg-[#F6F6F8] rounded-2xl border border-neutral-200 focus:border-black focus:outline-none focus:ring-4 focus:ring-black/5 transition-all uppercase placeholder:text-neutral-400 placeholder:font-sans placeholder:tracking-normal placeholder:text-xs placeholder:font-bold"
+                                            onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, ""))}
+                                            placeholder="ENTER 4-DIGIT PIN"
+                                            maxLength={6}
+                                            autoComplete="one-time-code"
+                                            className="w-full h-14 px-4 text-center font-mono text-2xl font-black tracking-[0.35em] text-black bg-[#F6F6F8] rounded-2xl border border-neutral-200 focus:border-black focus:outline-none focus:ring-4 focus:ring-black/5 transition-all placeholder:text-neutral-300 placeholder:font-sans placeholder:tracking-normal placeholder:text-xs placeholder:font-bold"
                                         />
                                     </div>
                                 </div>

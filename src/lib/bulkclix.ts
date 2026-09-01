@@ -193,21 +193,29 @@ export async function sendRiderAssignmentSMS(
 
         const riderLink = `${APP_URL}/rider/${orderId}`.replace(/^https?:\/\//, "")
         
-        // Parse metadata for pickup and delivery locations
+        // Parse metadata for pickup, delivery locations, and dropoff recipient
         const orderMeta = (typeof order.metadata === "object" && order.metadata !== null) ? order.metadata as Record<string, unknown> : {}
         const pickupLoc = (orderMeta.pickupLocation as string) || ""
         const deliveryLoc = (orderMeta.deliveryLocation as string) || order.measurements || ""
+        const recipientName = (orderMeta.recipientName as string) || ""
+        const recipientPhone = (orderMeta.recipientPhone as string) || ""
 
         // Map links only (the URLs already include the location names)
         const pickupMap = pickupLoc 
             ? `\nPickup Map: https://maps.google.com/?q=${encodeURIComponent(pickupLoc)}`
             : ""
-        const destMap = deliveryLoc 
-            ? `\nDest Map: https://maps.google.com/?q=${encodeURIComponent(deliveryLoc)}`
+        const dropoffMap = deliveryLoc 
+            ? `\nDrop off Map: https://maps.google.com/?q=${encodeURIComponent(deliveryLoc)}`
             : ""
 
+        // Contact info: show both pickup and dropoff contacts if recipient is specified
+        let contactSection = `\nCustomer: ${order.customerName} (${order.customerPhone})`
+        if (recipientName || recipientPhone) {
+            contactSection = `\nPickup Contact: ${order.customerName} (${order.customerPhone})\nDropoff Contact: ${recipientName || "Recipient"} (${recipientPhone || "None"})`
+        }
+
         // Concise SMS for rider
-        const message = `Hi ${staffMember.name}, new delivery assigned!\n\nWaybill: #${order.orderNumber}\nPackage: ${order.itemType || "Shipment"}\nCustomer: ${order.customerName} (${order.customerPhone})${pickupMap}${destMap}\n\nDelivery Actions: ${riderLink}`
+        const message = `Hi ${staffMember.name}, new delivery assigned!\n\nWaybill: #${order.orderNumber}\nPackage: ${order.itemType || "Shipment"}${contactSection}${pickupMap}${dropoffMap}\n\nDelivery Actions: ${riderLink}`
 
         const response = await fetch("https://api.bulkclix.com/api/v1/sms-api/send", {
             method: "POST",
