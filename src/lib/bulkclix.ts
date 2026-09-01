@@ -220,14 +220,25 @@ export async function sendRiderAssignmentSMS(
             })
         })
 
-        const data = await response.json()
+        const data = await response.json().catch(() => ({}))
+        console.log("BulkClix Rider Assignment API Response:", { status: response.status, data })
 
-        if (response.ok && (data.message === "Request Sent" || data.status === "success" || data.status === "Pending")) {
-            console.log(`BulkClix Rider Assignment SMS sent to ${formattedRiderPhone} (${staffMember.name}) for order ${order.orderNumber}`)
+        const isSuccess = response.ok && (
+            data.message === "Request Sent" || 
+            data.status === "success" || 
+            data.status === "Pending" ||
+            data.status === 200 ||
+            data.code === 200 ||
+            (typeof data.message === "string" && data.message.toLowerCase().includes("sent"))
+        )
+
+        if (isSuccess) {
+            console.log(`BulkClix Rider Assignment SMS successfully dispatched to ${formattedRiderPhone} (${staffMember.name}) for order ${order.orderNumber}`)
             return { success: true }
         } else {
             console.error("BulkClix Rider SMS API failure:", data)
-            return { success: false, error: data.message || "BulkClix API error" }
+            const errorDetail = data.message || data.error || data.details || (typeof data === "string" ? data : JSON.stringify(data))
+            return { success: false, error: errorDetail || `BulkClix API HTTP ${response.status}` }
         }
     } catch (error: any) {
         console.error("Failed to send BulkClix rider assignment SMS:", error)

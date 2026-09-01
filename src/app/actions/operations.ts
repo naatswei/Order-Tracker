@@ -319,13 +319,36 @@ export async function assignOrder(orderId: string, staffId: string | null) {
         .set({ assignedStaffId: staffId, updatedAt: new Date() })
         .where(and(eq(orders.id, orderId), eq(orders.clerkOrgId, orgId)));
 
+    let smsResult: { success: boolean; error?: string } | null = null;
     if (staffId) {
-        sendRiderAssignmentSMS(orderId, staffId, orgId).catch(err => console.error("Error sending rider assignment SMS:", err));
+        try {
+            smsResult = await sendRiderAssignmentSMS(orderId, staffId, orgId);
+            if (!smsResult.success) {
+                console.warn("Rider SMS warning:", smsResult.error);
+            }
+        } catch (err: any) {
+            console.error("Error sending rider assignment SMS:", err);
+            smsResult = { success: false, error: err?.message || "SMS delivery failed" };
+        }
     }
 
     revalidatePath("/backoffice");
     revalidatePath("/backoffice/operations");
-    return { success: true };
+    return { success: true, smsResult };
+}
+
+export async function resendRiderSMS(orderId: string) {
+    const { orgId } = await auth();
+    if (!orgId) throw new Error("Unauthorized");
+
+    const order = await db.query.orders.findFirst({
+        where: and(eq(orders.id, orderId), eq(orders.clerkOrgId, orgId))
+    });
+
+    if (!order) return { success: false, error: "Order not found" };
+    if (!order.assignedStaffId) return { success: false, error: "No rider assigned to this order" };
+
+    return await sendRiderAssignmentSMS(orderId, order.assignedStaffId, orgId);
 }
 
 export async function updateOrderStage(orderId: string, stageName: string, message?: string) {

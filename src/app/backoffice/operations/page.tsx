@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useOrganization } from "@clerk/nextjs";
 import { getOrders } from "@/app/actions/orders";
-import { getStaff, assignOrder, updateOrderStage, getWorkflowStages } from "@/app/actions/operations";
+import { getStaff, assignOrder, resendRiderSMS, updateOrderStage, getWorkflowStages } from "@/app/actions/operations";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -30,7 +30,8 @@ import {
     ShoppingBag,
     FlaskConical,
     Phone,
-    Copy
+    Copy,
+    Send
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -140,13 +141,39 @@ export default function OperationsPage() {
     }
 
     async function handleAssign(orderId: string, staffId: string) {
-        if (staffId === "none") {
-            await assignOrder(orderId, null);
-        } else {
-            await assignOrder(orderId, staffId);
+        try {
+            if (staffId === "none") {
+                await assignOrder(orderId, null);
+                toast.success("Staff unassigned");
+            } else {
+                toast.loading("Assigning & sending SMS to rider...", { id: `assign-${orderId}` });
+                const res = await assignOrder(orderId, staffId);
+                if (res?.smsResult?.success) {
+                    toast.success("Rider assigned & SMS alert dispatched!", { id: `assign-${orderId}` });
+                } else if (res?.smsResult?.error) {
+                    toast.warning(`Rider assigned, but SMS could not send: ${res.smsResult.error}`, { id: `assign-${orderId}` });
+                } else {
+                    toast.success("Staff assigned", { id: `assign-${orderId}` });
+                }
+            }
+            loadData();
+        } catch (error: any) {
+            toast.error("Failed to update staff: " + (error?.message || "Check connection"));
         }
-        toast.success("Staff updated");
-        loadData();
+    }
+
+    async function handleResendSMS(orderId: string) {
+        toast.loading("Sending SMS to rider...", { id: `resend-${orderId}` });
+        try {
+            const res = await resendRiderSMS(orderId);
+            if (res.success) {
+                toast.success("SMS successfully dispatched to rider!", { id: `resend-${orderId}` });
+            } else {
+                toast.error(`SMS failed: ${res.error || "Check SMS balance"}`, { id: `resend-${orderId}` });
+            }
+        } catch (err: any) {
+            toast.error(`SMS failed: ${err?.message || "Network error"}`, { id: `resend-${orderId}` });
+        }
     }
 
     async function handleMoveStage(orderId: string, nextStageName: string) {
@@ -379,7 +406,7 @@ export default function OperationsPage() {
                                                                             <div className="w-8 h-8 rounded-xl bg-white border border-slate-100 flex items-center justify-center text-slate-400 shadow-sm shrink-0">
                                                                                 <User className="w-4 h-4 text-slate-500" />
                                                                             </div>
-                                                                            <div className="min-w-0 w-full">
+                                                                            <div className="min-w-0 flex-1">
                                                                                 <p className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Assigned Staff</p>
                                                                                 <Select 
                                                                                     value={order.assignedStaffId || "none"} 
@@ -396,6 +423,17 @@ export default function OperationsPage() {
                                                                                     </SelectContent>
                                                                                 </Select>
                                                                             </div>
+                                                                            {order.assignedStaffId && order.assignedStaffId !== "none" && (
+                                                                                <button
+                                                                                    type="button"
+                                                                                    onClick={() => handleResendSMS(order.id)}
+                                                                                    className="h-7 px-2 rounded-lg bg-sky-50 hover:bg-sky-100 text-sky-700 text-[10px] font-bold flex items-center gap-1 shrink-0 border border-sky-200/60 transition-all active:scale-95"
+                                                                                    title="Resend Assignment SMS to Rider"
+                                                                                >
+                                                                                    <Send className="w-3 h-3 text-sky-600" />
+                                                                                    <span className="hidden sm:inline">Resend SMS</span>
+                                                                                </button>
+                                                                            )}
                                                                         </div>
                                                                     </div>
 
