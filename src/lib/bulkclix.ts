@@ -188,7 +188,7 @@ export async function sendRiderAssignmentSMS(
             return { success: false, error: "Invalid staff phone number" }
         }
 
-        const trackingLink = `${APP_URL}/track/${orderId}`.replace(/^https?:\/\//, "")
+        const riderLink = `${APP_URL}/rider/${orderId}`.replace(/^https?:\/\//, "")
         
         // Parse metadata for pickup and delivery locations
         const orderMeta = (typeof order.metadata === "object" && order.metadata !== null) ? order.metadata as Record<string, unknown> : {}
@@ -204,8 +204,8 @@ export async function sendRiderAssignmentSMS(
             ? `\nDestination: ${deliveryLoc}\nDest Map: https://maps.google.com/?q=${encodeURIComponent(deliveryLoc)}`
             : ""
 
-        // SMS formatted for rider with customer phone number and map directions
-        const message = `Hi ${staffMember.name}, new delivery assigned!\n\nWaybill: #${order.orderNumber}\nPackage: ${order.itemType || "Shipment"}\nCustomer: ${order.customerName} (${order.customerPhone})${pickup}${destination}\n\nTrack: ${trackingLink}`
+        // SMS formatted for rider with customer phone number, map directions, and rider action link
+        const message = `Hi ${staffMember.name}, new delivery assigned!\n\nWaybill: #${order.orderNumber}\nPackage: ${order.itemType || "Shipment"}\nCustomer: ${order.customerName} (${order.customerPhone})${pickup}${destination}\n\nDelivery Actions: ${riderLink}`
 
         const response = await fetch("https://api.bulkclix.com/api/v1/sms-api/send", {
             method: "POST",

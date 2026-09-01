@@ -432,3 +432,83 @@ export async function bulkUpdateOrderStatus(orderIds: string[], status: string, 
     revalidatePath("/backoffice");
     return { success: true };
 }
+
+// --- Public Rider Status Update (No auth required — for rider SMS action links) ---
+
+const ALLOWED_RIDER_STATUSES = [
+    "Picked Up",
+    "In Transit", 
+    "Dispatched",
+    "Delivered",
+] as const;
+
+export async function riderUpdateStatus(
+    orderId: string, 
+    status: string
+): Promise<{ success: boolean; error?: string }> {
+    try {
+        // Validate the status is one of the allowed rider actions
+        if (!ALLOWED_RIDER_STATUSES.includes(status as any)) {
+            return { success: false, error: "Invalid status for rider update" };
+        }
+
+        // Fetch order to verify it exists
+        const order = await db.query.orders.findFirst({
+            where: eq(orders.id, orderId),
+        });
+
+        if (!order) {
+            return { success: false, error: "Order not found" };
+        }
+
+        // Only allow updates for logistics orders
+        if (order.businessType !== "logistics") {
+            return { success: false, error: "Rider updates are only available for logistics orders" };
+        }
+
+        // Prevent updating already delivered or cancelled orders
+        const currentLower = order.currentStatus.toLowerCase();
+        if (currentLower === "delivered" || currentLower === "cancelled" || currentLower === "returned to sender") {
+            return { success: false, error: `Order is already ${order.currentStatus}` };
+        }
+
+        await db.transaction(async (tx) => {
+            // Update order status
+            await tx
+                .update(orders)
+                .set({
+                    currentStatus: status,
+                    updatedAt: new Date(),
+                })
+                .where(eq(orders.id, orderId));
+
+            // Add status history entry
+            await tx.insert(statusHistory).values({
+                id: Math.random().toString(36).substring(2, 9).toUpperCase(),
+                orderId: orderId,
+                status: status,
+                location: "Rider Update",
+                message: `Status updated by rider: ${status}`,
+                staffId: order.assignedStaffId,
+            });
+
+            // Consume stock on delivery
+            if (status === "Delivered") {
+                await consumeReservedStock(orderId, tx);
+            }
+        });
+
+        // Trigger notifications in background
+        triggerOrderStatusNotification(orderId, status, order.orderNumber).catch(console.error);
+        sendOrderStatusSMS(orderId, status).catch(err => console.error("Error triggering status SMS:", err));
+
+        revalidatePath("/backoffice");
+        revalidatePath(`/track/${orderId}`);
+        revalidatePath(`/rider/${orderId}`);
+
+        return { success: true };
+    } catch (error: any) {
+        console.error("Rider status update error:", error);
+        return { success: false, error: error?.message || "Failed to update status" };
+    }
+}
