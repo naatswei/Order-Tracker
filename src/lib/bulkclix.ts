@@ -195,17 +195,16 @@ export async function sendRiderAssignmentSMS(
         const pickupLoc = (orderMeta.pickupLocation as string) || ""
         const deliveryLoc = (orderMeta.deliveryLocation as string) || order.measurements || ""
 
-        // Pickup location if present (with map link)
-        const pickup = pickupLoc 
-            ? `\nPickup: ${pickupLoc}\nPickup Map: https://maps.google.com/?q=${encodeURIComponent(pickupLoc)}`
+        // Map links only (the URLs already include the location names)
+        const pickupMap = pickupLoc 
+            ? `\nPickup Map: https://maps.google.com/?q=${encodeURIComponent(pickupLoc)}`
             : ""
-        // Destination and Map Directions link if present
-        const destination = deliveryLoc 
-            ? `\nDestination: ${deliveryLoc}\nDest Map: https://maps.google.com/?q=${encodeURIComponent(deliveryLoc)}`
+        const destMap = deliveryLoc 
+            ? `\nDest Map: https://maps.google.com/?q=${encodeURIComponent(deliveryLoc)}`
             : ""
 
-        // SMS formatted for rider with customer phone number, map directions, and rider action link
-        const message = `Hi ${staffMember.name}, new delivery assigned!\n\nWaybill: #${order.orderNumber}\nPackage: ${order.itemType || "Shipment"}\nCustomer: ${order.customerName} (${order.customerPhone})${pickup}${destination}\n\nDelivery Actions: ${riderLink}`
+        // Concise SMS for rider
+        const message = `Hi ${staffMember.name}, new delivery assigned!\n\nWaybill: #${order.orderNumber}\nPackage: ${order.itemType || "Shipment"}\nCustomer: ${order.customerName} (${order.customerPhone})${pickupMap}${destMap}\n\nDelivery Actions: ${riderLink}`
 
         const response = await fetch("https://api.bulkclix.com/api/v1/sms-api/send", {
             method: "POST",
