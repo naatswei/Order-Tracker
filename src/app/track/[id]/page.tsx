@@ -524,7 +524,14 @@ export default function TrackingDetailsPage() {
                                     <h1 className="text-4xl sm:text-6xl font-light tracking-tighter text-white">
                                         {order.orderNumber}
                                     </h1>
-                                    <p className="text-white/60 font-light tracking-wide">Ref: {order.id.slice(0, 8).toUpperCase()}</p>
+                                    {order.businessType === "logistics" ? (
+                                        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-sky-500/15 border border-sky-500/30 text-sky-300 text-xs font-mono">
+                                            <span className="text-[10px] font-black text-sky-400 uppercase tracking-wider">Delivery Code:</span>
+                                            <span className="text-white font-black tracking-widest text-sm">{order.id.slice(0, 8).toUpperCase()}</span>
+                                        </div>
+                                    ) : (
+                                        <p className="text-white/60 font-light tracking-wide">Ref: {order.id.slice(0, 8).toUpperCase()}</p>
+                                    )}
                                 </div>
                                 <div className="flex flex-col items-center sm:items-end gap-2 text-center sm:text-right">
                                     <Badge className="bg-[#3B82F6] hover:bg-[#3B82F6] text-white text-[11px] px-4 py-1.5 rounded-full border-none font-medium tracking-wider uppercase">

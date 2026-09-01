@@ -444,7 +444,8 @@ const ALLOWED_RIDER_STATUSES = [
 
 export async function riderUpdateStatus(
     orderId: string, 
-    status: string
+    status: string,
+    verificationCode?: string
 ): Promise<{ success: boolean; error?: string }> {
     try {
         // Validate the status is one of the allowed rider actions
@@ -470,6 +471,27 @@ export async function riderUpdateStatus(
         const currentLower = order.currentStatus.toLowerCase();
         if (currentLower === "delivered" || currentLower === "cancelled" || currentLower === "returned to sender") {
             return { success: false, error: `Order is already ${order.currentStatus}` };
+        }
+
+        // Proof of Delivery: Validate customer's Ref number on delivery handover
+        if (status === "Delivered") {
+            if (!verificationCode || verificationCode.trim() === "") {
+                return { success: false, error: "Please enter the customer's Ref number to confirm delivery." };
+            }
+            const cleanEntered = verificationCode.trim().toUpperCase().replace(/[^A-Z0-9]/g, "");
+            const expectedRef = order.id.slice(0, 8).toUpperCase().replace(/[^A-Z0-9]/g, "");
+            const cleanOrderNumber = order.orderNumber.toUpperCase().replace(/[^A-Z0-9]/g, "");
+
+            const isMatch = cleanEntered === expectedRef || 
+                            cleanEntered === cleanOrderNumber || 
+                            order.id.toUpperCase().startsWith(cleanEntered);
+
+            if (!isMatch) {
+                return { 
+                    success: false, 
+                    error: "Incorrect code. Please ask the customer for the Ref number shown on their tracking link." 
+                };
+            }
         }
 
         await db.transaction(async (tx) => {

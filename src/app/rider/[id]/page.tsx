@@ -40,6 +40,7 @@ export default function RiderActionPage() {
     const [isLoading, setIsLoading] = useState(true)
     const [isUpdating, setIsUpdating] = useState(false)
     const [copiedWaybill, setCopiedWaybill] = useState(false)
+    const [verificationCode, setVerificationCode] = useState("")
 
     useEffect(() => {
         let isMounted = true
@@ -66,11 +67,11 @@ export default function RiderActionPage() {
         setTimeout(() => setCopiedWaybill(false), 2000)
     }
 
-    const handleStatusUpdate = async (newStatus: string) => {
+    const handleStatusUpdate = async (newStatus: string, code?: string) => {
         if (!order) return
         setIsUpdating(true)
         try {
-            const res = await riderUpdateStatus(order.id, newStatus)
+            const res = await riderUpdateStatus(order.id, newStatus, code)
             if (res.success) {
                 toast.success(`Status updated to: ${newStatus}`, {
                     style: { background: "#0F172A", color: "#fff", border: "1px solid rgba(255,255,255,0.2)" }
@@ -410,16 +411,49 @@ export default function RiderActionPage() {
                                 </Button>
                             )}
 
-                            {/* Step 3 Action: Complete Delivery */}
+                            {/* Step 3 Action: Handover Verification with Customer Ref Code */}
                             {activeStep >= 2 && (
-                                <Button
-                                    onClick={() => handleStatusUpdate("Delivered")}
-                                    disabled={isUpdating}
-                                    className="w-full h-16 rounded-2xl bg-gradient-to-r from-emerald-500 to-green-500 hover:from-emerald-400 hover:to-green-400 text-slate-950 text-sm font-black uppercase tracking-wider shadow-2xl shadow-emerald-500/40 transition-all active:scale-95"
-                                >
-                                    <CheckCircle2 className="w-5 h-5 mr-2 text-slate-950" />
-                                    {isUpdating ? "Finalizing Delivery..." : "Confirm Delivered to Customer"}
-                                </Button>
+                                <div className="p-5 rounded-3xl bg-gradient-to-b from-blue-950/40 to-[#0D1426] border border-blue-500/30 shadow-2xl space-y-4">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-10 h-10 rounded-2xl bg-blue-500/20 border border-blue-500/40 flex items-center justify-center text-blue-400 shrink-0">
+                                            <ShieldCheck className="w-5 h-5" />
+                                        </div>
+                                        <div>
+                                            <h4 className="text-sm font-black text-white uppercase tracking-wider">
+                                                Customer Handover Verification
+                                            </h4>
+                                            <p className="text-[11px] text-slate-300 font-medium">
+                                                Ask customer for the <span className="text-sky-400 font-bold">Delivery Code</span> on their tracking link
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 block">
+                                            Enter Customer's Delivery Code / Ref
+                                        </label>
+                                        <div className="relative">
+                                            <input
+                                                type="text"
+                                                value={verificationCode}
+                                                onChange={(e) => setVerificationCode(e.target.value.toUpperCase())}
+                                                placeholder="e.g. 4B2A8C1D"
+                                                maxLength={12}
+                                                autoComplete="off"
+                                                className="w-full h-14 px-4 text-center font-mono text-xl font-black tracking-[0.25em] text-white bg-black/50 rounded-2xl border border-white/20 focus:border-sky-500 focus:ring-4 focus:ring-sky-500/20 transition-all uppercase placeholder:text-slate-600 placeholder:font-sans placeholder:tracking-normal placeholder:text-sm"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <Button
+                                        onClick={() => handleStatusUpdate("Delivered", verificationCode)}
+                                        disabled={isUpdating || !verificationCode.trim()}
+                                        className="w-full h-16 rounded-2xl bg-gradient-to-r from-emerald-500 to-green-500 hover:from-emerald-400 hover:to-green-400 disabled:opacity-50 disabled:cursor-not-allowed text-slate-950 text-sm font-black uppercase tracking-wider shadow-2xl shadow-emerald-500/40 transition-all active:scale-95"
+                                    >
+                                        <CheckCircle2 className="w-5 h-5 mr-2 text-slate-950" />
+                                        {isUpdating ? "Verifying Code..." : "Verify Code & Confirm Delivery"}
+                                    </Button>
+                                </div>
                             )}
                         </div>
                     )}
