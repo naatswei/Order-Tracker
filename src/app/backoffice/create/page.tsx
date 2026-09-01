@@ -109,7 +109,12 @@ function CreateOrderContent() {
 
     // Business Config
     const { organization } = useOrganization()
-    const [businessType, setBusinessType] = useState<string | null>(null)
+    const [businessType, setBusinessType] = useState<string | null>(() => {
+        if (typeof window !== "undefined") {
+            return localStorage.getItem("businessType")
+        }
+        return null
+    })
     const config = getBusinessConfig(businessType)
 
     // Initialize defaults from organization settings
@@ -498,22 +503,22 @@ function CreateOrderContent() {
                             {/* Customer / Logistics Contacts */}
                             <div className="bg-slate-50/50 p-6 rounded-3xl border border-slate-100/80 space-y-5">
                                 <h3 className="text-xs font-black text-[#191A43] uppercase tracking-wider flex items-center gap-2">
-                                    {businessType === "logistics" ? "Pickup & Dropoff Contacts" : "Customer Information"}
+                                    {businessType === "logistics" ? "Pick Up & Drop Off Customer Details" : "Customer Information"}
                                 </h3>
 
                                 {businessType === "logistics" ? (
                                     <div className="space-y-5">
-                                        {/* Pickup Contact (Sender) */}
+                                        {/* Pick Up Customer Details */}
                                         <div className="p-4 rounded-2xl bg-white border border-slate-100 space-y-3">
                                             <span className="text-[10px] font-black uppercase tracking-wider text-emerald-600 flex items-center gap-1.5">
                                                 <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                                                1. Pickup Contact (Sender)
+                                                1. Pick Up Customer Details
                                             </span>
                                             <div className="grid sm:grid-cols-2 gap-4">
                                                 <div className="space-y-1.5">
-                                                    <Label htmlFor="senderName" className="ml-1 text-xs font-semibold text-muted-foreground">Sender Name <span className="text-red-500">*</span></Label>
+                                                    <Label htmlFor="pickupCustomerName" className="ml-1 text-xs font-semibold text-muted-foreground">Pick Up Customer Name <span className="text-red-500">*</span></Label>
                                                     <Input
-                                                        id="senderName"
+                                                        id="pickupCustomerName"
                                                         value={customerName}
                                                         onChange={(e) => setCustomerName(e.target.value)}
                                                         placeholder="e.g. Ama Mensah"
@@ -523,13 +528,14 @@ function CreateOrderContent() {
                                                     />
                                                 </div>
                                                 <div className="space-y-1.5">
-                                                    <Label htmlFor="senderPhone" className="ml-1 text-xs font-semibold text-muted-foreground">Sender Contact</Label>
+                                                    <Label htmlFor="pickupCustomerPhone" className="ml-1 text-xs font-semibold text-muted-foreground">Pick Up Customer Contact <span className="text-red-500">*</span></Label>
                                                     <Input
-                                                        id="senderPhone"
+                                                        id="pickupCustomerPhone"
                                                         type="tel"
                                                         value={customerPhone}
                                                         onChange={(e) => setCustomerPhone(e.target.value)}
                                                         placeholder="e.g. 0577000000"
+                                                        required
                                                         disabled={!canCreateOrder}
                                                         className="h-11 rounded-xl bg-slate-50/50 border-zinc-200 text-sm font-medium"
                                                     />
@@ -537,17 +543,17 @@ function CreateOrderContent() {
                                             </div>
                                         </div>
 
-                                        {/* Dropoff Contact (Recipient) */}
+                                        {/* Drop Off Customer Details */}
                                         <div className="p-4 rounded-2xl bg-white border border-slate-100 space-y-3">
                                             <span className="text-[10px] font-black uppercase tracking-wider text-sky-600 flex items-center gap-1.5">
                                                 <span className="w-2 h-2 rounded-full bg-sky-500" />
-                                                2. Dropoff Contact (Recipient)
+                                                2. Drop Off Customer Details
                                             </span>
                                             <div className="grid sm:grid-cols-2 gap-4">
                                                 <div className="space-y-1.5">
-                                                    <Label htmlFor="recipientName" className="ml-1 text-xs font-semibold text-muted-foreground">Recipient Name <span className="text-red-500">*</span></Label>
+                                                    <Label htmlFor="dropoffCustomerName" className="ml-1 text-xs font-semibold text-muted-foreground">Drop Off Customer Name <span className="text-red-500">*</span></Label>
                                                     <Input
-                                                        id="recipientName"
+                                                        id="dropoffCustomerName"
                                                         value={recipientName}
                                                         onChange={(e) => setRecipientName(e.target.value)}
                                                         placeholder="e.g. Kofi Boateng"
@@ -557,9 +563,9 @@ function CreateOrderContent() {
                                                     />
                                                 </div>
                                                 <div className="space-y-1.5">
-                                                    <Label htmlFor="recipientPhone" className="ml-1 text-xs font-semibold text-muted-foreground">Recipient Contact <span className="text-red-500">*</span></Label>
+                                                    <Label htmlFor="dropoffCustomerPhone" className="ml-1 text-xs font-semibold text-muted-foreground">Drop Off Customer Contact <span className="text-red-500">*</span></Label>
                                                     <Input
-                                                        id="recipientPhone"
+                                                        id="dropoffCustomerPhone"
                                                         type="tel"
                                                         value={recipientPhone}
                                                         onChange={(e) => setRecipientPhone(e.target.value)}
@@ -573,31 +579,33 @@ function CreateOrderContent() {
                                         </div>
                                     </div>
                                 ) : (
-                                    <div className="grid sm:grid-cols-2 gap-6">
-                                        <div className="space-y-2">
-                                            <Label htmlFor={`${businessType}-customerName`} className="ml-1 text-xs font-semibold text-muted-foreground tracking-wider">Customer Name <span className="text-red-500">*</span></Label>
-                                            <Input
-                                                id={`${businessType}-customerName`}
-                                                value={customerName}
-                                                onChange={(e) => setCustomerName(e.target.value)}
-                                                placeholder="Naa"
-                                                required
-                                                disabled={!canCreateOrder}
-                                                className="h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80"
-                                            />
-                                        </div>
+                                    <div className="space-y-4">
+                                        <div className="grid sm:grid-cols-2 gap-6">
+                                            <div className="space-y-2">
+                                                <Label htmlFor={`${businessType}-customerName`} className="ml-1 text-xs font-semibold text-muted-foreground tracking-wider">Customer Name <span className="text-red-500">*</span></Label>
+                                                <Input
+                                                    id={`${businessType}-customerName`}
+                                                    value={customerName}
+                                                    onChange={(e) => setCustomerName(e.target.value)}
+                                                    placeholder="Naa"
+                                                    required
+                                                    disabled={!canCreateOrder}
+                                                    className="h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80"
+                                                />
+                                            </div>
 
-                                        <div className="space-y-2">
-                                            <Label htmlFor={`${businessType}-customerPhone`} className="ml-1 text-xs font-semibold text-muted-foreground tracking-wider">Customer Contact</Label>
-                                            <Input
-                                                id={`${businessType}-customerPhone`}
-                                                type="tel"
-                                                value={customerPhone}
-                                                onChange={(e) => setCustomerPhone(e.target.value)}
-                                                placeholder="0577064301"
-                                                disabled={!canCreateOrder}
-                                                className="h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80"
-                                            />
+                                            <div className="space-y-2">
+                                                <Label htmlFor={`${businessType}-customerPhone`} className="ml-1 text-xs font-semibold text-muted-foreground tracking-wider">Customer Contact</Label>
+                                                <Input
+                                                    id={`${businessType}-customerPhone`}
+                                                    type="tel"
+                                                    value={customerPhone}
+                                                    onChange={(e) => setCustomerPhone(e.target.value)}
+                                                    placeholder="0577064301"
+                                                    disabled={!canCreateOrder}
+                                                    className="h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80"
+                                                />
+                                            </div>
                                         </div>
                                     </div>
                                 )}
@@ -691,7 +699,7 @@ function CreateOrderContent() {
                                     <div className="grid sm:grid-cols-2 gap-6">
                                         {/* Pickup Location */}
                                         <div className="space-y-2">
-                                            <Label htmlFor="pickupLocation" className="ml-1 text-xs font-semibold text-muted-foreground tracking-wider">Pickup Location</Label>
+                                            <Label htmlFor="pickupLocation" className="ml-1 text-xs font-semibold text-muted-foreground tracking-wider">Pick Up Location</Label>
                                             <Input
                                                 id="pickupLocation"
                                                 value={pickupLocation}
@@ -702,9 +710,9 @@ function CreateOrderContent() {
                                             />
                                         </div>
 
-                                        {/* Delivery Location */}
+                                        {/* Drop Off Location */}
                                         <div className="space-y-2">
-                                            <Label htmlFor="deliveryLocation" className="ml-1 text-xs font-semibold text-muted-foreground tracking-wider">Delivery Destination <span className="text-red-500">*</span></Label>
+                                            <Label htmlFor="deliveryLocation" className="ml-1 text-xs font-semibold text-muted-foreground tracking-wider">Drop Off Location <span className="text-red-500">*</span></Label>
                                             <Input
                                                 id="deliveryLocation"
                                                 value={deliveryLocation}
@@ -724,11 +732,11 @@ function CreateOrderContent() {
                                                 <div className="space-y-2">
                                                     <div className="flex items-center gap-2">
                                                         <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                                                        <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Pickup</span>
+                                                        <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Pick Up</span>
                                                     </div>
                                                     <div className="w-full h-48 rounded-2xl overflow-hidden border border-slate-200 bg-slate-100 shadow-inner">
                                                         <iframe
-                                                            title="Pickup Location Map"
+                                                            title="Pick Up Location Map"
                                                             width="100%"
                                                             height="100%"
                                                             loading="lazy"
@@ -751,12 +759,12 @@ function CreateOrderContent() {
                                             {deliveryLocation && (
                                                 <div className="space-y-2">
                                                     <div className="flex items-center gap-2">
-                                                        <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-                                                        <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Destination</span>
+                                                        <div className="w-2 h-2 rounded-full bg-sky-500 animate-pulse" />
+                                                        <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Drop Off</span>
                                                     </div>
                                                     <div className="w-full h-48 rounded-2xl overflow-hidden border border-slate-200 bg-slate-100 shadow-inner">
                                                         <iframe
-                                                            title="Delivery Destination Map"
+                                                            title="Drop Off Location Map"
                                                             width="100%"
                                                             height="100%"
                                                             loading="lazy"
