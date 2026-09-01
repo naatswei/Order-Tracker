@@ -492,9 +492,9 @@ export async function riderUpdateStatus(
                 staffId: order.assignedStaffId,
             });
 
-            // Consume stock on delivery
-            if (status === "Delivered") {
-                await consumeReservedStock(orderId, tx);
+            // Consume stock on delivery for inventory-tracked businesses (skip for logistics)
+            if (status === "Delivered" && order.businessType !== "logistics") {
+                await consumeReservedStock(orderId, tx, order.clerkOrgId || undefined);
             }
         });
 

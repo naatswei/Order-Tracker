@@ -649,15 +649,27 @@ export async function linkOrderToInventory(orderId: string, inventoryItems: { id
     return { success: true };
 }
 
-export async function consumeReservedStock(orderId: string, providedTx?: any) {
-    const { orgId } = await auth();
-    if (!orgId) throw new Error("Unauthorized");
+export async function consumeReservedStock(orderId: string, providedTx?: any, explicitOrgId?: string) {
+    let orgId = explicitOrgId;
+    if (!orgId) {
+        try {
+            const session = await auth();
+            orgId = session.orgId || undefined;
+        } catch {
+            // Unauthenticated rider action, will fallback to order clerkOrgId below
+        }
+    }
 
     const logic = async (tx: any) => {
         const order = await tx.query.orders.findFirst({
             where: eq(orders.id, orderId)
         });
         if (!order) return;
+
+        if (!orgId) {
+            orgId = order.clerkOrgId || undefined;
+        }
+        if (!orgId) return;
 
         const metadata = (order.metadata as any) || {};
         if (metadata.stockConsumed) {
