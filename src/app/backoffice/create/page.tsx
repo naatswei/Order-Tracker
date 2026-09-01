@@ -17,7 +17,7 @@ import { detectGhanaNetworkProvider } from "@/lib/utils"
 import Link from "next/link"
 import { OrganizationSwitcher, useOrganization } from "@clerk/nextjs"
 import { BackofficeHeader } from "@/components/backoffice-header"
-import { Package, ArrowLeft, Loader2, AlertCircle, Plus, Trash2, Search, Boxes, ShoppingBag, Tag, ChevronRight } from "lucide-react"
+import { Package, ArrowLeft, Loader2, AlertCircle, Plus, Trash2, Search, Boxes, ShoppingBag, Tag, ChevronRight, MapPin, Navigation } from "lucide-react"
 import { RenewalBanner } from "@/components/renewal-banner"
 import { toast } from "sonner"
 import { useSearchParams, useRouter } from "next/navigation"
@@ -70,6 +70,9 @@ function CreateOrderContent() {
     const [pickupDate, setPickupDate] = useState<Date | undefined>(undefined)
     const [measurements, setMeasurements] = useState("")
     const [metadata, setMetadata] = useState<Record<string, unknown>>({})
+    // Logistics location state
+    const [pickupLocation, setPickupLocation] = useState("")
+    const [deliveryLocation, setDeliveryLocation] = useState("")
     const [quantity, setQuantity] = useState("1")
     const [isSaving, setIsSaving] = useState(false)
     const [paymentMethod, setPaymentMethod] = useState<"online" | "cash">("online")
@@ -178,6 +181,9 @@ function CreateOrderContent() {
                     setMeasurements(orderToEdit.measurements || "")
                     const editMeta = orderToEdit.metadata as Record<string, unknown> || {}
                     setMetadata(editMeta)
+                    // Restore logistics locations from metadata
+                    if (editMeta.pickupLocation) setPickupLocation(editMeta.pickupLocation as string)
+                    if (editMeta.deliveryLocation) setDeliveryLocation(editMeta.deliveryLocation as string)
                     setQuantity(String(editMeta.quantity || "1"))
 
                     // Load inventory links
@@ -304,8 +310,8 @@ function CreateOrderContent() {
                     customerPhone,
                     itemType: finalItemType,
                     pickupDate: pickupDate ? format(pickupDate, "yyyy-MM-dd") : "",
-                    measurements,
-                    metadata: { ...metadata, quantity: totalQty },
+                    measurements: businessType === "logistics" && deliveryLocation ? deliveryLocation : measurements,
+                    metadata: { ...metadata, quantity: totalQty, ...(businessType === "logistics" ? { pickupLocation, deliveryLocation } : {}) },
                     inventoryItems: selectedInventory.map(item => ({ id: item.id, quantity: item.quantity })),
                 })
                 if (res?.error) {
@@ -340,8 +346,8 @@ function CreateOrderContent() {
                     customerPhone,
                     itemType: finalItemType,
                     pickupDate: pickupDate ? format(pickupDate, "yyyy-MM-dd") : "",
-                    measurements,
-                    metadata: { ...metadata, quantity: totalQty },
+                    measurements: businessType === "logistics" && deliveryLocation ? deliveryLocation : measurements,
+                    metadata: { ...metadata, quantity: totalQty, ...(businessType === "logistics" ? { pickupLocation, deliveryLocation } : {}) },
                     businessType: localStorage.getItem("businessType") || "tailoring",
                     currentStatus: config.defaultStatus,
                     inventoryItems: selectedInventory.map(item => ({ id: item.id, quantity: item.quantity })),
@@ -595,6 +601,106 @@ function CreateOrderContent() {
                                     </div>
                                 )}
                             </div>
+
+                            {/* Logistics Route & Locations — Only for logistics businesses */}
+                            {businessType === "logistics" && (
+                                <div className="bg-sky-50/30 p-6 rounded-3xl border border-sky-100/60 space-y-5">
+                                    <h3 className="text-xs font-black text-[#191A43] uppercase tracking-wider flex items-center gap-2">
+                                        <MapPin className="w-4 h-4 text-sky-600" />
+                                        Route & Locations
+                                    </h3>
+
+                                    <div className="grid sm:grid-cols-2 gap-6">
+                                        {/* Pickup Location */}
+                                        <div className="space-y-2">
+                                            <Label htmlFor="pickupLocation" className="ml-1 text-xs font-semibold text-muted-foreground tracking-wider">Pickup Location</Label>
+                                            <Input
+                                                id="pickupLocation"
+                                                value={pickupLocation}
+                                                onChange={(e) => setPickupLocation(e.target.value)}
+                                                placeholder="e.g. Madina Market, Accra"
+                                                disabled={!canCreateOrder}
+                                                className="h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-sky-300 focus-visible:ring-[4px] focus-visible:ring-sky-100/80"
+                                            />
+                                        </div>
+
+                                        {/* Delivery Location */}
+                                        <div className="space-y-2">
+                                            <Label htmlFor="deliveryLocation" className="ml-1 text-xs font-semibold text-muted-foreground tracking-wider">Delivery Destination <span className="text-red-500">*</span></Label>
+                                            <Input
+                                                id="deliveryLocation"
+                                                value={deliveryLocation}
+                                                onChange={(e) => setDeliveryLocation(e.target.value)}
+                                                placeholder="e.g. East Legon, near Shell"
+                                                required
+                                                disabled={!canCreateOrder}
+                                                className="h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-sky-300 focus-visible:ring-[4px] focus-visible:ring-sky-100/80"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {/* Live Google Maps Preview */}
+                                    {(pickupLocation || deliveryLocation) && (
+                                        <div className="grid sm:grid-cols-2 gap-4">
+                                            {pickupLocation && (
+                                                <div className="space-y-2">
+                                                    <div className="flex items-center gap-2">
+                                                        <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                                                        <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Pickup</span>
+                                                    </div>
+                                                    <div className="w-full h-48 rounded-2xl overflow-hidden border border-slate-200 bg-slate-100 shadow-inner">
+                                                        <iframe
+                                                            title="Pickup Location Map"
+                                                            width="100%"
+                                                            height="100%"
+                                                            loading="lazy"
+                                                            src={`https://maps.google.com/maps?q=${encodeURIComponent(pickupLocation)}&t=&z=14&ie=UTF8&iwloc=&output=embed`}
+                                                            className="w-full h-full border-0"
+                                                        />
+                                                    </div>
+                                                    <a
+                                                        href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(pickupLocation)}`}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="inline-flex items-center gap-1.5 text-[10px] font-bold text-sky-600 hover:text-sky-700 transition-colors"
+                                                    >
+                                                        <Navigation className="w-3 h-3" />
+                                                        Open in Google Maps
+                                                    </a>
+                                                </div>
+                                            )}
+
+                                            {deliveryLocation && (
+                                                <div className="space-y-2">
+                                                    <div className="flex items-center gap-2">
+                                                        <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                                                        <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Destination</span>
+                                                    </div>
+                                                    <div className="w-full h-48 rounded-2xl overflow-hidden border border-slate-200 bg-slate-100 shadow-inner">
+                                                        <iframe
+                                                            title="Delivery Destination Map"
+                                                            width="100%"
+                                                            height="100%"
+                                                            loading="lazy"
+                                                            src={`https://maps.google.com/maps?q=${encodeURIComponent(deliveryLocation)}&t=&z=14&ie=UTF8&iwloc=&output=embed`}
+                                                            className="w-full h-full border-0"
+                                                        />
+                                                    </div>
+                                                    <a
+                                                        href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(deliveryLocation)}`}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="inline-flex items-center gap-1.5 text-[10px] font-bold text-sky-600 hover:text-sky-700 transition-colors"
+                                                    >
+                                                        <Navigation className="w-3 h-3" />
+                                                        Open in Google Maps
+                                                    </a>
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
+                            )}
 
                             {/* Stock Usage & Product Selection */}
                             {businessType !== "logistics" && (
@@ -938,13 +1044,15 @@ function CreateOrderContent() {
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="measurements" className="ml-1 text-xs font-semibold text-muted-foreground tracking-wider">{config.id === "tailoring" ? "Notes / Measurements" : "Notes"}</Label>
+                                <Label htmlFor="measurements" className="ml-1 text-xs font-semibold text-muted-foreground tracking-wider">
+                                    {config.id === "tailoring" ? "Notes / Measurements" : businessType === "logistics" ? "Special Instructions" : "Notes"}
+                                </Label>
                                 <Textarea
                                     id="measurements"
-                                    value={measurements}
+                                    value={businessType === "logistics" ? measurements : measurements}
                                     onChange={(e) => setMeasurements(e.target.value)}
-                                    placeholder={config.id === "tailoring" ? "Details, measurements or special instructions..." : "Additional notes or special instructions..."}
-                                    rows={4}
+                                    placeholder={config.id === "tailoring" ? "Details, measurements or special instructions..." : businessType === "logistics" ? "e.g. Ring the bell, leave at gate, fragile package..." : "Additional notes or special instructions..."}
+                                    rows={3}
                                     disabled={!canCreateOrder}
                                     className="rounded-xl bg-white border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80 resize-none p-4"
                                 />

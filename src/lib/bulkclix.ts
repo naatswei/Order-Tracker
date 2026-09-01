@@ -190,14 +190,21 @@ export async function sendRiderAssignmentSMS(
 
         const trackingLink = `${APP_URL}/track/${orderId}`.replace(/^https?:\/\//, "")
         
+        // Parse metadata for pickup and delivery locations
+        const orderMeta = (typeof order.metadata === "object" && order.metadata !== null) ? order.metadata as Record<string, unknown> : {}
+        const pickupLoc = (orderMeta.pickupLocation as string) || ""
+        const deliveryLoc = (orderMeta.deliveryLocation as string) || order.measurements || ""
+
+        // Pickup location if present
+        const pickup = pickupLoc ? `\nPickup: ${pickupLoc}` : ""
         // Destination and Map Directions link if present
-        const destination = order.measurements ? `\nDestination: ${order.measurements}` : ""
-        const mapsLink = order.measurements 
-            ? `\nDirections: https://maps.google.com/?q=${encodeURIComponent(order.measurements)}`
+        const destination = deliveryLoc ? `\nDestination: ${deliveryLoc}` : ""
+        const mapsLink = deliveryLoc 
+            ? `\nDirections: https://maps.google.com/?q=${encodeURIComponent(deliveryLoc)}`
             : ""
 
         // SMS formatted for rider with customer phone number and map directions
-        const message = `Hi ${staffMember.name}, new delivery assigned!\n\nWaybill: #${order.orderNumber}\nPackage: ${order.itemType || "Shipment"}\nCustomer: ${order.customerName} (${order.customerPhone})${destination}${mapsLink}\n\nTrack: ${trackingLink}`
+        const message = `Hi ${staffMember.name}, new delivery assigned!\n\nWaybill: #${order.orderNumber}\nPackage: ${order.itemType || "Shipment"}\nCustomer: ${order.customerName} (${order.customerPhone})${pickup}${destination}${mapsLink}\n\nTrack: ${trackingLink}`
 
         const response = await fetch("https://api.bulkclix.com/api/v1/sms-api/send", {
             method: "POST",
