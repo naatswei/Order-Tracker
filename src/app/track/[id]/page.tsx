@@ -471,7 +471,7 @@ export default function TrackingDetailsPage() {
                                     </h1>
                                     <div className="h-[1px] w-12 bg-[#3B82F6] mx-auto mb-6" />
                                     <p className="text-sm text-white/90 font-light leading-loose tracking-wide">
-                                        Track your order and item availability <br />
+                                        {order.businessType === "logistics" ? "Track your order" : "Track your order and item availability"} <br />
                                         <span className="text-white/80 font-medium tracking-normal">
                                             {order.businessDetails?.name === "OTracker" ? (
                                                 <><span className="text-[#CE0003]">O</span>Tracker</>
