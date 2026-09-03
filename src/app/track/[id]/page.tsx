@@ -569,6 +569,104 @@ export default function TrackingDetailsPage() {
                             </Card>
                         </div>
 
+                        {/* Timeline (Original Checkpoints & History) */}
+                        <div className="space-y-8 px-4 sm:px-0">
+                            <div className="flex items-center justify-between mb-8 px-2 text-center sm:text-left">
+                                <h3 className="text-xs font-black uppercase tracking-[0.3em] text-neutral-400">Tracking History</h3>
+                                <div className="text-[10px] text-neutral-400 tracking-[0.1em] font-bold uppercase">{order.statusHistory.length} checkpoints</div>
+                            </div>
+                            <div className="relative pl-6 sm:pl-10 space-y-10">
+                                {/* Timeline Spine */}
+                                <div className="absolute left-[7px] sm:left-[11px] top-2 bottom-2 w-[2px] bg-neutral-200" />
+
+                                {order.statusHistory.map((statusItem, index) => {
+                                    const isCurrent = index === 0;
+                                    return (
+                                        <motion.div
+                                            key={index}
+                                            initial={{ opacity: 0, x: -10 }}
+                                            whileInView={{ opacity: 1, x: 0 }}
+                                            transition={{ delay: index * 0.1 }}
+                                            viewport={{ once: true }}
+                                            className={`relative group ${isCurrent ? "opacity-100" : "opacity-60"}`}
+                                        >
+                                            {/* Vertical Node */}
+                                            <div className={`absolute -left-[24px] sm:-left-[32px] top-1 w-[12px] h-[12px] rounded-full border-2 border-white z-10 transition-transform ${
+                                                isCurrent ? "bg-black ring-4 ring-black/10 scale-110" : "bg-neutral-300"
+                                            }`} />
+
+                                            <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 sm:gap-4">
+                                                <div className="flex-1 space-y-1">
+                                                    <div className="flex items-center gap-3">
+                                                        <h4 className={`text-base sm:text-lg font-black tracking-tight ${isCurrent ? "text-black" : "text-neutral-700"}`}>
+                                                            {statusItem.status}
+                                                        </h4>
+                                                        {statusItem.location && (
+                                                            <div className="flex items-center gap-1 text-[10px] text-neutral-400 uppercase tracking-widest font-bold">
+                                                                <MapPin className="w-3 h-3" strokeWidth={1.5} />
+                                                                {statusItem.location}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                    {statusItem.message && (
+                                                        <p className="text-sm text-neutral-600 font-medium leading-relaxed max-w-md">
+                                                            {statusItem.message}
+                                                        </p>
+                                                    )}
+                                                </div>
+                                                <div className="text-left sm:text-right shrink-0 pt-1 sm:pt-0">
+                                                    <div className="text-[11px] text-neutral-800 font-bold tabular-nums uppercase">
+                                                        {new Date(statusItem.timestamp).toLocaleDateString(undefined, { day: '2-digit', month: 'short' })}
+                                                    </div>
+                                                    <div className="text-[10px] text-neutral-400 font-medium tabular-nums">
+                                                        {new Date(statusItem.timestamp).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit', hour12: false })}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </motion.div>
+                                    )
+                                })}
+                            </div>
+                        </div>
+
+                        {/* Push Notification Card */}
+                        {isPushSupported && !isSubscribed && (
+                            <motion.div
+                                initial={{ opacity: 0, y: 15 }}
+                                animate={{ opacity: 1, y: 0 }}
+                            >
+                                <Card className="bg-white border border-black/[0.04] rounded-3xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.06)]">
+                                    <CardContent className="p-6 flex flex-col sm:flex-row items-center justify-between gap-6">
+                                        <div className="flex items-center gap-4 text-center sm:text-left flex-col sm:flex-row">
+                                            <div className="w-12 h-12 rounded-2xl bg-neutral-100 flex items-center justify-center text-black shrink-0">
+                                                <Bell className="w-6 h-6" />
+                                            </div>
+                                            <div className="space-y-1">
+                                                <h4 className="text-sm font-black text-black">
+                                                    Get Real-time Updates
+                                                </h4>
+                                                <p className="text-xs text-neutral-500 font-medium max-w-sm leading-relaxed">
+                                                    Enable push notifications to track this order instantly when status changes.
+                                                </p>
+                                                {isIOS && (
+                                                    <p className="text-[10px] text-neutral-400 font-medium leading-relaxed max-w-xs mt-1">
+                                                        ℹ️ iPhone user? Tap "Share" and "Add to Home Screen" first to enable notifications.
+                                                    </p>
+                                                )}
+                                            </div>
+                                        </div>
+                                        <Button
+                                            disabled={subscriptionLoading}
+                                            onClick={handleSubscribe}
+                                            className="w-full sm:w-auto px-6 py-5 rounded-2xl font-black text-xs tracking-wider uppercase bg-black hover:bg-neutral-800 text-white shadow-md active:scale-95"
+                                        >
+                                            {subscriptionLoading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : "Enable Notifications"}
+                                        </Button>
+                                    </CardContent>
+                                </Card>
+                            </motion.div>
+                        )}
+
                         {/* Invoice & Payments Card */}
                         {(order.metadata as any)?.invoice && (
                             <motion.div
@@ -724,104 +822,6 @@ export default function TrackingDetailsPage() {
                                 </Card>
                             </motion.div>
                         )}
-
-                        {/* Push Notification Card */}
-                        {isPushSupported && !isSubscribed && (
-                            <motion.div
-                                initial={{ opacity: 0, y: 15 }}
-                                animate={{ opacity: 1, y: 0 }}
-                            >
-                                <Card className="bg-white border border-black/[0.04] rounded-3xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.06)]">
-                                    <CardContent className="p-6 flex flex-col sm:flex-row items-center justify-between gap-6">
-                                        <div className="flex items-center gap-4 text-center sm:text-left flex-col sm:flex-row">
-                                            <div className="w-12 h-12 rounded-2xl bg-neutral-100 flex items-center justify-center text-black shrink-0">
-                                                <Bell className="w-6 h-6" />
-                                            </div>
-                                            <div className="space-y-1">
-                                                <h4 className="text-sm font-black text-black">
-                                                    Get Real-time Updates
-                                                </h4>
-                                                <p className="text-xs text-neutral-500 font-medium max-w-sm leading-relaxed">
-                                                    Enable push notifications to track this order instantly when status changes.
-                                                </p>
-                                                {isIOS && (
-                                                    <p className="text-[10px] text-neutral-400 font-medium leading-relaxed max-w-xs mt-1">
-                                                        ℹ️ iPhone user? Tap "Share" and "Add to Home Screen" first to enable notifications.
-                                                    </p>
-                                                )}
-                                            </div>
-                                        </div>
-                                        <Button
-                                            disabled={subscriptionLoading}
-                                            onClick={handleSubscribe}
-                                            className="w-full sm:w-auto px-6 py-5 rounded-2xl font-black text-xs tracking-wider uppercase bg-black hover:bg-neutral-800 text-white shadow-md active:scale-95"
-                                        >
-                                            {subscriptionLoading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : "Enable Notifications"}
-                                        </Button>
-                                    </CardContent>
-                                </Card>
-                            </motion.div>
-                        )}
-
-                        {/* Timeline (Original Checkpoints & History) */}
-                        <div className="space-y-8 px-4 sm:px-0">
-                            <div className="flex items-center justify-between mb-8 px-2 text-center sm:text-left">
-                                <h3 className="text-xs font-black uppercase tracking-[0.3em] text-neutral-400">Tracking History</h3>
-                                <div className="text-[10px] text-neutral-400 tracking-[0.1em] font-bold uppercase">{order.statusHistory.length} checkpoints</div>
-                            </div>
-                            <div className="relative pl-6 sm:pl-10 space-y-10">
-                                {/* Timeline Spine */}
-                                <div className="absolute left-[7px] sm:left-[11px] top-2 bottom-2 w-[2px] bg-neutral-200" />
-
-                                {order.statusHistory.map((statusItem, index) => {
-                                    const isCurrent = index === 0;
-                                    return (
-                                        <motion.div
-                                            key={index}
-                                            initial={{ opacity: 0, x: -10 }}
-                                            whileInView={{ opacity: 1, x: 0 }}
-                                            transition={{ delay: index * 0.1 }}
-                                            viewport={{ once: true }}
-                                            className={`relative group ${isCurrent ? "opacity-100" : "opacity-60"}`}
-                                        >
-                                            {/* Vertical Node */}
-                                            <div className={`absolute -left-[24px] sm:-left-[32px] top-1 w-[12px] h-[12px] rounded-full border-2 border-white z-10 transition-transform ${
-                                                isCurrent ? "bg-black ring-4 ring-black/10 scale-110" : "bg-neutral-300"
-                                            }`} />
-
-                                            <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 sm:gap-4">
-                                                <div className="flex-1 space-y-1">
-                                                    <div className="flex items-center gap-3">
-                                                        <h4 className={`text-base sm:text-lg font-black tracking-tight ${isCurrent ? "text-black" : "text-neutral-700"}`}>
-                                                            {statusItem.status}
-                                                        </h4>
-                                                        {statusItem.location && (
-                                                            <div className="flex items-center gap-1 text-[10px] text-neutral-400 uppercase tracking-widest font-bold">
-                                                                <MapPin className="w-3 h-3" strokeWidth={1.5} />
-                                                                {statusItem.location}
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                    {statusItem.message && (
-                                                        <p className="text-sm text-neutral-600 font-medium leading-relaxed max-w-md">
-                                                            {statusItem.message}
-                                                        </p>
-                                                    )}
-                                                </div>
-                                                <div className="text-left sm:text-right shrink-0 pt-1 sm:pt-0">
-                                                    <div className="text-[11px] text-neutral-800 font-bold tabular-nums uppercase">
-                                                        {new Date(statusItem.timestamp).toLocaleDateString(undefined, { day: '2-digit', month: 'short' })}
-                                                    </div>
-                                                    <div className="text-[10px] text-neutral-400 font-medium tabular-nums">
-                                                        {new Date(statusItem.timestamp).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit', hour12: false })}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </motion.div>
-                                    )
-                                })}
-                            </div>
-                        </div>
 
                         {/* Special Instructions for non-logistics businesses */}
                         {order.businessType !== "logistics" && order.measurements && (
