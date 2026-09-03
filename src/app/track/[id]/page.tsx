@@ -429,6 +429,62 @@ export default function TrackingDetailsPage() {
                 </div>
             ) : (
                 <>
+                    {/* Premium Welcome Introduction Overlay */}
+                    <AnimatePresence>
+                        {showOverlay && (
+                            <motion.div
+                                initial={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                                className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#0A0B14]"
+                            >
+                                <motion.div
+                                    initial={{ opacity: 0, y: 30 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ duration: 1, ease: "easeOut" }}
+                                    className="text-center px-6 max-w-sm"
+                                >
+                                    <div className="w-32 h-32 mx-auto mb-10 relative">
+                                        <motion.div
+                                            className="absolute inset-0 border border-white/30 rounded-full"
+                                            animate={{ scale: [1, 1.2, 1], opacity: [0.5, 0, 0.5] }}
+                                            transition={{ duration: 3, repeat: Infinity }}
+                                        />
+                                        <div className="absolute inset-2 rounded-full overflow-hidden bg-white/10 flex items-center justify-center border border-white/20">
+                                            {order.businessDetails?.imageUrl ? (
+                                                <img src={order.businessDetails.imageUrl} alt="Brand" className="w-full h-full object-cover scale-110" />
+                                            ) : (
+                                                <span className="text-4xl font-extralight text-white/50">O</span>
+                                            )}
+                                        </div>
+                                    </div>
+                                    <motion.span
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        transition={{ delay: 0.5 }}
+                                        className="block text-[10px] uppercase tracking-[0.4em] text-white/60 mb-4"
+                                    >
+                                        Private Access
+                                    </motion.span>
+                                    <h1 className="text-4xl font-extralight text-white mb-4 tracking-tight">
+                                        Welcome, <span className="font-normal">{order.customerName.split(' ')[0]}</span>
+                                    </h1>
+                                    <div className="h-[1px] w-12 bg-[#3B82F6] mx-auto mb-6" />
+                                    <p className="text-sm text-white/90 font-light leading-loose tracking-wide">
+                                        Track your order and item availability <br />
+                                        <span className="text-white/80 font-medium tracking-normal">
+                                            {order.businessDetails?.name === "OTracker" ? (
+                                                <><span className="text-[#CE0003]">O</span>Tracker</>
+                                            ) : (
+                                                order.businessDetails?.name || "The Atelier"
+                                            )}
+                                        </span>
+                                    </p>
+                                </motion.div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+
                     {/* Sticky Navigation Header */}
                     <motion.header
                         style={{ opacity: headerOpacity }}
