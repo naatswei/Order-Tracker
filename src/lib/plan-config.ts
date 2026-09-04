@@ -11,7 +11,7 @@ export interface PlanLimits {
 
 export const PLAN_LIMITS: Record<PlanName, PlanLimits> = {
     "Free Trial": {
-        maxOrders: 20,
+        maxOrders: 60,
         bulkUpdates: true,
         messaging: true,
         performanceTracking: true,

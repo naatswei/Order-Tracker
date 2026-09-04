@@ -67,7 +67,7 @@ export const FREE_TRIAL_PLAN = {
     features: [
         "Full application access",
         "Unlimited team members",
-        "Up to 20 orders",
+        "Up to 60 orders",
         "Branded tracking page",
         "Standard dashboard",
         "Email support"
