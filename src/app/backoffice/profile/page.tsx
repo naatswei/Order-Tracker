@@ -19,6 +19,7 @@ import { BackofficeHeader } from "@/components/backoffice-header"
 import dynamic from "next/dynamic"
 import { cn } from "@/lib/utils"
 import { PRICING_PLANS, FREE_TRIAL_PLAN } from "@/constants/pricing"
+import { GHANA_BANKS } from "@/constants/banks"
 
 const PlanButton = dynamic(() => import("@/components/paystack-button"), {
     ssr: false,
@@ -65,7 +66,7 @@ export default function ProfilePage() {
         accountNumber: "",
         accountName: ""
     })
-    const [banks, setBanks] = useState<{ name: string; code: string }[]>([])
+    const [banks, setBanks] = useState<{ name: string; code: string }[]>(GHANA_BANKS.map(b => ({ name: b.name, code: b.code })))
     const [banksLoading, setBanksLoading] = useState(false)
     const [resolvingAccount, setResolvingAccount] = useState(false)
     const [payoutLoading, setPayoutLoading] = useState(false)
@@ -76,7 +77,7 @@ export default function ProfilePage() {
     const [bulkclixAccountName, setBulkclixAccountName] = useState("")
     const [bulkclixChannelOrBankId, setBulkclixChannelOrBankId] = useState("MTN")
     const [bulkclixBankName, setBulkclixBankName] = useState("")
-    const [bulkclixBanks, setBulkclixBanks] = useState<{ id: string; name: string }[]>([])
+    const [bulkclixBanks, setBulkclixBanks] = useState<{ id: string; name: string }[]>(GHANA_BANKS.map(b => ({ id: b.id, name: b.name })))
     const [bulkclixBanksLoading, setBulkclixBanksLoading] = useState(false)
     const [resolvingBulkclixAccount, setResolvingBulkclixAccount] = useState(false)
     const [bulkclixSaving, setBulkclixSaving] = useState(false)
@@ -87,7 +88,7 @@ export default function ProfilePage() {
             try {
                 const { getGHSBanks } = await import("@/app/actions/paystack")
                 const res = await getGHSBanks()
-                if (res.success && res.banks) {
+                if (res.success && res.banks && res.banks.length > 0) {
                     setBanks(res.banks.map((b: any) => ({ name: b.name, code: b.code })))
                 }
             } catch (err) {
@@ -103,7 +104,7 @@ export default function ProfilePage() {
             try {
                 const { getBulkClixBankList } = await import("@/app/actions/bulkclix-payment")
                 const res = await getBulkClixBankList()
-                if (res.success && res.banks) {
+                if (res.success && res.banks && res.banks.length > 0) {
                     setBulkclixBanks(res.banks.map((b: any) => ({ id: String(b.id || b.code || b.bank_id), name: b.name || b.bank_name })))
                 }
             } catch (err) {
