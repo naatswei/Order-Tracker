@@ -25,6 +25,8 @@ import { getBusinessConfig } from "@/lib/business-configs"
 import { DatePicker } from "@/components/ui/date-picker"
 import { format, parse } from "date-fns"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
+import { PhoneInputWithCountry } from "@/components/ui/phone-input"
+import { parsePhoneInput, formatFullPhone } from "@/constants/countries"
 
 function resolveUnitPrice(quantity: number, inventoryItem: any, clientId?: string): number {
     if (!inventoryItem) return 0;
@@ -66,6 +68,9 @@ function CreateOrderContent() {
     const [customerName, setCustomerName] = useState("")
     const [customerEmail, setCustomerEmail] = useState("")
     const [customerPhone, setCustomerPhone] = useState("")
+    const [pickupCountryCode, setPickupCountryCode] = useState("+233")
+    const [pickupPhoneLocal, setPickupPhoneLocal] = useState("")
+    
     const [itemType, setItemType] = useState("")
     const [pickupDate, setPickupDate] = useState<Date | undefined>(undefined)
     const [measurements, setMeasurements] = useState("")
@@ -75,6 +80,8 @@ function CreateOrderContent() {
     const [deliveryLocation, setDeliveryLocation] = useState("")
     const [recipientName, setRecipientName] = useState("")
     const [recipientPhone, setRecipientPhone] = useState("")
+    const [dropoffCountryCode, setDropoffCountryCode] = useState("+233")
+    const [dropoffPhoneLocal, setDropoffPhoneLocal] = useState("")
     const [quantity, setQuantity] = useState("1")
     const [isSaving, setIsSaving] = useState(false)
     const [paymentMethod, setPaymentMethod] = useState<"online" | "cash">("online")
@@ -126,6 +133,13 @@ function CreateOrderContent() {
         
         setDeliveryFee(defaultDelivery)
         setDiscount(defaultDisc)
+
+        // Set default country code from organization registered contact
+        if (metadata.contact) {
+            const parsedOrgContact = parsePhoneInput(metadata.contact, "+233")
+            setPickupCountryCode(parsedOrgContact.countryCode)
+            setDropoffCountryCode(parsedOrgContact.countryCode)
+        }
     }, [organization])
 
     // Calculate subtotal from selected inventory
@@ -173,6 +187,10 @@ function CreateOrderContent() {
                     setCustomerName(orderToEdit.customerName)
                     setCustomerEmail(orderToEdit.customerEmail || "")
                     setCustomerPhone(orderToEdit.customerPhone)
+                    const parsedPickup = parsePhoneInput(orderToEdit.customerPhone, "+233")
+                    setPickupCountryCode(parsedPickup.countryCode)
+                    setPickupPhoneLocal(parsedPickup.phoneLocal)
+
                     setItemType(orderToEdit.itemType)
                     if (orderToEdit.pickupDate) {
                         try {
@@ -192,7 +210,12 @@ function CreateOrderContent() {
                     if (editMeta.pickupLocation) setPickupLocation(editMeta.pickupLocation as string)
                     if (editMeta.deliveryLocation) setDeliveryLocation(editMeta.deliveryLocation as string)
                     if (editMeta.recipientName) setRecipientName(editMeta.recipientName as string)
-                    if (editMeta.recipientPhone) setRecipientPhone(editMeta.recipientPhone as string)
+                    if (editMeta.recipientPhone) {
+                        setRecipientPhone(editMeta.recipientPhone as string)
+                        const parsedDropoff = parsePhoneInput(editMeta.recipientPhone as string, "+233")
+                        setDropoffCountryCode(parsedDropoff.countryCode)
+                        setDropoffPhoneLocal(parsedDropoff.phoneLocal)
+                    }
                     setQuantity(String(editMeta.quantity || "1"))
 
                     // Load inventory links
@@ -529,15 +552,23 @@ function CreateOrderContent() {
                                                 </div>
                                                 <div className="space-y-1.5">
                                                     <Label htmlFor="pickupCustomerPhone" className="ml-1 text-xs font-semibold text-muted-foreground">Pick Up Customer Contact <span className="text-red-500">*</span></Label>
-                                                    <Input
+                                                    <PhoneInputWithCountry
                                                         id="pickupCustomerPhone"
-                                                        type="tel"
-                                                        value={customerPhone}
-                                                        onChange={(e) => setCustomerPhone(e.target.value)}
-                                                        placeholder="e.g. 0577000000"
+                                                        countryCode={pickupCountryCode}
+                                                        phoneLocal={pickupPhoneLocal}
+                                                        onCountryCodeChange={(code) => {
+                                                            setPickupCountryCode(code)
+                                                            const formatted = formatFullPhone(code, pickupPhoneLocal)
+                                                            setCustomerPhone(formatted)
+                                                        }}
+                                                        onPhoneLocalChange={(local) => {
+                                                            setPickupPhoneLocal(local)
+                                                            const formatted = formatFullPhone(pickupCountryCode, local)
+                                                            setCustomerPhone(formatted)
+                                                        }}
+                                                        placeholder="54 870 6430"
                                                         required
                                                         disabled={!canCreateOrder}
-                                                        className="h-11 rounded-xl bg-slate-50/50 border-zinc-200 text-sm font-medium"
                                                     />
                                                 </div>
                                             </div>
@@ -564,15 +595,23 @@ function CreateOrderContent() {
                                                 </div>
                                                 <div className="space-y-1.5">
                                                     <Label htmlFor="dropoffCustomerPhone" className="ml-1 text-xs font-semibold text-muted-foreground">Drop Off Customer Contact <span className="text-red-500">*</span></Label>
-                                                    <Input
+                                                    <PhoneInputWithCountry
                                                         id="dropoffCustomerPhone"
-                                                        type="tel"
-                                                        value={recipientPhone}
-                                                        onChange={(e) => setRecipientPhone(e.target.value)}
-                                                        placeholder="e.g. 0244000000"
+                                                        countryCode={dropoffCountryCode}
+                                                        phoneLocal={dropoffPhoneLocal}
+                                                        onCountryCodeChange={(code) => {
+                                                            setDropoffCountryCode(code)
+                                                            const formatted = formatFullPhone(code, dropoffPhoneLocal)
+                                                            setRecipientPhone(formatted)
+                                                        }}
+                                                        onPhoneLocalChange={(local) => {
+                                                            setDropoffPhoneLocal(local)
+                                                            const formatted = formatFullPhone(dropoffCountryCode, local)
+                                                            setRecipientPhone(formatted)
+                                                        }}
+                                                        placeholder="24 400 0000"
                                                         required
                                                         disabled={!canCreateOrder}
-                                                        className="h-11 rounded-xl bg-slate-50/50 border-zinc-200 text-sm font-medium"
                                                     />
                                                 </div>
                                             </div>
@@ -596,14 +635,21 @@ function CreateOrderContent() {
 
                                             <div className="space-y-2">
                                                 <Label htmlFor={`${businessType}-customerPhone`} className="ml-1 text-xs font-semibold text-muted-foreground tracking-wider">Customer Contact</Label>
-                                                <Input
+                                                <PhoneInputWithCountry
                                                     id={`${businessType}-customerPhone`}
-                                                    type="tel"
-                                                    value={customerPhone}
-                                                    onChange={(e) => setCustomerPhone(e.target.value)}
-                                                    placeholder="0577064301"
+                                                    countryCode={pickupCountryCode}
+                                                    phoneLocal={pickupPhoneLocal}
+                                                    onCountryCodeChange={(code) => {
+                                                        setPickupCountryCode(code)
+                                                        const formatted = formatFullPhone(code, pickupPhoneLocal)
+                                                        setCustomerPhone(formatted)
+                                                    }}
+                                                    onPhoneLocalChange={(local) => {
+                                                        setPickupPhoneLocal(local)
+                                                        const formatted = formatFullPhone(pickupCountryCode, local)
+                                                        setCustomerPhone(formatted)
+                                                    }}
                                                     disabled={!canCreateOrder}
-                                                    className="h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80"
                                                 />
                                             </div>
                                         </div>
@@ -757,7 +803,7 @@ function CreateOrderContent() {
                                             )}
 
                                             {deliveryLocation && (
-                                                <div className="space-y-2">
+                                                <div className={cn("space-y-2", !pickupLocation && "sm:col-start-2")}>
                                                     <div className="flex items-center gap-2">
                                                         <div className="w-2 h-2 rounded-full bg-sky-500 animate-pulse" />
                                                         <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Drop Off</span>
