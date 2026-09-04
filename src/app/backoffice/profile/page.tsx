@@ -509,27 +509,27 @@ export default function ProfilePage() {
                             <div className="mt-8 space-y-6">
                                 <div>
                                     <h2 className="text-xl font-black text-slate-900 flex items-center gap-2">
-                                        Payout & Settlement Strategy
+                                        Payout & Settlement Settings
                                         <span className="text-[10px] uppercase tracking-wider font-bold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
-                                            Dual Gateway Active
+                                            Instant Payout Active
                                         </span>
                                     </h2>
                                     <p className="text-xs sm:text-sm text-slate-500 font-medium mt-1">
-                                        Configure BulkClix for instant 0-second Mobile Money & Bank payouts, and Paystack for Visa/Mastercard card fallback.
+                                        Set up your Mobile Money wallet or Bank Account to receive customer payouts automatically.
                                     </p>
                                 </div>
 
-                                {/* 1. Primary Gateway: BulkClix Instant Payouts */}
+                                {/* 1. Primary Gateway: Instant Payouts */}
                                 <Card className="border-emerald-200/80 shadow-md overflow-hidden bg-gradient-to-br from-white to-emerald-50/20 rounded-3xl relative">
                                     <div className="absolute top-0 right-0 bg-emerald-600 text-white text-[10px] font-black uppercase tracking-widest px-4 py-1 rounded-bl-2xl shadow-sm">
-                                        Primary Instant Gateway (0-Second Payout)
+                                        Primary Instant Gateway
                                     </div>
                                     <CardHeader className="p-5 sm:p-8 pb-4">
                                         <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-                                            BulkClix Instant Settlement (MoMo & Bank)
+                                            Instant Mobile Money & Bank Settlement
                                         </h3>
                                         <p className="text-xs text-slate-600">
-                                            Instant automatic settlements directly into your Mobile Money wallet or Bank Account the second a customer pays.
+                                            Automatic settlements directly into your Mobile Money wallet or Bank Account the moment a customer completes a payment.
                                         </p>
                                     </CardHeader>
                                     <CardContent className="p-5 sm:p-8 pt-0">
@@ -685,21 +685,21 @@ export default function ProfilePage() {
                                                     className="min-w-[160px] h-11 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold shadow-[0_4px_20px_rgba(16,185,129,0.2)] transition-all hover:-translate-y-0.5 active:scale-[0.98]"
                                                 >
                                                     {bulkclixSaving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
-                                                    Save BulkClix Payout
+                                                    Save Settlement Details
                                                 </Button>
                                             </div>
                                         </form>
                                     </CardContent>
                                 </Card>
 
-                                {/* 2. Secondary Gateway: Paystack Fallback Subaccount */}
+                                {/* 2. Secondary Gateway: Card & International Fallback */}
                                 <Card className="border-slate-200 shadow-sm overflow-hidden bg-white rounded-3xl">
                                     <CardHeader className="p-5 sm:p-8 pb-4">
                                         <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-                                            Paystack Fallback & Card Subaccount
+                                            Card & International Payment Backup
                                         </h3>
                                         <p className="text-xs text-slate-500">
-                                            Used as a fallback for international Visa / Mastercard credit card payments or automatic telco failover.
+                                            Secondary settlement account used for Visa / Mastercard credit card payments or network failover.
                                         </p>
                                     </CardHeader>
                                     <CardContent className="p-5 sm:p-8 pt-0">
