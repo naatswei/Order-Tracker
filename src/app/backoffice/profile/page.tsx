@@ -529,7 +529,7 @@ export default function ProfilePage() {
                                             Instant Mobile Money & Bank Settlement
                                         </h3>
                                         <p className="text-xs text-slate-600">
-                                            Automatic settlements directly into your Mobile Money wallet or Bank Account the moment a customer completes a payment.
+                                            Automatic settlements directly into your Mobile Money or Bank Account the moment a customer completes a payment.
                                         </p>
                                     </CardHeader>
                                     <CardContent className="p-5 sm:p-8 pt-0">
@@ -551,9 +551,9 @@ export default function ProfilePage() {
                                                     bankName: bulkclixBankName
                                                 })
                                                 if (res.success) {
-                                                    toast.success("BulkClix instant settlement details saved successfully!")
+                                                    toast.success("Instant settlement details saved successfully!")
                                                 } else {
-                                                    toast.error(res.error || "Failed to save BulkClix payout details")
+                                                    toast.error(res.error || "Failed to save payout details")
                                                 }
                                             } catch (error: any) {
                                                 console.error(error)
@@ -578,7 +578,7 @@ export default function ProfilePage() {
                                                             : "text-slate-500 hover:text-slate-800"
                                                     )}
                                                 >
-                                                    Mobile Money Wallet
+                                                    Mobile Money Account
                                                 </button>
                                                 <button
                                                     type="button"
