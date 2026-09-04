@@ -400,8 +400,19 @@ function CreateOrderContent() {
                 } else {
                     if (triggerMomoPrompt && res.orderId) {
                         const chargePhone = momoPhone || customerPhone
-                        toast.loading("Initiating Mobile Money Prompt...", { id: "momo-charge" })
-                        const chargeRes = await initiateMomoCharge(res.orderId, chargePhone, momoProvider)
+                        toast.loading("Initiating Instant Mobile Money Prompt...", { id: "momo-charge" })
+                        
+                        // Primary Gateway: BulkClix Instant MoMo Collection
+                        const { initiateBulkClixMomoCollection } = await import("@/app/actions/bulkclix-payment")
+                        let chargeRes = await initiateBulkClixMomoCollection(res.orderId, chargePhone, momoProvider)
+                        
+                        // Fallback Gateway: Paystack MoMo Collection if BulkClix encounters an error
+                        if (!chargeRes.success) {
+                            console.warn("BulkClix MoMo prompt failed, attempting Paystack fallback:", chargeRes.error)
+                            const { initiateMomoCharge } = await import("@/app/actions/paystack")
+                            chargeRes = await initiateMomoCharge(res.orderId, chargePhone, momoProvider)
+                        }
+
                         if (chargeRes.success) {
                             toast.success("Mobile Money Prompt sent successfully to customer!", { id: "momo-charge" })
                         } else {

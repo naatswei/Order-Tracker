@@ -58,7 +58,7 @@ export default function ProfilePage() {
     const [subscriptionPlan, setSubscriptionPlan] = useState<string | null>(null)
     const publicKey = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || ""
 
-    // Payout split settings state
+    // Paystack Payout split settings state
     const [payoutSettings, setPayoutSettings] = useState({
         bankCode: "",
         bankName: "",
@@ -69,6 +69,17 @@ export default function ProfilePage() {
     const [banksLoading, setBanksLoading] = useState(false)
     const [resolvingAccount, setResolvingAccount] = useState(false)
     const [payoutLoading, setPayoutLoading] = useState(false)
+
+    // BulkClix Instant Payout settings state
+    const [bulkclixPayoutType, setBulkclixPayoutType] = useState<"momo" | "bank">("momo")
+    const [bulkclixAccountNumber, setBulkclixAccountNumber] = useState("")
+    const [bulkclixAccountName, setBulkclixAccountName] = useState("")
+    const [bulkclixChannelOrBankId, setBulkclixChannelOrBankId] = useState("MTN")
+    const [bulkclixBankName, setBulkclixBankName] = useState("")
+    const [bulkclixBanks, setBulkclixBanks] = useState<{ id: string; name: string }[]>([])
+    const [bulkclixBanksLoading, setBulkclixBanksLoading] = useState(false)
+    const [resolvingBulkclixAccount, setResolvingBulkclixAccount] = useState(false)
+    const [bulkclixSaving, setBulkclixSaving] = useState(false)
 
     useEffect(() => {
         const fetchBanks = async () => {
@@ -86,6 +97,22 @@ export default function ProfilePage() {
             }
         }
         fetchBanks()
+
+        const fetchBulkClixBanks = async () => {
+            setBulkclixBanksLoading(true)
+            try {
+                const { getBulkClixBankList } = await import("@/app/actions/bulkclix-payment")
+                const res = await getBulkClixBankList()
+                if (res.success && res.banks) {
+                    setBulkclixBanks(res.banks.map((b: any) => ({ id: String(b.id || b.code || b.bank_id), name: b.name || b.bank_name })))
+                }
+            } catch (err) {
+                console.error("Failed to load BulkClix banks:", err)
+            } finally {
+                setBulkclixBanksLoading(false)
+            }
+        }
+        fetchBulkClixBanks()
     }, [])
 
     const handleResolveAccount = async () => {
@@ -107,6 +134,38 @@ export default function ProfilePage() {
             toast.error("Account verification failed")
         } finally {
             setResolvingAccount(false)
+        }
+    }
+
+    const handleResolveBulkClixAccount = async () => {
+        if (!bulkclixAccountNumber) {
+            toast.error("Please enter account or phone number")
+            return
+        }
+        setResolvingBulkclixAccount(true)
+        try {
+            const { queryMoMoAccountName, queryBankAccountName } = await import("@/app/actions/bulkclix-payment")
+            let res
+            if (bulkclixPayoutType === "momo") {
+                res = await queryMoMoAccountName(bulkclixAccountNumber)
+            } else {
+                if (!bulkclixChannelOrBankId) {
+                    toast.error("Please select a bank first")
+                    setResolvingBulkclixAccount(false)
+                    return
+                }
+                res = await queryBankAccountName(bulkclixAccountNumber, bulkclixChannelOrBankId)
+            }
+            if (res.success && res.accountName) {
+                setBulkclixAccountName(res.accountName)
+                toast.success("Account name verified successfully!")
+            } else {
+                toast.error(res.error || "Failed to verify account details")
+            }
+        } catch (error) {
+            toast.error("Account verification failed")
+        } finally {
+            setResolvingBulkclixAccount(false)
         }
     }
 
@@ -133,13 +192,20 @@ export default function ProfilePage() {
             setSubscriptionExpiry(metadata?.subscriptionExpiry || "")
             setSubscriptionPlan(metadata?.subscriptionPlan || null)
 
-            // Initialize payout subaccount settings
+            // Initialize Paystack payout subaccount settings
             setPayoutSettings({
                 bankCode: (metadata?.payoutBankCode as string) || "",
                 bankName: (metadata?.payoutBankName as string) || "",
                 accountNumber: (metadata?.payoutAccountNumber as string) || "",
                 accountName: (metadata?.payoutAccountName as string) || ""
             })
+
+            // Initialize BulkClix payout settings
+            setBulkclixPayoutType((metadata?.bulkclixPayoutType as "momo" | "bank") || "momo")
+            setBulkclixAccountNumber((metadata?.bulkclixAccountNumber as string) || "")
+            setBulkclixAccountName((metadata?.bulkclixAccountName as string) || "")
+            setBulkclixChannelOrBankId((metadata?.bulkclixChannelOrBankId as string) || "MTN")
+            setBulkclixBankName((metadata?.bulkclixBankName as string) || "")
 
             // Initialize invoice defaults settings
             setInvoiceSettings({
@@ -439,112 +505,304 @@ export default function ProfilePage() {
                                 </CardContent>
                             </Card>
 
-                            {/* Payout & Settlement Settings */}
-                            <Card className="border-slate-200 shadow-sm overflow-hidden bg-white rounded-3xl mt-6">
-                                <CardHeader className="p-5 sm:p-8 pb-0">
-                                    <h2 className="text-lg font-bold text-slate-900">Payout & Settlement Settings</h2>
-                                    <p className="text-xs sm:text-sm text-slate-500 font-medium">Link your business's bank or mobile money account to receive customer payments instantly (99% payout, 1% platform commission).</p>
-                                </CardHeader>
-                                <CardContent className="p-5 sm:p-8">
-                                    <form onSubmit={async (e) => {
-                                        e.preventDefault()
-                                        if (!organization) return
-                                        if (!payoutSettings.accountName) {
-                                            toast.error("Please verify your account details first")
-                                            return
-                                        }
-                                        setPayoutLoading(true)
-                                        try {
-                                            const { saveMerchantPayoutSettings } = await import("@/app/actions/paystack")
-                                            const res = await saveMerchantPayoutSettings(organization.id, {
-                                                bankCode: payoutSettings.bankCode,
-                                                bankName: payoutSettings.bankName,
-                                                accountNumber: payoutSettings.accountNumber,
-                                                businessName: organization.name
-                                            })
-                                            if (res.success) {
-                                                toast.success("Settlement account configured successfully!")
-                                            } else {
-                                                toast.error(res.error || "Failed to configure settlement account")
+                            {/* Dual Gateway Payout & Settlement Settings */}
+                            <div className="mt-8 space-y-6">
+                                <div>
+                                    <h2 className="text-xl font-black text-slate-900 flex items-center gap-2">
+                                        Payout & Settlement Strategy
+                                        <span className="text-[10px] uppercase tracking-wider font-bold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
+                                            Dual Gateway Active
+                                        </span>
+                                    </h2>
+                                    <p className="text-xs sm:text-sm text-slate-500 font-medium mt-1">
+                                        Configure BulkClix for instant 0-second Mobile Money & Bank payouts, and Paystack for Visa/Mastercard card fallback.
+                                    </p>
+                                </div>
+
+                                {/* 1. Primary Gateway: BulkClix Instant Payouts */}
+                                <Card className="border-emerald-200/80 shadow-md overflow-hidden bg-gradient-to-br from-white to-emerald-50/20 rounded-3xl relative">
+                                    <div className="absolute top-0 right-0 bg-emerald-600 text-white text-[10px] font-black uppercase tracking-widest px-4 py-1 rounded-bl-2xl shadow-sm">
+                                        Primary Instant Gateway (0-Second Payout)
+                                    </div>
+                                    <CardHeader className="p-5 sm:p-8 pb-4">
+                                        <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                                            BulkClix Instant Settlement (MoMo & Bank)
+                                        </h3>
+                                        <p className="text-xs text-slate-600">
+                                            Instant automatic settlements directly into your Mobile Money wallet or Bank Account the second a customer pays.
+                                        </p>
+                                    </CardHeader>
+                                    <CardContent className="p-5 sm:p-8 pt-0">
+                                        <form onSubmit={async (e) => {
+                                            e.preventDefault()
+                                            if (!organization) return
+                                            if (!bulkclixAccountName) {
+                                                toast.error("Please verify your account details first")
+                                                return
                                             }
-                                        } catch (error: any) {
-                                            console.error(error)
-                                            toast.error("Failed to update payout settings")
-                                        } finally {
-                                            setPayoutLoading(false)
-                                        }
-                                    }} className="space-y-6">
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                            <div className="space-y-2">
-                                                <Label className="text-slate-700 font-semibold" htmlFor="payoutBank">Settlement Network / Bank</Label>
-                                                <select
-                                                    id="payoutBank"
-                                                    disabled={banksLoading}
-                                                    value={payoutSettings.bankCode}
-                                                    onChange={(e) => {
-                                                        const selected = banks.find(b => b.code === e.target.value)
-                                                        setPayoutSettings(prev => ({
-                                                            ...prev,
-                                                            bankCode: e.target.value,
-                                                            bankName: selected ? selected.name : "",
-                                                            accountName: "" // Reset name validation on bank change
-                                                        }))
+                                            setBulkclixSaving(true)
+                                            try {
+                                                const { saveMerchantBulkClixPayoutSettings } = await import("@/app/actions/bulkclix-payment")
+                                                const res = await saveMerchantBulkClixPayoutSettings(organization.id, {
+                                                    payoutType: bulkclixPayoutType,
+                                                    accountNumber: bulkclixAccountNumber,
+                                                    accountName: bulkclixAccountName,
+                                                    channelOrBankId: bulkclixChannelOrBankId,
+                                                    bankName: bulkclixBankName
+                                                })
+                                                if (res.success) {
+                                                    toast.success("BulkClix instant settlement details saved successfully!")
+                                                } else {
+                                                    toast.error(res.error || "Failed to save BulkClix payout details")
+                                                }
+                                            } catch (error: any) {
+                                                console.error(error)
+                                                toast.error("Failed to update payout settings")
+                                            } finally {
+                                                setBulkclixSaving(false)
+                                            }
+                                        }} className="space-y-6">
+                                            {/* Payout Type Switcher */}
+                                            <div className="flex items-center gap-3 p-1.5 bg-slate-100 rounded-2xl w-fit">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        setBulkclixPayoutType("momo")
+                                                        setBulkclixChannelOrBankId("MTN")
+                                                        setBulkclixAccountName("")
                                                     }}
-                                                    className="w-full bg-slate-50/50 border border-slate-200 focus:bg-white rounded-xl h-11 px-3 transition-colors text-slate-800 focus:outline-none"
+                                                    className={cn(
+                                                        "px-4 py-2 rounded-xl text-xs font-bold transition-all",
+                                                        bulkclixPayoutType === "momo"
+                                                            ? "bg-white text-emerald-800 shadow-sm"
+                                                            : "text-slate-500 hover:text-slate-800"
+                                                    )}
                                                 >
-                                                    <option value="">Select Settlement Bank / Wallet</option>
-                                                    {banks.map((b) => (
-                                                        <option key={b.code} value={b.code}>{b.name}</option>
-                                                    ))}
-                                                </select>
+                                                    Mobile Money Wallet
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        setBulkclixPayoutType("bank")
+                                                        setBulkclixChannelOrBankId(bulkclixBanks[0]?.id || "")
+                                                        setBulkclixAccountName("")
+                                                    }}
+                                                    className={cn(
+                                                        "px-4 py-2 rounded-xl text-xs font-bold transition-all",
+                                                        bulkclixPayoutType === "bank"
+                                                            ? "bg-white text-emerald-800 shadow-sm"
+                                                            : "text-slate-500 hover:text-slate-800"
+                                                    )}
+                                                >
+                                                    Bank Account Transfer
+                                                </button>
                                             </div>
 
-                                            <div className="space-y-2">
-                                                <Label className="text-slate-700 font-semibold" htmlFor="accountNumber">Account / Mobile Number</Label>
-                                                <div className="flex gap-2">
-                                                    <Input
-                                                        id="accountNumber"
-                                                        value={payoutSettings.accountNumber}
-                                                        onChange={(e) => setPayoutSettings(prev => ({
-                                                            ...prev,
-                                                            accountNumber: e.target.value,
-                                                            accountName: "" // Reset validation
-                                                        }))}
-                                                        placeholder="Enter account / phone number"
-                                                        className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-11 transition-colors flex-1"
-                                                    />
-                                                    <Button
-                                                        type="button"
-                                                        onClick={handleResolveAccount}
-                                                        disabled={resolvingAccount || !payoutSettings.bankCode || !payoutSettings.accountNumber}
-                                                        className="h-11 rounded-xl bg-slate-100 border border-slate-200 text-slate-700 hover:bg-slate-200 font-bold px-4"
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                {bulkclixPayoutType === "momo" ? (
+                                                    <div className="space-y-2">
+                                                        <Label className="text-slate-700 font-semibold" htmlFor="bulkclixNetwork">Mobile Money Network</Label>
+                                                        <select
+                                                            id="bulkclixNetwork"
+                                                            value={bulkclixChannelOrBankId}
+                                                            onChange={(e) => {
+                                                                setBulkclixChannelOrBankId(e.target.value)
+                                                                setBulkclixAccountName("")
+                                                            }}
+                                                            className="w-full bg-slate-50/50 border border-slate-200 focus:bg-white rounded-xl h-11 px-3 transition-colors text-slate-800 focus:outline-none"
+                                                        >
+                                                            <option value="MTN">MTN Mobile Money</option>
+                                                            <option value="TELECEL">Telecel Cash (Vodafone)</option>
+                                                            <option value="AIRTELTIGO">ATMoney (AirtelTigo)</option>
+                                                        </select>
+                                                    </div>
+                                                ) : (
+                                                    <div className="space-y-2">
+                                                        <Label className="text-slate-700 font-semibold" htmlFor="bulkclixBank">Select Bank</Label>
+                                                        <select
+                                                            id="bulkclixBank"
+                                                            disabled={bulkclixBanksLoading}
+                                                            value={bulkclixChannelOrBankId}
+                                                            onChange={(e) => {
+                                                                const selected = bulkclixBanks.find(b => b.id === e.target.value)
+                                                                setBulkclixChannelOrBankId(e.target.value)
+                                                                setBulkclixBankName(selected ? selected.name : "")
+                                                                setBulkclixAccountName("")
+                                                            }}
+                                                            className="w-full bg-slate-50/50 border border-slate-200 focus:bg-white rounded-xl h-11 px-3 transition-colors text-slate-800 focus:outline-none"
+                                                        >
+                                                            <option value="">Select Target Bank</option>
+                                                            {bulkclixBanks.map((b) => (
+                                                                <option key={b.id} value={b.id}>{b.name}</option>
+                                                            ))}
+                                                        </select>
+                                                    </div>
+                                                )}
+
+                                                <div className="space-y-2">
+                                                    <Label className="text-slate-700 font-semibold" htmlFor="bulkclixAccountNumber">
+                                                        {bulkclixPayoutType === "momo" ? "Mobile Money Phone Number" : "Bank Account Number"}
+                                                    </Label>
+                                                    <div className="flex gap-2">
+                                                        <Input
+                                                            id="bulkclixAccountNumber"
+                                                            value={bulkclixAccountNumber}
+                                                            onChange={(e) => {
+                                                                setBulkclixAccountNumber(e.target.value)
+                                                                setBulkclixAccountName("")
+                                                            }}
+                                                            placeholder={bulkclixPayoutType === "momo" ? "e.g. 0548706430" : "e.g. 1441001234567"}
+                                                            className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-11 transition-colors flex-1"
+                                                        />
+                                                        <Button
+                                                            type="button"
+                                                            onClick={handleResolveBulkClixAccount}
+                                                            disabled={resolvingBulkclixAccount || !bulkclixAccountNumber}
+                                                            className="h-11 rounded-xl bg-emerald-600 text-white hover:bg-emerald-700 font-bold px-4 shadow-sm"
+                                                        >
+                                                            {resolvingBulkclixAccount ? <Loader2 className="w-4 h-4 animate-spin" /> : "Verify"}
+                                                        </Button>
+                                                    </div>
+                                                </div>
+
+                                                {bulkclixAccountName && (
+                                                    <div className="md:col-span-2 p-3.5 bg-emerald-100/70 border border-emerald-200 rounded-xl flex items-center justify-between">
+                                                        <div>
+                                                            <p className="text-[10px] uppercase tracking-wider text-emerald-800 font-black">Verified Account Name</p>
+                                                            <p className="text-sm text-emerald-950 font-bold">{bulkclixAccountName}</p>
+                                                        </div>
+                                                        <span className="text-xs font-black text-emerald-700 bg-white px-2.5 py-1 rounded-lg border border-emerald-200">
+                                                            Ready for Instant Payouts
+                                                        </span>
+                                                    </div>
+                                                )}
+                                            </div>
+
+                                            <div className="flex justify-end pt-4 border-t border-slate-100">
+                                                <Button
+                                                    type="submit"
+                                                    disabled={bulkclixSaving || !bulkclixAccountName}
+                                                    className="min-w-[160px] h-11 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold shadow-[0_4px_20px_rgba(16,185,129,0.2)] transition-all hover:-translate-y-0.5 active:scale-[0.98]"
+                                                >
+                                                    {bulkclixSaving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+                                                    Save BulkClix Payout
+                                                </Button>
+                                            </div>
+                                        </form>
+                                    </CardContent>
+                                </Card>
+
+                                {/* 2. Secondary Gateway: Paystack Fallback Subaccount */}
+                                <Card className="border-slate-200 shadow-sm overflow-hidden bg-white rounded-3xl">
+                                    <CardHeader className="p-5 sm:p-8 pb-4">
+                                        <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                                            Paystack Fallback & Card Subaccount
+                                        </h3>
+                                        <p className="text-xs text-slate-500">
+                                            Used as a fallback for international Visa / Mastercard credit card payments or automatic telco failover.
+                                        </p>
+                                    </CardHeader>
+                                    <CardContent className="p-5 sm:p-8 pt-0">
+                                        <form onSubmit={async (e) => {
+                                            e.preventDefault()
+                                            if (!organization) return
+                                            if (!payoutSettings.accountName) {
+                                                toast.error("Please verify your account details first")
+                                                return
+                                            }
+                                            setPayoutLoading(true)
+                                            try {
+                                                const { saveMerchantPayoutSettings } = await import("@/app/actions/paystack")
+                                                const res = await saveMerchantPayoutSettings(organization.id, {
+                                                    bankCode: payoutSettings.bankCode,
+                                                    bankName: payoutSettings.bankName,
+                                                    accountNumber: payoutSettings.accountNumber,
+                                                    businessName: organization.name
+                                                })
+                                                if (res.success) {
+                                                    toast.success("Paystack fallback settlement account configured successfully!")
+                                                } else {
+                                                    toast.error(res.error || "Failed to configure Paystack subaccount")
+                                                }
+                                            } catch (error: any) {
+                                                console.error(error)
+                                                toast.error("Failed to update payout settings")
+                                            } finally {
+                                                setPayoutLoading(false)
+                                            }
+                                        }} className="space-y-6">
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                <div className="space-y-2">
+                                                    <Label className="text-slate-700 font-semibold" htmlFor="payoutBank">Paystack Settlement Bank</Label>
+                                                    <select
+                                                        id="payoutBank"
+                                                        disabled={banksLoading}
+                                                        value={payoutSettings.bankCode}
+                                                        onChange={(e) => {
+                                                            const selected = banks.find(b => b.code === e.target.value)
+                                                            setPayoutSettings(prev => ({
+                                                                ...prev,
+                                                                bankCode: e.target.value,
+                                                                bankName: selected ? selected.name : "",
+                                                                accountName: ""
+                                                            }))
+                                                        }}
+                                                        className="w-full bg-slate-50/50 border border-slate-200 focus:bg-white rounded-xl h-11 px-3 transition-colors text-slate-800 focus:outline-none"
                                                     >
-                                                        {resolvingAccount ? <Loader2 className="w-4 h-4 animate-spin" /> : "Verify"}
-                                                    </Button>
+                                                        <option value="">Select Settlement Bank</option>
+                                                        {banks.map((b) => (
+                                                            <option key={b.code} value={b.code}>{b.name}</option>
+                                                        ))}
+                                                    </select>
                                                 </div>
+
+                                                <div className="space-y-2">
+                                                    <Label className="text-slate-700 font-semibold" htmlFor="accountNumber">Account / Mobile Number</Label>
+                                                    <div className="flex gap-2">
+                                                        <Input
+                                                            id="accountNumber"
+                                                            value={payoutSettings.accountNumber}
+                                                            onChange={(e) => setPayoutSettings(prev => ({
+                                                                ...prev,
+                                                                accountNumber: e.target.value,
+                                                                accountName: ""
+                                                            }))}
+                                                            placeholder="Enter bank account / phone number"
+                                                            className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-11 transition-colors flex-1"
+                                                        />
+                                                        <Button
+                                                            type="button"
+                                                            onClick={handleResolveAccount}
+                                                            disabled={resolvingAccount || !payoutSettings.bankCode || !payoutSettings.accountNumber}
+                                                            className="h-11 rounded-xl bg-slate-100 border border-slate-200 text-slate-700 hover:bg-slate-200 font-bold px-4"
+                                                        >
+                                                            {resolvingAccount ? <Loader2 className="w-4 h-4 animate-spin" /> : "Verify"}
+                                                        </Button>
+                                                    </div>
+                                                </div>
+
+                                                {payoutSettings.accountName && (
+                                                    <div className="md:col-span-2 p-3 bg-slate-50 border border-slate-200 rounded-xl">
+                                                        <p className="text-xs text-slate-500 font-bold">Verified Account Name</p>
+                                                        <p className="text-sm text-slate-900 font-medium">{payoutSettings.accountName}</p>
+                                                    </div>
+                                                )}
                                             </div>
 
-                                            {payoutSettings.accountName && (
-                                                <div className="md:col-span-2 p-3 bg-emerald-50 border border-emerald-100 rounded-xl">
-                                                    <p className="text-xs text-emerald-800 font-bold">Verified Account Name</p>
-                                                    <p className="text-sm text-emerald-900 font-medium">{payoutSettings.accountName}</p>
-                                                </div>
-                                            )}
-                                        </div>
-
-                                        <div className="flex justify-end pt-4 border-t border-slate-100">
-                                            <Button
-                                                type="submit"
-                                                disabled={payoutLoading || !payoutSettings.accountName}
-                                                className="min-w-[140px] h-11 rounded-full bg-[#111827] hover:bg-[#1f2937] text-white font-bold shadow-[0_4px_20px_rgb(0,0,0,0.1)] transition-all hover:-translate-y-0.5 active:scale-[0.98]"
-                                            >
-                                                {payoutLoading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
-                                                Save Payout Details
-                                            </Button>
-                                        </div>
-                                    </form>
-                                </CardContent>
-                            </Card>
+                                            <div className="flex justify-end pt-4 border-t border-slate-100">
+                                                <Button
+                                                    type="submit"
+                                                    disabled={payoutLoading || !payoutSettings.accountName}
+                                                    className="min-w-[140px] h-11 rounded-full bg-[#111827] hover:bg-[#1f2937] text-white font-bold shadow-[0_4px_20px_rgb(0,0,0,0.1)] transition-all hover:-translate-y-0.5 active:scale-[0.98]"
+                                                >
+                                                    {payoutLoading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+                                                    Save Paystack Details
+                                                </Button>
+                                            </div>
+                                        </form>
+                                    </CardContent>
+                                </Card>
+                            </div>
 
                         </motion.div>
                     </TabsContent>
