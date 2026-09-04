@@ -2,10 +2,11 @@
 
 import { useState, useRef, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { ArrowRight, Upload, Camera, Sparkles, Loader2, Search, ChevronDown, Check } from "lucide-react"
+import { ArrowRight, Upload, Camera, Sparkles, Loader2, Search, ChevronDown, Check, MapPin } from "lucide-react"
 import { useOrganization } from "@clerk/nextjs"
 import { updateOrgProfile } from "@/app/actions/org-metadata"
 import { AppLoader } from "@/components/app-loader"
+import { validateLocation, getLocationSuggestions } from "@/lib/location-validator"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -45,10 +46,16 @@ export default function BusinessProfilePage() {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false)
     const dropdownRef = useRef<HTMLDivElement>(null)
 
+    const [isLocationDropdownOpen, setIsLocationDropdownOpen] = useState(false)
+    const locationDropdownRef = useRef<HTMLDivElement>(null)
+
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
                 setIsDropdownOpen(false)
+            }
+            if (locationDropdownRef.current && !locationDropdownRef.current.contains(event.target as Node)) {
+                setIsLocationDropdownOpen(false)
             }
         }
         document.addEventListener("mousedown", handleClickOutside)
@@ -153,9 +160,13 @@ export default function BusinessProfilePage() {
     const cleanPhone = phoneLocal.replace(/^0+/, "").replace(/\D/g, "");
     const isPhoneValid = cleanPhone.length >= selectedCountry.minLength && cleanPhone.length <= selectedCountry.maxLength;
 
+    const locationValidation = validateLocation(formData.location, formData.companyName);
+    const isLocationValid = locationValidation.isValid;
+    const locationSuggestions = getLocationSuggestions(formData.location);
+
     const isFormValid = formData.companyName.trim() !== "" &&
         isPhoneValid &&
-        formData.location.trim() !== ""
+        isLocationValid;
 
     const filteredCountries = COUNTRIES.filter(c =>
         c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -393,20 +404,70 @@ export default function BusinessProfilePage() {
                                             />
                                         </div>
 
-                                        {/* Location */}
-                                        <div className="space-y-2 md:col-span-2">
+                                        {/* Location / Address with Interactive Inspection & Suggestions */}
+                                        <div className="space-y-2 md:col-span-2 relative" ref={locationDropdownRef}>
                                             <Label htmlFor="location" className="text-primary font-medium">
                                                 Location / Address <span className="text-destructive">*</span>
                                             </Label>
-                                            <Input
-                                                id="location"
-                                                name="location"
-                                                placeholder="e.g. 123 Business Avenue, Accra"
-                                                required
-                                                value={formData.location}
-                                                onChange={handleInputChange}
-                                                className="h-12 border-input bg-background/50 focus-visible:ring-primary transition-all duration-200"
-                                            />
+                                            <div className="relative">
+                                                <MapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground z-10" />
+                                                <Input
+                                                    id="location"
+                                                    name="location"
+                                                    placeholder="e.g. East Legon, Accra or 123 Business Avenue"
+                                                    required
+                                                    value={formData.location}
+                                                    onChange={(e) => {
+                                                        handleInputChange(e)
+                                                        setIsLocationDropdownOpen(true)
+                                                    }}
+                                                    onFocus={() => setIsLocationDropdownOpen(true)}
+                                                    className={cn(
+                                                        "h-12 pl-10 pr-10 border-input bg-background/50 focus-visible:ring-primary transition-all duration-200",
+                                                        formData.location && !isLocationValid && "border-destructive focus-visible:ring-destructive focus-visible:border-destructive",
+                                                        formData.location && isLocationValid && "border-emerald-500 focus-visible:ring-emerald-500 focus-visible:border-emerald-500"
+                                                    )}
+                                                />
+                                                {formData.location && (
+                                                    <div className="absolute right-3.5 top-1/2 -translate-y-1/2 flex items-center justify-center pointer-events-none select-none">
+                                                        {isLocationValid ? (
+                                                            <span className="text-emerald-500 text-sm font-bold">✓</span>
+                                                        ) : (
+                                                            <span className="text-destructive text-sm font-bold">✗</span>
+                                                        )}
+                                                    </div>
+                                                )}
+                                            </div>
+
+                                            {/* Location Auto-Suggest Dropdown */}
+                                            {isLocationDropdownOpen && locationSuggestions.length > 0 && (
+                                                <div className="absolute left-0 right-0 top-full mt-1 p-2 rounded-2xl shadow-xl border border-slate-100 bg-white z-50 animate-in fade-in-50 slide-in-from-top-1 max-h-56 overflow-y-auto custom-scrollbar">
+                                                    <div className="px-2 py-1 text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                                                        Recognized Locations & Hubs
+                                                    </div>
+                                                    {locationSuggestions.map((loc) => (
+                                                        <button
+                                                            key={loc}
+                                                            type="button"
+                                                            onClick={() => {
+                                                                setFormData(prev => ({ ...prev, location: loc }))
+                                                                setIsLocationDropdownOpen(false)
+                                                            }}
+                                                            className="w-full text-left px-3 py-2 text-sm rounded-lg hover:bg-slate-50 flex items-center gap-2 text-slate-700 hover:text-slate-900 transition-colors"
+                                                        >
+                                                            <MapPin className="w-3.5 h-3.5 text-primary shrink-0" />
+                                                            <span>{loc}</span>
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            )}
+
+                                            {/* Error reason text when invalid */}
+                                            {formData.location && !isLocationValid && locationValidation.reason && (
+                                                <p className="text-[10px] font-medium text-destructive mt-1.5 ml-1">
+                                                    {locationValidation.reason}
+                                                </p>
+                                            )}
                                         </div>
 
                                         {/* Website URL */}

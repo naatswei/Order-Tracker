@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Loader2, ArrowLeft, Camera, Settings, Building2, CreditCard, Check, Clock, Users } from "lucide-react"
 import { getBusinessConfig } from "@/lib/business-configs"
+import { validateLocation } from "@/lib/location-validator"
 import Link from "next/link"
 import { toast } from "sonner"
 import { motion } from "framer-motion"
@@ -176,6 +177,13 @@ export default function ProfilePage() {
     const handleProfileSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         if (!organization) return
+
+        const locValidation = validateLocation(formData.location, formData.companyName)
+        if (!locValidation.isValid) {
+            toast.error(locValidation.reason || "Please enter a valid business location.")
+            return
+        }
+
         setProfileLoading(true)
         try {
             await updateOrgProfile(organization.id, formData)
