@@ -17,30 +17,30 @@ interface SelectionCardProps {
 
 const themeStyles = {
     violet: {
-        activeBg: "bg-violet-50/60",
-        activeBorder: "border-violet-500",
-        activeText: "text-violet-700",
+        activeBg: "bg-violet-50/70",
+        activeBorder: "border-violet-500 ring-2 ring-violet-500/15",
+        activeText: "text-violet-900",
         activeIconBg: "bg-violet-100 text-violet-600",
         indicator: "bg-violet-600 border-violet-600 text-white",
     },
     gold: {
-        activeBg: "bg-amber-50/60",
-        activeBorder: "border-amber-500",
-        activeText: "text-amber-700",
+        activeBg: "bg-amber-50/70",
+        activeBorder: "border-amber-500 ring-2 ring-amber-500/15",
+        activeText: "text-amber-900",
         activeIconBg: "bg-amber-100 text-amber-600",
         indicator: "bg-amber-500 border-amber-500 text-white",
     },
     emerald: {
-        activeBg: "bg-emerald-50/60",
-        activeBorder: "border-emerald-500",
-        activeText: "text-emerald-700",
+        activeBg: "bg-emerald-50/70",
+        activeBorder: "border-emerald-500 ring-2 ring-emerald-500/15",
+        activeText: "text-emerald-900",
         activeIconBg: "bg-emerald-100 text-emerald-600",
         indicator: "bg-emerald-600 border-emerald-600 text-white",
     },
     blue: {
-        activeBg: "bg-blue-50/60",
-        activeBorder: "border-blue-500",
-        activeText: "text-blue-700",
+        activeBg: "bg-blue-50/70",
+        activeBorder: "border-blue-500 ring-2 ring-blue-500/15",
+        activeText: "text-blue-900",
         activeIconBg: "bg-blue-100 text-blue-600",
         indicator: "bg-blue-600 border-blue-600 text-white",
     },
@@ -66,16 +66,16 @@ export function SelectionCard({
             disabled={!href && disabled}
             type="button"
             className={cn(
-                "relative flex items-center gap-4 w-full rounded-2xl border-2 p-5 transition-all duration-200 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 text-left",
+                "relative flex items-center gap-3.5 sm:gap-4 w-full rounded-xl sm:rounded-2xl border-2 p-3.5 sm:p-4.5 transition-all duration-200 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 text-left cursor-pointer",
                 selected
-                    ? cn(t.activeBg, t.activeBorder)
-                    : "border-slate-100 bg-white hover:border-slate-200 hover:bg-slate-50/50"
+                    ? cn(t.activeBg, t.activeBorder, "shadow-sm")
+                    : "border-slate-200/80 bg-white hover:border-slate-300 hover:bg-slate-50/60 shadow-xs"
             )}
         >
             {/* Icon */}
             <div
                 className={cn(
-                    "w-11 h-11 rounded-xl flex items-center justify-center shrink-0 transition-all duration-200",
+                    "w-10 h-10 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center shrink-0 transition-all duration-200",
                     selected
                         ? t.activeIconBg
                         : "bg-slate-100 text-slate-500"
@@ -88,13 +88,13 @@ export function SelectionCard({
             <div className="flex-1 min-w-0">
                 <h3
                     className={cn(
-                        "font-semibold text-sm leading-tight transition-colors duration-200",
+                        "font-bold text-xs sm:text-sm leading-tight transition-colors duration-200",
                         selected ? t.activeText : "text-slate-800"
                     )}
                 >
                     {title}
                 </h3>
-                <p className="text-xs text-slate-400 font-medium mt-0.5 leading-relaxed">
+                <p className="text-[11px] sm:text-xs text-slate-500 font-normal mt-0.5 leading-relaxed">
                     {description}
                 </p>
             </div>
@@ -105,7 +105,7 @@ export function SelectionCard({
                     "w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all duration-200",
                     selected
                         ? t.indicator
-                        : "border-slate-200"
+                        : "border-slate-300 bg-white"
                 )}
             >
                 {selected && <Check className="w-3 h-3 stroke-[3]" />}

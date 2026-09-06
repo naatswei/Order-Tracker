@@ -176,4 +176,86 @@
   .onboarding-fade-in {
     animation: onboarding-fade-in 0.5s ease-out both;
   }
-}
+
+  /* Clerk Custom Styling & Mobile Responsiveness Overrides */
+  .cl-rootBox,
+  .cl-cardBox,
+  .cl-organizationList-root,
+  .cl-createOrganization-root {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .cl-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.05), 0 1px 2px -1px rgb(0 0 0 / 0.05) !important;
+    border-radius: 1rem !important;
+    border: 1px solid #E2E8F0 !important;
+    background-color: #FFFFFF !important;
+    padding: 1.25rem !important;
+  }
+
+  @media (min-width: 640px) {
+    .cl-card {
+      padding: 1.75rem !important;
+    }
+  }
+
+  .cl-formButtonPrimary,
+  .cl-organizationListCreateOrganizationActionButton {
+    background-color: #191A43 !important;
+    color: #FFFFFF !important;
+    font-weight: 600 !important;
+    font-size: 0.875rem !important;
+    border-radius: 0.75rem !important;
+    height: 2.75rem !important;
+    transition: all 0.2s ease-in-out !important;
+    box-shadow: 0 4px 12px rgba(25, 26, 67, 0.15) !important;
+  }
+
+  .cl-formButtonPrimary:hover,
+  .cl-organizationListCreateOrganizationActionButton:hover {
+    background-color: #24265d !important;
+    transform: translateY(-1px) !important;
+  }
+
+  .cl-formFieldInput {
+    border-radius: 0.75rem !important;
+    border-color: #E2E8F0 !important;
+    font-size: 0.875rem !important;
+    height: 2.75rem !important;
+    transition: all 0.2s ease-in-out !important;
+  }
+
+  .cl-formFieldInput:focus {
+    border-color: #191A43 !important;
+    box-shadow: 0 0 0 3px rgba(25, 26, 67, 0.1) !important;
+  }
+
+  .cl-headerTitle {
+    color: #191A43 !important;
+    font-weight: 700 !important;
+    font-size: 1.125rem !important;
+    letter-spacing: -0.02em !important;
+  }
+
+  .cl-headerSubtitle {
+    color: #64748B !important;
+    font-size: 0.875rem !important;
+  }
+
+  .cl-footerActionText,
+  .cl-footerActionLink {
+    font-size: 0.8125rem !important;
+  }
+
+  .cl-footerActionLink {
+    color: #191A43 !important;
+    font-weight: 600 !important;
+  }
+
+  .cl-internal-b3fm6y {
+    display: none !important;
+  }
+}

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import { useEffect } from "react"
 import { AppLoader } from "@/components/app-loader"
 import { OnboardingLayout } from "@/components/onboarding-layout"
+import { Sparkles, Building2 } from "lucide-react"
 
 export default function OrganizationSelectionPage() {
     const { organization, isLoaded } = useOrganization()
@@ -54,7 +55,6 @@ export default function OrganizationSelectionPage() {
         return () => clearInterval(interval);
     }, []);
 
-
     if (!isLoaded || organization) {
         return <AppLoader message="Loading your workspace..." />
     }
@@ -64,17 +64,17 @@ export default function OrganizationSelectionPage() {
     return (
         <OnboardingLayout
             currentStep={1}
-            title={firstName ? `Hey ${firstName}, let\u2019s create your workspace` : "Create your workspace"}
-            subtitle="This is your team\u2019s home base for managing orders, inventory, and customers."
+            title={firstName ? `Hey ${firstName}, let's create your workspace` : "Create your workspace"}
+            subtitle="This is your team's home base for managing orders, inventory, and deliveries."
         >
             {/* Hint for returning users */}
             {membershipsLoaded && userMemberships.data && userMemberships.data.length > 0 && (
-                <div className="mb-6 px-4 py-3 rounded-xl bg-amber-50/80 border border-amber-100 text-sm text-amber-700 leading-relaxed">
-                    <span className="font-semibold">Tip:</span> Use a unique name for each business to stay organized.
+                <div className="mb-4 px-4 py-3 rounded-xl bg-amber-50/90 border border-amber-200/60 text-xs sm:text-sm text-amber-800 leading-relaxed flex items-center gap-2.5">
+                    <span className="font-bold">Tip:</span> Use a unique name for each business to stay organized.
                 </div>
             )}
 
-            {/* Clerk Organization List — restyled */}
+            {/* Clerk Organization List Container */}
             <div className="w-full">
                 <OrganizationList
                     hidePersonal={true}
@@ -82,23 +82,24 @@ export default function OrganizationSelectionPage() {
                     afterSelectOrganizationUrl="/onboarding/business-type"
                     appearance={{
                         elements: {
-                            rootBox: "w-full",
-                            card: "shadow-none border border-slate-150 rounded-2xl bg-white/80 backdrop-blur-sm w-full",
-                            headerTitle: "text-base font-semibold text-[#191A43]",
-                            headerSubtitle: "text-sm text-slate-500",
-                            organizationListCreateOrganizationActionButton: "text-[#191A43] font-semibold",
-                            formButtonPrimary: "bg-[#191A43] hover:bg-[#191A43]/90 text-white shadow-lg shadow-[#191A43]/10 rounded-xl h-11 font-semibold text-sm transition-all duration-200",
-                            formFieldInput: "h-11 rounded-xl border-slate-200 bg-white focus:ring-[#191A43] focus:border-[#191A43] text-sm transition-all duration-200",
-                            formFieldLabel: "text-sm font-medium text-slate-700",
-                            organizationListPreviewButton: "rounded-xl border-slate-200 hover:bg-slate-50 transition-all duration-200",
-                            organizationListPreviewMainIdentifier: "font-semibold text-[#191A43]",
+                            rootBox: "w-full max-w-full flex flex-col items-stretch",
+                            cardBox: "w-full max-w-full shadow-none border-0",
+                            card: "shadow-sm border border-slate-200/80 rounded-2xl bg-white p-4 sm:p-6 w-full max-w-full",
+                            headerTitle: "text-base sm:text-lg font-bold text-[#191A43] tracking-tight",
+                            headerSubtitle: "text-xs sm:text-sm text-slate-500 mt-0.5",
+                            organizationListCreateOrganizationActionButton: "bg-[#191A43] hover:bg-[#25275e] text-white font-semibold text-xs sm:text-sm rounded-xl h-11 px-4 transition-all duration-200",
+                            formButtonPrimary: "bg-[#191A43] hover:bg-[#25275e] text-white shadow-md shadow-[#191A43]/15 rounded-xl h-11 font-semibold text-xs sm:text-sm transition-all duration-200 w-full sm:w-auto",
+                            formFieldInput: "h-11 rounded-xl border-slate-200 bg-white focus:ring-2 focus:ring-[#191A43]/10 focus:border-[#191A43] text-sm transition-all duration-200",
+                            formFieldLabel: "text-xs sm:text-sm font-semibold text-slate-700",
+                            organizationListPreviewButton: "rounded-xl border border-slate-200 hover:bg-slate-50 transition-all duration-200",
+                            organizationListPreviewMainIdentifier: "font-bold text-[#191A43] text-xs sm:text-sm",
                         },
                     }}
                 />
             </div>
 
-            <p className="mt-10 text-center text-sm text-slate-400">
-                You can always switch or add more businesses later.
+            <p className="mt-6 sm:mt-8 text-center text-xs sm:text-sm text-slate-400">
+                You can always switch or add more business branches later.
             </p>
         </OnboardingLayout>
     )

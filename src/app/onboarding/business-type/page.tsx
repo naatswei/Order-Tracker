@@ -165,12 +165,12 @@ export default function BusinessTypePage() {
                 <Button
                     onClick={handleNext}
                     disabled={!selectedType || isLoading}
-                    className="bg-[#191A43] hover:bg-[#191A43]/90 text-white h-11 px-8 rounded-xl font-semibold text-sm shadow-lg shadow-[#191A43]/10 transition-all duration-200 disabled:bg-slate-100 disabled:text-slate-400 disabled:shadow-none"
+                    className="w-full sm:w-auto bg-[#191A43] hover:bg-[#25275e] text-white h-12 sm:h-11 px-8 rounded-xl font-semibold text-sm shadow-md shadow-[#191A43]/15 transition-all duration-200 disabled:bg-slate-100 disabled:text-slate-400 disabled:shadow-none cursor-pointer"
                 >
                     {isLoading ? (
                         <Loader2 className="h-4 w-4 animate-spin" />
                     ) : (
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center justify-center gap-2">
                             Continue
                             <ArrowRight className="h-4 w-4" />
                         </div>

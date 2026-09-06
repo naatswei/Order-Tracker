@@ -440,7 +440,7 @@ export default function BusinessProfilePage() {
                 </div>
 
                 {/* Submit */}
-                <div className="flex items-center justify-between pt-4 border-t border-slate-100">
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-slate-100">
                     <p className="text-xs text-slate-400 hidden sm:block">
                         Next: Choose your plan
                     </p>
@@ -448,16 +448,16 @@ export default function BusinessProfilePage() {
                         type="submit"
                         disabled={isLoading || !isFormValid}
                         className={cn(
-                            "h-11 px-8 rounded-xl text-sm font-semibold transition-all duration-200 sm:ml-auto",
+                            "w-full sm:w-auto h-12 sm:h-11 px-8 rounded-xl text-sm font-semibold transition-all duration-200 sm:ml-auto cursor-pointer",
                             isFormValid
-                                ? "bg-[#191A43] hover:bg-[#191A43]/90 text-white shadow-lg shadow-[#191A43]/10"
-                                : "bg-slate-100 text-slate-400 cursor-not-allowed hover:bg-slate-100"
+                                ? "bg-[#191A43] hover:bg-[#25275e] text-white shadow-md shadow-[#191A43]/15"
+                                : "bg-slate-100 text-slate-400 cursor-not-allowed hover:bg-slate-100 shadow-none"
                         )}
                     >
                         {isLoading ? (
                             <Loader2 className="h-4 w-4 animate-spin" />
                         ) : (
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center justify-center gap-2">
                                 Complete Setup
                                 <ArrowRight className="h-4 w-4" />
                             </div>
