@@ -221,6 +221,8 @@ export default function SubscriptionPage() {
             subtitle="All plans include complete platform access. Pick the duration that works best for your team."
             wide
             centerHeader
+            backUrl="/onboarding/profile?edit=true"
+            backLabel="Back to Profile Details"
         >
             {/* Value Highlights Pill */}
             <div className="flex items-center justify-center gap-6 mb-8 text-xs font-medium text-slate-500">

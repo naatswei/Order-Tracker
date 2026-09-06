@@ -1,14 +1,16 @@
 "use client"
 
+import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
-import { Check, Sparkles } from "lucide-react"
+import { Check, ArrowLeft } from "lucide-react"
 import { OnboardingHeader } from "@/components/onboarding-header"
 
 const STEPS = [
-    { label: "Workspace", step: 1, desc: "Create your team base" },
-    { label: "Business Type", step: 2, desc: "Select industry hub" },
-    { label: "Your Details", step: 3, desc: "Profile & branding" },
-    { label: "Choose Plan", step: 4, desc: "Start free trial" },
+    { label: "Workspace", step: 1, href: "/onboarding/organization?restart=true" },
+    { label: "Business Type", step: 2, href: "/onboarding/business-type" },
+    { label: "Your Details", step: 3, href: "/onboarding/profile" },
+    { label: "Choose Plan", step: 4, href: "/onboarding/subscription" },
 ]
 
 interface OnboardingLayoutProps {
@@ -16,6 +18,10 @@ interface OnboardingLayoutProps {
     title: string
     subtitle?: string
     children: React.ReactNode
+    /** Custom back URL, if not provided will use the previous step */
+    backUrl?: string
+    /** Custom back button label */
+    backLabel?: string
     /** Use wider container (for pricing grid, etc.) */
     wide?: boolean
     /** Center align title and subtitle */
@@ -27,10 +33,22 @@ export function OnboardingLayout({
     title,
     subtitle,
     children,
+    backUrl,
+    backLabel,
     wide = false,
     centerHeader = false,
 }: OnboardingLayoutProps) {
+    const router = useRouter()
     const currentStepObj = STEPS[currentStep - 1]
+
+    // Determine default back URL based on current step
+    const resolvedBackUrl = backUrl !== undefined 
+        ? backUrl 
+        : currentStep > 1 
+            ? STEPS[currentStep - 2].href 
+            : null
+
+    const resolvedBackLabel = backLabel || (currentStep > 1 ? `Back to ${STEPS[currentStep - 2].label}` : "Back")
 
     return (
         <div className="min-h-screen bg-gradient-to-b from-slate-50/60 via-white to-slate-50/40 bg-grid selection:bg-[#191A43] selection:text-white flex flex-col justify-between">
@@ -43,6 +61,15 @@ export function OnboardingLayout({
                         {/* Mobile Stepper Header (< sm) */}
                         <div className="flex sm:hidden items-center justify-between mb-2">
                             <div className="flex items-center gap-2">
+                                {resolvedBackUrl && (
+                                    <Link
+                                        href={resolvedBackUrl}
+                                        className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors mr-1"
+                                        aria-label="Go to previous step"
+                                    >
+                                        <ArrowLeft className="w-3.5 h-3.5" />
+                                    </Link>
+                                )}
                                 <span className="inline-flex items-center justify-center px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wider uppercase bg-[#191A43] text-white">
                                     Step {currentStep} of 4
                                 </span>
@@ -60,9 +87,10 @@ export function OnboardingLayout({
                             {STEPS.map((s) => {
                                 const isComplete = currentStep > s.step
                                 const isActive = currentStep === s.step
-                                return (
+                                const isAccessible = s.step <= currentStep
+
+                                const bar = (
                                     <div
-                                        key={s.step}
                                         className={cn(
                                             "h-1.5 rounded-full transition-all duration-500",
                                             isComplete && "bg-emerald-500",
@@ -71,6 +99,16 @@ export function OnboardingLayout({
                                         )}
                                     />
                                 )
+
+                                if (isAccessible && s.step !== currentStep) {
+                                    return (
+                                        <Link key={s.step} href={s.href} className="block cursor-pointer">
+                                            {bar}
+                                        </Link>
+                                    )
+                                }
+
+                                return <div key={s.step}>{bar}</div>
                             })}
                         </div>
 
@@ -80,38 +118,48 @@ export function OnboardingLayout({
                                 const isComplete = currentStep > s.step
                                 const isActive = currentStep === s.step
                                 const isUpcoming = currentStep < s.step
+                                const isAccessible = s.step <= currentStep
+
+                                const stepContent = (
+                                    <div className="flex items-center gap-2.5 shrink-0 group">
+                                        <div
+                                            className={cn(
+                                                "w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300",
+                                                isComplete && "bg-emerald-500 text-white shadow-sm shadow-emerald-500/20 group-hover:scale-105",
+                                                isActive && "bg-[#191A43] text-white shadow-md shadow-[#191A43]/25 ring-3 ring-[#191A43]/15",
+                                                isUpcoming && "bg-slate-100 text-slate-400"
+                                            )}
+                                        >
+                                            {isComplete ? (
+                                                <Check className="w-3.5 h-3.5 stroke-[3]" />
+                                            ) : (
+                                                s.step
+                                            )}
+                                        </div>
+                                        <div className="flex flex-col">
+                                            <span
+                                                className={cn(
+                                                    "text-xs font-bold transition-colors duration-200",
+                                                    isActive && "text-[#191A43]",
+                                                    isComplete && "text-emerald-700 group-hover:text-emerald-800",
+                                                    isUpcoming && "text-slate-400"
+                                                )}
+                                            >
+                                                {s.label}
+                                            </span>
+                                        </div>
+                                    </div>
+                                )
 
                                 return (
                                     <div key={s.step} className="flex items-center gap-2 flex-1 last:flex-initial">
-                                        {/* Step Circle & Label */}
-                                        <div className="flex items-center gap-2.5 shrink-0">
-                                            <div
-                                                className={cn(
-                                                    "w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300",
-                                                    isComplete && "bg-emerald-500 text-white shadow-sm shadow-emerald-500/20",
-                                                    isActive && "bg-[#191A43] text-white shadow-md shadow-[#191A43]/25 ring-3 ring-[#191A43]/15",
-                                                    isUpcoming && "bg-slate-100 text-slate-400"
-                                                )}
-                                            >
-                                                {isComplete ? (
-                                                    <Check className="w-3.5 h-3.5 stroke-[3]" />
-                                                ) : (
-                                                    s.step
-                                                )}
-                                            </div>
-                                            <div className="flex flex-col">
-                                                <span
-                                                    className={cn(
-                                                        "text-xs font-bold transition-colors duration-200",
-                                                        isActive && "text-[#191A43]",
-                                                        isComplete && "text-emerald-700",
-                                                        isUpcoming && "text-slate-400"
-                                                    )}
-                                                >
-                                                    {s.label}
-                                                </span>
-                                            </div>
-                                        </div>
+                                        {isAccessible && s.step !== currentStep ? (
+                                            <Link href={s.href} className="cursor-pointer">
+                                                {stepContent}
+                                            </Link>
+                                        ) : (
+                                            stepContent
+                                        )}
 
                                         {/* Connector line */}
                                         {i < STEPS.length - 1 && (
@@ -133,9 +181,22 @@ export function OnboardingLayout({
 
                 {/* Main Content Area */}
                 <main className={cn(
-                    "mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-10 pb-16 w-full",
+                    "mx-auto px-4 sm:px-6 lg:px-8 pt-5 sm:pt-8 pb-16 w-full",
                     wide ? "max-w-7xl" : "max-w-xl"
                 )}>
+                    {/* Back button navigation for desktop/tablet */}
+                    {resolvedBackUrl && (
+                        <div className="mb-4">
+                            <Link
+                                href={resolvedBackUrl}
+                                className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-[#191A43] transition-colors py-1 px-2 rounded-lg hover:bg-slate-100/70 -ml-2"
+                            >
+                                <ArrowLeft className="w-3.5 h-3.5" />
+                                <span>{resolvedBackLabel}</span>
+                            </Link>
+                        </div>
+                    )}
+
                     {/* Title Section */}
                     <div className={cn("mb-6 sm:mb-8 onboarding-fade-in", centerHeader && "text-center")}>
                         <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-[#191A43] tracking-tight leading-tight mb-2">

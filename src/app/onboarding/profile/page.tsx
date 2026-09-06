@@ -2,7 +2,8 @@
 
 import { useState, useRef, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { ArrowRight, Camera, Loader2, Search, ChevronDown, Check, MapPin } from "lucide-react"
+import Link from "next/link"
+import { ArrowRight, ArrowLeft, Camera, Loader2, Search, ChevronDown, Check, MapPin } from "lucide-react"
 import { useOrganization } from "@clerk/nextjs"
 import { updateOrgProfile } from "@/app/actions/org-metadata"
 import { AppLoader } from "@/components/app-loader"
@@ -47,6 +48,16 @@ export default function BusinessProfilePage() {
 
     const [isLocationDropdownOpen, setIsLocationDropdownOpen] = useState(false)
     const locationDropdownRef = useRef<HTMLDivElement>(null)
+    const [imagePreview, setImagePreview] = useState<string | null>(null)
+    const fileInputRef = useRef<HTMLInputElement>(null)
+
+    const [formData, setFormData] = useState({
+        companyName: "",
+        contact: "",
+        location: "",
+        email: "",
+        website: ""
+    })
 
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
@@ -69,37 +80,47 @@ export default function BusinessProfilePage() {
             router.replace("/onboarding/organization")
             return
         }
+
         const metadata = organization?.publicMetadata as any
-        if (metadata?.location && metadata?.contact && metadata?.businessType) {
-            router.replace("/backoffice")
-        }
-    }, [isLoaded, organization, router])
+        
+        // Initialize form data from existing organization / metadata
+        if (formData.companyName === "") {
+            setFormData({
+                companyName: organization.name || "",
+                contact: metadata?.contact || "",
+                location: metadata?.location || "",
+                email: metadata?.secondaryEmail || "",
+                website: metadata?.website || ""
+            })
 
-    if (!isLoaded || (organization?.publicMetadata as any)?.location) {
-        return <AppLoader message="Syncing profile..." />
-    }
-    const [imagePreview, setImagePreview] = useState<string | null>(null)
-    const fileInputRef = useRef<HTMLInputElement>(null)
+            if (metadata?.contact) {
+                const matchedCountry = COUNTRIES.find(c => metadata.contact.startsWith(c.code))
+                if (matchedCountry) {
+                    setCountryCode(matchedCountry.code)
+                    setPhoneLocal(metadata.contact.replace(matchedCountry.code, "").trim())
+                } else {
+                    setPhoneLocal(metadata.contact.replace(/\D/g, ""))
+                }
+            }
 
-    const [formData, setFormData] = useState({
-        companyName: "",
-        contact: "",
-        location: "",
-        email: "",
-        website: ""
-    })
-
-    useEffect(() => {
-        if (isLoaded && organization && formData.companyName === "") {
-            setFormData(prev => ({
-                ...prev,
-                companyName: organization.name
-            }))
             if (organization.imageUrl && !imagePreview) {
                 setImagePreview(organization.imageUrl)
             }
         }
-    }, [isLoaded, organization, formData.companyName, imagePreview])
+
+        // Only redirect to dashboard if subscription is ALREADY completed
+        const subscriptionStatus = metadata?.subscriptionStatus as string
+        const isSubscribed = subscriptionStatus === 'active' || subscriptionStatus === 'trialing'
+        const isEditing = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('edit') === 'true'
+
+        if (isSubscribed && metadata?.location && metadata?.contact && !isEditing) {
+            router.replace("/backoffice")
+        }
+    }, [isLoaded, organization, router, formData.companyName, imagePreview])
+
+    if (!isLoaded) {
+        return <AppLoader message="Loading profile..." />
+    }
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target
@@ -141,9 +162,6 @@ export default function BusinessProfilePage() {
             const finalPayload = { ...formData, contact: finalContact }
 
             await updateOrgProfile(organization.id, finalPayload)
-            // Note: Logo upload to Clerk would typically happen via organization.setLogo()
-            // but for parity with current flow, we'll keep the imagePreview in localStorage for local UI only
-            // or we can rely on organization.imageUrl once it hits Clerk.
             localStorage.setItem("businessProfile", JSON.stringify({ ...finalPayload, imagePreview }))
 
             router.push("/onboarding/subscription")
@@ -176,9 +194,11 @@ export default function BusinessProfilePage() {
         <OnboardingLayout
             currentStep={3}
             title="Set up your profile"
-            subtitle="Add your business details. You can change these anytime."
+            subtitle="Add your business details. You can change these anytime in your backoffice."
+            backUrl="/onboarding/business-type"
+            backLabel="Back to Business Type"
         >
-            <form className="space-y-8" onSubmit={handleSubmit}>
+            <form className="space-y-6 sm:space-y-8" onSubmit={handleSubmit}>
 
                 {/* Logo Upload — Centered circle */}
                 <div className="flex flex-col items-center">
@@ -194,179 +214,172 @@ export default function BusinessProfilePage() {
                         type="button"
                         onClick={triggerFileInput}
                         className={cn(
-                            "h-24 w-24 rounded-full border-2 border-dashed flex items-center justify-center transition-all duration-200 cursor-pointer overflow-hidden relative group",
+                            "h-20 w-20 sm:h-24 sm:w-24 rounded-full border-2 border-dashed flex items-center justify-center transition-all duration-200 cursor-pointer overflow-hidden relative group",
                             imagePreview
                                 ? "border-[#191A43]/30 ring-2 ring-[#191A43]/10"
                                 : "border-slate-200 bg-slate-50 hover:bg-slate-100 hover:border-slate-300"
                         )}
                     >
                         {imagePreview ? (
-                            <div className="w-full h-full relative">
-                                <img src={imagePreview} alt="Logo preview" className="h-full w-full object-cover" />
-                                <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-full">
-                                    <Camera className="h-5 w-5 text-white drop-shadow-md" />
+                            <>
+                                <img
+                                    src={imagePreview}
+                                    alt="Logo preview"
+                                    className="h-full w-full object-cover"
+                                />
+                                <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <Camera className="h-5 w-5 text-white" />
                                 </div>
-                            </div>
+                            </>
                         ) : (
-                            <Camera className="h-5 w-5 text-slate-400 group-hover:text-slate-600 transition-colors" />
+                            <div className="flex flex-col items-center text-slate-400 group-hover:text-slate-600 transition-colors">
+                                <Camera className="h-6 w-6 stroke-[1.5]" />
+                            </div>
                         )}
                     </button>
-                    <p className="text-xs text-slate-400 mt-2">Upload logo (optional)</p>
+                    <span className="text-xs font-semibold text-slate-500 mt-2">
+                        {imagePreview ? "Change Logo" : "Upload Business Logo"}
+                    </span>
+                    <span className="text-[11px] text-slate-400">
+                        PNG or JPG up to 5MB
+                    </span>
                 </div>
 
-                {/* Company Name */}
+                {/* Business Name */}
                 <div className="space-y-2">
-                    <Label htmlFor="companyName" className="text-sm font-medium text-slate-700">
-                        Company Name <span className="text-red-500">*</span>
+                    <Label htmlFor="companyName" className="text-xs sm:text-sm font-semibold text-slate-700">
+                        Business Name <span className="text-red-500">*</span>
                     </Label>
                     <Input
                         id="companyName"
                         name="companyName"
-                        placeholder="e.g. Acme Corporation"
+                        placeholder="e.g. Royal Stitch Tailors"
                         required
                         value={formData.companyName}
                         onChange={handleInputChange}
-                        className="h-11 text-sm rounded-xl border-slate-200 bg-white focus-visible:ring-[#191A43] focus-visible:border-[#191A43] transition-all duration-200"
+                        className="h-11 text-sm rounded-xl border-slate-200 bg-white focus-visible:ring-[#191A43] transition-all duration-200"
                     />
                 </div>
 
-                {/* Phone + Email — side by side on desktop */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                    {/* Contact Number */}
-                    <div className="space-y-2">
-                        <Label htmlFor="contact" className="text-sm font-medium text-slate-700">
-                            Contact Number <span className="text-red-500">*</span>
-                        </Label>
-                        <div className="flex gap-2">
-                            <div className="relative shrink-0" ref={dropdownRef}>
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                                    className="h-11 px-3 rounded-xl border-slate-200 bg-white text-sm font-semibold flex items-center gap-1.5 hover:bg-slate-50 transition-all duration-200 cursor-pointer text-slate-700"
-                                >
-                                    <span className="text-base leading-none">{selectedCountry.flag}</span>
-                                    <span className="text-xs">{selectedCountry.code}</span>
-                                    <ChevronDown className={cn("h-3.5 w-3.5 opacity-50 transition-transform duration-200", isDropdownOpen && "rotate-180")} />
-                                </Button>
-                                {isDropdownOpen && (
-                                    <div className="absolute left-0 mt-1.5 p-1.5 w-64 rounded-xl shadow-xl border border-slate-100 bg-white z-50 animate-in fade-in-50 slide-in-from-top-1 duration-150">
-                                        <div className="flex items-center gap-2 px-2.5 pb-2 pt-1 border-b border-slate-100">
-                                            <Search className="h-3.5 w-3.5 text-slate-400 shrink-0" />
-                                            <input
-                                                type="text"
-                                                placeholder="Search country..."
-                                                value={searchQuery}
-                                                onChange={(e) => setSearchQuery(e.target.value)}
-                                                className="w-full bg-transparent border-0 p-0 text-sm focus:ring-0 focus:outline-none placeholder:text-slate-400 text-slate-800"
-                                                autoFocus
-                                            />
-                                        </div>
-                                        <div className="max-h-52 overflow-y-auto mt-1 space-y-0.5 custom-scrollbar">
-                                            {filteredCountries.length > 0 ? (
-                                                filteredCountries.map((c) => {
-                                                    const isSelected = c.code === countryCode && c.name === selectedCountry.name;
-                                                    return (
-                                                        <button
-                                                            key={`${c.name}-${c.code}`}
-                                                            type="button"
-                                                            onClick={() => {
-                                                                setCountryCode(c.code)
-                                                                setPhoneLocal("")
-                                                                setIsDropdownOpen(false)
-                                                                setSearchQuery("")
-                                                            }}
-                                                            className={cn(
-                                                                "w-full flex items-center justify-between px-2.5 py-2 rounded-lg text-left text-sm transition-all duration-150 cursor-pointer",
-                                                                isSelected
-                                                                    ? "bg-slate-100 font-semibold text-slate-900"
-                                                                    : "hover:bg-slate-50 text-slate-700"
-                                                            )}
-                                                        >
-                                                            <div className="flex items-center gap-2">
-                                                                <span className="text-base leading-none">{c.flag}</span>
-                                                                <span className="truncate max-w-[120px] text-sm">{c.name}</span>
-                                                            </div>
-                                                            <div className="flex items-center gap-1.5 shrink-0">
-                                                                <span className="text-xs text-slate-400 font-mono">{c.code}</span>
-                                                                {isSelected && <Check className="h-3.5 w-3.5 text-[#191A43] shrink-0" />}
-                                                            </div>
-                                                        </button>
-                                                    );
-                                                })
-                                            ) : (
-                                                <div className="py-4 text-center text-xs text-slate-400">
-                                                    No countries found
-                                                </div>
-                                            )}
-                                        </div>
+                {/* Contact Phone (International Selector) */}
+                <div className="space-y-2">
+                    <Label htmlFor="contact" className="text-xs sm:text-sm font-semibold text-slate-700">
+                        Business Phone Number <span className="text-red-500">*</span>
+                    </Label>
+                    <div className="flex gap-2">
+                        {/* Country Code Dropdown */}
+                        <div className="relative" ref={dropdownRef}>
+                            <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                                className="h-11 px-3 rounded-xl border-slate-200 bg-white hover:bg-slate-50 flex items-center gap-1.5 shrink-0 text-sm font-medium cursor-pointer"
+                            >
+                                <span className="text-base leading-none">{selectedCountry.flag}</span>
+                                <span className="text-xs text-slate-600 font-mono">{selectedCountry.code}</span>
+                                <ChevronDown className={cn("h-3.5 w-3.5 opacity-50 transition-transform duration-200", isDropdownOpen && "rotate-180")} />
+                            </Button>
+                            {isDropdownOpen && (
+                                <div className="absolute left-0 mt-1.5 p-1.5 w-64 rounded-xl shadow-xl border border-slate-100 bg-white z-50 animate-in fade-in-50 slide-in-from-top-1 duration-150">
+                                    <div className="flex items-center gap-2 px-2.5 pb-2 pt-1 border-b border-slate-100">
+                                        <Search className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                                        <input
+                                            type="text"
+                                            placeholder="Search country..."
+                                            value={searchQuery}
+                                            onChange={(e) => setSearchQuery(e.target.value)}
+                                            className="w-full bg-transparent border-0 p-0 text-sm focus:ring-0 focus:outline-none placeholder:text-slate-400 text-slate-800"
+                                            autoFocus
+                                        />
                                     </div>
-                                )}
-                            </div>
-                            <div className="flex-1 relative">
-                                <Input
-                                    id="contact"
-                                    name="contact"
-                                    type="tel"
-                                    placeholder={selectedCountry.placeholder}
-                                    required
-                                    value={phoneLocal}
-                                    onChange={(e) => {
-                                        const val = e.target.value.replace(/\D/g, "");
-                                        setPhoneLocal(val);
-                                    }}
-                                    className={cn(
-                                        "h-11 text-sm rounded-xl border-slate-200 bg-white focus-visible:ring-[#191A43] transition-all duration-200 pr-8",
-                                        phoneLocal && !isPhoneValid && "border-red-400 focus-visible:ring-red-400",
-                                        phoneLocal && isPhoneValid && "border-emerald-400 focus-visible:ring-emerald-400"
-                                    )}
-                                />
-                                {phoneLocal && (
-                                    <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
-                                        {isPhoneValid ? (
-                                            <Check className="h-3.5 w-3.5 text-emerald-500" />
+                                    <div className="max-h-52 overflow-y-auto mt-1 space-y-0.5 custom-scrollbar">
+                                        {filteredCountries.length > 0 ? (
+                                            filteredCountries.map((c) => {
+                                                const isSelected = c.code === countryCode && c.name === selectedCountry.name;
+                                                return (
+                                                    <button
+                                                        key={`${c.name}-${c.code}`}
+                                                        type="button"
+                                                        onClick={() => {
+                                                            setCountryCode(c.code)
+                                                            setPhoneLocal("")
+                                                            setIsDropdownOpen(false)
+                                                            setSearchQuery("")
+                                                        }}
+                                                        className={cn(
+                                                            "w-full flex items-center justify-between px-2.5 py-2 rounded-lg text-left text-sm transition-all duration-150 cursor-pointer",
+                                                            isSelected
+                                                                ? "bg-slate-100 font-semibold text-slate-900"
+                                                                : "hover:bg-slate-50 text-slate-700"
+                                                        )}
+                                                    >
+                                                        <div className="flex items-center gap-2">
+                                                            <span className="text-base leading-none">{c.flag}</span>
+                                                            <span className="truncate max-w-[120px] text-sm">{c.name}</span>
+                                                        </div>
+                                                        <div className="flex items-center gap-1.5 shrink-0">
+                                                            <span className="text-xs text-slate-400 font-mono">{c.code}</span>
+                                                            {isSelected && <Check className="h-3.5 w-3.5 text-[#191A43] shrink-0" />}
+                                                        </div>
+                                                    </button>
+                                                );
+                                            })
                                         ) : (
-                                            <span className="text-red-400 text-xs font-bold">✗</span>
+                                            <div className="py-4 text-center text-xs text-slate-400">
+                                                No countries found
+                                            </div>
                                         )}
                                     </div>
-                                )}
-                            </div>
+                                </div>
+                            )}
                         </div>
-                        {phoneLocal && !isPhoneValid && (
-                            <p className="text-xs text-red-500 mt-1">
-                                Enter a valid number ({selectedCountry.minLength === selectedCountry.maxLength ? `${selectedCountry.minLength}` : `${selectedCountry.minLength}-${selectedCountry.maxLength}`} digits).
-                            </p>
-                        )}
+                        <div className="flex-1 relative">
+                            <Input
+                                id="contact"
+                                name="contact"
+                                type="tel"
+                                placeholder={selectedCountry.placeholder}
+                                required
+                                value={phoneLocal}
+                                onChange={(e) => {
+                                    const val = e.target.value.replace(/\D/g, "");
+                                    setPhoneLocal(val);
+                                }}
+                                className={cn(
+                                    "h-11 text-sm rounded-xl border-slate-200 bg-white focus-visible:ring-[#191A43] transition-all duration-200 pr-8",
+                                    phoneLocal && !isPhoneValid && "border-red-400 focus-visible:ring-red-400",
+                                    phoneLocal && isPhoneValid && "border-emerald-500 focus-visible:ring-emerald-500"
+                                )}
+                            />
+                            {phoneLocal && isPhoneValid && (
+                                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-emerald-500 text-xs">✓</span>
+                            )}
+                        </div>
                     </div>
-
-                    {/* Email */}
-                    <div className="space-y-2">
-                        <Label htmlFor="email" className="text-sm font-medium text-slate-700">
-                            Email Address
-                        </Label>
-                        <Input
-                            id="email"
-                            name="email"
-                            type="email"
-                            placeholder="e.g. contact@acme.com"
-                            value={formData.email}
-                            onChange={handleInputChange}
-                            className="h-11 text-sm rounded-xl border-slate-200 bg-white focus-visible:ring-[#191A43] transition-all duration-200"
-                        />
-                    </div>
+                    {phoneLocal && !isPhoneValid && (
+                        <p className="text-[11px] text-red-500 mt-1">
+                            Please enter a valid {selectedCountry.name} phone number ({selectedCountry.minLength} digits)
+                        </p>
+                    )}
                 </div>
 
-                {/* Location */}
+                {/* Location / Landmark */}
                 <div className="space-y-2 relative" ref={locationDropdownRef}>
-                    <Label htmlFor="location" className="text-sm font-medium text-slate-700">
-                        Location / Address <span className="text-red-500">*</span>
-                    </Label>
+                    <div className="flex items-center justify-between">
+                        <Label htmlFor="location" className="text-xs sm:text-sm font-semibold text-slate-700">
+                            Shop / Pickup Location <span className="text-red-500">*</span>
+                        </Label>
+                        {formData.location && isLocationValid && (
+                            <span className="text-[11px] text-emerald-600 font-medium flex items-center gap-1">
+                                <Check className="w-3 h-3" /> Validated
+                            </span>
+                        )}
+                    </div>
                     <div className="relative">
-                        <MapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 z-10" />
                         <Input
                             id="location"
                             name="location"
-                            placeholder="e.g. East Legon, Accra"
+                            placeholder="e.g. Osu Oxford Street, near Danmorton House"
                             required
                             value={formData.location}
                             onChange={(e) => {
@@ -375,28 +388,19 @@ export default function BusinessProfilePage() {
                             }}
                             onFocus={() => setIsLocationDropdownOpen(true)}
                             className={cn(
-                                "h-11 pl-10 pr-8 text-sm rounded-xl border-slate-200 bg-white focus-visible:ring-[#191A43] transition-all duration-200",
-                                formData.location && !isLocationValid && "border-red-400 focus-visible:ring-red-400",
-                                formData.location && isLocationValid && "border-emerald-400 focus-visible:ring-emerald-400"
+                                "h-11 text-sm rounded-xl border-slate-200 bg-white focus-visible:ring-[#191A43] transition-all duration-200",
+                                formData.location && !isLocationValid && "border-amber-400 focus-visible:ring-amber-400",
+                                formData.location && isLocationValid && "border-emerald-500 focus-visible:ring-emerald-500"
                             )}
                         />
-                        {formData.location && (
-                            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
-                                {isLocationValid ? (
-                                    <Check className="h-3.5 w-3.5 text-emerald-500" />
-                                ) : (
-                                    <span className="text-red-400 text-xs font-bold">✗</span>
-                                )}
-                            </div>
-                        )}
                     </div>
 
-                    {/* Location Suggestions */}
+                    {/* Suggestions Dropdown */}
                     {isLocationDropdownOpen && locationSuggestions.length > 0 && (
-                        <div className="absolute left-0 right-0 top-full mt-1 p-1.5 rounded-xl shadow-xl border border-slate-100 bg-white z-50 animate-in fade-in-50 slide-in-from-top-1 max-h-48 overflow-y-auto custom-scrollbar">
-                            <div className="px-2.5 py-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                                Suggestions
-                            </div>
+                        <div className="absolute left-0 right-0 mt-1 p-1.5 rounded-xl shadow-lg border border-slate-100 bg-white z-50 animate-in fade-in-50 duration-150">
+                            <p className="px-2.5 py-1 text-[11px] font-medium text-slate-400">
+                                Suggested areas:
+                            </p>
                             {locationSuggestions.map((loc) => (
                                 <button
                                     key={loc}
@@ -405,7 +409,7 @@ export default function BusinessProfilePage() {
                                         setFormData(prev => ({ ...prev, location: loc }))
                                         setIsLocationDropdownOpen(false)
                                     }}
-                                    className="w-full text-left px-2.5 py-2 text-sm rounded-lg hover:bg-slate-50 flex items-center gap-2 text-slate-600 hover:text-slate-900 transition-colors"
+                                    className="w-full text-left px-2.5 py-2 text-sm rounded-lg hover:bg-slate-50 flex items-center gap-2 text-slate-600 hover:text-slate-900 transition-colors cursor-pointer"
                                 >
                                     <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                                     <span>{loc}</span>
@@ -415,23 +419,23 @@ export default function BusinessProfilePage() {
                     )}
 
                     {formData.location && !isLocationValid && locationValidation.reason && (
-                        <p className="text-xs text-red-500 mt-1">
+                        <p className="text-[11px] text-amber-600 mt-1">
                             {locationValidation.reason}
                         </p>
                     )}
                 </div>
 
-                {/* Website */}
+                {/* Optional Website */}
                 <div className="space-y-2">
-                    <Label htmlFor="website" className="text-sm font-medium text-slate-700">
-                        Website URL <span className="text-slate-400 font-normal text-xs">(optional)</span>
+                    <Label htmlFor="website" className="text-xs sm:text-sm font-semibold text-slate-700">
+                        Website or Instagram URL <span className="text-slate-400 font-normal text-xs">(optional)</span>
                     </Label>
                     <div className="relative">
                         <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm">🌐</span>
                         <Input
                             id="website"
                             name="website"
-                            placeholder="https://www.yourbusiness.com"
+                            placeholder="https://www.instagram.com/yourbusiness"
                             value={formData.website}
                             onChange={handleInputChange}
                             className="h-11 pl-9 text-sm rounded-xl border-slate-200 bg-white focus-visible:ring-[#191A43] transition-all duration-200"
@@ -439,16 +443,21 @@ export default function BusinessProfilePage() {
                     </div>
                 </div>
 
-                {/* Submit */}
-                <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-slate-100">
-                    <p className="text-xs text-slate-400 hidden sm:block">
-                        Next: Choose your plan
-                    </p>
+                {/* Action Buttons */}
+                <div className="flex flex-col-reverse sm:flex-row items-center justify-between gap-3 pt-4 border-t border-slate-100">
+                    <Link
+                        href="/onboarding/business-type"
+                        className="w-full sm:w-auto inline-flex items-center justify-center gap-2 h-11 px-5 rounded-xl text-xs sm:text-sm font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100/70 border border-slate-200 transition-all duration-200"
+                    >
+                        <ArrowLeft className="h-4 w-4" />
+                        Back to Business Type
+                    </Link>
+
                     <Button
                         type="submit"
                         disabled={isLoading || !isFormValid}
                         className={cn(
-                            "w-full sm:w-auto h-12 sm:h-11 px-8 rounded-xl text-sm font-semibold transition-all duration-200 sm:ml-auto cursor-pointer",
+                            "w-full sm:w-auto h-12 sm:h-11 px-8 rounded-xl text-sm font-semibold transition-all duration-200 cursor-pointer",
                             isFormValid
                                 ? "bg-[#191A43] hover:bg-[#25275e] text-white shadow-md shadow-[#191A43]/15"
                                 : "bg-slate-100 text-slate-400 cursor-not-allowed hover:bg-slate-100 shadow-none"
@@ -458,7 +467,7 @@ export default function BusinessProfilePage() {
                             <Loader2 className="h-4 w-4 animate-spin" />
                         ) : (
                             <div className="flex items-center justify-center gap-2">
-                                Complete Setup
+                                Continue to Plans
                                 <ArrowRight className="h-4 w-4" />
                             </div>
                         )}

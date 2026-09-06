@@ -1,9 +1,11 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
+import Link from "next/link"
 import {
     ArrowRight,
+    ArrowLeft,
     Truck,
     ShoppingBag,
     LucideIcon,
@@ -38,11 +40,8 @@ const TailoringIcon = ({ className, ...props }: React.ComponentProps<"svg">) => 
         className={className}
         {...props}
     >
-        {/* Needle diagonal */}
         <path d="m5 19 14-14" />
-        {/* Needle eye */}
         <circle cx="18" cy="6" r="1.5" />
-        {/* Thread loop through eye */}
         <path d="M18 6c2-2 4 1 2 3-3 3-8 8-8 8s-2 2-4 1" />
     </svg>
 )
@@ -60,9 +59,7 @@ const HairIcon = ({ className, ...props }: React.ComponentProps<"svg">) => (
         className={className}
         {...props}
     >
-        {/* Tied bundle band at top */}
         <rect x="9" y="3" width="6" height="2.5" rx="0.5" fill="currentColor" />
-        {/* Flowing wavy locks coming down */}
         <path d="M10 5.5c-1 3 1 7-1 11-1 3.5 0 5 1 7" />
         <path d="M12 5.5c-1 3 1 7-1 11-1 3.5 0 5 1 7" />
         <path d="M14 5.5c-1 3 1 7-1 11-1 3.5 0 5 1 7" />
@@ -81,13 +78,16 @@ export default function BusinessTypePage() {
             router.replace("/onboarding/organization")
             return
         }
-        if (organization?.publicMetadata?.businessType) {
-            router.replace("/onboarding/profile")
+        
+        // Pre-select saved business type if available
+        const savedType = (organization?.publicMetadata?.businessType as string) || (typeof window !== 'undefined' ? localStorage.getItem("businessType") : null)
+        if (savedType && !selectedType) {
+            setSelectedType(savedType)
         }
-    }, [isLoaded, organization, router])
+    }, [isLoaded, organization, router, selectedType])
 
-    if (!isLoaded || organization?.publicMetadata?.businessType) {
-        return <AppLoader message="Checking business setup..." />
+    if (!isLoaded) {
+        return <AppLoader message="Loading business types..." />
     }
 
     const businessTypes: BusinessType[] = [
@@ -143,10 +143,12 @@ export default function BusinessTypePage() {
         <OnboardingLayout
             currentStep={2}
             title="What type of business do you run?"
-            subtitle="We'll customize your dashboard and workflow to match."
+            subtitle="We'll customize your dashboard and workflow to match your industry."
+            backUrl="/onboarding/organization?restart=true"
+            backLabel="Back to Workspace"
         >
             {/* Selection Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-8">
                 {businessTypes.map((type) => (
                     <SelectionCard
                         key={type.id}
@@ -160,8 +162,16 @@ export default function BusinessTypePage() {
                 ))}
             </div>
 
-            {/* Confirm Button */}
-            <div className="flex justify-end pt-4 border-t border-slate-100">
+            {/* Action Buttons */}
+            <div className="flex flex-col-reverse sm:flex-row items-center justify-between gap-3 pt-4 border-t border-slate-100">
+                <Link
+                    href="/onboarding/organization?restart=true"
+                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 h-11 px-5 rounded-xl text-xs sm:text-sm font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100/70 border border-slate-200 transition-all duration-200"
+                >
+                    <ArrowLeft className="h-4 w-4" />
+                    Back to Workspace
+                </Link>
+
                 <Button
                     onClick={handleNext}
                     disabled={!selectedType || isLoading}
