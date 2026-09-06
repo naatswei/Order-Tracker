@@ -90,53 +90,41 @@ function getStatusTheme(statusText: string) {
         return {
             badge: "bg-emerald-50 text-emerald-700 border-emerald-200",
             dot: "bg-emerald-500",
-            leftBorder: "border-l-emerald-500",
-            activeButton: "bg-emerald-600 text-white shadow-emerald-600/20 border-emerald-600",
-            pill: "bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100"
+            leftBorder: "border-l-emerald-500"
         };
     }
     if (lower.includes("pick") && lower.includes("up")) {
         return {
             badge: "bg-amber-50 text-amber-700 border-amber-200",
             dot: "bg-amber-500",
-            leftBorder: "border-l-amber-500",
-            activeButton: "bg-amber-600 text-white shadow-amber-600/20 border-amber-600",
-            pill: "bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100"
+            leftBorder: "border-l-amber-500"
         };
     }
     if (lower.includes("transit") || lower.includes("delivery") || lower.includes("dispatched") || lower.includes("sewing") || lower.includes("production")) {
         return {
-            badge: "bg-blue-50 text-blue-700 border-blue-200",
-            dot: "bg-blue-500",
-            leftBorder: "border-l-blue-500",
-            activeButton: "bg-blue-600 text-white shadow-blue-600/20 border-blue-600",
-            pill: "bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100"
+            badge: "bg-indigo-50 text-indigo-700 border-indigo-200",
+            dot: "bg-indigo-500",
+            leftBorder: "border-l-indigo-500"
         };
     }
     if (lower.includes("facility") || lower.includes("sorting") || lower.includes("ready") || lower.includes("fitting")) {
         return {
             badge: "bg-purple-50 text-purple-700 border-purple-200",
             dot: "bg-purple-500",
-            leftBorder: "border-l-purple-500",
-            activeButton: "bg-purple-600 text-white shadow-purple-600/20 border-purple-600",
-            pill: "bg-purple-50 text-purple-700 border-purple-200 hover:bg-purple-100"
+            leftBorder: "border-l-purple-500"
         };
     }
     if (lower.includes("cancel") || lower.includes("delayed") || lower.includes("hold") || lower.includes("returned")) {
         return {
             badge: "bg-red-50 text-red-700 border-red-200",
             dot: "bg-red-500",
-            leftBorder: "border-l-red-500",
-            activeButton: "bg-red-600 text-white shadow-red-600/20 border-red-600",
-            pill: "bg-red-50 text-red-700 border-red-200 hover:bg-red-100"
+            leftBorder: "border-l-red-500"
         };
     }
     return {
         badge: "bg-slate-50 text-slate-700 border-slate-200",
         dot: "bg-slate-400",
-        leftBorder: "border-l-slate-400",
-        activeButton: "bg-[#191A43] text-white shadow-[#191A43]/20 border-[#191A43]",
-        pill: "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
+        leftBorder: "border-l-slate-400"
     };
 }
 
@@ -734,15 +722,15 @@ export default function OrderUpdatePage() {
                                             className={cn(
                                                 "p-2.5 rounded-2xl text-xs font-bold border transition-all text-left flex items-center justify-between gap-1.5 active:scale-95 shadow-2xs",
                                                 isSelected 
-                                                    ? theme.activeButton
-                                                    : theme.pill
+                                                    ? "bg-[#191A43] text-white border-[#191A43] shadow-sm shadow-[#191A43]/10"
+                                                    : "bg-white hover:bg-slate-50 text-slate-700 border-slate-200/90"
                                             )}
                                         >
-                                            <div className="flex items-center gap-1.5 min-w-0">
-                                                <span className={cn("w-2 h-2 rounded-full shrink-0", isSelected ? "bg-white" : theme.dot)} />
+                                            <div className="flex items-center gap-2 min-w-0">
+                                                <span className={cn("w-2 h-2 rounded-full shrink-0", theme.dot)} />
                                                 <span className="truncate">{qs}</span>
                                             </div>
-                                            {isSelected && <Check className="w-3.5 h-3.5 shrink-0" />}
+                                            {isSelected && <Check className="w-3.5 h-3.5 shrink-0 text-white" />}
                                         </button>
                                     )
                                 })}

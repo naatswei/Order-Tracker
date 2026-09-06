@@ -168,7 +168,7 @@ export async function createOrder(data: OrderInput): Promise<{ success: boolean;
                     discount: defaultDiscount
                 });
 
-                if (data.paymentMethod === "cash") {
+                if (data.paymentMethod === "cash" && data.businessType !== "logistics") {
                     await markInvoiceAsPaid(orderId, true); // silent = true
                 }
             } catch (invoiceErr) {
