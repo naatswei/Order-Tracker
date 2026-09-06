@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
 @import "tailwindcss";
 @plugin "tailwindcss-animate";
 
@@ -85,8 +86,8 @@
 }
 
 @theme inline {
-  --font-sans: "Geist", "Geist Fallback";
-  --font-mono: "Geist Mono", "Geist Mono Fallback";
+  --font-sans: var(--font-sans), "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "Geist Mono", "Geist Mono Fallback", monospace;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -133,7 +134,8 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans;
+    font-family: var(--font-sans);
   }
 
   .no-scrollbar::-webkit-scrollbar {
@@ -157,5 +159,21 @@
   }
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background: rgba(0, 0, 0, 0.2);
+  }
+
+  /* Onboarding page transition */
+  @keyframes onboarding-fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .onboarding-fade-in {
+    animation: onboarding-fade-in 0.5s ease-out both;
   }
 }

@@ -72,7 +72,7 @@ export const FREE_TRIAL_PLAN = {
         "Standard dashboard",
         "Email support"
     ],
-    buttonText: "Start 1-Month Free Trial",
+    buttonText: "Start Free Trial",
     buttonVariant: "secondary" as const,
     glowColor: "bg-pink-400/20",
     popular: false,

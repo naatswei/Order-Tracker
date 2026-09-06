@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Loader2, ArrowLeft, Camera, Settings, Building2, CreditCard, Check, Clock, Users } from "lucide-react"
+import { Loader2, ArrowLeft, Camera, Settings, Building2, CreditCard, Check, Clock, Users, Sparkles } from "lucide-react"
 import { getBusinessConfig } from "@/lib/business-configs"
 import { validateLocation } from "@/lib/location-validator"
 import Link from "next/link"
@@ -23,10 +23,72 @@ import { GHANA_BANKS } from "@/constants/banks"
 
 const PlanButton = dynamic(() => import("@/components/paystack-button"), {
     ssr: false,
-    loading: () => <Button disabled className="w-full h-11 bg-slate-100 text-slate-400">Loading...</Button>
+    loading: () => <Button disabled className="w-full h-10 bg-slate-100 text-slate-400 rounded-xl">Loading...</Button>
 })
 
 const plans = PRICING_PLANS;
+
+interface PlanTheme {
+    badgeText: string
+    badgeStyle: string
+    cardBorder: string
+    cardShadow: string
+    headerBg?: string
+    isDarkHeader?: boolean
+    priceColor: string
+    periodColor: string
+    savingsBadge?: string
+    savingsStyle?: string
+    buttonClass: string
+    checkBg: string
+    checkColor: string
+    checkBorder: string
+}
+
+const PLAN_THEMES: Record<string, PlanTheme> = {
+    "1-month": {
+        badgeText: "Flexible",
+        badgeStyle: "bg-indigo-50 text-indigo-700 border border-indigo-200/80",
+        cardBorder: "border-slate-200 hover:border-indigo-300",
+        cardShadow: "shadow-sm hover:shadow-xl",
+        priceColor: "text-slate-900",
+        periodColor: "text-slate-400",
+        buttonClass: "bg-slate-900 hover:bg-slate-800 text-white font-semibold shadow-sm",
+        checkBg: "bg-indigo-50",
+        checkColor: "text-indigo-600",
+        checkBorder: "border-indigo-200/60"
+    },
+    "3-months": {
+        badgeText: "Most Popular",
+        badgeStyle: "bg-indigo-500/20 text-indigo-200 border border-indigo-400/30 backdrop-blur-md",
+        cardBorder: "border-indigo-500/40 ring-2 ring-indigo-500/20",
+        cardShadow: "shadow-xl hover:shadow-2xl",
+        isDarkHeader: true,
+        headerBg: "bg-gradient-to-b from-[#090D16] via-[#0F172A] to-[#1E1B4B]",
+        priceColor: "text-white",
+        periodColor: "text-indigo-200",
+        savingsBadge: "Save GH₵ 148",
+        savingsStyle: "bg-amber-400/20 text-amber-300 border border-amber-400/30",
+        buttonClass: "bg-white text-slate-950 hover:bg-slate-100 font-bold shadow-md shadow-black/25",
+        checkBg: "bg-indigo-50",
+        checkColor: "text-indigo-600",
+        checkBorder: "border-indigo-200/60"
+    },
+    "1-year": {
+        badgeText: "Best Value",
+        badgeStyle: "bg-emerald-500 text-white font-bold shadow-sm shadow-emerald-500/30",
+        cardBorder: "border-emerald-200 hover:border-emerald-400 ring-1 ring-emerald-500/10",
+        cardShadow: "shadow-md hover:shadow-xl",
+        priceColor: "text-slate-900",
+        periodColor: "text-slate-400",
+        savingsBadge: "Save GH₵ 938",
+        savingsStyle: "bg-emerald-50 text-emerald-700 border border-emerald-200",
+        buttonClass: "bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-md shadow-emerald-600/25",
+        checkBg: "bg-emerald-50",
+        checkColor: "text-emerald-600",
+        checkBorder: "border-emerald-200/60"
+    }
+};
 
 export default function ProfilePage() {
     const router = useRouter()
@@ -314,9 +376,9 @@ export default function ProfilePage() {
     }
 
     const getPlanPeriodLabel = (plan: any) => {
-        if (plan.id === '1-month') return "mo";
-        if (plan.id === '3-months') return "3mo";
-        return "yr";
+        if (plan.id === '1-month') return "/ month";
+        if (plan.id === '3-months') return "/ 3 months";
+        return "/ year";
     }
 
     return (
@@ -834,90 +896,181 @@ export default function ProfilePage() {
                     <TabsContent value="subscription">
                         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6 sm:space-y-8">
                             {/* Current Plan Overview */}
-                            <Card className="border-slate-200 shadow-sm overflow-hidden bg-white rounded-3xl w-full sm:w-fit sm:min-w-[350px] pr-0 sm:pr-8">
-                                <CardContent className="p-5 sm:p-8">
-                                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 sm:gap-12">
-                                        <div className="space-y-2">
-                                            <h2 className="text-lg sm:text-xl font-bold flex flex-wrap sm:flex-nowrap items-center gap-2 sm:gap-3">
+                            <div className="bg-white border border-slate-200/80 rounded-2xl p-5 sm:p-6 w-full sm:w-fit sm:min-w-[340px] shadow-sm">
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                    <div className="space-y-1.5">
+                                        <div className="flex items-center gap-2.5">
+                                            <h2 className="text-base sm:text-lg font-bold text-slate-900 tracking-tight">
                                                 {subscriptionPlan ? `Current Plan (${subscriptionPlan})` : "Current Plan"}
-                                                <div className={cn(
-                                                    "text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider",
-                                                    subscriptionStatus === 'active' && !isExpired ? "bg-emerald-100 text-emerald-700" :
-                                                        subscriptionStatus === 'trialing' ? "bg-slate-100 text-slate-400" : "bg-red-100 text-red-700"
-                                                )}>
-                                                    {isExpired ? "Expired" : subscriptionStatus === 'trialing' ? "Free Trial" : subscriptionStatus}
-                                                </div>
                                             </h2>
-                                            {subscriptionExpiry ? (
-                                                <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-slate-500 font-medium">
-                                                    <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                                                    {isExpired ? "Expired on " : "Renews on "}
-                                                    <span className={cn("font-bold", isExpired ? "text-red-500" : "text-slate-800")}>
-                                                        {expiryDateObj?.toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' })}
-                                                    </span>
-                                                </div>
-                                            ) : (
-                                                <p className="text-sm text-slate-500 font-medium">No active subscription found.</p>
-                                            )}
+                                            <span className={cn(
+                                                "text-[10px] font-semibold px-2 py-0.5 rounded-full uppercase tracking-wider",
+                                                subscriptionStatus === 'active' && !isExpired
+                                                    ? "bg-emerald-50 text-emerald-700 border border-emerald-200/60"
+                                                    : subscriptionStatus === 'trialing'
+                                                        ? "bg-slate-100 text-slate-600"
+                                                        : "bg-red-50 text-red-700 border border-red-200/60"
+                                            )}>
+                                                {isExpired ? "Expired" : subscriptionStatus === 'trialing' ? "Free Trial" : subscriptionStatus}
+                                            </span>
                                         </div>
-                                        {isExpired && (
-                                            <Button className="h-11 px-8 rounded-full font-bold bg-[#CE0003] hover:bg-[#CE0003]/90 text-white shadow-[0_4px_20px_rgb(206,0,3,0.2)] transition-all hover:-translate-y-0.5 active:scale-[0.98]">
-                                                Renew Now
-                                            </Button>
+                                        {subscriptionExpiry ? (
+                                            <div className="flex items-center gap-1.5 text-xs text-slate-500 font-medium">
+                                                <Clock className="w-3.5 h-3.5 text-slate-400" />
+                                                <span>{isExpired ? "Expired on " : "Renews on "}</span>
+                                                <span className={cn("font-semibold", isExpired ? "text-red-500" : "text-slate-700")}>
+                                                    {expiryDateObj?.toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' })}
+                                                </span>
+                                            </div>
+                                        ) : (
+                                            <p className="text-xs text-slate-400 font-medium">No active subscription found.</p>
                                         )}
                                     </div>
-                                </CardContent>
-                            </Card>
+                                    {isExpired && (
+                                        <Button className="h-9 px-5 rounded-lg text-xs font-semibold bg-[#CE0003] hover:bg-[#CE0003]/90 text-white shadow-sm transition-all hover:-translate-y-0.5 active:scale-[0.98]">
+                                            Renew Now
+                                        </Button>
+                                    )}
+                                </div>
+                            </div>
 
                              {/* Upgrade Plans Grid */}
                             <div>
                                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-                                    <h3 className="text-base sm:text-lg font-bold text-slate-900">Extend your access</h3>
+                                    <div>
+                                        <h3 className="text-base sm:text-lg font-bold text-slate-900">Extend your access</h3>
+                                        <p className="text-xs text-slate-500 mt-0.5">Select a plan duration to renew or extend your business workspace.</p>
+                                    </div>
                                 </div>
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                    {plans.map((plan) => (
-                                        <Card
-                                            key={plan.name}
-                                            className={cn(
-                                                "border-slate-100 flex flex-col relative rounded-3xl shadow-sm",
-                                                plan.popular && "ring-2 ring-[#191A43] shadow-lg"
-                                            )}
-                                        >
-                                            {plan.popular && (
-                                                <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#191A43] text-white text-[8px] font-bold uppercase tracking-widest px-3 py-1 rounded-full shadow-sm">
-                                                    Recommended
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 items-stretch">
+                                    {plans.map((plan) => {
+                                        const theme = PLAN_THEMES[plan.id] || PLAN_THEMES["1-month"]
+                                        const isDark = theme.isDarkHeader
+
+                                        return (
+                                            <div
+                                                key={plan.name}
+                                                className={cn(
+                                                    "relative flex flex-col rounded-3xl transition-all duration-300 hover:-translate-y-1 bg-white overflow-hidden border",
+                                                    theme.cardBorder,
+                                                    theme.cardShadow
+                                                )}
+                                            >
+                                                {/* Card Top Section */}
+                                                {isDark ? (
+                                                    /* Featured Card: Dark Fluid Gradient Header */
+                                                    <div className={cn("p-5 sm:p-6 text-white relative overflow-hidden", theme.headerBg)}>
+                                                        <div className="absolute top-0 right-0 w-44 h-44 bg-indigo-500/20 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
+                                                        <div className="absolute bottom-0 left-0 w-32 h-32 bg-purple-500/15 rounded-full blur-2xl -ml-10 -mb-10 pointer-events-none" />
+
+                                                        <div className="relative z-10 flex flex-col">
+                                                            {/* Top Badge */}
+                                                            <div className="flex items-center justify-between gap-2 mb-3">
+                                                                <span className={cn("text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full inline-flex items-center gap-1 whitespace-nowrap", theme.badgeStyle)}>
+                                                                    <Sparkles className="w-2.5 h-2.5 text-indigo-300 shrink-0" />
+                                                                    {theme.badgeText}
+                                                                </span>
+                                                            </div>
+
+                                                            {/* Title & Description */}
+                                                            <h4 className="text-lg sm:text-xl font-bold text-white tracking-tight">{plan.name}</h4>
+                                                            <p className="text-xs text-slate-300 font-medium mt-1 leading-relaxed min-h-[32px]">{plan.description}</p>
+
+                                                            {/* Price Box with Savings Badge */}
+                                                            <div className="mt-3.5 mb-3.5 p-3 rounded-2xl bg-white/10 backdrop-blur-md border border-white/10">
+                                                                <div className="flex items-baseline justify-between gap-2">
+                                                                    <div className="flex items-baseline gap-1.5">
+                                                                        <span className="text-2xl sm:text-3xl font-black text-white tracking-tight">{getPlanPriceLabel(plan)}</span>
+                                                                        <span className="text-xs text-indigo-200 font-medium">{getPlanPeriodLabel(plan)}</span>
+                                                                    </div>
+                                                                    {theme.savingsBadge && (
+                                                                        <span className={cn("text-[9.5px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full whitespace-nowrap shrink-0", theme.savingsStyle)}>
+                                                                            {theme.savingsBadge}
+                                                                        </span>
+                                                                    )}
+                                                                </div>
+                                                            </div>
+
+                                                            {/* CTA Button */}
+                                                            <PlanButton
+                                                                plan={plan}
+                                                                publicKey={publicKey}
+                                                                organization={organization}
+                                                                user={user}
+                                                                onSuccess={() => handleActivateSubscription(plan.name)}
+                                                                isLoaded={isLoaded}
+                                                                className={theme.buttonClass}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                ) : (
+                                                    /* Light Card Header */
+                                                    <div className="p-5 sm:p-6 bg-white flex flex-col">
+                                                        {/* Top Badge */}
+                                                        <div className="flex items-center justify-between gap-2 mb-3">
+                                                            <span className={cn("text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full inline-flex items-center gap-1 whitespace-nowrap", theme.badgeStyle)}>
+                                                                {theme.badgeText}
+                                                            </span>
+                                                        </div>
+
+                                                        {/* Title & Description */}
+                                                        <h4 className="text-lg sm:text-xl font-bold text-[#191A43] tracking-tight">{plan.name}</h4>
+                                                        <p className="text-xs text-slate-500 font-medium mt-1 leading-relaxed min-h-[32px]">{plan.description}</p>
+
+                                                        {/* Price Box with Savings Badge */}
+                                                        <div className="mt-3.5 mb-3.5 p-3 rounded-2xl bg-slate-50/80 border border-slate-100">
+                                                            <div className="flex items-baseline justify-between gap-2">
+                                                                <div className="flex items-baseline gap-1.5">
+                                                                    <span className="text-2xl sm:text-3xl font-black text-[#191A43] tracking-tight">{getPlanPriceLabel(plan)}</span>
+                                                                    <span className="text-xs text-slate-400 font-medium">{getPlanPeriodLabel(plan)}</span>
+                                                                </div>
+                                                                {theme.savingsBadge && (
+                                                                    <span className={cn("text-[9.5px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full whitespace-nowrap shrink-0", theme.savingsStyle)}>
+                                                                        {theme.savingsBadge}
+                                                                    </span>
+                                                                )}
+                                                            </div>
+                                                        </div>
+
+                                                        {/* CTA Button */}
+                                                        <PlanButton
+                                                            plan={plan}
+                                                            publicKey={publicKey}
+                                                            organization={organization}
+                                                            user={user}
+                                                            onSuccess={() => handleActivateSubscription(plan.name)}
+                                                            isLoaded={isLoaded}
+                                                            className={theme.buttonClass}
+                                                        />
+                                                    </div>
+                                                )}
+
+                                                {/* Features Section */}
+                                                <div className="p-5 sm:p-6 pt-4 flex-1 flex flex-col justify-between bg-white border-t border-slate-100/80">
+                                                    <div>
+                                                        <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-3.5">
+                                                            What's included
+                                                        </p>
+                                                        <ul className="space-y-3">
+                                                            {plan.features.map((feature: string, idx: number) => (
+                                                                <li key={idx} className="flex items-start gap-2.5 text-xs sm:text-[13px] leading-snug">
+                                                                    <div className={cn(
+                                                                        "w-4 h-4 rounded-full flex items-center justify-center shrink-0 mt-0.5 border",
+                                                                        theme.checkBg,
+                                                                        theme.checkColor,
+                                                                        theme.checkBorder
+                                                                    )}>
+                                                                        <Check className="w-2.5 h-2.5 stroke-[3]" />
+                                                                    </div>
+                                                                    <span className="text-slate-600 font-medium">{feature}</span>
+                                                                </li>
+                                                            ))}
+                                                        </ul>
+                                                    </div>
                                                 </div>
-                                            )}
-                                            <CardHeader className="p-4 sm:p-6 pb-0">
-                                                <div className="text-base sm:text-lg font-bold text-slate-900">{plan.name}</div>
-                                                <div className="text-xs text-slate-500">{plan.description}</div>
-                                            </CardHeader>
-                                            <CardContent className="p-0 pt-4 sm:pt-6 flex-1 flex flex-col">
-                                                <div className="mb-4 sm:mb-6 px-4 sm:px-6">
-                                                    <span className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">{getPlanPriceLabel(plan)}</span>
-                                                    <span className="text-xs text-slate-500 font-medium ml-1">/{getPlanPeriodLabel(plan)}</span>
-                                                </div>
-                                                <ul className="space-y-3 mb-8 flex-1 px-4 sm:px-6">
-                                                    {plan.features.map((feature, idx) => (
-                                                        <li key={idx} className="flex items-start gap-2 text-[12px] font-medium text-slate-600">
-                                                            <Check className="w-3.5 h-3.5 text-emerald-500 mt-0.5 shrink-0" />
-                                                            {feature}
-                                                        </li>
-                                                    ))}
-                                                </ul>
-                                                <div className="p-4 sm:p-6 pt-0">
-                                                    <PlanButton
-                                                        plan={plan}
-                                                        publicKey={publicKey}
-                                                        organization={organization}
-                                                        user={user}
-                                                        onSuccess={() => handleActivateSubscription(plan.name)}
-                                                        isLoaded={isLoaded}
-                                                    />
-                                                </div>
-                                            </CardContent>
-                                        </Card>
-                                    ))}
+                                            </div>
+                                        )
+                                    })}
                                 </div>
                             </div>
                         </motion.div>

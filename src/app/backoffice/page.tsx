@@ -174,7 +174,7 @@ export default function BackofficePage() {
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-16 sm:pt-20 pb-8 sm:pb-12 max-w-[1400px] space-y-8 sm:space-y-[70px]">
                 {/* Actions Bar */}
                 <div className="space-y-3">
-                    <h2 className="text-[10px] uppercase font-bold tracking-[0.2em] text-[#191A43] ml-1">Track Order</h2>
+                    <h2 className="text-xs uppercase font-bold tracking-wider text-slate-500 ml-1">Track Order</h2>
                     <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
                         {/* Search Input */}
                         <div className="relative w-full lg:flex-1 lg:max-w-xl">

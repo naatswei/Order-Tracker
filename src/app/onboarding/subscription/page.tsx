@@ -1,28 +1,98 @@
 "use client"
 
-import { Check } from "lucide-react"
+import { Check, ShieldCheck, Sparkles } from "lucide-react"
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { useOrganization, useUser } from "@clerk/nextjs"
 import { updateOrgSubscriptionStatus } from "@/app/actions/org-metadata"
 import { AppLoader } from "@/components/app-loader"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
-import Link from "next/link"
 import dynamic from "next/dynamic"
-import { OnboardingHeader } from "@/components/onboarding-header"
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { OnboardingLayout } from "@/components/onboarding-layout"
 import { PRICING_PLANS, FREE_TRIAL_PLAN } from "@/constants/pricing"
 
 const PlanButton = dynamic(() => import("@/components/paystack-button"), {
     ssr: false,
-    loading: () => <Button disabled className="w-full h-12 bg-slate-100 text-slate-400">Loading...</Button>
+    loading: () => <Button disabled className="w-full h-11 bg-slate-100 text-slate-400 rounded-xl">Loading...</Button>
 })
 
+const plans = PRICING_PLANS
 
-const plans = PRICING_PLANS;
+interface PlanTheme {
+    badgeText: string
+    badgeStyle: string
+    cardBorder: string
+    cardShadow: string
+    headerBg?: string
+    isDarkHeader?: boolean
+    priceColor: string
+    periodColor: string
+    savingsBadge?: string
+    savingsStyle?: string
+    buttonClass: string
+    checkBg: string
+    checkColor: string
+    checkBorder: string
+}
+
+const PLAN_THEMES: Record<string, PlanTheme> = {
+    "free-trial": {
+        badgeText: "30-Day Free Trial",
+        badgeStyle: "bg-sky-50 text-sky-700 border border-sky-200/80",
+        cardBorder: "border-slate-200 hover:border-sky-300",
+        cardShadow: "shadow-sm hover:shadow-xl",
+        priceColor: "text-slate-900",
+        periodColor: "text-slate-400",
+        buttonClass: "bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-200/90 font-semibold shadow-none",
+        checkBg: "bg-sky-50",
+        checkColor: "text-sky-600",
+        checkBorder: "border-sky-200/60"
+    },
+    "1-month": {
+        badgeText: "Flexible",
+        badgeStyle: "bg-indigo-50 text-indigo-700 border border-indigo-200/80",
+        cardBorder: "border-slate-200 hover:border-indigo-300",
+        cardShadow: "shadow-sm hover:shadow-xl",
+        priceColor: "text-slate-900",
+        periodColor: "text-slate-400",
+        buttonClass: "bg-slate-900 hover:bg-slate-800 text-white font-semibold shadow-sm",
+        checkBg: "bg-indigo-50",
+        checkColor: "text-indigo-600",
+        checkBorder: "border-indigo-200/60"
+    },
+    "3-months": {
+        badgeText: "Most Popular",
+        badgeStyle: "bg-indigo-500/20 text-indigo-200 border border-indigo-400/30 backdrop-blur-md",
+        cardBorder: "border-indigo-500/40 ring-2 ring-indigo-500/20",
+        cardShadow: "shadow-xl hover:shadow-2xl",
+        isDarkHeader: true,
+        headerBg: "bg-gradient-to-b from-[#090D16] via-[#0F172A] to-[#1E1B4B]",
+        priceColor: "text-white",
+        periodColor: "text-indigo-200",
+        savingsBadge: "Save GH₵ 148",
+        savingsStyle: "bg-amber-400/15 text-amber-300 border border-amber-400/25",
+        buttonClass: "bg-white text-slate-950 hover:bg-slate-100 font-bold shadow-lg shadow-black/25",
+        checkBg: "bg-indigo-50",
+        checkColor: "text-indigo-600",
+        checkBorder: "border-indigo-200/60"
+    },
+    "1-year": {
+        badgeText: "Best Value",
+        badgeStyle: "bg-emerald-500 text-white font-bold shadow-sm shadow-emerald-500/30",
+        cardBorder: "border-emerald-200 hover:border-emerald-400 ring-1 ring-emerald-500/10",
+        cardShadow: "shadow-md hover:shadow-xl",
+        priceColor: "text-slate-900",
+        periodColor: "text-slate-400",
+        savingsBadge: "Save GH₵ 938",
+        savingsStyle: "bg-emerald-50 text-emerald-700 border border-emerald-200",
+        buttonClass: "bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-md shadow-emerald-600/25",
+        checkBg: "bg-emerald-50",
+        checkColor: "text-emerald-600",
+        checkBorder: "border-emerald-200/60"
+    }
+}
 
 export default function SubscriptionPage() {
     const router = useRouter()
@@ -52,15 +122,13 @@ export default function SubscriptionPage() {
 
         // CRITICAL: If they have an active plan and reached this page, 
         // we should automatically send them to the dashboard.
-        // This solves the issue for "not a new user" cases who land here accidentally.
         if (isSubscribed && !isExpired) {
             router.replace("/backoffice")
             return
         }
 
-        // Set whether they can go back to dashboard safely without a redirect loop
         setCanGoBack(true)
-    }, [isLoaded, organization, router])
+    }, [isLoaded, organization, router, userLoaded])
 
     const isLoading = !isLoaded || !userLoaded
     const metadata = organization?.publicMetadata as any
@@ -73,7 +141,7 @@ export default function SubscriptionPage() {
             // Calculate expiry date
             const now = new Date()
             let expiryDays = 30
-            
+
             const selectedPlan = [...plans, FREE_TRIAL_PLAN].find(p => p.name === planName)
             if (selectedPlan) {
                 expiryDays = selectedPlan.durationDays
@@ -95,7 +163,7 @@ export default function SubscriptionPage() {
                 localStorage.setItem("subscriptionStatus", 'active')
                 localStorage.setItem("subscriptionExpiry", expiryDate)
                 localStorage.setItem("lastActivation", Date.now().toString())
-                
+
                 toast.success(`${planName} activated!`)
                 window.location.href = "/backoffice"
             }
@@ -105,50 +173,22 @@ export default function SubscriptionPage() {
         }
     }
 
-    const handleSelectPlan = async (plan: any) => {
-        if (!isLoaded || redirectingPlan || !organization) return
-
-        // 1. If it's the Free Trial, activate immediately
-        if (plan.name === "Free Trial") {
-            setRedirectingPlan(plan.name)
-            await handleActivateSubscription(plan.name)
-            return
-        }
-
-        // 2. For paid plans, trigger Paystack
-        if (!publicKey) {
-            toast.error("Payment system configuration missing. Please contact support.")
-            return
-        }
-
-        const amountInGHS = parseInt(plan.price.replace(/[^0-9]/g, ""))
-        const amountInKobo = amountInGHS * 100
-
-        const config = {
-            reference: (new Date()).getTime().toString(),
-            email: organization.publicMetadata?.adminEmail as string || user?.emailAddresses[0].emailAddress || "",
-            amount: amountInKobo,
-            publicKey: publicKey,
-            currency: "GHS",
-        }
-    }
-
     const getPlanPriceLabel = (plan: any) => {
-        if (plan.price === 0) return "Free";
-        return `GH₵ ${plan.price}`;
+        if (plan.price === 0) return "Free"
+        return `GH₵ ${plan.price}`
     }
 
     const getPlanPeriodLabel = (plan: any) => {
-        if (plan.id === 'free-trial') return "/1 month";
-        if (plan.id === '1-month') return "/month";
-        if (plan.id === '3-months') return "/3 months";
-        return "/year";
+        if (plan.id === 'free-trial') return "/ 30 days"
+        if (plan.id === '1-month') return "/ month"
+        if (plan.id === '3-months') return "/ 3 months"
+        return "/ year"
     }
 
     // Prevent Free Trial reuse by checking trial flags explicitly
-    const hasSubscriptionHistory = isLoading || 
-        !!metadata?.subscriptionStatus || 
-        !!metadata?.trialUsed || 
+    const hasSubscriptionHistory = isLoading ||
+        !!metadata?.subscriptionStatus ||
+        !!metadata?.trialUsed ||
         !!userMetadata?.hasUsedTrial
 
     useEffect(() => {
@@ -175,71 +215,84 @@ export default function SubscriptionPage() {
     }
 
     return (
-        <div className="min-h-screen bg-[#F8FAFC]">
-            {/* Header */}
-            <OnboardingHeader />
+        <OnboardingLayout
+            currentStep={4}
+            title="Choose your plan"
+            subtitle="All plans include complete platform access. Pick the duration that works best for your team."
+            wide
+            centerHeader
+        >
+            {/* Value Highlights Pill */}
+            <div className="flex items-center justify-center gap-6 mb-8 text-xs font-medium text-slate-500">
+                <span className="flex items-center gap-1.5">
+                    <Check className="w-3.5 h-3.5 text-emerald-500" />
+                    No setup fees
+                </span>
+                <span className="flex items-center gap-1.5">
+                    <Check className="w-3.5 h-3.5 text-emerald-500" />
+                    Instant activation
+                </span>
+                <span className="flex items-center gap-1.5 hidden sm:inline-flex">
+                    <Check className="w-3.5 h-3.5 text-emerald-500" />
+                    Cancel anytime
+                </span>
+            </div>
 
-            <div className="pt-10 pb-20 px-4 sm:px-6 lg:px-8">
-                <div className="max-w-7xl w-full mx-auto space-y-12">
-                    {/* Header Section */}
-                    <div className="text-center space-y-4">
-                        <h1 className="text-3xl font-bold text-[#101323] tracking-tight">
-                            Ready to grow your business?
-                        </h1>
-                        <p className="text-sm font-medium text-slate-400 max-w-2xl mx-auto">
-                            Choose the duration that fits your business. All plans include full application access.
-                        </p>
-                    </div>
+            {/* Plan Cards Grid */}
+            <div className={cn(
+                "grid grid-cols-1 md:grid-cols-2 gap-5 items-stretch",
+                displayPlans.length === 3 ? "lg:grid-cols-3" : "lg:grid-cols-4"
+            )}>
+                {displayPlans.map((plan) => {
+                    const theme = PLAN_THEMES[plan.id] || PLAN_THEMES["1-month"]
+                    const isDark = theme.isDarkHeader
 
-                    {/* Cards Grid */}
-                    <div className={cn("grid grid-cols-1 md:grid-cols-2 gap-6 pt-6", displayPlans.length === 3 ? "lg:grid-cols-3 max-w-5xl mx-auto" : "lg:grid-cols-4")}>
-                        {displayPlans.map((plan) => (
-                            <div key={plan.name} className="relative group">
-                                {plan.popular && (
-                                    <div className="absolute -top-12 left-0 right-0 bg-[#161931] h-24 rounded-t-[1.5rem] -z-10 flex justify-center pt-3">
-                                        <div className="bg-white text-[#161931] text-[10px] font-bold uppercase tracking-widest px-6 py-1.5 rounded-full h-fit">
-                                            Most Popular
+                    return (
+                        <div
+                            key={plan.name}
+                            className={cn(
+                                "relative flex flex-col rounded-3xl transition-all duration-300 hover:-translate-y-1 bg-white overflow-hidden border",
+                                theme.cardBorder,
+                                theme.cardShadow
+                            )}
+                        >
+                            {/* Card Top Section */}
+                            {isDark ? (
+                                /* Featured Card: Dark Fluid Gradient Header (Reference Inspired!) */
+                                <div className={cn("p-5 sm:p-6 text-white relative overflow-hidden", theme.headerBg)}>
+                                    {/* Decorative subtle ambient wave glow */}
+                                    <div className="absolute top-0 right-0 w-44 h-44 bg-indigo-500/20 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
+                                    <div className="absolute bottom-0 left-0 w-32 h-32 bg-purple-500/15 rounded-full blur-2xl -ml-10 -mb-10 pointer-events-none" />
+
+                                    <div className="relative z-10 flex flex-col">
+                                        {/* Top Badge (Compact, single-line, never wraps) */}
+                                        <div className="flex items-center justify-between gap-2 mb-3">
+                                            <span className={cn("text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full inline-flex items-center gap-1 whitespace-nowrap", theme.badgeStyle)}>
+                                                <Sparkles className="w-2.5 h-2.5 text-indigo-300 shrink-0" />
+                                                {theme.badgeText}
+                                            </span>
                                         </div>
-                                    </div>
-                                )}
-                                <Card
-                                    className={cn(
-                                        "relative flex flex-col border-0 rounded-[1.5rem] p-8 shadow-sm transition-all duration-300 hover:shadow-xl hover:-translate-y-1 h-full text-[#101323]",
-                                        plan.popular ? "bg-white ring-2 ring-[#161931] shadow-2xl" : "bg-white",
-                                        plan.popular && "mt-0"
-                                    )}
-                                >
-                                    {plan.id === "1-year" && (
-                                        <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#00B171] text-white text-[10px] font-bold uppercase tracking-widest px-4 py-1.5 rounded-full shadow-sm whitespace-nowrap z-20">
-                                            BEST VALUE
-                                        </div>
-                                    )}
-                                    <CardHeader className="space-y-1 p-0">
-                                        <h3 className="text-2xl font-extrabold tracking-tight text-[#101323]">{plan.name}</h3>
-                                        <p className="text-[14px] font-medium text-slate-400">{plan.description}</p>
-                                    </CardHeader>
 
-                                    <CardContent className="flex-1 p-0 pt-12">
-                                        <div className="mb-10 flex items-baseline gap-2">
-                                            <span className="text-3xl font-black tracking-tight text-[#101323]">{getPlanPriceLabel(plan)}</span>
-                                            <span className="text-[14px] font-medium text-slate-400">{getPlanPeriodLabel(plan)}</span>
-                                        </div>
+                                        {/* Title & Description */}
+                                        <h3 className="text-lg sm:text-xl font-bold text-white tracking-tight">{plan.name}</h3>
+                                        <p className="text-xs text-slate-300 font-medium mt-1 leading-relaxed min-h-[32px]">{plan.description}</p>
 
-                                        <ul className="space-y-5">
-                                            {plan.features.map((feature, idx) => (
-                                                <li key={idx} className="flex items-center gap-4 text-[15px] font-medium">
-                                                    <div className="w-6 h-6 rounded-full bg-blue-50 text-blue-500 flex items-center justify-center shrink-0">
-                                                        <Check className="w-3.5 h-3.5" strokeWidth={3} />
-                                                    </div>
-                                                    <span className="text-[#101323]/90">
-                                                        {feature}
+                                        {/* Price Box with Savings Badge */}
+                                        <div className="mt-3.5 mb-3.5 p-3 rounded-2xl bg-white/10 backdrop-blur-md border border-white/10">
+                                            <div className="flex items-baseline justify-between gap-2">
+                                                <div className="flex items-baseline gap-1.5">
+                                                    <span className="text-2xl sm:text-3xl font-black text-white tracking-tight">{getPlanPriceLabel(plan)}</span>
+                                                    <span className="text-xs text-indigo-200 font-medium">{getPlanPeriodLabel(plan)}</span>
+                                                </div>
+                                                {theme.savingsBadge && (
+                                                    <span className={cn("text-[9.5px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full whitespace-nowrap shrink-0", theme.savingsStyle)}>
+                                                        {theme.savingsBadge}
                                                     </span>
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    </CardContent>
+                                                )}
+                                            </div>
+                                        </div>
 
-                                    <CardFooter className="p-0 pt-10">
+                                        {/* CTA Button */}
                                         <PlanButton
                                             plan={plan}
                                             publicKey={publicKey}
@@ -247,49 +300,96 @@ export default function SubscriptionPage() {
                                             user={user}
                                             onSuccess={() => handleActivateSubscription(plan.name)}
                                             isLoaded={isLoaded}
+                                            className={theme.buttonClass}
                                         />
-                                    </CardFooter>
-                                </Card>
+                                    </div>
+                                </div>
+                            ) : (
+                                /* Light Card Header */
+                                <div className="p-5 sm:p-6 bg-white flex flex-col">
+                                    {/* Top Badge (Compact, single-line, never wraps) */}
+                                    <div className="flex items-center justify-between gap-2 mb-3">
+                                        <span className={cn("text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full inline-flex items-center gap-1 whitespace-nowrap", theme.badgeStyle)}>
+                                            {theme.badgeText}
+                                        </span>
+                                    </div>
+
+                                    {/* Title & Description */}
+                                    <h3 className="text-lg sm:text-xl font-bold text-[#191A43] tracking-tight">{plan.name}</h3>
+                                    <p className="text-xs text-slate-500 font-medium mt-1 leading-relaxed min-h-[32px]">{plan.description}</p>
+
+                                    {/* Price Box with Savings Badge */}
+                                    <div className="mt-3.5 mb-3.5 p-3 rounded-2xl bg-slate-50/80 border border-slate-100">
+                                        <div className="flex items-baseline justify-between gap-2">
+                                            <div className="flex items-baseline gap-1.5">
+                                                <span className="text-2xl sm:text-3xl font-black text-[#191A43] tracking-tight">{getPlanPriceLabel(plan)}</span>
+                                                <span className="text-xs text-slate-400 font-medium">{getPlanPeriodLabel(plan)}</span>
+                                            </div>
+                                            {theme.savingsBadge && (
+                                                <span className={cn("text-[9.5px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full whitespace-nowrap shrink-0", theme.savingsStyle)}>
+                                                    {theme.savingsBadge}
+                                                </span>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    {/* CTA Button */}
+                                    <PlanButton
+                                        plan={plan}
+                                        publicKey={publicKey}
+                                        organization={organization}
+                                        user={user}
+                                        onSuccess={() => handleActivateSubscription(plan.name)}
+                                        isLoaded={isLoaded}
+                                        className={theme.buttonClass}
+                                    />
+                                </div>
+                            )}
+
+                            {/* Features Section */}
+                            <div className="p-5 sm:p-6 pt-4 flex-1 flex flex-col justify-between bg-white border-t border-slate-100/80">
+                                <div>
+                                    <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-3.5">
+                                        What's included
+                                    </p>
+                                    <ul className="space-y-3">
+                                        {plan.features.map((feature: string, idx: number) => (
+                                            <li key={idx} className="flex items-start gap-2.5 text-xs sm:text-[13px] leading-snug">
+                                                <div className={cn(
+                                                    "w-4 h-4 rounded-full flex items-center justify-center shrink-0 mt-0.5 border",
+                                                    theme.checkBg,
+                                                    theme.checkColor,
+                                                    theme.checkBorder
+                                                )}>
+                                                    <Check className="w-2.5 h-2.5 stroke-[3]" />
+                                                </div>
+                                                <span className="text-slate-600 font-medium">{feature}</span>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
                             </div>
-                        ))}
-                    </div>
-
-                    <div className="pt-20 grid grid-cols-1 md:grid-cols-3 gap-12 border-t border-slate-100">
-                        <div className="space-y-3">
-                            <h3 className="font-bold text-[#101323]">Real-time Tracking</h3>
-                            <p className="text-sm text-slate-500 leading-relaxed">
-                                Give your customers peace of mind with instant updates on their order status, from pickup to delivery.
-                            </p>
                         </div>
-                        <div className="space-y-3">
-                            <h3 className="font-bold text-[#101323]">Team Collaboration</h3>
-                            <p className="text-sm text-slate-500 leading-relaxed">
-                                Invite your staff and managers to help manage orders, update statuses, and track business performance.
-                            </p>
-                        </div>
-                        <div className="space-y-3">
-                            <h3 className="font-bold text-[#101323]">Data Insights</h3>
-                            <p className="text-sm text-slate-500 leading-relaxed">
-                                Understand your business better with insights into your most popular items and peak order times.
-                            </p>
-                        </div>
-                    </div>
-
-                    <div className="pt-10 flex flex-col items-center space-y-4">
-                        <p className="text-[12px] font-medium text-slate-300 flex items-center gap-2">
-                            Payments secured by
-                            <img
-                                src="https://upload.wikimedia.org/wikipedia/commons/f/f9/Paystack_Logo.svg"
-                                alt="Paystack"
-                                className="h-4 w-auto opacity-80"
-                            />
-                        </p>
-                    </div>
-                </div>
+                    )
+                })}
             </div>
-        </div >
+
+            {/* Trust & Paystack Attribution */}
+            <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-4 text-xs text-slate-400">
+                <div className="flex items-center gap-1.5 text-slate-400">
+                    <ShieldCheck className="w-4 h-4 text-emerald-500" />
+                    <span>256-bit secure encrypted transaction</span>
+                </div>
+                <span className="hidden sm:inline text-slate-300">•</span>
+                <p className="flex items-center gap-2">
+                    Payments powered by
+                    <img
+                        src="https://upload.wikimedia.org/wikipedia/commons/f/f9/Paystack_Logo.svg"
+                        alt="Paystack"
+                        className="h-3.5 w-auto opacity-70"
+                    />
+                </p>
+            </div>
+        </OnboardingLayout>
     )
 }
-
-
-

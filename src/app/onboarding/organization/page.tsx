@@ -1,15 +1,14 @@
 "use client"
 
-import { OrganizationList, useOrganization, SignOutButton, useOrganizationList } from "@clerk/nextjs"
+import { OrganizationList, useOrganization, useOrganizationList, useUser } from "@clerk/nextjs"
 import { useRouter } from "next/navigation"
 import { useEffect } from "react"
-import { LogOut } from "lucide-react"
-import { Button } from "@/components/ui/button"
 import { AppLoader } from "@/components/app-loader"
-import { OnboardingHeader } from "@/components/onboarding-header"
+import { OnboardingLayout } from "@/components/onboarding-layout"
 
 export default function OrganizationSelectionPage() {
     const { organization, isLoaded } = useOrganization()
+    const { user } = useUser()
     const { userMemberships, isLoaded: membershipsLoaded, setActive } = useOrganizationList({
         userMemberships: {
             infinite: true,
@@ -60,42 +59,47 @@ export default function OrganizationSelectionPage() {
         return <AppLoader message="Loading your workspace..." />
     }
 
+    const firstName = user?.firstName || ""
+
     return (
-        <div className="min-h-screen bg-[#FAFAFA]">
-            {/* Standard Header */}
-            <OnboardingHeader />
-
-            <div className="flex flex-col items-center justify-center p-4 py-20">
-                <div className="max-w-md w-full space-y-6 text-center mb-10">
-                    <h1 className="text-3xl font-semibold text-slate-900 tracking-tight">
-                        Create your Business Account
-                    </h1>
-                    <p className="text-slate-500">
-                        To start tracking orders, you need a business space. Create a new one or select an existing one below.
-                    </p>
-
-                    {membershipsLoaded && userMemberships.data && userMemberships.data.length > 0 && (
-                        <div className="mt-4 p-4 bg-amber-50 rounded-2xl border border-amber-100 text-left">
-                            <p className="text-xs font-semibold text-amber-700 uppercase tracking-wider mb-1">💡 Important Note</p>
-                            <p className="text-sm text-amber-600 leading-relaxed">
-                                Avoid using the same name for multiple businesses. Unique names help you and your customers stay organized!
-                            </p>
-                        </div>
-                    )}
+        <OnboardingLayout
+            currentStep={1}
+            title={firstName ? `Hey ${firstName}, let\u2019s create your workspace` : "Create your workspace"}
+            subtitle="This is your team\u2019s home base for managing orders, inventory, and customers."
+        >
+            {/* Hint for returning users */}
+            {membershipsLoaded && userMemberships.data && userMemberships.data.length > 0 && (
+                <div className="mb-6 px-4 py-3 rounded-xl bg-amber-50/80 border border-amber-100 text-sm text-amber-700 leading-relaxed">
+                    <span className="font-semibold">Tip:</span> Use a unique name for each business to stay organized.
                 </div>
+            )}
 
-                <div className="w-full max-w-md flex justify-center">
-                    <OrganizationList
-                        hidePersonal={true}
-                        afterCreateOrganizationUrl="/onboarding/business-type"
-                        afterSelectOrganizationUrl="/onboarding/business-type"
-                    />
-                </div>
-
-                <p className="mt-8 text-sm text-slate-400">
-                    You can always switch or add more businesses later.
-                </p>
+            {/* Clerk Organization List — restyled */}
+            <div className="w-full">
+                <OrganizationList
+                    hidePersonal={true}
+                    afterCreateOrganizationUrl="/onboarding/business-type"
+                    afterSelectOrganizationUrl="/onboarding/business-type"
+                    appearance={{
+                        elements: {
+                            rootBox: "w-full",
+                            card: "shadow-none border border-slate-150 rounded-2xl bg-white/80 backdrop-blur-sm w-full",
+                            headerTitle: "text-base font-semibold text-[#191A43]",
+                            headerSubtitle: "text-sm text-slate-500",
+                            organizationListCreateOrganizationActionButton: "text-[#191A43] font-semibold",
+                            formButtonPrimary: "bg-[#191A43] hover:bg-[#191A43]/90 text-white shadow-lg shadow-[#191A43]/10 rounded-xl h-11 font-semibold text-sm transition-all duration-200",
+                            formFieldInput: "h-11 rounded-xl border-slate-200 bg-white focus:ring-[#191A43] focus:border-[#191A43] text-sm transition-all duration-200",
+                            formFieldLabel: "text-sm font-medium text-slate-700",
+                            organizationListPreviewButton: "rounded-xl border-slate-200 hover:bg-slate-50 transition-all duration-200",
+                            organizationListPreviewMainIdentifier: "font-semibold text-[#191A43]",
+                        },
+                    }}
+                />
             </div>
-        </div>
+
+            <p className="mt-10 text-center text-sm text-slate-400">
+                You can always switch or add more businesses later.
+            </p>
+        </OnboardingLayout>
     )
 }

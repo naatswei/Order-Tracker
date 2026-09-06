@@ -12,7 +12,7 @@ export function SignatureLoader({
     fullScreen = false 
 }: SignatureLoaderProps) {
     return (
-        <div className={`flex flex-col items-center justify-center ${fullScreen ? 'min-h-screen bg-[#FBFBFF]' : 'min-h-[40vh]'} space-y-10`}>
+        <div className={`flex flex-col items-center justify-center ${fullScreen ? 'min-h-screen bg-[#FBFBFF]' : 'min-h-[40vh]'} space-y-6`}>
             <div className="relative">
                 {/* Outer Kinetic Frame */}
                 <motion.div 
@@ -46,20 +46,13 @@ export function SignatureLoader({
                 </div>
             </div>
 
-            <div className="flex flex-col items-center gap-4">
-                <div className="flex items-center gap-3">
-                    <div className="w-1.5 h-1.5 rounded-full bg-[#CE0003] animate-pulse" />
-                    <p className="text-[10px] font-black text-[#191A43] uppercase tracking-[0.4em] text-center px-4">{message}</p>
-                </div>
-                
-                {/* Kinetic Progress Shimmer */}
-                <div className="w-32 h-[1px] bg-slate-100 relative overflow-hidden rounded-full">
-                    <motion.div 
-                        animate={{ x: [-128, 128] }}
-                        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                        className="absolute inset-0 bg-gradient-to-r from-transparent via-[#CE0003] to-transparent w-full"
-                    />
-                </div>
+            {/* Kinetic Progress Shimmer */}
+            <div className="w-24 h-[1.5px] bg-slate-100 relative overflow-hidden rounded-full mt-2">
+                <motion.div 
+                    animate={{ x: [-96, 96] }}
+                    transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+                    className="absolute inset-0 bg-gradient-to-r from-transparent via-[#CE0003] to-transparent w-full"
+                />
             </div>
         </div>
     );

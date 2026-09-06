@@ -404,7 +404,7 @@ function CreateOrderContent() {
                         
                         // Primary Gateway: BulkClix Instant MoMo Collection
                         const { initiateBulkClixMomoCollection } = await import("@/app/actions/bulkclix-payment")
-                        let chargeRes = await initiateBulkClixMomoCollection(res.orderId, chargePhone, momoProvider)
+                        let chargeRes: any = await initiateBulkClixMomoCollection(res.orderId, chargePhone, momoProvider)
                         
                         // Fallback Gateway: Paystack MoMo Collection if BulkClix encounters an error
                         if (!chargeRes.success) {

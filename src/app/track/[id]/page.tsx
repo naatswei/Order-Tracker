@@ -831,7 +831,7 @@ export default function TrackingDetailsPage() {
                                 viewport={{ once: true }}
                                 className="px-6 py-6 rounded-3xl bg-white border border-black/[0.04] shadow-[0_8px_30px_rgb(0,0,0,0.06)]"
                             >
-                                <Label className="text-[10px] uppercase tracking-[0.2em] text-neutral-400 font-black block mb-2">
+                                <Label className="text-xs uppercase tracking-wider text-neutral-400 font-bold block mb-2">
                                     {order.businessType === "tailoring" ? "Specifications" : "Special Instructions"}
                                 </Label>
                                 <p className="text-sm font-medium text-neutral-700 leading-relaxed italic">

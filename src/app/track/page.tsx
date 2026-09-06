@@ -91,7 +91,7 @@ export default function TrackPage() {
                             <CardContent className="p-8 sm:p-12">
                                 <form onSubmit={handleSubmit} className="space-y-8">
                                     <div className="space-y-3 text-left">
-                                        <Label htmlFor="trackingId" className="text-[10px] uppercase tracking-[0.2em] text-[#3B82F6] font-bold ml-1">
+                                        <Label htmlFor="trackingId" className="text-xs uppercase tracking-wider text-[#3B82F6] font-bold ml-1">
                                             {isGeneric ? "Order Reference" : config.orderLabel}
                                         </Label>
                                         <div className="relative group">
