@@ -3,29 +3,23 @@
 import { useState, useEffect, useMemo } from "react";
 import { useOrganization } from "@clerk/nextjs";
 import { getOrders } from "@/app/actions/orders";
-import { getStaff, assignOrder, resendRiderSMS, updateOrderStage, getWorkflowStages } from "@/app/actions/operations";
+import { getStaff, assignOrder, resendRiderSMS, getWorkflowStages } from "@/app/actions/operations";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { 
-    ChevronRight, 
     User, 
     Settings2,
     Plus,
-    CheckCircle2,
-    Truck,
     Search,
     ArrowLeft,
     Package,
     Phone,
     Copy,
     Send,
-    MapPin,
     ArrowRight,
     X,
-    Layers,
-    MoreHorizontal,
-    Check
+    Layers
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -43,14 +37,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 import { StageConfig } from "@/components/operations/stage-config";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
@@ -65,7 +51,6 @@ export default function OperationsPage() {
     const [isLoading, setIsLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState("");
     const [activeTab, setActiveTab] = useState<string>("all");
-    const [updatingStageId, setUpdatingStageId] = useState<string | null>(null);
     const [isConfigOpen, setIsConfigOpen] = useState(false);
 
     const { organization } = useOrganization();
@@ -165,29 +150,8 @@ export default function OperationsPage() {
         }
     }
 
-    async function handleMoveStage(orderId: string, nextStageName: string) {
-        setUpdatingStageId(orderId);
-        try {
-            await updateOrderStage(orderId, nextStageName);
-            toast.success(`Moved to "${nextStageName}"`);
-            await loadData();
-        } catch (error) {
-            toast.error("Failed to update stage");
-        } finally {
-            setUpdatingStageId(null);
-        }
-    }
-
     const getOrderStageName = (order: any) => {
-        return (order.metadata as any)?.internalStage || (stages[0]?.name || "Shipment Booked");
-    };
-
-    const getNextStage = (currentStageName: string) => {
-        const currentIndex = stages.findIndex(s => s.name === currentStageName);
-        if (currentIndex !== -1 && currentIndex + 1 < stages.length) {
-            return stages[currentIndex + 1];
-        }
-        return null;
+        return (order.metadata as any)?.internalStage || order.currentStatus || (stages[0]?.name || "Shipment Booked");
     };
 
     const filteredOrders = useMemo(() => {
@@ -228,13 +192,13 @@ export default function OperationsPage() {
                                     variant="ghost" 
                                     size="icon" 
                                     className="h-9 w-9 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-600"
-                                    title="Back"
+                                    title="Back to Dashboard"
                                 >
                                     <ArrowLeft className="w-4 h-4" />
                                 </Button>
                             </Link>
                             <h1 className="text-base sm:text-lg font-bold text-[#191A43]">
-                                {isLogistics ? "Operations" : config.dashboardTitle}
+                                {isLogistics ? "Dispatch Operations" : config.dashboardTitle}
                             </h1>
                             <span className="px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 text-[11px] font-semibold">
                                 {orders.length}
@@ -362,19 +326,17 @@ export default function OperationsPage() {
                         {filteredOrders.map((order) => {
                             const meta = (order.metadata as Record<string, unknown>) || {};
                             const currentStageName = getOrderStageName(order);
-                            const nextStage = getNextStage(currentStageName);
                             const pickupLoc = (meta.pickupLocation as string) || null;
                             const deliveryLoc = (meta.deliveryLocation as string) || null;
                             const recipientName = (meta.recipientName as string) || null;
                             const recipientPhone = (meta.recipientPhone as string) || null;
-                            const isUpdating = updatingStageId === order.id;
 
                             return (
                                 <Card 
                                     key={order.id}
                                     className="border border-slate-200/80 bg-white rounded-2xl shadow-2xs hover:border-slate-300 transition-all overflow-hidden"
                                 >
-                                    <CardContent className="p-3.5 sm:p-4 space-y-3">
+                                    <CardContent className="p-3.5 sm:p-4 space-y-2.5">
                                         {/* Line 1: Tracking # + Customer + Status Badge */}
                                         <div className="flex items-center justify-between gap-2">
                                             <div className="flex items-center gap-2 min-w-0">
@@ -429,9 +391,8 @@ export default function OperationsPage() {
                                             )}
                                         </div>
 
-                                        {/* Line 3: Actions (Rider Select + Advance Button) */}
+                                        {/* Line 3: Rider Assignment & SMS Alert */}
                                         <div className="pt-1 flex items-center gap-2">
-                                            {/* Rider / Staff Selector */}
                                             <div className="flex-1 min-w-0 bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1 flex items-center gap-1.5">
                                                 <User className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                                                 <Select
@@ -461,57 +422,13 @@ export default function OperationsPage() {
                                                     variant="ghost"
                                                     size="sm"
                                                     onClick={() => handleResendSMS(order.id)}
-                                                    className="h-8 px-2 rounded-xl text-sky-700 hover:bg-sky-50 text-xs font-semibold shrink-0"
+                                                    className="h-8 px-2.5 rounded-xl text-sky-700 hover:bg-sky-50 text-xs font-semibold shrink-0 border border-sky-200/80"
                                                     title="Resend SMS to Rider"
                                                 >
                                                     <Send className="w-3 h-3 mr-1 text-sky-600" />
                                                     <span>SMS</span>
                                                 </Button>
                                             )}
-
-                                            {/* Next Stage Button */}
-                                            {nextStage ? (
-                                                <Button
-                                                    type="button"
-                                                    disabled={isUpdating}
-                                                    onClick={() => handleMoveStage(order.id, nextStage.name)}
-                                                    className="h-8 px-3 rounded-xl bg-[#191A43] hover:bg-[#191A43]/90 text-white font-semibold text-xs shrink-0 shadow-xs"
-                                                >
-                                                    <span>➔ {nextStage.name}</span>
-                                                </Button>
-                                            ) : (
-                                                <span className="text-[11px] font-semibold text-emerald-600 flex items-center gap-1 shrink-0 px-2">
-                                                    <Check className="w-3.5 h-3.5" /> Delivered
-                                                </span>
-                                            )}
-
-                                            {/* More options (Jump to arbitrary stage) */}
-                                            <DropdownMenu>
-                                                <DropdownMenuTrigger asChild>
-                                                    <Button 
-                                                        variant="ghost" 
-                                                        size="icon" 
-                                                        className="h-8 w-8 rounded-xl text-slate-400 hover:text-slate-700 shrink-0"
-                                                    >
-                                                        <MoreHorizontal className="w-3.5 h-3.5" />
-                                                    </Button>
-                                                </DropdownMenuTrigger>
-                                                <DropdownMenuContent align="end" className="rounded-xl border-slate-200">
-                                                    <DropdownMenuLabel className="text-[10px] font-bold text-slate-400 uppercase">
-                                                        Change Stage
-                                                    </DropdownMenuLabel>
-                                                    <DropdownMenuSeparator />
-                                                    {stages.map(s => (
-                                                        <DropdownMenuItem 
-                                                            key={s.name}
-                                                            onClick={() => handleMoveStage(order.id, s.name)}
-                                                            className="text-xs font-medium cursor-pointer"
-                                                        >
-                                                            {s.name}
-                                                        </DropdownMenuItem>
-                                                    ))}
-                                                </DropdownMenuContent>
-                                            </DropdownMenu>
                                         </div>
                                     </CardContent>
                                 </Card>
