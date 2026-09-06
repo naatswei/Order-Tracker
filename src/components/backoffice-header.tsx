@@ -82,16 +82,12 @@ export function BackofficeHeader({ config }: BackofficeHeaderProps) {
         <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b-[0.5px] border-slate-100 shadow-[0_2px_20px_rgb(0,0,0,0.02)]">
             <div className="w-full px-4 sm:px-8 py-5 flex items-center justify-between">
                 {/* Logo */}
-                <Link href="/backoffice" className="flex items-center gap-3 group">
-                    <div className="w-8 h-8 rounded-full bg-red-50/50 border border-red-100 flex items-center justify-center shadow-sm group-hover:shadow-md transition-all">
-                        <span className="text-[#CE0003] font-black text-lg transition-transform group-hover:scale-110">O</span>
-                    </div>
-                    <div className="flex flex-col">
-                        <h1 className="text-xl font-bold tracking-tight flex items-center">
-                            <span className="text-[#CE0003]">O</span><span className="text-[#191A43]">Tracker</span>
-                        </h1>
-                        <p className="text-[11px] text-slate-500 font-medium mt-[2px]">Backoffice Dashboard</p>
-                    </div>
+                <Link href="/backoffice" className="flex flex-col group select-none">
+                    <h1 className="text-xl sm:text-2xl font-black tracking-tight flex items-center">
+                        <span className="text-[#CE0003] transition-transform group-hover:scale-105">O</span>
+                        <span className="text-[#191A43]">Tracker</span>
+                    </h1>
+                    <p className="text-[11px] text-slate-500 font-medium mt-[1px]">Backoffice Dashboard</p>
                 </Link>
 
                 {/* Desktop Navigation */}
