@@ -268,11 +268,8 @@ export default function OperationsPage() {
                                     <ArrowLeft className="w-4 h-4" />
                                 </Button>
                             </Link>
-                            <h1 className="text-base sm:text-lg font-bold text-[#191A43] flex items-center gap-2">
-                                <span>{isLogistics ? "Operations" : config.dashboardTitle}</span>
-                                <span className="px-2 py-0.5 rounded-full bg-indigo-50 border border-indigo-200/60 text-indigo-700 text-[11px] font-black">
-                                    {orders.length}
-                                </span>
+                            <h1 className="text-base sm:text-lg font-bold text-[#191A43]">
+                                {isLogistics ? "Operations" : config.dashboardTitle}
                             </h1>
                         </div>
 
@@ -285,7 +282,7 @@ export default function OperationsPage() {
                                         title="Configure Pipeline Stages"
                                     >
                                         <Settings2 className="w-3.5 h-3.5" />
-                                        <span className="hidden sm:inline">Stages</span>
+                                        <span>Stages</span>
                                     </Button>
                                 </DialogTrigger>
                                 <DialogContent className="sm:max-w-[420px] rounded-3xl border-slate-100 p-5 sm:p-6 max-h-[90vh] overflow-y-auto shadow-2xl">
@@ -300,13 +297,6 @@ export default function OperationsPage() {
                                     <StageConfig initialStages={stages} onUpdate={loadData} />
                                 </DialogContent>
                             </Dialog>
-
-                            <Link href="/backoffice/create">
-                                <Button className="h-9 px-4 rounded-xl bg-gradient-to-r from-[#191A43] via-[#242663] to-[#CE0003] hover:opacity-95 text-white font-bold text-xs shadow-md shadow-indigo-950/20 transition-all">
-                                    <Plus className="w-3.5 h-3.5 mr-1 text-red-300" />
-                                    <span>{isLogistics ? "Book Shipment" : "New Order"}</span>
-                                </Button>
-                            </Link>
                         </div>
                     </div>
 
