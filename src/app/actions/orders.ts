@@ -540,3 +540,54 @@ export async function riderUpdateStatus(
         return { success: false, error: error?.message || "Failed to update status" };
     }
 }
+
+export async function riderCollectCashPayment(orderId: string): Promise<{ success: boolean; error?: string }> {
+    try {
+        const order = await db.query.orders.findFirst({
+            where: eq(orders.id, orderId),
+        });
+
+        if (!order) return { success: false, error: "Order not found" };
+
+        const currentMetadata = (order.metadata as any) || {};
+        const invoice = currentMetadata.invoice;
+        if (!invoice) return { success: false, error: "No invoice found for this shipment" };
+
+        const updatedMetadata = {
+            ...currentMetadata,
+            invoice: {
+                ...invoice,
+                invoiceStatus: "paid",
+                amountPaid: invoice.amountDue,
+                paidAt: new Date().toISOString(),
+                paymentCollectedBy: "rider_cash"
+            }
+        };
+
+        await db.update(orders)
+            .set({
+                metadata: updatedMetadata,
+                updatedAt: new Date()
+            })
+            .where(eq(orders.id, orderId));
+
+        await db.insert(statusHistory).values({
+            id: Math.random().toString(36).substring(2, 9).toUpperCase(),
+            orderId: orderId,
+            status: order.currentStatus || "Payment Confirmed",
+            location: "Customer Doorstep",
+            message: `Cash payment of GH₵ ${Number(invoice.amountDue || 0).toFixed(2)} collected by rider on arrival`,
+            staffId: order.assignedStaffId || null,
+        });
+
+        revalidatePath(`/rider/${orderId}`);
+        revalidatePath(`/track/${orderId}`);
+        revalidatePath(`/backoffice/order/${orderId}`);
+        revalidatePath(`/backoffice`);
+
+        return { success: true };
+    } catch (error: any) {
+        console.error("Rider cash collection error:", error);
+        return { success: false, error: error?.message || "Failed to record cash payment" };
+    }
+}

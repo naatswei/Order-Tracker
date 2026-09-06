@@ -2,8 +2,27 @@
 
 import { useState, useEffect } from "react"
 import { useParams } from "next/navigation"
-import { getOrderWithHistory, riderUpdateStatus } from "@/app/actions/orders"
+import { getOrderWithHistory, riderUpdateStatus, riderCollectCashPayment } from "@/app/actions/orders"
+import { initiateMomoCharge } from "@/app/actions/paystack"
+import { detectGhanaNetworkProvider } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog"
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
 import { 
     Truck, 
     CheckCircle2, 
@@ -13,7 +32,13 @@ import {
     Check, 
     Lock,
     ArrowRight,
-    Phone
+    Phone,
+    DollarSign,
+    Banknote,
+    Navigation,
+    MapPin,
+    ShieldCheck,
+    Loader2
 } from "lucide-react"
 import { toast } from "sonner"
 import { SignatureLoader } from "@/components/signature-loader"
@@ -27,8 +52,15 @@ export default function RiderActionPage() {
     const [order, setOrder] = useState<any | null>(null)
     const [isLoading, setIsLoading] = useState(true)
     const [isUpdating, setIsUpdating] = useState(false)
+    const [isCollectingCash, setIsCollectingCash] = useState(false)
     const [copiedWaybill, setCopiedWaybill] = useState(false)
     const [verificationCode, setVerificationCode] = useState("")
+
+    // Momo Prompt modal state
+    const [isMomoModalOpen, setIsMomoModalOpen] = useState(false)
+    const [momoPhone, setMomoPhone] = useState("")
+    const [momoProvider, setMomoProvider] = useState<'mtn' | 'vod' | 'atl'>("mtn")
+    const [isMomoCharging, setIsMomoCharging] = useState(false)
 
     useEffect(() => {
         let isMounted = true
@@ -47,6 +79,16 @@ export default function RiderActionPage() {
         fetchOrder()
         return () => { isMounted = false }
     }, [orderId])
+
+    // Auto-detect Momo network provider from phone number
+    useEffect(() => {
+        if (momoPhone) {
+            const detected = detectGhanaNetworkProvider(momoPhone);
+            if (detected) {
+                setMomoProvider(detected);
+            }
+        }
+    }, [momoPhone]);
 
     const copyToClipboard = (text: string) => {
         navigator.clipboard.writeText(text)
@@ -78,6 +120,27 @@ export default function RiderActionPage() {
         }
     }
 
+    const handleCashCollection = async () => {
+        if (!order) return
+        setIsCollectingCash(true)
+        try {
+            const res = await riderCollectCashPayment(order.id)
+            if (res.success) {
+                toast.success("Cash payment recorded successfully!", {
+                    style: { background: "#000", color: "#fff", border: "none" }
+                })
+                const updated = await getOrderWithHistory(orderId)
+                setOrder(updated)
+            } else {
+                toast.error(res.error || "Failed to record cash payment")
+            }
+        } catch (err: any) {
+            toast.error("Network error. Please try again.")
+        } finally {
+            setIsCollectingCash(false)
+        }
+    }
+
     if (isLoading) {
         return (
             <div className="min-h-screen bg-[#F6F6F8] flex flex-col items-center justify-center p-6 text-center">
@@ -105,6 +168,17 @@ export default function RiderActionPage() {
 
     const currentStatus = order.currentStatus || "Shipment Booked"
     const isDelivered = currentStatus.toLowerCase() === "delivered"
+    const meta = (order.metadata as Record<string, unknown>) || {}
+    const pickupLoc = (meta.pickupLocation as string) || null
+    const deliveryLoc = (meta.deliveryLocation as string) || null
+    const recipientName = (meta.recipientName as string) || null
+    const recipientPhone = (meta.recipientPhone as string) || null
+    
+    // Invoicing & Payment on Arrival Data
+    const invoice = (meta.invoice as any) || null
+    const isInvoiceUnpaid = invoice && invoice.invoiceStatus === "unpaid" && Number(invoice.amountDue || 0) > 0
+    const isInvoicePaid = invoice && invoice.invoiceStatus === "paid"
+    const amountDue = Number(invoice?.amountDue || 0)
 
     // Workflow Stepper Definitions
     const steps = [
@@ -125,8 +199,8 @@ export default function RiderActionPage() {
     const activeStep = getActiveStepIndex()
 
     return (
-        <div className="min-h-screen bg-[#F6F6F8] text-neutral-900 font-sans flex flex-col justify-between p-5 sm:p-7 selection:bg-black selection:text-white">
-            <div className="max-w-md w-full mx-auto space-y-6 pt-2 sm:pt-4">
+        <div className="min-h-screen bg-[#F6F6F8] text-neutral-900 font-sans flex flex-col justify-between p-4 sm:p-7 selection:bg-black selection:text-white">
+            <div className="max-w-md w-full mx-auto space-y-4 sm:space-y-6 pt-2 sm:pt-4">
 
                 {/* 1. TOP HEADER: Vehicle Badge + Live Dot + Waybill # */}
                 <motion.div 
@@ -160,12 +234,12 @@ export default function RiderActionPage() {
                     </button>
                 </motion.div>
 
-                {/* 2. HORIZONTAL TIMELINE STEPPER (Signature Uber Driver Floating Sheet) */}
+                {/* 2. HORIZONTAL TIMELINE STEPPER */}
                 <motion.div 
                     initial={{ opacity: 0, y: -4 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.35, delay: 0.05 }}
-                    className="bg-white rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-black/[0.04]"
+                    className="bg-white rounded-3xl p-5 sm:p-6 shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-black/[0.04]"
                 >
                     <div className="flex items-center justify-between relative px-2">
                         {/* Connecting Track Line */}
@@ -213,7 +287,124 @@ export default function RiderActionPage() {
                     </div>
                 </motion.div>
 
-                {/* 3. ACTION & VERIFICATION AREA */}
+                {/* 3. ROUTE & DESTINATION CARD */}
+                {(pickupLoc || deliveryLoc) && (
+                    <motion.div 
+                        initial={{ opacity: 0, y: -2 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="bg-white rounded-3xl p-4 sm:p-5 shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-black/[0.04] space-y-3"
+                    >
+                        <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-wider text-neutral-400">
+                            <Navigation className="w-3.5 h-3.5 text-black" />
+                            <span>Route Details</span>
+                        </div>
+                        <div className="space-y-2.5 text-xs">
+                            {pickupLoc && (
+                                <div className="flex items-start gap-2.5 min-w-0">
+                                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 mt-1 shrink-0" />
+                                    <div className="min-w-0">
+                                        <p className="text-[10px] font-bold text-neutral-400">PICKUP ADDRESS</p>
+                                        <p className="font-bold text-neutral-900 break-words">{pickupLoc}</p>
+                                    </div>
+                                </div>
+                            )}
+                            {deliveryLoc && (
+                                <div className="flex items-start gap-2.5 min-w-0 pt-1 border-t border-neutral-100">
+                                    <span className="w-2.5 h-2.5 rounded-full bg-sky-500 mt-1 shrink-0" />
+                                    <div className="min-w-0">
+                                        <p className="text-[10px] font-bold text-neutral-400">DELIVERY DESTINATION</p>
+                                        <p className="font-bold text-neutral-900 break-words">{deliveryLoc}</p>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </motion.div>
+                )}
+
+                {/* 4. PAYMENT ON ARRIVAL CARD (If invoice exists) */}
+                {isInvoiceUnpaid && (
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.98 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="bg-gradient-to-br from-amber-500/15 to-amber-500/5 border-2 border-amber-500/30 rounded-3xl p-4 sm:p-5 shadow-md shadow-amber-500/5 space-y-3.5"
+                    >
+                        <div className="flex items-center justify-between gap-2">
+                            <div className="flex items-center gap-2.5 min-w-0">
+                                <div className="w-9 h-9 rounded-2xl bg-amber-500 text-white flex items-center justify-center font-bold shadow-xs shrink-0">
+                                    <DollarSign className="w-5 h-5" />
+                                </div>
+                                <div className="min-w-0">
+                                    <p className="text-[10px] font-black uppercase tracking-wider text-amber-900">
+                                        Payment on Arrival Required
+                                    </p>
+                                    <p className="text-lg sm:text-xl font-black text-black">
+                                        GH₵ {amountDue.toFixed(2)}
+                                    </p>
+                                </div>
+                            </div>
+                            <span className="px-2.5 py-0.5 rounded-full bg-amber-500 text-white text-[10px] font-black uppercase tracking-wider shrink-0">
+                                Unpaid
+                            </span>
+                        </div>
+
+                        <p className="text-[11px] text-amber-950 font-medium">
+                            Collect payment before or upon handover. Customer can pay via Momo prompt or cash.
+                        </p>
+
+                        <div className="grid grid-cols-2 gap-2 pt-1">
+                            {/* Prompt Momo Button */}
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setMomoPhone(recipientPhone || order.customerPhone || "")
+                                    setIsMomoModalOpen(true)
+                                }}
+                                className="p-3 rounded-2xl bg-black hover:bg-neutral-900 text-white font-black text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 shadow-sm transition-all active:scale-95"
+                            >
+                                <DollarSign className="w-4 h-4 text-amber-400" />
+                                <span>Prompt Momo</span>
+                            </button>
+
+                            {/* Confirm Cash Received Button */}
+                            <button
+                                type="button"
+                                onClick={handleCashCollection}
+                                disabled={isCollectingCash}
+                                className="p-3 rounded-2xl bg-white hover:bg-neutral-50 text-black font-black text-xs uppercase tracking-wider border-2 border-black/10 flex items-center justify-center gap-1.5 shadow-2xs transition-all active:scale-95"
+                            >
+                                <Banknote className="w-4 h-4 text-emerald-600" />
+                                <span>{isCollectingCash ? "Recording..." : "Cash Received"}</span>
+                            </button>
+                        </div>
+                    </motion.div>
+                )}
+
+                {isInvoicePaid && (
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.98 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="bg-emerald-50 border border-emerald-200 rounded-3xl p-3.5 sm:p-4 flex items-center justify-between gap-2 shadow-2xs"
+                    >
+                        <div className="flex items-center gap-2.5 min-w-0">
+                            <div className="w-8 h-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0">
+                                <ShieldCheck className="w-4 h-4" />
+                            </div>
+                            <div className="min-w-0">
+                                <p className="text-[10px] font-black uppercase tracking-wider text-emerald-800">
+                                    Payment Confirmed
+                                </p>
+                                <p className="text-xs sm:text-sm font-black text-emerald-950 truncate">
+                                    GH₵ {Number(invoice.amountPaid || invoice.amountDue || 0).toFixed(2)} Paid ({invoice.paymentCollectedBy === "rider_cash" ? "Cash Collected" : "Online/Momo"})
+                                </p>
+                            </div>
+                        </div>
+                        <span className="px-2.5 py-0.5 rounded-full bg-emerald-600 text-white text-[10px] font-black uppercase shrink-0">
+                            Paid
+                        </span>
+                    </motion.div>
+                )}
+
+                {/* 5. ACTION & VERIFICATION AREA */}
                 <div className="space-y-4 pt-1">
                     {isDelivered ? (
                         <motion.div 
@@ -262,7 +453,7 @@ export default function RiderActionPage() {
                             {activeStep >= 2 && (
                                 <div className="space-y-4">
                                     {/* Dropoff Customer Contact Quick Call */}
-                                    {((order.metadata as any)?.recipientPhone || order.customerPhone) && (
+                                    {(recipientPhone || order.customerPhone) && (
                                         <div className="flex items-center justify-between bg-white p-3.5 rounded-2xl shadow-[0_4px_20px_rgb(0,0,0,0.04)] border border-black/[0.04]">
                                             <div className="flex items-center gap-3 min-w-0">
                                                 <div className="w-9 h-9 rounded-xl bg-neutral-100 flex items-center justify-center text-black font-black shrink-0">
@@ -270,15 +461,15 @@ export default function RiderActionPage() {
                                                 </div>
                                                 <div className="min-w-0">
                                                     <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider block">
-                                                        {(order.metadata as any)?.recipientName ? "Dropoff Recipient" : "Customer Contact"}
+                                                        {recipientName ? "Dropoff Recipient" : "Customer Contact"}
                                                     </span>
                                                     <span className="text-xs font-black text-black truncate block">
-                                                        {(order.metadata as any)?.recipientName || order.customerName} ({(order.metadata as any)?.recipientPhone || order.customerPhone})
+                                                        {recipientName || order.customerName} ({recipientPhone || order.customerPhone})
                                                     </span>
                                                 </div>
                                             </div>
                                             <a
-                                                href={`tel:${(order.metadata as any)?.recipientPhone || order.customerPhone}`}
+                                                href={`tel:${recipientPhone || order.customerPhone}`}
                                                 className="px-4 py-2 rounded-xl bg-black text-white text-xs font-black uppercase tracking-wider hover:bg-neutral-800 transition-colors shrink-0 shadow-sm"
                                             >
                                                 Call
@@ -324,7 +515,7 @@ export default function RiderActionPage() {
 
             </div>
 
-            {/* 4. BOTTOM LINK: Open Public Customer Tracking */}
+            {/* 6. BOTTOM LINK: Open Public Customer Tracking */}
             <div className="max-w-md w-full mx-auto text-center pt-8 pb-2">
                 <Link 
                     href={`/track/${order.id}`}
@@ -334,6 +525,83 @@ export default function RiderActionPage() {
                     <ExternalLink className="w-3.5 h-3.5" />
                 </Link>
             </div>
+
+            {/* Momo Direct Payment Prompt Modal for Rider */}
+            <Dialog open={isMomoModalOpen} onOpenChange={setIsMomoModalOpen}>
+                <DialogContent className="sm:max-w-md border-0 bg-white shadow-2xl rounded-3xl p-5 sm:p-6 overflow-hidden">
+                    <DialogHeader>
+                        <div className="flex items-center gap-2.5 mb-1">
+                            <div className="p-2 bg-amber-50 text-amber-600 rounded-2xl">
+                                <DollarSign className="w-5 h-5" />
+                            </div>
+                            <div>
+                                <DialogTitle className="text-base sm:text-lg font-black text-slate-900 tracking-tight">
+                                    Prompt Customer Momo
+                                </DialogTitle>
+                                <DialogDescription className="text-xs text-slate-400 font-bold uppercase tracking-wider mt-0.5">
+                                    Sends direct USSD PIN prompt for GH₵ {amountDue.toFixed(2)}
+                                </DialogDescription>
+                            </div>
+                        </div>
+                    </DialogHeader>
+
+                    <div className="space-y-3.5 pt-2">
+                        <div className="space-y-1.5">
+                            <Label htmlFor="riderMomoPhone" className="text-xs font-bold text-slate-700">Customer Momo Number</Label>
+                            <Input 
+                                id="riderMomoPhone"
+                                value={momoPhone} 
+                                onChange={(e) => setMomoPhone(e.target.value)} 
+                                placeholder="e.g. 0244000000" 
+                                className="h-11 rounded-2xl bg-slate-50/70 border-slate-200 text-xs sm:text-sm font-semibold text-slate-900"
+                            />
+                        </div>
+                        <div className="space-y-1.5">
+                            <Label htmlFor="riderMomoProvider" className="text-xs font-bold text-slate-700">Network Provider</Label>
+                            <Select 
+                                value={momoProvider} 
+                                onValueChange={(val: 'mtn' | 'vod' | 'atl') => setMomoProvider(val)}
+                                disabled={!!detectGhanaNetworkProvider(momoPhone)}
+                            >
+                                <SelectTrigger id="riderMomoProvider" className="h-11 rounded-2xl bg-slate-50/70 border-slate-200 text-xs sm:text-sm font-bold text-slate-900">
+                                    <SelectValue placeholder="Select provider" />
+                                </SelectTrigger>
+                                <SelectContent className="rounded-2xl border-slate-200 shadow-xl bg-white">
+                                     <SelectItem value="mtn" className="rounded-xl font-bold">MTN Ghana</SelectItem>
+                                     <SelectItem value="vod" className="rounded-xl font-bold">Telecel (Vodafone)</SelectItem>
+                                     <SelectItem value="atl" className="rounded-xl font-bold">AT (AirtelTigo)</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    </div>
+
+                    <DialogFooter className="mt-5 flex flex-col gap-2">
+                        <Button
+                            type="button"
+                            disabled={isMomoCharging || !momoPhone}
+                            onClick={async () => {
+                                setIsMomoCharging(true)
+                                try {
+                                    const res = await initiateMomoCharge(orderId, momoPhone, momoProvider)
+                                    if (res.success) {
+                                        toast.success("Momo Prompt sent to customer! Ask them to approve on their phone.")
+                                        setIsMomoModalOpen(false)
+                                    } else {
+                                        toast.error(`Could not trigger prompt: ${res.error}`)
+                                    }
+                                } catch (e) {
+                                    toast.error("An error occurred while triggering the prompt.")
+                                } finally {
+                                    setIsMomoCharging(false)
+                                }
+                            }}
+                            className="w-full text-white rounded-2xl h-11 sm:h-12 font-bold text-xs sm:text-sm shadow-md bg-black hover:bg-neutral-800 border-0"
+                        >
+                            {isMomoCharging ? "Sending Prompt..." : `Send Prompt (GH₵ ${amountDue.toFixed(2)})`}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     )
 }
