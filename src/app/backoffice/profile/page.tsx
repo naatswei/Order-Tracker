@@ -447,9 +447,9 @@ export default function ProfilePage() {
                                                 />
                                             </div>
                                             <div className="text-center sm:text-left">
-                                                <h3 className="font-bold text-slate-900">Business Logo</h3>
-                                                <p className="text-sm text-slate-500 mb-3">This logo will appear in customer tracking pages.</p>
-                                                <Button type="button" variant="outline" size="sm" className="rounded-xl font-semibold border-slate-200 text-slate-700" onClick={triggerFileInput}>
+                                                <h3 className="text-xs sm:text-sm font-bold text-slate-900">Business Logo</h3>
+                                                <p className="text-[11px] sm:text-xs text-slate-500 mb-2.5">Appears on customer tracking pages.</p>
+                                                <Button type="button" variant="outline" size="sm" className="rounded-xl font-semibold border-slate-200 text-slate-700 text-xs h-8 px-3" onClick={triggerFileInput}>
                                                     Change Logo
                                                 </Button>
                                             </div>
@@ -457,53 +457,53 @@ export default function ProfilePage() {
 
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                             <div className="space-y-2 md:col-span-2">
-                                                <Label className="text-slate-700 font-semibold" htmlFor="companyName">Company Name</Label>
+                                                <Label className="text-slate-700 font-semibold text-xs sm:text-sm" htmlFor="companyName">Company Name</Label>
                                                 <Input
                                                     id="companyName"
                                                     name="companyName"
                                                     value={formData.companyName}
                                                     onChange={handleInputChange}
-                                                    className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-11 transition-colors"
+                                                    className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-11 transition-colors text-sm"
                                                 />
                                             </div>
                                             <div className="space-y-2">
-                                                <Label className="text-slate-700 font-semibold" htmlFor="contact">Contact Number</Label>
+                                                <Label className="text-slate-700 font-semibold text-xs sm:text-sm" htmlFor="contact">Contact Number</Label>
                                                 <Input
                                                     id="contact"
                                                     name="contact"
                                                     value={formData.contact}
                                                     onChange={handleInputChange}
-                                                    className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-11 transition-colors"
+                                                    className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-11 transition-colors text-sm"
                                                 />
                                             </div>
                                             <div className="space-y-2">
-                                                <Label className="text-slate-700 font-semibold" htmlFor="email">Public Email</Label>
+                                                <Label className="text-slate-700 font-semibold text-xs sm:text-sm" htmlFor="email">Public Email</Label>
                                                 <Input
                                                     id="email"
                                                     name="email"
                                                     value={formData.email}
                                                     onChange={handleInputChange}
-                                                    className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-11 transition-colors"
+                                                    className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-11 transition-colors text-sm"
                                                 />
                                             </div>
                                             <div className="space-y-2 md:col-span-2">
-                                                <Label className="text-slate-700 font-semibold" htmlFor="location">Business Address</Label>
+                                                <Label className="text-slate-700 font-semibold text-xs sm:text-sm" htmlFor="location">Business Address</Label>
                                                 <Input
                                                     id="location"
                                                     name="location"
                                                     value={formData.location}
                                                     onChange={handleInputChange}
-                                                    className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-11 transition-colors"
+                                                    className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-11 transition-colors text-sm"
                                                 />
                                             </div>
                                             <div className="space-y-2 md:col-span-2">
-                                                <Label className="text-slate-700 font-semibold" htmlFor="website">Website URL (Optional)</Label>
+                                                <Label className="text-slate-700 font-semibold text-xs sm:text-sm" htmlFor="website">Website URL (Optional)</Label>
                                                 <Input
                                                     id="website"
                                                     name="website"
                                                     value={formData.website}
                                                     onChange={handleInputChange}
-                                                    className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-11 transition-colors"
+                                                    className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-11 transition-colors text-sm"
                                                 />
                                             </div>
                                         </div>
@@ -511,8 +511,8 @@ export default function ProfilePage() {
                                         {/* Default Invoice Settings */}
                                         <div className="pt-6 border-t border-slate-100 space-y-4">
                                             <div>
-                                                <h4 className="text-sm font-bold text-slate-900">Default Invoice Settings</h4>
-                                                <p className="text-xs text-slate-500">Configure default values to automatically pre-fill when generating invoices.</p>
+                                                <h4 className="text-xs sm:text-sm font-bold text-slate-900">Default Invoice Settings</h4>
+                                                <p className="text-[11px] sm:text-xs text-slate-500">Default values automatically pre-filled on invoices.</p>
                                             </div>
                                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                                 <div className="space-y-2">
@@ -569,39 +569,39 @@ export default function ProfilePage() {
                             </Card>
 
                             {/* Dual Gateway Payout & Settlement Settings */}
-                            <div className="mt-8 space-y-5">
-                                <div className="space-y-1">
-                                    <div className="flex flex-wrap items-center justify-between gap-2">
-                                        <h2 className="text-base sm:text-lg font-bold text-slate-900 tracking-tight">
+                            <div className="mt-8 space-y-4">
+                                <div className="space-y-0.5">
+                                    <div className="flex items-center justify-between gap-2">
+                                        <h2 className="text-xs sm:text-sm md:text-base font-bold text-slate-900 tracking-tight truncate">
                                             Payout &amp; Settlement Settings
                                         </h2>
-                                        <span className="text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 shrink-0">
-                                            Instant Payout Active
+                                        <span className="text-[9px] sm:text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 shrink-0">
+                                            Instant Active
                                         </span>
                                     </div>
-                                    <p className="text-xs text-slate-500 font-normal leading-relaxed">
-                                        Set up your Mobile Money or Bank Account to receive customer payouts automatically.
+                                    <p className="text-[11px] sm:text-xs text-slate-500 font-normal leading-normal">
+                                        Receive automatic customer payouts to your MoMo or bank account.
                                     </p>
                                 </div>
 
                                 {/* 1. Primary Gateway: Instant Payouts */}
                                 <Card className="border-emerald-200/80 shadow-xs overflow-hidden bg-gradient-to-br from-white to-emerald-50/20 rounded-2xl relative">
-                                    <div className="flex items-center justify-between px-4 sm:px-6 py-2.5 border-b border-emerald-100/60 bg-emerald-50/50">
+                                    <div className="flex items-center justify-between px-3.5 sm:px-5 py-2 border-b border-emerald-100/60 bg-emerald-50/50">
                                         <div className="flex items-center gap-1.5">
-                                            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                                            <span className="text-[10px] sm:text-[11px] font-bold text-emerald-900 uppercase tracking-wider">Primary Gateway</span>
+                                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                                            <span className="text-[9px] sm:text-[10px] font-bold text-emerald-900 uppercase tracking-wider">Primary Gateway</span>
                                         </div>
-                                        <span className="text-[9px] sm:text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-600 text-white shadow-xs">Instant Settlement</span>
+                                        <span className="text-[8.5px] sm:text-[9.5px] font-bold px-1.5 py-0.5 rounded bg-emerald-600 text-white shadow-xs">Instant Settlement</span>
                                     </div>
-                                    <CardHeader className="p-4 sm:p-6 pb-3 pt-3.5">
-                                        <h3 className="text-sm sm:text-base font-bold text-slate-900 leading-snug">
+                                    <CardHeader className="p-3.5 sm:p-5 pb-2.5 pt-3">
+                                        <h3 className="text-xs sm:text-sm md:text-base font-bold text-slate-900 leading-snug truncate">
                                             Instant Mobile Money &amp; Bank Settlement
                                         </h3>
-                                        <p className="text-xs text-slate-500 font-normal leading-relaxed mt-0.5">
-                                            Direct settlements to your Mobile Money or Bank Account as soon as an order is paid.
+                                        <p className="text-[11px] sm:text-xs text-slate-500 font-normal leading-normal mt-0.5">
+                                            Instant direct payouts as soon as an order is paid.
                                         </p>
                                     </CardHeader>
-                                    <CardContent className="p-4 sm:p-6 pt-0">
+                                    <CardContent className="p-3.5 sm:p-5 pt-0">
                                         <form onSubmit={async (e) => {
                                             e.preventDefault()
                                             if (!organization) return
@@ -630,9 +630,9 @@ export default function ProfilePage() {
                                             } finally {
                                                 setBulkclixSaving(false)
                                             }
-                                        }} className="space-y-5">
+                                        }} className="space-y-4">
                                             {/* Payout Type Switcher */}
-                                            <div className="grid grid-cols-2 sm:flex items-center gap-1.5 p-1 bg-slate-100 rounded-xl w-full sm:w-fit">
+                                            <div className="grid grid-cols-2 sm:flex items-center gap-1 p-1 bg-slate-100 rounded-xl w-full sm:w-fit">
                                                 <button
                                                     type="button"
                                                     onClick={() => {
@@ -641,7 +641,7 @@ export default function ProfilePage() {
                                                         setBulkclixAccountName("")
                                                     }}
                                                     className={cn(
-                                                        "px-3 py-2 rounded-lg text-xs font-bold transition-all text-center cursor-pointer",
+                                                        "px-2.5 py-1.5 rounded-lg text-[11px] sm:text-xs font-bold transition-all text-center cursor-pointer",
                                                         bulkclixPayoutType === "momo"
                                                             ? "bg-white text-emerald-800 shadow-xs"
                                                             : "text-slate-500 hover:text-slate-800"
@@ -657,7 +657,7 @@ export default function ProfilePage() {
                                                         setBulkclixAccountName("")
                                                     }}
                                                     className={cn(
-                                                        "px-3 py-2 rounded-lg text-xs font-bold transition-all text-center cursor-pointer",
+                                                        "px-2.5 py-1.5 rounded-lg text-[11px] sm:text-xs font-bold transition-all text-center cursor-pointer",
                                                         bulkclixPayoutType === "bank"
                                                             ? "bg-white text-emerald-800 shadow-xs"
                                                             : "text-slate-500 hover:text-slate-800"
@@ -667,10 +667,10 @@ export default function ProfilePage() {
                                                 </button>
                                             </div>
 
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 sm:gap-5">
                                                 {bulkclixPayoutType === "momo" ? (
-                                                    <div className="space-y-1.5">
-                                                        <Label className="text-slate-700 font-semibold text-xs sm:text-sm" htmlFor="bulkclixNetwork">Mobile Money Network</Label>
+                                                    <div className="space-y-1">
+                                                        <Label className="text-slate-700 font-semibold text-[11px] sm:text-xs" htmlFor="bulkclixNetwork">Mobile Money Network</Label>
                                                         <select
                                                             id="bulkclixNetwork"
                                                             value={bulkclixChannelOrBankId}
@@ -678,7 +678,7 @@ export default function ProfilePage() {
                                                                 setBulkclixChannelOrBankId(e.target.value)
                                                                 setBulkclixAccountName("")
                                                             }}
-                                                            className="w-full bg-slate-50/50 border border-slate-200 focus:bg-white rounded-xl h-11 px-3 transition-colors text-slate-800 focus:outline-none text-sm"
+                                                            className="w-full bg-slate-50/50 border border-slate-200 focus:bg-white rounded-xl h-10 px-3 transition-colors text-slate-800 focus:outline-none text-xs sm:text-sm"
                                                         >
                                                             <option value="MTN">MTN Mobile Money</option>
                                                             <option value="TELECEL">Telecel Cash (Vodafone)</option>
@@ -686,8 +686,8 @@ export default function ProfilePage() {
                                                         </select>
                                                     </div>
                                                 ) : (
-                                                    <div className="space-y-1.5">
-                                                        <Label className="text-slate-700 font-semibold text-xs sm:text-sm" htmlFor="bulkclixBank">Select Bank</Label>
+                                                    <div className="space-y-1">
+                                                        <Label className="text-slate-700 font-semibold text-[11px] sm:text-xs" htmlFor="bulkclixBank">Select Bank</Label>
                                                         <select
                                                             id="bulkclixBank"
                                                             disabled={bulkclixBanksLoading}
@@ -698,7 +698,7 @@ export default function ProfilePage() {
                                                                 setBulkclixBankName(selected ? selected.name : "")
                                                                 setBulkclixAccountName("")
                                                             }}
-                                                            className="w-full bg-slate-50/50 border border-slate-200 focus:bg-white rounded-xl h-11 px-3 transition-colors text-slate-800 focus:outline-none text-sm"
+                                                            className="w-full bg-slate-50/50 border border-slate-200 focus:bg-white rounded-xl h-10 px-3 transition-colors text-slate-800 focus:outline-none text-xs sm:text-sm"
                                                         >
                                                             <option value="">Select Target Bank</option>
                                                             {bulkclixBanks.map((b) => (
@@ -708,8 +708,8 @@ export default function ProfilePage() {
                                                     </div>
                                                 )}
 
-                                                <div className="space-y-1.5">
-                                                    <Label className="text-slate-700 font-semibold text-xs sm:text-sm" htmlFor="bulkclixAccountNumber">
+                                                <div className="space-y-1">
+                                                    <Label className="text-slate-700 font-semibold text-[11px] sm:text-xs" htmlFor="bulkclixAccountNumber">
                                                         {bulkclixPayoutType === "momo" ? "Mobile Money Phone Number" : "Bank Account Number"}
                                                     </Label>
                                                     <div className="flex gap-2">
@@ -721,39 +721,39 @@ export default function ProfilePage() {
                                                                 setBulkclixAccountName("")
                                                             }}
                                                             placeholder={bulkclixPayoutType === "momo" ? "e.g. 0548706430" : "e.g. 1441001234567"}
-                                                            className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-11 transition-colors flex-1 text-sm"
+                                                            className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-10 transition-colors flex-1 text-xs sm:text-sm"
                                                         />
                                                         <Button
                                                             type="button"
                                                             onClick={handleResolveBulkClixAccount}
                                                             disabled={resolvingBulkclixAccount || !bulkclixAccountNumber}
-                                                            className="h-11 rounded-xl bg-emerald-600 text-white hover:bg-emerald-700 font-bold px-4 shadow-xs text-xs sm:text-sm cursor-pointer"
+                                                            className="h-10 rounded-xl bg-emerald-600 text-white hover:bg-emerald-700 font-bold px-3.5 shadow-xs text-xs cursor-pointer"
                                                         >
-                                                            {resolvingBulkclixAccount ? <Loader2 className="w-4 h-4 animate-spin" /> : "Verify"}
+                                                            {resolvingBulkclixAccount ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : "Verify"}
                                                         </Button>
                                                     </div>
                                                 </div>
 
                                                 {bulkclixAccountName && (
-                                                    <div className="md:col-span-2 p-3 bg-emerald-100/70 border border-emerald-200 rounded-xl flex items-center justify-between">
+                                                    <div className="md:col-span-2 p-2.5 bg-emerald-100/70 border border-emerald-200 rounded-xl flex items-center justify-between">
                                                         <div>
-                                                            <p className="text-[10px] uppercase tracking-wider text-emerald-800 font-bold">Verified Account Name</p>
+                                                            <p className="text-[9px] uppercase tracking-wider text-emerald-800 font-bold">Verified Account Name</p>
                                                             <p className="text-xs sm:text-sm text-emerald-950 font-bold">{bulkclixAccountName}</p>
                                                         </div>
-                                                        <span className="text-[11px] font-bold text-emerald-700 bg-white px-2 py-0.5 rounded-md border border-emerald-200">
+                                                        <span className="text-[10px] font-bold text-emerald-700 bg-white px-2 py-0.5 rounded-md border border-emerald-200">
                                                             Verified
                                                         </span>
                                                     </div>
                                                 )}
                                             </div>
 
-                                            <div className="flex justify-end pt-3 border-t border-slate-100">
+                                            <div className="flex justify-end pt-2.5 border-t border-slate-100">
                                                 <Button
                                                     type="submit"
                                                     disabled={bulkclixSaving || !bulkclixAccountName}
-                                                    className="w-full sm:w-auto h-11 px-6 rounded-xl sm:rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm shadow-sm transition-all hover:-translate-y-0.5 active:scale-[0.98] cursor-pointer"
+                                                    className="w-full sm:w-auto h-10 px-5 rounded-xl sm:rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm shadow-sm transition-all hover:-translate-y-0.5 active:scale-[0.98] cursor-pointer"
                                                 >
-                                                    {bulkclixSaving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+                                                    {bulkclixSaving ? <Loader2 className="w-3.5 h-3.5 animate-spin mr-2" /> : null}
                                                     Save Settlement Details
                                                 </Button>
                                             </div>
@@ -763,19 +763,19 @@ export default function ProfilePage() {
 
                                 {/* 2. Secondary Gateway: Card & International Fallback */}
                                 <Card className="border-slate-200 shadow-xs overflow-hidden bg-white rounded-2xl">
-                                    <div className="flex items-center justify-between px-4 sm:px-6 py-2.5 border-b border-slate-100 bg-slate-50/50">
-                                        <span className="text-[10px] sm:text-[11px] font-bold text-slate-600 uppercase tracking-wider">Fallback Gateway</span>
-                                        <span className="text-[9px] sm:text-[10px] font-medium px-2 py-0.5 rounded-md bg-slate-200/70 text-slate-700">Paystack</span>
+                                    <div className="flex items-center justify-between px-3.5 sm:px-5 py-2 border-b border-slate-100 bg-slate-50/50">
+                                        <span className="text-[9px] sm:text-[10px] font-bold text-slate-600 uppercase tracking-wider">Fallback Gateway</span>
+                                        <span className="text-[8.5px] sm:text-[9.5px] font-medium px-1.5 py-0.5 rounded bg-slate-200/70 text-slate-700">Paystack</span>
                                     </div>
-                                    <CardHeader className="p-4 sm:p-6 pb-3 pt-3.5">
-                                        <h3 className="text-sm sm:text-base font-bold text-slate-900 leading-snug">
+                                    <CardHeader className="p-3.5 sm:p-5 pb-2.5 pt-3">
+                                        <h3 className="text-xs sm:text-sm md:text-base font-bold text-slate-900 leading-snug truncate">
                                             Card &amp; International Payment Backup
                                         </h3>
-                                        <p className="text-xs text-slate-500 font-normal leading-relaxed mt-0.5">
-                                            Secondary settlement account used for Visa / Mastercard credit card payments or network failover.
+                                        <p className="text-[11px] sm:text-xs text-slate-500 font-normal leading-normal mt-0.5">
+                                            Fallback account for Visa, Mastercard, and failovers.
                                         </p>
                                     </CardHeader>
-                                    <CardContent className="p-4 sm:p-6 pt-0">
+                                    <CardContent className="p-3.5 sm:p-5 pt-0">
                                         <form onSubmit={async (e) => {
                                             e.preventDefault()
                                             if (!organization) return
@@ -803,10 +803,10 @@ export default function ProfilePage() {
                                             } finally {
                                                 setPayoutLoading(false)
                                             }
-                                        }} className="space-y-5">
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-                                                <div className="space-y-1.5">
-                                                    <Label className="text-slate-700 font-semibold text-xs sm:text-sm" htmlFor="payoutBank">Paystack Settlement Bank</Label>
+                                        }} className="space-y-4">
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 sm:gap-5">
+                                                <div className="space-y-1">
+                                                    <Label className="text-slate-700 font-semibold text-[11px] sm:text-xs" htmlFor="payoutBank">Paystack Settlement Bank</Label>
                                                     <select
                                                         id="payoutBank"
                                                         disabled={banksLoading}
@@ -820,7 +820,7 @@ export default function ProfilePage() {
                                                                 accountName: ""
                                                             }))
                                                         }}
-                                                        className="w-full bg-slate-50/50 border border-slate-200 focus:bg-white rounded-xl h-11 px-3 transition-colors text-slate-800 focus:outline-none text-sm"
+                                                        className="w-full bg-slate-50/50 border border-slate-200 focus:bg-white rounded-xl h-10 px-3 transition-colors text-slate-800 focus:outline-none text-xs sm:text-sm"
                                                     >
                                                         <option value="">Select Settlement Bank</option>
                                                         {banks.map((b) => (
@@ -829,8 +829,8 @@ export default function ProfilePage() {
                                                     </select>
                                                 </div>
 
-                                                <div className="space-y-1.5">
-                                                    <Label className="text-slate-700 font-semibold text-xs sm:text-sm" htmlFor="accountNumber">Account / Mobile Number</Label>
+                                                <div className="space-y-1">
+                                                    <Label className="text-slate-700 font-semibold text-[11px] sm:text-xs" htmlFor="accountNumber">Account / Mobile Number</Label>
                                                     <div className="flex gap-2">
                                                         <Input
                                                             id="accountNumber"
@@ -841,34 +841,34 @@ export default function ProfilePage() {
                                                                 accountName: ""
                                                             }))}
                                                             placeholder="Enter bank account / phone number"
-                                                            className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-11 transition-colors flex-1 text-sm"
+                                                            className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-10 transition-colors flex-1 text-xs sm:text-sm"
                                                         />
                                                         <Button
                                                             type="button"
                                                             onClick={handleResolveAccount}
                                                             disabled={resolvingAccount || !payoutSettings.bankCode || !payoutSettings.accountNumber}
-                                                            className="h-11 rounded-xl bg-slate-100 border border-slate-200 text-slate-700 hover:bg-slate-200 font-bold px-4 text-xs sm:text-sm cursor-pointer"
+                                                            className="h-10 rounded-xl bg-slate-100 border border-slate-200 text-slate-700 hover:bg-slate-200 font-bold px-3.5 text-xs cursor-pointer"
                                                         >
-                                                            {resolvingAccount ? <Loader2 className="w-4 h-4 animate-spin" /> : "Verify"}
+                                                            {resolvingAccount ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : "Verify"}
                                                         </Button>
                                                     </div>
                                                 </div>
 
                                                 {payoutSettings.accountName && (
-                                                    <div className="md:col-span-2 p-3 bg-slate-50 border border-slate-200 rounded-xl">
-                                                        <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Verified Account Name</p>
+                                                    <div className="md:col-span-2 p-2.5 bg-slate-50 border border-slate-200 rounded-xl">
+                                                        <p className="text-[9px] text-slate-500 font-bold uppercase tracking-wider">Verified Account Name</p>
                                                         <p className="text-xs sm:text-sm text-slate-900 font-medium">{payoutSettings.accountName}</p>
                                                     </div>
                                                 )}
                                             </div>
 
-                                            <div className="flex justify-end pt-3 border-t border-slate-100">
+                                            <div className="flex justify-end pt-2.5 border-t border-slate-100">
                                                 <Button
                                                     type="submit"
                                                     disabled={payoutLoading || !payoutSettings.accountName}
-                                                    className="w-full sm:w-auto h-11 px-6 rounded-xl sm:rounded-full bg-[#111827] hover:bg-[#1f2937] text-white font-bold text-xs sm:text-sm shadow-sm transition-all hover:-translate-y-0.5 active:scale-[0.98] cursor-pointer"
+                                                    className="w-full sm:w-auto h-10 px-5 rounded-xl sm:rounded-full bg-[#111827] hover:bg-[#1f2937] text-white font-bold text-xs sm:text-sm shadow-sm transition-all hover:-translate-y-0.5 active:scale-[0.98] cursor-pointer"
                                                 >
-                                                    {payoutLoading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+                                                    {payoutLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin mr-2" /> : null}
                                                     Save Paystack Details
                                                 </Button>
                                             </div>
