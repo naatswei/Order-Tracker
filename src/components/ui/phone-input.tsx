@@ -56,7 +56,7 @@ export function PhoneInputWithCountry({
     )
 
     return (
-        <div className="flex gap-2 relative">
+        <div className="flex gap-1.5 sm:gap-2 relative">
             {/* Country Selector Button */}
             <div className="relative shrink-0" ref={dropdownRef}>
                 <Button
@@ -64,11 +64,11 @@ export function PhoneInputWithCountry({
                     variant="outline"
                     disabled={disabled}
                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                    className="h-11 px-3 rounded-xl border border-zinc-200 bg-white text-xs font-bold flex items-center gap-1.5 hover:bg-slate-50 transition-all cursor-pointer text-slate-800 shadow-sm"
+                    className="h-10 sm:h-11 px-2.5 sm:px-3 rounded-xl border border-zinc-200 bg-white text-xs font-bold flex items-center gap-1 sm:gap-1.5 hover:bg-slate-50 transition-all cursor-pointer text-slate-800 shadow-xs"
                 >
-                    <span className="text-base leading-none">{selectedCountry.flag}</span>
-                    <span>{selectedCountry.code}</span>
-                    <ChevronDown className={cn("h-3.5 w-3.5 opacity-50 transition-transform duration-200", isDropdownOpen && "rotate-180")} />
+                    <span className="text-sm sm:text-base leading-none">{selectedCountry.flag}</span>
+                    <span className="text-xs font-bold">{selectedCountry.code}</span>
+                    <ChevronDown className={cn("h-3 w-3 sm:h-3.5 sm:w-3.5 opacity-50 transition-transform duration-200", isDropdownOpen && "rotate-180")} />
                 </Button>
 
                 {/* Country Search Dropdown */}
@@ -127,7 +127,7 @@ export function PhoneInputWithCountry({
             </div>
 
             {/* Subscriber Number Input */}
-            <div className="flex-1 relative">
+            <div className="flex-1 min-w-0 relative">
                 <Input
                     id={id}
                     type="tel"
@@ -140,7 +140,7 @@ export function PhoneInputWithCountry({
                         onPhoneLocalChange(val);
                     }}
                     className={cn(
-                        "h-11 border-zinc-200 bg-white text-sm font-medium focus-visible:ring-primary transition-all pr-9 rounded-xl",
+                        "h-10 sm:h-11 border-zinc-200 bg-white text-xs sm:text-sm font-medium focus-visible:ring-primary transition-all pr-8 rounded-xl",
                         phoneLocal && !isValid && "border-red-400 focus-visible:ring-red-400 focus-visible:border-red-400",
                         phoneLocal && isValid && "border-emerald-500 focus-visible:ring-emerald-500 focus-visible:border-emerald-500",
                         className

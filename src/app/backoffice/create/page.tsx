@@ -449,31 +449,29 @@ function CreateOrderContent() {
                 />
             )}
 
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-16 sm:pt-20 pb-8 sm:pb-12 max-w-[1400px] space-y-6">
+            <div className="container mx-auto px-3 sm:px-6 lg:px-8 pt-16 sm:pt-20 pb-8 sm:pb-12 max-w-[1400px] space-y-4 sm:space-y-6">
                 <div>
                     <Button
                         asChild
                         variant="outline"
-                        className="gap-2 mb-4 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 hover:text-slate-900 transition-all duration-300 rounded-xl shadow-[0_2px_10px_rgb(0,0,0,0.02)] hover:shadow-[0_4px_20px_rgb(0,0,0,0.04)] hover:-translate-y-0.5"
+                        className="gap-2 mb-4 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 hover:text-slate-900 transition-all duration-300 rounded-xl shadow-xs hover:shadow-sm hover:-translate-y-0.5 text-xs sm:text-sm h-9 sm:h-10"
                     >
                         <Link href="/backoffice">
                             <ArrowLeft className="w-4 h-4" />
                             Back to Dashboard
                         </Link>
                     </Button>
-
-
                 </div>
 
-                <Card className="border-white/50 bg-white/60 backdrop-blur-md shadow-xl rounded-3xl overflow-hidden mb-4">
-                    <CardHeader className="bg-primary/5 pb-8 pt-6">
-                        <CardTitle className="text-xl">{editingId ? "Edit Order Details" : "New Order Entry"}</CardTitle>
-                        <CardDescription>Enter order details to verify and generate a tracking link.</CardDescription>
+                <Card className="border-white/50 bg-white/60 backdrop-blur-md shadow-lg sm:shadow-xl rounded-2xl sm:rounded-3xl overflow-hidden mb-4">
+                    <CardHeader className="bg-primary/5 pb-5 sm:pb-8 pt-5 sm:pt-6 px-4 sm:px-8">
+                        <CardTitle className="text-lg sm:text-xl font-bold text-slate-900">{editingId ? "Edit Order Details" : "New Order Entry"}</CardTitle>
+                        <CardDescription className="text-xs sm:text-sm">Enter order details to verify and generate a tracking link.</CardDescription>
                     </CardHeader>
-                    <CardContent className="pt-8">
+                    <CardContent className="p-3.5 sm:p-8 pt-4 sm:pt-8">
                         {/* sliding tab switcher */}
                         {businessType !== "logistics" && (
-                        <div className="mb-6 flex justify-start">
+                        <div className="mb-5 sm:mb-6 flex justify-start">
                             <div className="bg-slate-100/80 backdrop-blur-md p-1 rounded-2xl flex flex-wrap items-center gap-1 shadow-inner border border-slate-200/50">
                                 <button
                                     type="button"
@@ -482,10 +480,10 @@ function CreateOrderContent() {
                                         setSelectedClientId("none");
                                         setSelectedInventory([]);
                                     }}
-                                    className={`px-4 sm:px-6 py-2.5 rounded-xl text-[10px] sm:text-xs font-black uppercase tracking-wider transition-all duration-300 ${
+                                    className={`px-3.5 sm:px-6 py-2 rounded-xl text-[10px] sm:text-xs font-bold uppercase tracking-wider transition-all duration-300 ${
                                         orderMode === "unit"
-                                            ? "bg-white text-[#191A43] shadow-sm font-black"
-                                            : "text-slate-400 hover:text-slate-600 font-bold"
+                                            ? "bg-white text-[#191A43] shadow-xs font-bold"
+                                            : "text-slate-400 hover:text-slate-600 font-medium"
                                     }`}
                                 >
                                     Retail Sales Mode (Unit)
@@ -493,10 +491,10 @@ function CreateOrderContent() {
                                 <button
                                     type="button"
                                     onClick={() => setOrderMode("wholesale")}
-                                    className={`px-4 sm:px-6 py-2.5 rounded-xl text-[10px] sm:text-xs font-black uppercase tracking-wider transition-all duration-300 ${
+                                    className={`px-3.5 sm:px-6 py-2 rounded-xl text-[10px] sm:text-xs font-bold uppercase tracking-wider transition-all duration-300 ${
                                         orderMode === "wholesale"
-                                            ? "bg-white text-[#191A43] shadow-sm font-black"
-                                            : "text-slate-400 hover:text-slate-600 font-bold"
+                                            ? "bg-white text-[#191A43] shadow-xs font-bold"
+                                            : "text-slate-400 hover:text-slate-600 font-medium"
                                     }`}
                                 >
                                     Wholesale Sales Mode
@@ -505,20 +503,20 @@ function CreateOrderContent() {
                         </div>
                         )}
 
-                        <form onSubmit={handleSubmit} className="space-y-6">
+                        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
                             {/* B2B Client Account Selector */}
                             {businessType !== "logistics" && orderMode === "wholesale" && (
-                                <div className="p-5 bg-slate-50/70 border border-slate-100 rounded-3xl flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-                                    <div className="space-y-1 text-left">
-                                        <Label className="text-[10px] font-black text-[#191A43] uppercase tracking-widest ml-0.5">B2B Customer Pricing Account</Label>
-                                        <p className="text-[10px] text-slate-400 font-bold leading-normal">Select a registered client organization to apply their custom pricing overrides sheet automatically.</p>
+                                <div className="p-3.5 sm:p-5 bg-slate-50/70 border border-slate-100 rounded-2xl sm:rounded-3xl flex flex-col lg:flex-row lg:items-center justify-between gap-3 sm:gap-4">
+                                    <div className="space-y-0.5 text-left">
+                                        <Label className="text-[10px] font-bold text-[#191A43] uppercase tracking-wider">B2B Customer Pricing Account</Label>
+                                        <p className="text-[11px] text-slate-500 font-normal leading-normal">Select a registered client organization to apply their custom pricing overrides sheet automatically.</p>
                                     </div>
                                     <div className="w-full lg:w-80">
                                         <Select
                                             value={selectedClientId}
                                             onValueChange={setSelectedClientId}
                                         >
-                                            <SelectTrigger className="h-12 rounded-2xl border-slate-200 bg-white font-semibold text-xs text-left">
+                                            <SelectTrigger className="h-10 sm:h-12 rounded-xl sm:rounded-2xl border-slate-200 bg-white font-semibold text-xs text-left">
                                                 <SelectValue placeholder="Standard Catalog Prices (Default)" />
                                             </SelectTrigger>
                                             <SelectContent className="rounded-2xl border-slate-100 bg-white">
@@ -535,22 +533,25 @@ function CreateOrderContent() {
                             )}
 
                             {/* Customer / Logistics Contacts */}
-                            <div className="bg-slate-50/50 p-6 rounded-3xl border border-slate-100/80 space-y-5">
-                                <h3 className="text-xs font-black text-[#191A43] uppercase tracking-wider flex items-center gap-2">
-                                    {businessType === "logistics" ? "Pick Up & Drop Off Customer Details" : "Customer Information"}
+                            <div className="bg-slate-50/60 p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-200/70 space-y-3.5 sm:space-y-4">
+                                <h3 className="text-xs sm:text-sm font-bold text-slate-900 tracking-tight flex items-center gap-2">
+                                    {businessType === "logistics" ? "Customer & Delivery Contacts" : "Customer Information"}
                                 </h3>
 
                                 {businessType === "logistics" ? (
-                                    <div className="space-y-5">
+                                    <div className="space-y-3 sm:space-y-4">
                                         {/* Pick Up Customer Details */}
-                                        <div className="p-4 rounded-2xl bg-white border border-slate-100 space-y-3">
-                                            <span className="text-[10px] font-black uppercase tracking-wider text-emerald-600 flex items-center gap-1.5">
-                                                <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                                                1. Pick Up Customer Details
-                                            </span>
-                                            <div className="grid sm:grid-cols-2 gap-4">
-                                                <div className="space-y-1.5">
-                                                    <Label htmlFor="pickupCustomerName" className="ml-1 text-xs font-semibold text-muted-foreground">Pick Up Customer Name <span className="text-red-500">*</span></Label>
+                                        <div className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-white border border-slate-200/70 shadow-2xs space-y-2.5 sm:space-y-3">
+                                            <div className="flex items-center justify-between pb-1.5 border-b border-slate-100">
+                                                <span className="text-xs font-bold text-emerald-800 flex items-center gap-1.5">
+                                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                                                    1. Pick Up Contact
+                                                </span>
+                                                <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200/60">Pickup</span>
+                                            </div>
+                                            <div className="grid sm:grid-cols-2 gap-3 sm:gap-4">
+                                                <div className="space-y-1">
+                                                    <Label htmlFor="pickupCustomerName" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">Pick Up Customer Name <span className="text-red-500">*</span></Label>
                                                     <Input
                                                         id="pickupCustomerName"
                                                         value={customerName}
@@ -558,11 +559,11 @@ function CreateOrderContent() {
                                                         placeholder="e.g. Ama Mensah"
                                                         required
                                                         disabled={!canCreateOrder}
-                                                        className="h-11 rounded-xl bg-slate-50/50 border-zinc-200 text-sm font-medium"
+                                                        className="h-10 sm:h-11 rounded-xl bg-slate-50/50 border-zinc-200 text-xs sm:text-sm font-medium"
                                                     />
                                                 </div>
-                                                <div className="space-y-1.5">
-                                                    <Label htmlFor="pickupCustomerPhone" className="ml-1 text-xs font-semibold text-muted-foreground">Pick Up Customer Contact <span className="text-red-500">*</span></Label>
+                                                <div className="space-y-1">
+                                                    <Label htmlFor="pickupCustomerPhone" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">Pick Up Customer Contact <span className="text-red-500">*</span></Label>
                                                     <PhoneInputWithCountry
                                                         id="pickupCustomerPhone"
                                                         countryCode={pickupCountryCode}
@@ -586,14 +587,17 @@ function CreateOrderContent() {
                                         </div>
 
                                         {/* Drop Off Customer Details */}
-                                        <div className="p-4 rounded-2xl bg-white border border-slate-100 space-y-3">
-                                            <span className="text-[10px] font-black uppercase tracking-wider text-sky-600 flex items-center gap-1.5">
-                                                <span className="w-2 h-2 rounded-full bg-sky-500" />
-                                                2. Drop Off Customer Details
-                                            </span>
-                                            <div className="grid sm:grid-cols-2 gap-4">
-                                                <div className="space-y-1.5">
-                                                    <Label htmlFor="dropoffCustomerName" className="ml-1 text-xs font-semibold text-muted-foreground">Drop Off Customer Name <span className="text-red-500">*</span></Label>
+                                        <div className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-white border border-slate-200/70 shadow-2xs space-y-2.5 sm:space-y-3">
+                                            <div className="flex items-center justify-between pb-1.5 border-b border-slate-100">
+                                                <span className="text-xs font-bold text-sky-800 flex items-center gap-1.5">
+                                                    <span className="w-1.5 h-1.5 rounded-full bg-sky-500" />
+                                                    2. Drop Off Contact
+                                                </span>
+                                                <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-sky-50 text-sky-700 border border-sky-200/60">Recipient</span>
+                                            </div>
+                                            <div className="grid sm:grid-cols-2 gap-3 sm:gap-4">
+                                                <div className="space-y-1">
+                                                    <Label htmlFor="dropoffCustomerName" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">Drop Off Customer Name <span className="text-red-500">*</span></Label>
                                                     <Input
                                                         id="dropoffCustomerName"
                                                         value={recipientName}
@@ -601,11 +605,11 @@ function CreateOrderContent() {
                                                         placeholder="e.g. Kofi Boateng"
                                                         required
                                                         disabled={!canCreateOrder}
-                                                        className="h-11 rounded-xl bg-slate-50/50 border-zinc-200 text-sm font-medium"
+                                                        className="h-10 sm:h-11 rounded-xl bg-slate-50/50 border-zinc-200 text-xs sm:text-sm font-medium"
                                                     />
                                                 </div>
-                                                <div className="space-y-1.5">
-                                                    <Label htmlFor="dropoffCustomerPhone" className="ml-1 text-xs font-semibold text-muted-foreground">Drop Off Customer Contact <span className="text-red-500">*</span></Label>
+                                                <div className="space-y-1">
+                                                    <Label htmlFor="dropoffCustomerPhone" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">Drop Off Customer Contact <span className="text-red-500">*</span></Label>
                                                     <PhoneInputWithCountry
                                                         id="dropoffCustomerPhone"
                                                         countryCode={dropoffCountryCode}
@@ -629,10 +633,10 @@ function CreateOrderContent() {
                                         </div>
                                     </div>
                                 ) : (
-                                    <div className="space-y-4">
-                                        <div className="grid sm:grid-cols-2 gap-6">
-                                            <div className="space-y-2">
-                                                <Label htmlFor={`${businessType}-customerName`} className="ml-1 text-xs font-semibold text-muted-foreground tracking-wider">Customer Name <span className="text-red-500">*</span></Label>
+                                    <div className="space-y-3 sm:space-y-4">
+                                        <div className="grid sm:grid-cols-2 gap-3 sm:gap-6">
+                                            <div className="space-y-1 sm:space-y-2">
+                                                <Label htmlFor={`${businessType}-customerName`} className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">Customer Name <span className="text-red-500">*</span></Label>
                                                 <Input
                                                     id={`${businessType}-customerName`}
                                                     value={customerName}
@@ -640,12 +644,12 @@ function CreateOrderContent() {
                                                     placeholder="Naa"
                                                     required
                                                     disabled={!canCreateOrder}
-                                                    className="h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80"
+                                                    className="h-10 sm:h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80 text-xs sm:text-sm"
                                                 />
                                             </div>
 
-                                            <div className="space-y-2">
-                                                <Label htmlFor={`${businessType}-customerPhone`} className="ml-1 text-xs font-semibold text-muted-foreground tracking-wider">Customer Contact</Label>
+                                            <div className="space-y-1 sm:space-y-2">
+                                                <Label htmlFor={`${businessType}-customerPhone`} className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">Customer Contact</Label>
                                                 <PhoneInputWithCountry
                                                     id={`${businessType}-customerPhone`}
                                                     countryCode={pickupCountryCode}
@@ -669,30 +673,30 @@ function CreateOrderContent() {
                             </div>
 
                             {/* Payment Method Selector */}
-                            <div className="bg-slate-50/50 p-6 rounded-3xl border border-slate-100/80 space-y-4">
-                                <h3 className="text-xs font-black text-[#191A43] uppercase tracking-wider flex items-center gap-2">
+                            <div className="bg-slate-50/60 p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-200/70 space-y-3 sm:space-y-4">
+                                <h3 className="text-xs sm:text-sm font-bold text-slate-900 tracking-tight flex items-center gap-2">
                                     Expected Payment Method
                                 </h3>
-                                <div className="grid grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-4">
                                     <div 
                                         onClick={() => setPaymentMethod("online")}
-                                        className={`border rounded-2xl p-4 cursor-pointer flex flex-col gap-1.5 transition-all ${paymentMethod === "online" ? "bg-blue-50 border-blue-200 ring-2 ring-blue-500/20" : "bg-white border-slate-200 hover:bg-slate-50"}`}
+                                        className={`border rounded-xl sm:rounded-2xl p-3 sm:p-4 cursor-pointer flex flex-col gap-1 transition-all ${paymentMethod === "online" ? "bg-blue-50 border-blue-200 ring-2 ring-blue-500/20" : "bg-white border-slate-200 hover:bg-slate-50"}`}
                                     >
-                                        <span className={`text-sm font-bold ${paymentMethod === "online" ? "text-blue-700" : "text-slate-700"}`}>Online Payment</span>
-                                        <span className="text-xs text-slate-500 leading-tight">Customer will receive a payment link via SMS</span>
+                                        <span className={`text-xs sm:text-sm font-bold ${paymentMethod === "online" ? "text-blue-700" : "text-slate-700"}`}>Online Payment</span>
+                                        <span className="text-[11px] sm:text-xs text-slate-500 leading-tight">Customer receives payment link via SMS</span>
                                     </div>
                                     <div 
                                         onClick={() => setPaymentMethod("cash")}
-                                        className={`border rounded-2xl p-4 cursor-pointer flex flex-col gap-1.5 transition-all ${paymentMethod === "cash" ? "bg-emerald-50 border-emerald-200 ring-2 ring-emerald-500/20" : "bg-white border-slate-200 hover:bg-slate-50"}`}
+                                        className={`border rounded-xl sm:rounded-2xl p-3 sm:p-4 cursor-pointer flex flex-col gap-1 transition-all ${paymentMethod === "cash" ? "bg-emerald-50 border-emerald-200 ring-2 ring-emerald-500/20" : "bg-white border-slate-200 hover:bg-slate-50"}`}
                                     >
-                                        <span className={`text-sm font-bold ${paymentMethod === "cash" ? "text-emerald-700" : "text-slate-700"}`}>Cash / Manual Payment</span>
-                                        <span className="text-xs text-slate-500 leading-tight">Order marked as paid immediately. No payment link.</span>
+                                        <span className={`text-xs sm:text-sm font-bold ${paymentMethod === "cash" ? "text-emerald-700" : "text-slate-700"}`}>Cash / Manual Payment</span>
+                                        <span className="text-[11px] sm:text-xs text-slate-500 leading-tight">Order marked paid immediately. No link.</span>
                                     </div>
                                 </div>
 
                                 {paymentMethod === "online" && (
-                                    <div className="mt-4 p-5 bg-blue-50/40 rounded-2xl border border-blue-100/60 space-y-4">
-                                        <div className="flex items-center gap-3">
+                                    <div className="mt-3 sm:mt-4 p-3.5 sm:p-5 bg-blue-50/40 rounded-xl sm:rounded-2xl border border-blue-100/60 space-y-3 sm:space-y-4">
+                                        <div className="flex items-center gap-2.5 sm:gap-3">
                                             <Checkbox
                                                 id="triggerMomoPrompt"
                                                 checked={triggerMomoPrompt}
@@ -710,32 +714,32 @@ function CreateOrderContent() {
                                         </div>
 
                                         {triggerMomoPrompt && (
-                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-                                                <div className="space-y-2">
-                                                    <Label htmlFor="momoPhone" className="ml-1 text-xs font-semibold text-muted-foreground">Momo Phone Number</Label>
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 pt-1 sm:pt-2">
+                                                <div className="space-y-1 sm:space-y-2">
+                                                    <Label htmlFor="momoPhone" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">Momo Phone Number</Label>
                                                     <Input
                                                         id="momoPhone"
                                                         type="tel"
                                                         placeholder="e.g. 0244000000"
                                                         value={momoPhone}
                                                         onChange={(e) => setMomoPhone(e.target.value)}
-                                                        className="h-11 rounded-xl bg-white border-zinc-200 focus-visible:border-blue-400 text-sm font-medium"
+                                                        className="h-10 sm:h-11 rounded-xl bg-white border-zinc-200 focus-visible:border-blue-400 text-xs sm:text-sm font-medium"
                                                     />
                                                 </div>
-                                                <div className="space-y-2">
-                                                    <Label htmlFor="momoProvider" className="ml-1 text-xs font-semibold text-muted-foreground">Network Provider</Label>
+                                                <div className="space-y-1 sm:space-y-2">
+                                                    <Label htmlFor="momoProvider" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">Network Provider</Label>
                                                     <Select 
                                                         value={momoProvider} 
                                                         onValueChange={(val: 'mtn' | 'vod' | 'atl') => setMomoProvider(val)}
                                                         disabled={!!detectGhanaNetworkProvider(momoPhone)}
                                                     >
-                                                        <SelectTrigger id="momoProvider" className="h-11 rounded-xl bg-white border-zinc-200 focus:border-blue-400 text-sm font-medium">
+                                                        <SelectTrigger id="momoProvider" className="h-10 sm:h-11 rounded-xl bg-white border-zinc-200 focus:border-blue-400 text-xs sm:text-sm font-medium">
                                                             <SelectValue placeholder="Select provider" />
                                                         </SelectTrigger>
                                                         <SelectContent className="rounded-xl border-zinc-100 shadow-xl">
-                                                             <SelectItem value="mtn" className="rounded-lg">MTN Ghana</SelectItem>
-                                                             <SelectItem value="vod" className="rounded-lg">Telecel (Vodafone)</SelectItem>
-                                                             <SelectItem value="atl" className="rounded-lg">AT (AirtelTigo)</SelectItem>
+                                                             <SelectItem value="mtn" className="rounded-lg text-xs sm:text-sm">MTN Ghana</SelectItem>
+                                                             <SelectItem value="vod" className="rounded-lg text-xs sm:text-sm">Telecel (Vodafone)</SelectItem>
+                                                             <SelectItem value="atl" className="rounded-lg text-xs sm:text-sm">AT (AirtelTigo)</SelectItem>
                                                         </SelectContent>
                                                     </Select>
                                                 </div>
@@ -747,29 +751,29 @@ function CreateOrderContent() {
 
                             {/* Logistics Route & Locations — Only for logistics businesses */}
                             {businessType === "logistics" && (
-                                <div className="bg-sky-50/30 p-6 rounded-3xl border border-sky-100/60 space-y-5">
-                                    <h3 className="text-xs font-black text-[#191A43] uppercase tracking-wider flex items-center gap-2">
-                                        <MapPin className="w-4 h-4 text-sky-600" />
-                                        Route & Locations
+                                <div className="bg-sky-50/40 p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl border border-sky-200/60 space-y-3.5 sm:space-y-4">
+                                    <h3 className="text-xs sm:text-sm font-bold text-slate-900 tracking-tight flex items-center gap-2">
+                                        <MapPin className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-sky-600" />
+                                        Route &amp; Locations
                                     </h3>
 
-                                    <div className="grid sm:grid-cols-2 gap-6">
+                                    <div className="grid sm:grid-cols-2 gap-3 sm:gap-6">
                                         {/* Pickup Location */}
-                                        <div className="space-y-2">
-                                            <Label htmlFor="pickupLocation" className="ml-1 text-xs font-semibold text-muted-foreground tracking-wider">Pick Up Location</Label>
+                                        <div className="space-y-1 sm:space-y-2">
+                                            <Label htmlFor="pickupLocation" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">Pick Up Location</Label>
                                             <Input
                                                 id="pickupLocation"
                                                 value={pickupLocation}
                                                 onChange={(e) => setPickupLocation(e.target.value)}
                                                 placeholder="e.g. Madina Market, Accra"
                                                 disabled={!canCreateOrder}
-                                                className="h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-sky-300 focus-visible:ring-[4px] focus-visible:ring-sky-100/80"
+                                                className="h-10 sm:h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-sky-300 focus-visible:ring-[4px] focus-visible:ring-sky-100/80 text-xs sm:text-sm"
                                             />
                                         </div>
 
                                         {/* Drop Off Location */}
-                                        <div className="space-y-2">
-                                            <Label htmlFor="deliveryLocation" className="ml-1 text-xs font-semibold text-muted-foreground tracking-wider">Drop Off Location <span className="text-red-500">*</span></Label>
+                                        <div className="space-y-1 sm:space-y-2">
+                                            <Label htmlFor="deliveryLocation" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">Drop Off Location <span className="text-red-500">*</span></Label>
                                             <Input
                                                 id="deliveryLocation"
                                                 value={deliveryLocation}
@@ -777,21 +781,21 @@ function CreateOrderContent() {
                                                 placeholder="e.g. East Legon, near Shell"
                                                 required
                                                 disabled={!canCreateOrder}
-                                                className="h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-sky-300 focus-visible:ring-[4px] focus-visible:ring-sky-100/80"
+                                                className="h-10 sm:h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-sky-300 focus-visible:ring-[4px] focus-visible:ring-sky-100/80 text-xs sm:text-sm"
                                             />
                                         </div>
                                     </div>
 
                                     {/* Live Google Maps Preview */}
                                     {(pickupLocation || deliveryLocation) && (
-                                        <div className="grid sm:grid-cols-2 gap-4">
+                                        <div className="grid sm:grid-cols-2 gap-3 sm:gap-4">
                                             {pickupLocation && (
-                                                <div className="space-y-2">
-                                                    <div className="flex items-center gap-2">
-                                                        <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                                                        <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Pick Up</span>
+                                                <div className="space-y-1.5">
+                                                    <div className="flex items-center gap-1.5">
+                                                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                                                        <span className="text-[9px] font-bold text-slate-500 uppercase tracking-wider">Pick Up</span>
                                                     </div>
-                                                    <div className="w-full h-48 rounded-2xl overflow-hidden border border-slate-200 bg-slate-100 shadow-inner">
+                                                    <div className="w-full h-40 sm:h-48 rounded-xl sm:rounded-2xl overflow-hidden border border-slate-200 bg-slate-100 shadow-inner">
                                                         <iframe
                                                             title="Pick Up Location Map"
                                                             width="100%"
@@ -805,7 +809,7 @@ function CreateOrderContent() {
                                                         href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(pickupLocation)}`}
                                                         target="_blank"
                                                         rel="noopener noreferrer"
-                                                        className="inline-flex items-center gap-1.5 text-[10px] font-bold text-sky-600 hover:text-sky-700 transition-colors"
+                                                        className="inline-flex items-center gap-1 text-[10px] font-bold text-sky-600 hover:text-sky-700 transition-colors"
                                                     >
                                                         <Navigation className="w-3 h-3" />
                                                         Open in Google Maps
@@ -814,12 +818,12 @@ function CreateOrderContent() {
                                             )}
 
                                             {deliveryLocation && (
-                                                <div className={cn("space-y-2", !pickupLocation && "sm:col-start-2")}>
-                                                    <div className="flex items-center gap-2">
-                                                        <div className="w-2 h-2 rounded-full bg-sky-500 animate-pulse" />
-                                                        <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Drop Off</span>
+                                                <div className={cn("space-y-1.5", !pickupLocation && "sm:col-start-2")}>
+                                                    <div className="flex items-center gap-1.5">
+                                                        <div className="w-1.5 h-1.5 rounded-full bg-sky-500 animate-pulse" />
+                                                        <span className="text-[9px] font-bold text-slate-500 uppercase tracking-wider">Drop Off</span>
                                                     </div>
-                                                    <div className="w-full h-48 rounded-2xl overflow-hidden border border-slate-200 bg-slate-100 shadow-inner">
+                                                    <div className="w-full h-40 sm:h-48 rounded-xl sm:rounded-2xl overflow-hidden border border-slate-200 bg-slate-100 shadow-inner">
                                                         <iframe
                                                             title="Drop Off Location Map"
                                                             width="100%"
@@ -833,7 +837,7 @@ function CreateOrderContent() {
                                                         href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(deliveryLocation)}`}
                                                         target="_blank"
                                                         rel="noopener noreferrer"
-                                                        className="inline-flex items-center gap-1.5 text-[10px] font-bold text-sky-600 hover:text-sky-700 transition-colors"
+                                                        className="inline-flex items-center gap-1 text-[10px] font-bold text-sky-600 hover:text-sky-700 transition-colors"
                                                     >
                                                         <Navigation className="w-3 h-3" />
                                                         Open in Google Maps
@@ -847,13 +851,13 @@ function CreateOrderContent() {
 
                             {/* Stock Usage & Product Selection */}
                             {businessType !== "logistics" && (
-                            <div className="bg-slate-50/30 p-6 rounded-3xl border border-slate-100/60 space-y-4">
+                            <div className="bg-slate-50/50 p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-200/70 space-y-3.5 sm:space-y-4">
                                 <div className="flex items-center justify-between">
-                                    <Label className="ml-1 text-xs font-black text-[#191A43] uppercase tracking-widest flex items-center gap-2">
-                                        <Boxes className="w-4 h-4" />
+                                    <Label className="ml-0.5 text-xs sm:text-sm font-bold text-slate-900 tracking-tight flex items-center gap-2">
+                                        <Boxes className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                                         Stock Usage / Product Selection {isRetailBusiness && <span className="text-red-500">*</span>}
                                     </Label>
-                                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Items from Inventory</span>
+                                    <span className="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-wider">Inventory</span>
                                 </div>
 
                                 <div className="relative">
@@ -864,7 +868,7 @@ function CreateOrderContent() {
                                         onChange={(e) => setInventorySearch(e.target.value)}
                                         onFocus={() => setIsSearchFocused(true)}
                                         onBlur={() => setTimeout(() => setIsSearchFocused(false), 200)}
-                                        className="pl-10 rounded-xl bg-white border-slate-200 h-12 text-sm"
+                                        className="pl-9 sm:pl-10 rounded-xl bg-white border-slate-200 h-10 sm:h-12 text-xs sm:text-sm"
                                     />
                                     {(inventorySearch || isSearchFocused) && (
                                         <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-100 rounded-xl shadow-xl z-50 max-h-48 overflow-auto">
@@ -939,19 +943,19 @@ function CreateOrderContent() {
                                 {selectedInventory.length > 0 && (
                                     <div className="space-y-2">
                                         {selectedInventory.map((item, index) => (
-                                            <div key={item.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 bg-white rounded-2xl border border-slate-100 shadow-sm">
+                                            <div key={item.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 sm:p-4 bg-white rounded-xl sm:rounded-2xl border border-slate-100 shadow-xs">
                                                 <div className="flex-1 min-w-0">
-                                                    <p className="text-sm font-black text-slate-700 truncate">{item.name}</p>
+                                                    <p className="text-xs sm:text-sm font-bold text-slate-800 truncate">{item.name}</p>
                                                     {businessType === "hair-retail" && (Boolean(metadata.length) || Boolean(metadata.color)) && (
-                                                        <div className="mt-1 flex flex-wrap items-center gap-2 text-[10px] font-semibold text-slate-500">
-                                                            {Boolean(metadata.length) && <span className="bg-slate-50 px-2 py-0.5 rounded-lg border border-slate-100">Length: {String(metadata.length)}</span>}
-                                                            {Boolean(metadata.color) && <span className="bg-slate-50 px-2 py-0.5 rounded-lg border border-slate-100">Color: {String(metadata.color)}</span>}
+                                                        <div className="mt-1 flex flex-wrap items-center gap-1.5 text-[9px] sm:text-[10px] font-medium text-slate-500">
+                                                            {Boolean(metadata.length) && <span className="bg-slate-50 px-2 py-0.5 rounded border border-slate-100">Length: {String(metadata.length)}</span>}
+                                                            {Boolean(metadata.color) && <span className="bg-slate-50 px-2 py-0.5 rounded border border-slate-100">Color: {String(metadata.color)}</span>}
                                                         </div>
                                                     )}
                                                 </div>
-                                                <div className="flex flex-wrap items-center justify-between sm:justify-end gap-3 sm:gap-4 border-t border-slate-50 pt-3 sm:border-0 sm:pt-0">
-                                                    <div className="flex items-center gap-2">
-                                                        <Label className="text-[10px] font-bold text-slate-400 uppercase">Qty:</Label>
+                                                <div className="flex flex-wrap items-center justify-between sm:justify-end gap-2.5 sm:gap-4 border-t border-slate-50 pt-2 sm:border-0 sm:pt-0">
+                                                    <div className="flex items-center gap-1.5">
+                                                        <Label className="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase">Qty:</Label>
                                                         <Input 
                                                             type="number"
                                                             value={item.quantity}
@@ -961,10 +965,10 @@ function CreateOrderContent() {
                                                                 newItems[index].quantity = e.target.value;
                                                                 setSelectedInventory(newItems);
                                                             }}
-                                                            className="w-16 h-8 rounded-lg bg-slate-50 border-slate-100 text-xs font-bold text-center"
+                                                            className="w-14 sm:w-16 h-7 sm:h-8 rounded-lg bg-slate-50 border-slate-100 text-xs font-bold text-center"
                                                         />
                                                     </div>
-                                                    <div className="text-right flex flex-col justify-center min-w-[110px]">
+                                                    <div className="text-right flex flex-col justify-center min-w-[100px]">
                                                          {(() => {
                                                              const invItem = allInventory.find(inv => inv.id === item.id);
                                                              const qty = parseFloat(item.quantity) || 1;
@@ -1012,9 +1016,9 @@ function CreateOrderContent() {
                                                                 }
                                                             }
                                                         }}
-                                                        className="w-8 h-8 rounded-lg hover:bg-red-50 hover:text-red-600 transition-all shrink-0"
+                                                        className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg hover:bg-red-50 hover:text-red-600 transition-all shrink-0"
                                                     >
-                                                        <Trash2 className="w-4 h-4" />
+                                                        <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                                                     </Button>
                                                 </div>
                                             </div>
@@ -1024,11 +1028,11 @@ function CreateOrderContent() {
 
                                 {/* Order Total Summary */}
                                 {selectedInventory.length > 0 && (
-                                    <div className="mt-4 bg-white rounded-2xl border border-slate-200/80 overflow-hidden shadow-sm">
-                                        <div className="px-5 py-3 bg-slate-50/80 border-b border-slate-100">
-                                            <h4 className="text-[10px] font-black text-[#191A43] uppercase tracking-widest">Order Summary</h4>
+                                    <div className="mt-3 sm:mt-4 bg-white rounded-xl sm:rounded-2xl border border-slate-200/80 overflow-hidden shadow-xs">
+                                        <div className="px-4 sm:px-5 py-2.5 sm:py-3 bg-slate-50/80 border-b border-slate-100">
+                                            <h4 className="text-[10px] font-bold text-[#191A43] uppercase tracking-wider">Order Summary</h4>
                                         </div>
-                                        <div className="px-5 py-3 space-y-2 border-b border-slate-100/50">
+                                        <div className="px-4 sm:px-5 py-2.5 sm:py-3 space-y-1.5 sm:space-y-2 border-b border-slate-100/50">
                                             {selectedInventory.map((item) => {
                                                 const invItem = allInventory.find(inv => inv.id === item.id);
                                                 const qty = parseFloat(item.quantity) || 1;
@@ -1037,7 +1041,7 @@ function CreateOrderContent() {
                                                 const lineTotal = qty * unitPrice;
                                                 return (
                                                     <div key={item.id} className="flex items-center justify-between text-xs">
-                                                        <span className="text-slate-600 font-medium truncate mr-4">
+                                                        <span className="text-slate-600 font-medium truncate mr-3 sm:mr-4">
                                                             {item.name} <span className="text-slate-400">× {qty}</span>
                                                         </span>
                                                         <span className="font-bold text-slate-700 whitespace-nowrap">
@@ -1047,7 +1051,7 @@ function CreateOrderContent() {
                                                 );
                                             })}
                                         </div>
-                                        <div className="px-5 py-3 space-y-1.5 text-xs border-b border-slate-100/35">
+                                        <div className="px-4 sm:px-5 py-2.5 sm:py-3 space-y-1 text-xs border-b border-slate-100/35">
                                             <div className="flex justify-between items-center text-slate-500">
                                                 <span>Subtotal</span>
                                                 <span className="font-semibold text-slate-700">GH₵ {subtotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
@@ -1071,9 +1075,9 @@ function CreateOrderContent() {
                                                 </div>
                                             )}
                                         </div>
-                                        <div className="px-5 py-3.5 bg-[#191A43] flex items-center justify-between rounded-b-2xl">
-                                            <span className="text-xs font-black text-white/70 uppercase tracking-wider">Order Total</span>
-                                            <span className="text-lg font-black text-white">
+                                        <div className="px-4 sm:px-5 py-3 sm:py-3.5 bg-[#191A43] flex items-center justify-between">
+                                            <span className="text-xs font-bold text-white/70 uppercase tracking-wider">Order Total</span>
+                                            <span className="text-base sm:text-lg font-bold text-white">
                                                 GH₵ {(subtotal + tax + deliveryFee - discount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                             </span>
                                         </div>
@@ -1083,16 +1087,16 @@ function CreateOrderContent() {
                             )}
 
                             {/* Additional Specifications / Details */}
-                            <div className="bg-slate-50/10 p-6 rounded-3xl border border-slate-100/50 space-y-4">
-                                <h3 className="text-xs font-black text-[#191A43] uppercase tracking-wider">
+                            <div className="bg-slate-50/50 p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-200/70 space-y-3.5 sm:space-y-4">
+                                <h3 className="text-xs sm:text-sm font-bold text-slate-900 tracking-tight">
                                     {selectedInventory.length > 0 ? "Specifications & Delivery" : "Product Specifications & Delivery"}
                                 </h3>
-                                <div className="grid sm:grid-cols-2 gap-6">
+                                <div className="grid sm:grid-cols-2 gap-3.5 sm:gap-6">
                                     {/* Manual fields: only rendered if NO inventory is linked and it is NOT a retail business */}
                                     {selectedInventory.length === 0 && !isRetailBusiness && (
                                         <>
-                                            <div className="space-y-2 relative">
-                                                <Label htmlFor={`${businessType}-itemType`} className="ml-1 text-xs font-semibold text-muted-foreground tracking-wider">{config.itemLabel} <span className="text-red-500">*</span></Label>
+                                            <div className="space-y-1 sm:space-y-2 relative">
+                                                <Label htmlFor={`${businessType}-itemType`} className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">{config.itemLabel} <span className="text-red-500">*</span></Label>
                                                 <div className="relative">
                                                     <Input
                                                         name="order-item-type-search"
@@ -1104,20 +1108,20 @@ function CreateOrderContent() {
                                                         autoComplete="off"
                                                         spellCheck="false"
                                                         disabled={!canCreateOrder}
-                                                        className="h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80"
+                                                        className="h-10 sm:h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80 text-xs sm:text-sm"
                                                     />
                                                 </div>
                                             </div>
 
                                             {!config.extraFields?.some(f => f.id === "quantity") && (
-                                                <div className="space-y-2">
-                                                    <Label htmlFor={`${businessType}-quantity`} className="ml-1 text-xs font-semibold text-muted-foreground tracking-wider">Quantity <span className="text-red-500">*</span></Label>
+                                                <div className="space-y-1 sm:space-y-2">
+                                                    <Label htmlFor={`${businessType}-quantity`} className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">Quantity <span className="text-red-500">*</span></Label>
                                                     <Input
                                                         id={`${businessType}-quantity`} type="number" min="1"
                                                         value={quantity}
                                                         disabled={!canCreateOrder} onChange={(e) => setQuantity(e.target.value)} required
                                                         placeholder="1"
-                                                        className="h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80"
+                                                        className="h-10 sm:h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80 text-xs sm:text-sm"
                                                     />
                                                 </div>
                                             )}
@@ -1125,8 +1129,8 @@ function CreateOrderContent() {
                                     )}
 
                                     {/* Pickup/Delivery Date */}
-                                    <div className="space-y-2">
-                                        <Label htmlFor={`${businessType}-pickupDate`} className="ml-1 text-xs font-semibold text-muted-foreground tracking-wider">{config.orderLabel === "Tracking Number" ? "Date" : "Delivery Date"}</Label>
+                                    <div className="space-y-1 sm:space-y-2">
+                                        <Label htmlFor={`${businessType}-pickupDate`} className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">{config.orderLabel === "Tracking Number" ? "Date" : "Delivery Date"}</Label>
                                         <DatePicker
                                             date={pickupDate}
                                             setDate={setPickupDate}
@@ -1137,8 +1141,8 @@ function CreateOrderContent() {
                                     </div>
 
                                     {/* Delivery Fee Input */}
-                                    <div className="space-y-2">
-                                        <Label htmlFor="deliveryFee" className="ml-1 text-xs font-semibold text-muted-foreground tracking-wider">Delivery Fee (GH₵)</Label>
+                                    <div className="space-y-1 sm:space-y-2">
+                                        <Label htmlFor="deliveryFee" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">Delivery Fee (GH₵)</Label>
                                         <Input 
                                             type="number" 
                                             id="deliveryFee" 
@@ -1147,7 +1151,7 @@ function CreateOrderContent() {
                                             onChange={(e) => setDeliveryFee(Number(e.target.value) || 0)}
                                             placeholder="0.00"
                                             disabled={!canCreateOrder}
-                                            className="h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80 text-sm"
+                                            className="h-10 sm:h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80 text-xs sm:text-sm"
                                         />
                                     </div>
 
@@ -1164,8 +1168,8 @@ function CreateOrderContent() {
                                             return true;
                                         })
                                         .map((field) => (
-                                            <div key={field.id} className="space-y-2">
-                                                <Label htmlFor={`${businessType}-${field.id}`} className="ml-1 text-xs font-semibold text-muted-foreground tracking-wider">{field.label}</Label>
+                                            <div key={field.id} className="space-y-1 sm:space-y-2">
+                                                <Label htmlFor={`${businessType}-${field.id}`} className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">{field.label}</Label>
                                                 <Input
                                                     id={`${businessType}-${field.id}`}
                                                     type={field.type === "number" ? "number" : "text"}
@@ -1177,14 +1181,14 @@ function CreateOrderContent() {
                                                              setMetadata({ ...metadata, [field.id]: e.target.value });
                                                          }
                                                      }}
-                                                    placeholder={field.placeholder}
-                                                    disabled={!canCreateOrder}
-                                                    className="h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80"
+                                                     placeholder={field.placeholder}
+                                                     disabled={!canCreateOrder}
+                                                     className="h-10 sm:h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80 text-xs sm:text-sm"
                                                 />
                                             </div>
                                         ))}
                                 </div>
-                            </div>
+                                </div>
 
                             <div className="space-y-2">
                                 <Label htmlFor="measurements" className="ml-1 text-xs font-semibold text-muted-foreground tracking-wider">
