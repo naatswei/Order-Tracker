@@ -19,7 +19,13 @@ import {
     Send,
     ArrowRight,
     X,
-    Layers
+    Layers,
+    MapPin,
+    Navigation,
+    CheckCircle2,
+    Truck,
+    Clock,
+    Sparkles
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -43,6 +49,71 @@ import { Input } from "@/components/ui/input";
 import { SignatureLoader } from "@/components/signature-loader";
 import { getBusinessConfig } from "@/lib/business-configs";
 import { cn } from "@/lib/utils";
+
+// Stage visual themes for soft button & badge colors
+function getStageStyle(stageName: string, isSelected: boolean) {
+    const lower = (stageName || "").toLowerCase();
+
+    if (lower.includes("booked") || lower.includes("received")) {
+        return {
+            tab: isSelected 
+                ? "bg-blue-600 text-white shadow-xs shadow-blue-500/30" 
+                : "bg-blue-50 text-blue-700 border border-blue-200/80 hover:bg-blue-100/80",
+            badge: "bg-blue-50 text-blue-700 border-blue-200",
+            leftBorder: "border-l-blue-500",
+            dot: "bg-blue-500"
+        };
+    }
+    if (lower.includes("pick") && lower.includes("up")) {
+        return {
+            tab: isSelected 
+                ? "bg-amber-600 text-white shadow-xs shadow-amber-500/30" 
+                : "bg-amber-50 text-amber-700 border border-amber-200/80 hover:bg-amber-100/80",
+            badge: "bg-amber-50 text-amber-700 border-amber-200",
+            leftBorder: "border-l-amber-500",
+            dot: "bg-amber-500"
+        };
+    }
+    if (lower.includes("transit") || lower.includes("production") || lower.includes("sewing")) {
+        return {
+            tab: isSelected 
+                ? "bg-indigo-600 text-white shadow-xs shadow-indigo-500/30" 
+                : "bg-indigo-50 text-indigo-700 border border-indigo-200/80 hover:bg-indigo-100/80",
+            badge: "bg-indigo-50 text-indigo-700 border-indigo-200",
+            leftBorder: "border-l-indigo-500",
+            dot: "bg-indigo-500"
+        };
+    }
+    if (lower.includes("facility") || lower.includes("hub") || lower.includes("sorting") || lower.includes("fitting")) {
+        return {
+            tab: isSelected 
+                ? "bg-purple-600 text-white shadow-xs shadow-purple-500/30" 
+                : "bg-purple-50 text-purple-700 border border-purple-200/80 hover:bg-purple-100/80",
+            badge: "bg-purple-50 text-purple-700 border-purple-200",
+            leftBorder: "border-l-purple-500",
+            dot: "bg-purple-500"
+        };
+    }
+    if (lower.includes("delivered") || lower.includes("done") || lower.includes("ready") || lower.includes("completed")) {
+        return {
+            tab: isSelected 
+                ? "bg-emerald-600 text-white shadow-xs shadow-emerald-500/30" 
+                : "bg-emerald-50 text-emerald-700 border border-emerald-200/80 hover:bg-emerald-100/80",
+            badge: "bg-emerald-50 text-emerald-700 border-emerald-200",
+            leftBorder: "border-l-emerald-500",
+            dot: "bg-emerald-500"
+        };
+    }
+
+    return {
+        tab: isSelected 
+            ? "bg-[#191A43] text-white shadow-xs" 
+            : "bg-slate-100 text-slate-700 border border-slate-200/80 hover:bg-slate-200/70",
+        badge: "bg-slate-100 text-slate-700 border-slate-200",
+        leftBorder: "border-l-slate-400",
+        dot: "bg-slate-400"
+    };
+}
 
 export default function OperationsPage() {
     const [orders, setOrders] = useState<any[]>([]);
@@ -181,8 +252,8 @@ export default function OperationsPage() {
 
     return (
         <div className="bg-[#F8FAFC] min-h-screen pb-20">
-            {/* Clean Minimal Header */}
-            <header className="bg-white border-b border-slate-200/70 sticky top-0 z-30">
+            {/* Header */}
+            <header className="bg-white border-b border-slate-200/80 sticky top-0 z-30 shadow-2xs">
                 <div className="max-w-4xl mx-auto px-4 py-3 sm:py-4">
                     {/* Top Row: Navigation + Actions */}
                     <div className="flex items-center justify-between gap-3">
@@ -191,38 +262,38 @@ export default function OperationsPage() {
                                 <Button 
                                     variant="ghost" 
                                     size="icon" 
-                                    className="h-9 w-9 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-600"
+                                    className="h-9 w-9 rounded-xl border border-slate-200/80 bg-slate-50 hover:bg-slate-100 text-slate-700 transition-colors shadow-xs"
                                     title="Back to Dashboard"
                                 >
                                     <ArrowLeft className="w-4 h-4" />
                                 </Button>
                             </Link>
-                            <h1 className="text-base sm:text-lg font-bold text-[#191A43]">
-                                {isLogistics ? "Dispatch Operations" : config.dashboardTitle}
+                            <h1 className="text-base sm:text-lg font-bold text-[#191A43] flex items-center gap-2">
+                                <span>{isLogistics ? "Operations" : config.dashboardTitle}</span>
+                                <span className="px-2 py-0.5 rounded-full bg-indigo-50 border border-indigo-200/60 text-indigo-700 text-[11px] font-black">
+                                    {orders.length}
+                                </span>
                             </h1>
-                            <span className="px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 text-[11px] font-semibold">
-                                {orders.length}
-                            </span>
                         </div>
 
                         <div className="flex items-center gap-2">
                             <Dialog open={isConfigOpen} onOpenChange={setIsConfigOpen}>
                                 <DialogTrigger asChild>
                                     <Button 
-                                        variant="ghost" 
-                                        size="icon"
-                                        className="h-9 w-9 rounded-xl border border-slate-200 text-slate-500 hover:text-slate-800"
-                                        title="Configure Stages"
+                                        variant="outline" 
+                                        className="h-9 px-3 rounded-xl border-indigo-200/80 bg-indigo-50/70 hover:bg-indigo-100/80 text-indigo-700 font-bold text-xs shadow-xs transition-colors flex items-center gap-1.5"
+                                        title="Configure Pipeline Stages"
                                     >
-                                        <Settings2 className="w-4 h-4" />
+                                        <Settings2 className="w-3.5 h-3.5" />
+                                        <span className="hidden sm:inline">Stages</span>
                                     </Button>
                                 </DialogTrigger>
-                                <DialogContent className="sm:max-w-[420px] rounded-2xl border-slate-100 p-5 sm:p-6 max-h-[90vh] overflow-y-auto">
+                                <DialogContent className="sm:max-w-[420px] rounded-3xl border-slate-100 p-5 sm:p-6 max-h-[90vh] overflow-y-auto shadow-2xl">
                                     <DialogHeader className="mb-3">
                                         <DialogTitle className="text-lg font-bold text-[#191A43] flex items-center gap-2">
-                                            <Layers className="w-4 h-4" /> Pipeline Stages
+                                            <Layers className="w-4 h-4 text-indigo-600" /> Pipeline Stages
                                         </DialogTitle>
-                                        <DialogDescription className="text-xs text-slate-500">
+                                        <DialogDescription className="text-xs text-slate-500 font-medium">
                                             {config.operationsDescription}
                                         </DialogDescription>
                                     </DialogHeader>
@@ -231,9 +302,9 @@ export default function OperationsPage() {
                             </Dialog>
 
                             <Link href="/backoffice/create">
-                                <Button className="h-9 px-3.5 rounded-xl bg-[#191A43] hover:bg-[#191A43]/90 text-white font-semibold text-xs shadow-sm">
-                                    <Plus className="w-3.5 h-3.5 mr-1" />
-                                    <span>{isLogistics ? "Book" : "New Order"}</span>
+                                <Button className="h-9 px-4 rounded-xl bg-gradient-to-r from-[#191A43] via-[#242663] to-[#CE0003] hover:opacity-95 text-white font-bold text-xs shadow-md shadow-indigo-950/20 transition-all">
+                                    <Plus className="w-3.5 h-3.5 mr-1 text-red-300" />
+                                    <span>{isLogistics ? "Book Shipment" : "New Order"}</span>
                                 </Button>
                             </Link>
                         </div>
@@ -246,7 +317,7 @@ export default function OperationsPage() {
                             placeholder={isLogistics ? "Search tracking #, sender, recipient, location..." : "Search name, order #, contact..."}
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="h-9 pl-9 pr-8 rounded-xl border-slate-200 bg-slate-50/70 focus:bg-white text-xs sm:text-sm font-normal"
+                            className="h-9 pl-9 pr-8 rounded-xl border-slate-200 bg-slate-50/60 focus:bg-white text-xs sm:text-sm font-normal"
                         />
                         {searchQuery && (
                             <button 
@@ -258,21 +329,21 @@ export default function OperationsPage() {
                         )}
                     </div>
 
-                    {/* Clean Stage Selector Tabs */}
+                    {/* Colored Stage Selector Tabs */}
                     <div className="flex items-center gap-1.5 overflow-x-auto pt-3 pb-0.5 no-scrollbar">
                         <button
                             onClick={() => setActiveTab("all")}
                             className={cn(
-                                "px-3 py-1.5 rounded-lg text-xs font-semibold transition-all shrink-0 flex items-center gap-1.5",
+                                "px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 flex items-center gap-1.5",
                                 activeTab === "all"
-                                    ? "bg-[#191A43] text-white"
-                                    : "bg-slate-100/80 text-slate-600 hover:bg-slate-200/70"
+                                    ? "bg-[#191A43] text-white shadow-xs"
+                                    : "bg-slate-100 text-slate-700 border border-slate-200/80 hover:bg-slate-200/70"
                             )}
                         >
                             <span>All</span>
                             <span className={cn(
-                                "px-1.5 py-0.2 rounded-full text-[10px]",
-                                activeTab === "all" ? "bg-white/20 text-white" : "bg-white text-slate-500 font-bold"
+                                "px-1.5 py-0.2 rounded-full text-[10px] font-bold",
+                                activeTab === "all" ? "bg-white/20 text-white" : "bg-white text-slate-600 shadow-2xs"
                             )}>
                                 {orders.length}
                             </span>
@@ -281,22 +352,22 @@ export default function OperationsPage() {
                         {stages.map((stage) => {
                             const stageCount = orders.filter(o => getOrderStageName(o) === stage.name).length;
                             const isSelected = activeTab === stage.name;
+                            const style = getStageStyle(stage.name, isSelected);
 
                             return (
                                 <button
                                     key={stage.name}
                                     onClick={() => setActiveTab(stage.name)}
                                     className={cn(
-                                        "px-3 py-1.5 rounded-lg text-xs font-semibold transition-all shrink-0 flex items-center gap-1.5",
-                                        isSelected
-                                            ? "bg-[#191A43] text-white"
-                                            : "bg-slate-100/80 text-slate-600 hover:bg-slate-200/70"
+                                        "px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 flex items-center gap-1.5",
+                                        style.tab
                                     )}
                                 >
+                                    <span className={cn("w-1.5 h-1.5 rounded-full", isSelected ? "bg-white" : style.dot)} />
                                     <span>{stage.name}</span>
                                     <span className={cn(
-                                        "px-1.5 py-0.2 rounded-full text-[10px]",
-                                        isSelected ? "bg-white/20 text-white" : "bg-white text-slate-500 font-bold"
+                                        "px-1.5 py-0.2 rounded-full text-[10px] font-bold",
+                                        isSelected ? "bg-white/20 text-white" : "bg-white text-slate-600 shadow-2xs"
                                     )}>
                                         {stageCount}
                                     </span>
@@ -311,14 +382,16 @@ export default function OperationsPage() {
             <main className="max-w-4xl mx-auto px-4 pt-4 sm:pt-6">
                 {isLoading ? (
                     <div className="py-20">
-                        <SignatureLoader message="Loading orders..." />
+                        <SignatureLoader message="Loading operations board..." />
                     </div>
                 ) : filteredOrders.length === 0 ? (
-                    <div className="py-16 text-center bg-white border border-slate-200/80 rounded-2xl p-6 space-y-2">
-                        <Package className="w-8 h-8 text-slate-300 mx-auto" />
-                        <h3 className="font-bold text-slate-700 text-sm">No shipments found</h3>
-                        <p className="text-xs text-slate-400">
-                            {searchQuery ? `No results for "${searchQuery}"` : "There are currently no orders in this stage."}
+                    <div className="py-16 text-center bg-white border border-slate-200/80 rounded-3xl p-6 space-y-2.5 shadow-xs">
+                        <div className="w-12 h-12 rounded-2xl bg-indigo-50 border border-indigo-100 text-indigo-600 flex items-center justify-center mx-auto">
+                            <Package className="w-6 h-6" />
+                        </div>
+                        <h3 className="font-bold text-slate-800 text-sm">No shipments in this stage</h3>
+                        <p className="text-xs text-slate-400 max-w-xs mx-auto">
+                            {searchQuery ? `No results for "${searchQuery}"` : "Active shipments will appear here once booked."}
                         </p>
                     </div>
                 ) : (
@@ -330,11 +403,15 @@ export default function OperationsPage() {
                             const deliveryLoc = (meta.deliveryLocation as string) || null;
                             const recipientName = (meta.recipientName as string) || null;
                             const recipientPhone = (meta.recipientPhone as string) || null;
+                            const style = getStageStyle(currentStageName, false);
 
                             return (
                                 <Card 
                                     key={order.id}
-                                    className="border border-slate-200/80 bg-white rounded-2xl shadow-2xs hover:border-slate-300 transition-all overflow-hidden"
+                                    className={cn(
+                                        "border border-slate-200/80 bg-white rounded-2xl sm:rounded-3xl shadow-xs hover:shadow-sm hover:border-slate-300 transition-all overflow-hidden border-l-4",
+                                        style.leftBorder
+                                    )}
                                 >
                                     <CardContent className="p-3.5 sm:p-4 space-y-2.5">
                                         {/* Line 1: Tracking # + Customer + Status Badge */}
@@ -342,17 +419,17 @@ export default function OperationsPage() {
                                             <div className="flex items-center gap-2 min-w-0">
                                                 <Link 
                                                     href={`/backoffice/order/${order.id}`}
-                                                    className="font-black text-xs sm:text-sm text-[#191A43] hover:text-[#CE0003] transition-colors shrink-0"
+                                                    className="font-black text-xs sm:text-sm text-[#191A43] hover:text-[#CE0003] transition-colors shrink-0 flex items-center gap-1"
                                                 >
-                                                    {order.orderNumber}
+                                                    <span>{order.orderNumber}</span>
                                                 </Link>
                                                 <span className="text-slate-300">•</span>
-                                                <span className="font-semibold text-xs sm:text-sm text-slate-800 truncate">
+                                                <span className="font-bold text-xs sm:text-sm text-slate-800 truncate">
                                                     {order.customerName}
                                                 </span>
                                             </div>
 
-                                            <Badge variant="outline" className="bg-slate-50 border-slate-200 text-slate-700 text-[10px] font-bold shrink-0">
+                                            <Badge variant="outline" className={cn("text-[10px] font-bold px-2 py-0.5 rounded-lg shrink-0", style.badge)}>
                                                 {currentStageName}
                                             </Badge>
                                         </div>
@@ -360,10 +437,12 @@ export default function OperationsPage() {
                                         {/* Line 2: Route & Contact */}
                                         <div className="text-xs text-slate-600 space-y-1">
                                             {isLogistics && (pickupLoc || deliveryLoc) ? (
-                                                <div className="flex items-center gap-1.5 font-medium truncate">
-                                                    <span className="text-slate-700 font-semibold truncate">{pickupLoc || "Origin"}</span>
-                                                    <ArrowRight className="w-3 h-3 text-slate-400 shrink-0" />
-                                                    <span className="text-slate-700 font-semibold truncate">{deliveryLoc || "Destination"}</span>
+                                                <div className="flex items-center gap-1.5 font-medium truncate py-0.5">
+                                                    <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" title="Pickup Origin" />
+                                                    <span className="text-slate-800 font-semibold truncate">{pickupLoc || "Origin"}</span>
+                                                    <ArrowRight className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
+                                                    <span className="w-2 h-2 rounded-full bg-sky-500 shrink-0" title="Delivery Destination" />
+                                                    <span className="text-slate-800 font-semibold truncate">{deliveryLoc || "Destination"}</span>
                                                 </div>
                                             ) : (
                                                 <p className="text-slate-500 font-medium">
@@ -376,7 +455,8 @@ export default function OperationsPage() {
                                                 <div className="flex items-center gap-2 pt-0.5 text-[11px] text-slate-500">
                                                     <a 
                                                         href={`tel:${order.customerPhone}`}
-                                                        className="inline-flex items-center gap-1 text-slate-600 hover:text-[#191A43] font-semibold"
+                                                        className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-emerald-50/80 hover:bg-emerald-100 text-emerald-700 font-bold border border-emerald-200/70 transition-colors"
+                                                        title="Click to Call"
                                                     >
                                                         <Phone className="w-3 h-3 text-emerald-600" />
                                                         <span>{order.customerPhone}</span>
@@ -384,7 +464,9 @@ export default function OperationsPage() {
                                                     {recipientName && (
                                                         <>
                                                             <span className="text-slate-300">•</span>
-                                                            <span className="truncate">Recipient: {recipientName} {recipientPhone ? `(${recipientPhone})` : ''}</span>
+                                                            <span className="truncate font-medium text-slate-600">
+                                                                Recipient: <strong className="text-slate-800">{recipientName}</strong> {recipientPhone ? `(${recipientPhone})` : ''}
+                                                            </span>
                                                         </>
                                                     )}
                                                 </div>
@@ -393,22 +475,31 @@ export default function OperationsPage() {
 
                                         {/* Line 3: Rider Assignment & SMS Alert */}
                                         <div className="pt-1 flex items-center gap-2">
-                                            <div className="flex-1 min-w-0 bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1 flex items-center gap-1.5">
-                                                <User className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                                            <div className={cn(
+                                                "flex-1 min-w-0 rounded-xl px-2.5 py-1 flex items-center gap-1.5 border transition-all",
+                                                order.assignedStaffId && order.assignedStaffId !== "none"
+                                                    ? "bg-indigo-50/40 border-indigo-200/80"
+                                                    : "bg-slate-50 border-slate-200/80"
+                                            )}>
+                                                <User className={cn(
+                                                    "w-3.5 h-3.5 shrink-0",
+                                                    order.assignedStaffId && order.assignedStaffId !== "none" ? "text-indigo-600" : "text-slate-400"
+                                                )} />
                                                 <Select
                                                     value={order.assignedStaffId || "none"}
                                                     onValueChange={(val) => handleAssign(order.id, val)}
                                                 >
-                                                    <SelectTrigger className="h-6 border-none bg-transparent p-0 focus:ring-0 text-xs font-semibold text-slate-700 w-full shadow-none">
+                                                    <SelectTrigger className="h-6 border-none bg-transparent p-0 focus:ring-0 text-xs font-bold text-slate-700 w-full shadow-none">
                                                         <SelectValue placeholder={isLogistics ? "Assign Rider" : "Assign Staff"} />
                                                     </SelectTrigger>
-                                                    <SelectContent className="rounded-xl border-slate-200 shadow-lg">
+                                                    <SelectContent className="rounded-2xl border-slate-200 shadow-xl">
                                                         <SelectItem value="none">
                                                             <span className="text-slate-400">Unassigned</span>
                                                         </SelectItem>
                                                         {staff.map(s => (
                                                             <SelectItem key={s.id} value={s.id}>
-                                                                <span className="font-semibold">{s.name}</span>
+                                                                <span className="font-bold text-slate-800">{s.name}</span>
+                                                                {s.phone && <span className="text-[11px] text-slate-400 ml-1.5">({s.phone})</span>}
                                                             </SelectItem>
                                                         ))}
                                                     </SelectContent>
@@ -419,13 +510,12 @@ export default function OperationsPage() {
                                             {isLogistics && order.assignedStaffId && order.assignedStaffId !== "none" && (
                                                 <Button
                                                     type="button"
-                                                    variant="ghost"
                                                     size="sm"
                                                     onClick={() => handleResendSMS(order.id)}
-                                                    className="h-8 px-2.5 rounded-xl text-sky-700 hover:bg-sky-50 text-xs font-semibold shrink-0 border border-sky-200/80"
-                                                    title="Resend SMS to Rider"
+                                                    className="h-8 px-3 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white text-xs font-bold shrink-0 shadow-xs shadow-sky-500/20 transition-all flex items-center gap-1"
+                                                    title="Send dispatch SMS with tracking link to rider"
                                                 >
-                                                    <Send className="w-3 h-3 mr-1 text-sky-600" />
+                                                    <Send className="w-3 h-3 text-white" />
                                                     <span>SMS</span>
                                                 </Button>
                                             )}
