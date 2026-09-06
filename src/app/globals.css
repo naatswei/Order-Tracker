@@ -178,12 +178,28 @@
   }
 
   /* Clerk Custom Styling & Mobile Responsiveness Overrides */
-  .cl-rootBox,
-  .cl-cardBox,
   .cl-organizationList-root,
-  .cl-createOrganization-root {
+  .cl-organizationList-rootBox,
+  .cl-createOrganization-root,
+  .cl-createOrganization-rootBox,
+  .cl-organizationProfile-root,
+  .cl-organizationProfile-rootBox,
+  .cl-signIn-root,
+  .cl-signIn-rootBox,
+  .cl-signUp-root,
+  .cl-signUp-rootBox,
+  .cl-cardBox {
     width: 100% !important;
     max-width: 100% !important;
+  }
+
+  .cl-userButton-root,
+  .cl-userButton-rootBox,
+  .cl-userButtonBox {
+    width: auto !important;
+    max-width: none !important;
+    flex-shrink: 0 !important;
+    display: inline-flex !important;
   }
 
   .cl-card {

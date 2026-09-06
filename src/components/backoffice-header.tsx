@@ -339,14 +339,17 @@ export function BackofficeHeader({ config }: BackofficeHeaderProps) {
 
                             {/* User Account Section */}
                             <div className="flex items-center gap-3 px-1">
-                                <UserButton
-                                    afterSignOutUrl="/"
-                                    appearance={{
-                                        elements: {
-                                            userButtonAvatarBox: "w-10 h-10 border-2 border-white shadow-md transition-transform hover:scale-105"
-                                        }
-                                    }}
-                                />
+                                <div className="shrink-0 flex items-center">
+                                    <UserButton
+                                        afterSignOutUrl="/"
+                                        appearance={{
+                                            elements: {
+                                                rootBox: "w-auto shrink-0 flex items-center",
+                                                userButtonAvatarBox: "w-10 h-10 border-2 border-white shadow-md transition-transform hover:scale-105 shrink-0"
+                                            }
+                                        }}
+                                    />
+                                </div>
                                 <div className="flex-1 min-w-0">
                                     <p className="text-sm font-semibold text-slate-800 truncate">Account</p>
                                     <p className="text-[11px] text-slate-400">Manage & security</p>
