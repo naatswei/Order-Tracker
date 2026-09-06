@@ -246,21 +246,21 @@ export default function OperationsPage() {
         <div className="bg-[#F8FAFC] min-h-screen pb-16 flex flex-col">
             {/* Mobile-First Header */}
             <header className="bg-white border-b border-slate-200/80 sticky top-0 z-30 shadow-2xs">
-                <div className="max-w-7xl mx-auto px-3.5 sm:px-6 py-2.5 sm:py-3 space-y-2">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-3.5 pb-3 sm:pt-4 sm:pb-3.5 space-y-3 sm:space-y-3.5">
                     {/* Top Row: Navigation + Neutral Stages Button */}
                     <div className="flex items-center justify-between gap-3">
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2.5">
                             <Link href="/backoffice">
                                 <Button 
                                     variant="ghost" 
                                     size="icon" 
-                                    className="h-8 w-8 sm:h-9 sm:w-9 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 transition-colors shadow-2xs"
+                                    className="h-9 w-9 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 transition-colors shadow-2xs"
                                     title="Back to Dashboard"
                                 >
                                     <ArrowLeft className="w-4 h-4" />
                                 </Button>
                             </Link>
-                            <h1 className="text-base sm:text-lg font-bold text-[#191A43]">
+                            <h1 className="text-base sm:text-lg font-bold tracking-tight text-[#191A43]">
                                 {isLogistics ? "Operations" : config.dashboardTitle}
                             </h1>
                         </div>
@@ -270,7 +270,7 @@ export default function OperationsPage() {
                             <DialogTrigger asChild>
                                 <Button 
                                     variant="outline" 
-                                    className="h-8 sm:h-9 px-2.5 sm:px-3 rounded-xl border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-semibold text-xs shadow-2xs transition-colors flex items-center gap-1.5"
+                                    className="h-9 px-3 rounded-xl border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-semibold text-xs shadow-2xs transition-colors flex items-center gap-1.5"
                                     title="Configure Pipeline Stages"
                                 >
                                     <Settings2 className="w-3.5 h-3.5 text-slate-500" />
@@ -293,32 +293,32 @@ export default function OperationsPage() {
 
                     {/* Search Field (Stage-Aware) */}
                     <div className="relative">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-400" />
+                        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                         <Input 
                             placeholder={isLogistics ? "Search tracking #, route, contact, or stage..." : "Search name, order #, contact, or stage..."}
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="h-8 sm:h-9 pl-8 sm:pl-9 pr-8 rounded-xl border-slate-200 bg-slate-50/60 focus:bg-white text-xs sm:text-sm font-normal"
+                            className="h-10 sm:h-11 pl-9 sm:pl-10 pr-9 rounded-2xl border-slate-200/90 bg-slate-50/70 focus:bg-white text-xs sm:text-sm font-medium shadow-2xs transition-all"
                         />
                         {searchQuery && (
                             <button 
                                 onClick={() => setSearchQuery("")}
-                                className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-600"
+                                className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-600 transition-colors"
                             >
-                                <X className="w-3.5 h-3.5" />
+                                <X className="w-4 h-4" />
                             </button>
                         )}
                     </div>
 
                     {/* Total Sum & 1-Tap Stage Jump Strip (Mobile-First) */}
-                    <div className="flex items-center gap-1.5 overflow-x-auto pt-1 pb-0.5 no-scrollbar">
+                    <div className="flex items-center gap-2 overflow-x-auto pt-1 pb-1 no-scrollbar">
                         <button
                             onClick={scrollToStart}
-                            className="px-2.5 py-1 rounded-xl bg-[#191A43] text-white text-xs font-bold shrink-0 shadow-2xs hover:bg-slate-800 transition-all flex items-center gap-1.5"
+                            className="px-3 py-1.5 rounded-xl bg-[#191A43] text-white text-xs font-bold shrink-0 shadow-2xs hover:bg-slate-800 transition-all flex items-center gap-2 active:scale-95"
                             title="Scroll to beginning"
                         >
                             <span>Total Orders</span>
-                            <span className="px-1.5 py-0.2 rounded-full bg-white/20 text-white text-[10px] font-black">
+                            <span className="px-1.5 py-0.5 rounded-full bg-white/20 text-white text-[10px] font-black leading-none">
                                 {filteredOrders.length}
                             </span>
                         </button>
@@ -331,12 +331,12 @@ export default function OperationsPage() {
                                 <button
                                     key={stage.name}
                                     onClick={() => scrollToStage(stage.name)}
-                                    className="px-2.5 py-1 rounded-xl bg-slate-100 hover:bg-slate-200/80 text-slate-700 text-xs font-semibold shrink-0 transition-all flex items-center gap-1.5 border border-slate-200/60 active:scale-95"
+                                    className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200/80 text-slate-700 text-xs font-semibold shrink-0 transition-all flex items-center gap-2 border border-slate-200/60 active:scale-95"
                                     title={`Jump to ${stage.name}`}
                                 >
-                                    <span className={cn("w-1.5 h-1.5 rounded-full shrink-0", theme.dot)} />
+                                    <span className={cn("w-2 h-2 rounded-full shrink-0", theme.dot)} />
                                     <span className="truncate">{stage.name}</span>
-                                    <span className="px-1.5 py-0.2 rounded-full bg-white text-slate-600 text-[10px] font-bold border border-slate-200/60 shadow-2xs">
+                                    <span className="px-1.5 py-0.5 rounded-full bg-white text-slate-600 text-[10px] font-bold border border-slate-200/60 shadow-2xs leading-none">
                                         {count}
                                     </span>
                                 </button>
@@ -347,7 +347,7 @@ export default function OperationsPage() {
             </header>
 
             {/* Main Stage Columns Board with Mobile Scroll-Snap */}
-            <main className="flex-1 max-w-full px-3.5 sm:px-6 pt-3 sm:pt-5 overflow-hidden flex flex-col">
+            <main className="flex-1 max-w-full px-4 sm:px-6 pt-4 sm:pt-6 overflow-hidden flex flex-col">
                 {isLoading ? (
                     <div className="py-20 flex-1 flex items-center justify-center">
                         <SignatureLoader message="Loading operations board..." />
@@ -356,7 +356,7 @@ export default function OperationsPage() {
                     /* Horizontal Scrollable Stages Container */
                     <div 
                         id="kanban-container"
-                        className="flex gap-3.5 sm:gap-5 overflow-x-auto pb-8 snap-x snap-mandatory scroll-smooth no-scrollbar items-start"
+                        className="flex gap-4 sm:gap-6 overflow-x-auto pb-8 snap-x snap-mandatory scroll-smooth no-scrollbar items-start"
                     >
                         {stages.map((stage) => {
                             const stageTheme = getStageTheme(stage.name);
@@ -366,10 +366,10 @@ export default function OperationsPage() {
                                 <div 
                                     key={stage.name} 
                                     id={`stage-col-${stage.name}`}
-                                    className="w-[88vw] max-w-[340px] sm:w-[320px] shrink-0 snap-center flex flex-col space-y-2.5"
+                                    className="w-[88vw] max-w-[340px] sm:w-[320px] shrink-0 snap-center flex flex-col space-y-3"
                                 >
                                     {/* Stage Header */}
-                                    <div className="flex items-center justify-between px-3 py-2 bg-white border border-slate-200/80 rounded-2xl shadow-2xs">
+                                    <div className="flex items-center justify-between px-3.5 py-2.5 sm:px-4 sm:py-3 bg-white border border-slate-200/80 rounded-2xl shadow-2xs">
                                         <div className="flex items-center gap-2 min-w-0">
                                             <span className={cn("w-2 h-2 rounded-full shrink-0", stageTheme.dot)} />
                                             <h2 className="text-xs font-bold text-slate-800 uppercase tracking-wider truncate">
@@ -382,10 +382,10 @@ export default function OperationsPage() {
                                     </div>
 
                                     {/* Stage Orders Column Body */}
-                                    <div className="space-y-2.5 p-2 rounded-2xl sm:rounded-3xl bg-slate-100/50 border border-slate-200/50 min-h-[340px]">
+                                    <div className="space-y-3 p-2.5 sm:p-3 rounded-3xl bg-slate-100/60 border border-slate-200/60 min-h-[360px]">
                                         {stageOrders.length === 0 ? (
-                                            <div className="py-12 text-center border-2 border-dashed border-slate-200/70 rounded-2xl p-4">
-                                                <Package className="w-5 h-5 text-slate-300 mx-auto mb-1" />
+                                            <div className="py-14 text-center border-2 border-dashed border-slate-200/80 rounded-2xl p-5">
+                                                <Package className="w-5 h-5 text-slate-300 mx-auto mb-1.5" />
                                                 <p className="text-xs font-medium text-slate-400">No active shipments</p>
                                             </div>
                                         ) : (
@@ -404,7 +404,7 @@ export default function OperationsPage() {
                                                             stageTheme.leftBorder
                                                         )}
                                                     >
-                                                        <CardContent className="p-3 space-y-2">
+                                                        <CardContent className="p-3.5 sm:p-4 space-y-2.5">
                                                             {/* Line 1: Tracking # + Customer */}
                                                             <div className="flex items-center justify-between gap-2">
                                                                 <div className="flex items-center gap-1.5 min-w-0">
@@ -422,7 +422,7 @@ export default function OperationsPage() {
                                                             </div>
 
                                                             {/* Line 2: Route & Contact */}
-                                                            <div className="text-xs text-slate-600 space-y-1">
+                                                            <div className="text-xs text-slate-600 space-y-1.5">
                                                                 {isLogistics && (pickupLoc || deliveryLoc) ? (
                                                                     <div className="flex items-center gap-1.5 font-medium truncate py-0.5">
                                                                         <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" title="Pickup" />
@@ -442,7 +442,7 @@ export default function OperationsPage() {
                                                                     <div className="flex items-center gap-2 pt-0.5 text-[11px] text-slate-500">
                                                                         <a 
                                                                             href={`tel:${order.customerPhone}`}
-                                                                            className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold border border-emerald-200/70 transition-colors"
+                                                                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold border border-emerald-200/70 transition-colors"
                                                                             title="Call Customer"
                                                                         >
                                                                             <Phone className="w-3 h-3 text-emerald-600" />
@@ -461,9 +461,9 @@ export default function OperationsPage() {
                                                             </div>
 
                                                             {/* Line 3: Rider Assignment & Dispatch SMS */}
-                                                            <div className="pt-0.5 flex items-center gap-2">
+                                                            <div className="pt-1 flex items-center gap-2">
                                                                 <div className={cn(
-                                                                    "flex-1 min-w-0 rounded-xl px-2.5 py-1 flex items-center gap-1.5 border transition-all",
+                                                                    "flex-1 min-w-0 rounded-xl px-3 py-1.5 flex items-center gap-1.5 border transition-all",
                                                                     order.assignedStaffId && order.assignedStaffId !== "none"
                                                                         ? "bg-indigo-50/40 border-indigo-200/80"
                                                                         : "bg-slate-50 border-slate-200/80"
@@ -476,7 +476,7 @@ export default function OperationsPage() {
                                                                         value={order.assignedStaffId || "none"}
                                                                         onValueChange={(val) => handleAssign(order.id, val)}
                                                                     >
-                                                                        <SelectTrigger className="h-6 border-none bg-transparent p-0 focus:ring-0 text-xs font-bold text-slate-700 w-full shadow-none">
+                                                                        <SelectTrigger className="h-7 border-none bg-transparent p-0 focus:ring-0 text-xs font-bold text-slate-700 w-full shadow-none">
                                                                             <SelectValue placeholder={isLogistics ? "Assign Rider" : "Assign Staff"} />
                                                                         </SelectTrigger>
                                                                         <SelectContent className="rounded-2xl border-slate-200 shadow-xl">
@@ -499,7 +499,7 @@ export default function OperationsPage() {
                                                                         type="button"
                                                                         size="sm"
                                                                         onClick={() => handleResendSMS(order.id)}
-                                                                        className="h-8 px-2.5 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white text-xs font-bold shrink-0 shadow-xs shadow-sky-500/20 transition-all flex items-center gap-1"
+                                                                        className="h-9 px-3 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white text-xs font-bold shrink-0 shadow-xs shadow-sky-500/20 transition-all flex items-center gap-1.5"
                                                                         title="Send SMS to rider"
                                                                     >
                                                                         <Send className="w-3 h-3 text-white" />
