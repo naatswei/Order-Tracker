@@ -26,23 +26,23 @@ import {
 import { 
     Truck, 
     CheckCircle2, 
-    ExternalLink, 
     AlertCircle, 
     Copy, 
     Check, 
     Lock,
     ArrowRight,
     Phone,
-    DollarSign,
     Banknote,
     Navigation,
     MapPin,
     ShieldCheck,
-    Loader2
+    Loader2,
+    MessageCircle,
+    Compass,
+    Package
 } from "lucide-react"
 import { toast } from "sonner"
 import { SignatureLoader } from "@/components/signature-loader"
-import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
 
 export default function RiderActionPage() {
@@ -141,6 +141,20 @@ export default function RiderActionPage() {
         }
     }
 
+    const getGoogleMapsUrl = (location: string) => {
+        return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(location)}`
+    }
+
+    const getWhatsAppUrl = (phone: string, name?: string) => {
+        if (!phone) return null
+        let clean = phone.replace(/\D/g, "")
+        if (clean.startsWith("0")) {
+            clean = "233" + clean.substring(1)
+        }
+        const text = encodeURIComponent(`Hello ${name || 'Customer'}, I am your delivery rider regarding shipment #${order?.orderNumber}. I am on my way to your location.`)
+        return `https://wa.me/${clean}?text=${text}`
+    }
+
     if (isLoading) {
         return (
             <div className="min-h-screen bg-[#F6F6F8] flex flex-col items-center justify-center p-6 text-center">
@@ -173,6 +187,8 @@ export default function RiderActionPage() {
     const deliveryLoc = (meta.deliveryLocation as string) || null
     const recipientName = (meta.recipientName as string) || null
     const recipientPhone = (meta.recipientPhone as string) || null
+    const contactPhone = recipientPhone || order.customerPhone || ""
+    const contactName = recipientName || order.customerName || "Customer"
     
     // Invoicing & Payment on Arrival Data
     const invoice = (meta.invoice as any) || null
@@ -199,32 +215,32 @@ export default function RiderActionPage() {
     const activeStep = getActiveStepIndex()
 
     return (
-        <div className="min-h-screen bg-[#F6F6F8] text-neutral-900 font-sans flex flex-col justify-between p-4 sm:p-7 selection:bg-black selection:text-white">
-            <div className="max-w-md w-full mx-auto space-y-4 sm:space-y-6 pt-2 sm:pt-4">
+        <div className="min-h-screen bg-[#F6F6F8] text-neutral-900 font-sans flex flex-col justify-start p-3 sm:p-6 selection:bg-black selection:text-white">
+            <div className="max-w-md w-full mx-auto space-y-3.5 sm:space-y-5 pt-1 sm:pt-3 pb-8">
 
                 {/* 1. TOP HEADER: Vehicle Badge + Live Dot + Waybill # */}
                 <motion.div 
                     initial={{ opacity: 0, y: -8 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3 }}
-                    className="flex items-center justify-between bg-white rounded-3xl p-4 shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-black/[0.04]"
+                    className="flex items-center justify-between bg-white rounded-3xl p-3.5 sm:p-4 shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-black/[0.04]"
                 >
-                    <div className="flex items-center gap-3.5 min-w-0">
+                    <div className="flex items-center gap-3 min-w-0">
                         {/* Vehicle Icon Badge */}
-                        <div className="w-12 h-12 rounded-2xl bg-black text-white flex items-center justify-center shadow-md shadow-black/10 shrink-0">
-                            <Truck className="w-6 h-6" />
+                        <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-black text-white flex items-center justify-center shadow-md shadow-black/10 shrink-0">
+                            <Truck className="w-5 h-5 sm:w-6 sm:h-6" />
                         </div>
 
                         {/* Status Dot + Waybill */}
-                        <div className="flex items-center gap-2.5 min-w-0">
+                        <div className="flex items-center gap-2 min-w-0">
                             <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping shrink-0" />
-                            <span className="text-xl sm:text-2xl font-black tracking-tighter text-black truncate">
+                            <span className="text-lg sm:text-2xl font-black tracking-tighter text-black truncate">
                                 #{order.orderNumber}
                             </span>
                         </div>
                     </div>
 
-                    {/* Copy Button */}
+                    {/* Copy Waybill Button */}
                     <button
                         onClick={() => copyToClipboard(order.orderNumber)}
                         className="w-10 h-10 rounded-2xl bg-neutral-100 hover:bg-neutral-200 flex items-center justify-center text-neutral-500 hover:text-black transition-all active:scale-95 shrink-0"
@@ -239,7 +255,7 @@ export default function RiderActionPage() {
                     initial={{ opacity: 0, y: -4 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.35, delay: 0.05 }}
-                    className="bg-white rounded-3xl p-5 sm:p-6 shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-black/[0.04]"
+                    className="bg-white rounded-3xl p-4 sm:p-6 shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-black/[0.04]"
                 >
                     <div className="flex items-center justify-between relative px-2">
                         {/* Connecting Track Line */}
@@ -254,7 +270,7 @@ export default function RiderActionPage() {
                             const isPassed = idx < activeStep
                             const isCurrent = idx === activeStep
                             return (
-                                <div key={step.label} className="relative z-10 flex flex-col items-center gap-2">
+                                <div key={step.label} className="relative z-10 flex flex-col items-center gap-1.5 sm:gap-2">
                                     <div 
                                         className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-black transition-all duration-500 ${
                                             isPassed 
@@ -287,33 +303,66 @@ export default function RiderActionPage() {
                     </div>
                 </motion.div>
 
-                {/* 3. ROUTE & DESTINATION CARD */}
+                {/* 3. ROUTE & GOOGLE MAPS LIVE NAVIGATION CARD */}
                 {(pickupLoc || deliveryLoc) && (
                     <motion.div 
                         initial={{ opacity: 0, y: -2 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="bg-white rounded-3xl p-4 sm:p-5 shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-black/[0.04] space-y-3"
+                        className="bg-white rounded-3xl p-4 sm:p-5 shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-black/[0.04] space-y-3.5"
                     >
-                        <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-wider text-neutral-400">
-                            <Navigation className="w-3.5 h-3.5 text-black" />
-                            <span>Route Details</span>
+                        <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-wider text-neutral-400">
+                            <div className="flex items-center gap-1.5">
+                                <Compass className="w-3.5 h-3.5 text-black" />
+                                <span>Route & GPS Navigation</span>
+                            </div>
+                            <span className="text-[10px] text-neutral-400 font-mono font-bold">1-Tap Maps</span>
                         </div>
-                        <div className="space-y-2.5 text-xs">
+
+                        <div className="space-y-3 text-xs">
+                            {/* Pickup Address + Google Maps Button */}
                             {pickupLoc && (
-                                <div className="flex items-start gap-2.5 min-w-0">
-                                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 mt-1 shrink-0" />
-                                    <div className="min-w-0">
-                                        <p className="text-[10px] font-bold text-neutral-400">PICKUP ADDRESS</p>
-                                        <p className="font-bold text-neutral-900 break-words">{pickupLoc}</p>
+                                <div className="p-3 rounded-2xl bg-slate-50/80 border border-slate-100 space-y-2">
+                                    <div className="flex items-start gap-2.5 min-w-0">
+                                        <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 mt-1 shrink-0" />
+                                        <div className="min-w-0 flex-1">
+                                            <p className="text-[10px] font-black text-emerald-800 uppercase tracking-wider">Pickup Address</p>
+                                            <p className="font-bold text-neutral-900 text-xs sm:text-sm break-words mt-0.5">{pickupLoc}</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex justify-end pt-1">
+                                        <a
+                                            href={getGoogleMapsUrl(pickupLoc)}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-black hover:bg-neutral-800 text-white text-xs font-bold shadow-xs active:scale-95 transition-all"
+                                        >
+                                            <Navigation className="w-3.5 h-3.5 text-emerald-400" />
+                                            <span>Open in Google Maps</span>
+                                        </a>
                                     </div>
                                 </div>
                             )}
+
+                            {/* Delivery Destination + Google Maps Button */}
                             {deliveryLoc && (
-                                <div className="flex items-start gap-2.5 min-w-0 pt-1 border-t border-neutral-100">
-                                    <span className="w-2.5 h-2.5 rounded-full bg-sky-500 mt-1 shrink-0" />
-                                    <div className="min-w-0">
-                                        <p className="text-[10px] font-bold text-neutral-400">DELIVERY DESTINATION</p>
-                                        <p className="font-bold text-neutral-900 break-words">{deliveryLoc}</p>
+                                <div className="p-3 rounded-2xl bg-sky-50/60 border border-sky-100/80 space-y-2">
+                                    <div className="flex items-start gap-2.5 min-w-0">
+                                        <span className="w-2.5 h-2.5 rounded-full bg-sky-500 mt-1 shrink-0" />
+                                        <div className="min-w-0 flex-1">
+                                            <p className="text-[10px] font-black text-sky-800 uppercase tracking-wider">Delivery Destination</p>
+                                            <p className="font-bold text-neutral-900 text-xs sm:text-sm break-words mt-0.5">{deliveryLoc}</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex justify-end pt-1">
+                                        <a
+                                            href={getGoogleMapsUrl(deliveryLoc)}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-sky-700 hover:bg-sky-800 text-white text-xs font-bold shadow-xs active:scale-95 transition-all"
+                                        >
+                                            <Navigation className="w-3.5 h-3.5 text-white" />
+                                            <span>Navigate in Google Maps</span>
+                                        </a>
                                     </div>
                                 </div>
                             )}
@@ -321,7 +370,58 @@ export default function RiderActionPage() {
                     </motion.div>
                 )}
 
-                {/* 4. PAYMENT ON ARRIVAL CARD (If invoice exists) */}
+                {/* 4. RECIPIENT & 1-TAP CONTACT CARD */}
+                {contactPhone && (
+                    <motion.div 
+                        initial={{ opacity: 0, y: -2 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="bg-white rounded-3xl p-4 shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-black/[0.04] space-y-3"
+                    >
+                        <div className="flex items-center justify-between">
+                            <div className="min-w-0">
+                                <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider block">
+                                    {recipientName ? "Dropoff Recipient" : "Customer Contact"}
+                                </span>
+                                <span className="text-sm font-black text-black truncate block mt-0.5">
+                                    {contactName}
+                                </span>
+                                <span className="text-xs text-neutral-500 font-mono font-medium block">
+                                    {contactPhone}
+                                </span>
+                            </div>
+                            {order.itemType && (
+                                <div className="px-2.5 py-1 rounded-xl bg-slate-100 text-slate-700 text-[11px] font-bold shrink-0 flex items-center gap-1">
+                                    <Package className="w-3.5 h-3.5 text-slate-500" />
+                                    <span>{order.itemType}</span>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Quick Action Contact Buttons (Call & WhatsApp) */}
+                        <div className="grid grid-cols-2 gap-2 pt-1 border-t border-neutral-100">
+                            <a
+                                href={`tel:${contactPhone}`}
+                                className="py-2.5 px-3 rounded-2xl bg-black hover:bg-neutral-800 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-xs transition-all active:scale-95"
+                            >
+                                <Phone className="w-3.5 h-3.5 text-emerald-400" />
+                                <span>Call Customer</span>
+                            </a>
+                            {getWhatsAppUrl(contactPhone, contactName) && (
+                                <a
+                                    href={getWhatsAppUrl(contactPhone, contactName)!}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="py-2.5 px-3 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-xs transition-all active:scale-95"
+                                >
+                                    <MessageCircle className="w-3.5 h-3.5" />
+                                    <span>WhatsApp</span>
+                                </a>
+                            )}
+                        </div>
+                    </motion.div>
+                )}
+
+                {/* 5. PAYMENT ON ARRIVAL CARD (GH₵ Ghana Cedis) */}
                 {isInvoiceUnpaid && (
                     <motion.div
                         initial={{ opacity: 0, scale: 0.98 }}
@@ -331,7 +431,7 @@ export default function RiderActionPage() {
                         <div className="flex items-center justify-between gap-2">
                             <div className="flex items-center gap-2.5 min-w-0">
                                 <div className="w-9 h-9 rounded-2xl bg-amber-500 text-white flex items-center justify-center font-bold shadow-xs shrink-0">
-                                    <DollarSign className="w-5 h-5" />
+                                    <Banknote className="w-5 h-5" />
                                 </div>
                                 <div className="min-w-0">
                                     <p className="text-[10px] font-black uppercase tracking-wider text-amber-900">
@@ -348,7 +448,7 @@ export default function RiderActionPage() {
                         </div>
 
                         <p className="text-[11px] text-amber-950 font-medium">
-                            Collect payment before or upon handover. Customer can pay via Momo prompt or cash.
+                            Collect payment before or upon handover. Customer can pay via Mobile Money prompt or cash.
                         </p>
 
                         <div className="grid grid-cols-2 gap-2 pt-1">
@@ -356,12 +456,12 @@ export default function RiderActionPage() {
                             <button
                                 type="button"
                                 onClick={() => {
-                                    setMomoPhone(recipientPhone || order.customerPhone || "")
+                                    setMomoPhone(contactPhone)
                                     setIsMomoModalOpen(true)
                                 }}
                                 className="p-3 rounded-2xl bg-black hover:bg-neutral-900 text-white font-black text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 shadow-sm transition-all active:scale-95"
                             >
-                                <DollarSign className="w-4 h-4 text-amber-400" />
+                                <Banknote className="w-4 h-4 text-amber-400" />
                                 <span>Prompt Momo</span>
                             </button>
 
@@ -394,7 +494,7 @@ export default function RiderActionPage() {
                                     Payment Confirmed
                                 </p>
                                 <p className="text-xs sm:text-sm font-black text-emerald-950 truncate">
-                                    GH₵ {Number(invoice.amountPaid || invoice.amountDue || 0).toFixed(2)} Paid ({invoice.paymentCollectedBy === "rider_cash" ? "Cash Collected" : "Online/Momo"})
+                                    GH₵ {Number(invoice.amountPaid || invoice.amountDue || 0).toFixed(2)} Paid ({invoice.paymentCollectedBy === "rider_cash" ? "Cash Collected" : "Online / Momo"})
                                 </p>
                             </div>
                         </div>
@@ -404,7 +504,7 @@ export default function RiderActionPage() {
                     </motion.div>
                 )}
 
-                {/* 5. ACTION & VERIFICATION AREA */}
+                {/* 6. ACTION & DELIVERY PIN VERIFICATION AREA */}
                 <div className="space-y-4 pt-1">
                     {isDelivered ? (
                         <motion.div 
@@ -424,15 +524,15 @@ export default function RiderActionPage() {
                             </p>
                         </motion.div>
                     ) : (
-                        <div className="space-y-4">
+                        <div className="space-y-3.5">
                             {/* Step 0: Confirm Package Pickup */}
                             {activeStep === 0 && (
                                 <Button
                                     onClick={() => handleStatusUpdate("Picked Up")}
                                     disabled={isUpdating}
-                                    className="w-full h-16 sm:h-20 rounded-3xl bg-black hover:bg-neutral-900 text-white text-base sm:text-lg font-black uppercase tracking-wider shadow-[0_10px_30px_rgba(0,0,0,0.2)] transition-all active:scale-[0.98] border-none flex items-center justify-center gap-3"
+                                    className="w-full h-14 sm:h-16 rounded-2xl bg-black hover:bg-neutral-900 text-white text-sm sm:text-base font-black uppercase tracking-wider shadow-lg shadow-black/15 transition-all active:scale-[0.98] border-none flex items-center justify-center gap-2.5"
                                 >
-                                    <CheckCircle2 className="w-6 h-6" />
+                                    <CheckCircle2 className="w-5 h-5" />
                                     <span>{isUpdating ? "Updating..." : "Confirm Package Pickup"}</span>
                                 </Button>
                             )}
@@ -442,51 +542,16 @@ export default function RiderActionPage() {
                                 <Button
                                     onClick={() => handleStatusUpdate("In Transit")}
                                     disabled={isUpdating}
-                                    className="w-full h-16 sm:h-20 rounded-3xl bg-black hover:bg-neutral-900 text-white text-base sm:text-lg font-black uppercase tracking-wider shadow-[0_10px_30px_rgba(0,0,0,0.2)] transition-all active:scale-[0.98] border-none flex items-center justify-center gap-3"
+                                    className="w-full h-14 sm:h-16 rounded-2xl bg-black hover:bg-neutral-900 text-white text-sm sm:text-base font-black uppercase tracking-wider shadow-lg shadow-black/15 transition-all active:scale-[0.98] border-none flex items-center justify-center gap-2.5"
                                 >
-                                    <Truck className="w-6 h-6" />
+                                    <Truck className="w-5 h-5" />
                                     <span>{isUpdating ? "Updating..." : "Start Delivery (In Transit)"}</span>
                                 </Button>
                             )}
 
                             {/* Step 2: Handover Confirmation with Customer Numeric Delivery PIN */}
                             {activeStep >= 2 && (
-                                <div className="space-y-4">
-                                    {/* Dropoff Customer Contact Quick Call */}
-                                    {(recipientPhone || order.customerPhone) && (
-                                        <div className="flex items-center justify-between bg-white p-3.5 rounded-2xl shadow-[0_4px_20px_rgb(0,0,0,0.04)] border border-black/[0.04]">
-                                            <div className="flex items-center gap-3 min-w-0">
-                                                <div className="w-9 h-9 rounded-xl bg-neutral-100 flex items-center justify-center text-black font-black shrink-0">
-                                                    <Phone className="w-4 h-4" />
-                                                </div>
-                                                <div className="min-w-0">
-                                                    <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider block">
-                                                        {recipientName ? "Dropoff Recipient" : "Customer Contact"}
-                                                    </span>
-                                                    <span className="text-xs font-black text-black truncate block">
-                                                        {recipientName || order.customerName} ({recipientPhone || order.customerPhone})
-                                                    </span>
-                                                </div>
-                                            </div>
-                                            <a
-                                                href={`tel:${recipientPhone || order.customerPhone}`}
-                                                className="px-4 py-2 rounded-xl bg-black text-white text-xs font-black uppercase tracking-wider hover:bg-neutral-800 transition-colors shrink-0 shadow-sm"
-                                            >
-                                                Call
-                                            </a>
-                                        </div>
-                                    )}
-
-                                    {/* Action Button */}
-                                    <Button
-                                        onClick={() => handleStatusUpdate("Delivered", verificationCode)}
-                                        disabled={isUpdating || !verificationCode.trim()}
-                                        className="w-full h-16 sm:h-20 rounded-3xl bg-black hover:bg-neutral-900 text-white text-base sm:text-lg font-black uppercase tracking-wider shadow-[0_10px_30px_rgba(0,0,0,0.2)] transition-all active:scale-[0.98] border-none disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center gap-3"
-                                    >
-                                        <CheckCircle2 className="w-6 h-6" />
-                                        <span>{isUpdating ? "Verifying PIN..." : "Confirm Delivery"}</span>
-                                    </Button>
-
+                                <div className="space-y-3.5">
                                     {/* Dedicated Numeric OTP Box */}
                                     <div className="bg-white rounded-3xl p-4 shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-black/[0.04]">
                                         <div className="flex items-center gap-2 px-1 mb-2">
@@ -507,6 +572,16 @@ export default function RiderActionPage() {
                                             className="w-full h-14 px-4 text-center font-mono text-2xl font-black tracking-[0.35em] text-black bg-[#F6F6F8] rounded-2xl border border-neutral-200 focus:border-black focus:outline-none focus:ring-4 focus:ring-black/5 transition-all placeholder:text-neutral-300 placeholder:font-sans placeholder:tracking-normal placeholder:text-xs placeholder:font-bold"
                                         />
                                     </div>
+
+                                    {/* Action Button */}
+                                    <Button
+                                        onClick={() => handleStatusUpdate("Delivered", verificationCode)}
+                                        disabled={isUpdating || !verificationCode.trim()}
+                                        className="w-full h-14 sm:h-16 rounded-2xl bg-black hover:bg-neutral-900 text-white text-sm sm:text-base font-black uppercase tracking-wider shadow-lg shadow-black/15 transition-all active:scale-[0.98] border-none disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center gap-2.5"
+                                    >
+                                        <CheckCircle2 className="w-5 h-5" />
+                                        <span>{isUpdating ? "Verifying PIN..." : "Confirm Delivery"}</span>
+                                    </Button>
                                 </div>
                             )}
                         </div>
@@ -515,24 +590,13 @@ export default function RiderActionPage() {
 
             </div>
 
-            {/* 6. BOTTOM LINK: Open Public Customer Tracking */}
-            <div className="max-w-md w-full mx-auto text-center pt-8 pb-2">
-                <Link 
-                    href={`/track/${order.id}`}
-                    className="inline-flex items-center gap-2 text-xs font-bold text-neutral-500 hover:text-black transition-colors py-2.5 px-5 rounded-full hover:bg-neutral-200/60"
-                >
-                    <span>Open Public Customer Tracking</span>
-                    <ExternalLink className="w-3.5 h-3.5" />
-                </Link>
-            </div>
-
             {/* Momo Direct Payment Prompt Modal for Rider */}
             <Dialog open={isMomoModalOpen} onOpenChange={setIsMomoModalOpen}>
                 <DialogContent className="sm:max-w-md border-0 bg-white shadow-2xl rounded-3xl p-5 sm:p-6 overflow-hidden">
                     <DialogHeader>
                         <div className="flex items-center gap-2.5 mb-1">
                             <div className="p-2 bg-amber-50 text-amber-600 rounded-2xl">
-                                <DollarSign className="w-5 h-5" />
+                                <Banknote className="w-5 h-5" />
                             </div>
                             <div>
                                 <DialogTitle className="text-base sm:text-lg font-black text-slate-900 tracking-tight">

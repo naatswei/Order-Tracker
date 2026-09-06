@@ -28,7 +28,9 @@ import {
     Shirt, 
     Package, 
     Loader2, 
-    DollarSign, 
+    Banknote,
+    Receipt,
+    CreditCard, 
     FileText, 
     Plus, 
     Trash, 
@@ -906,7 +908,7 @@ export default function OrderUpdatePage() {
                                             }}
                                             className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl h-10 px-4 text-xs font-bold flex items-center gap-1.5 shadow-xs"
                                         >
-                                            <DollarSign className="w-3.5 h-3.5" />
+                                            <Banknote className="w-3.5 h-3.5" />
                                             <span>Trigger Momo Prompt</span>
                                         </Button>
                                     </>
@@ -943,7 +945,7 @@ export default function OrderUpdatePage() {
                     <Card className="bg-white border border-slate-200/80 shadow-2xs rounded-3xl overflow-hidden">
                         <CardHeader className="p-4 sm:p-6 pb-2">
                             <CardTitle className="text-base sm:text-lg font-black text-slate-900 flex items-center gap-2">
-                                <DollarSign className="w-4 h-4 text-emerald-600" />
+                                <Receipt className="w-4 h-4 text-emerald-600" />
                                 <span>Generate Invoice</span>
                             </CardTitle>
                             <CardDescription className="text-xs text-slate-500 font-medium">
@@ -1216,7 +1218,7 @@ export default function OrderUpdatePage() {
                     <DialogHeader>
                         <div className="flex items-center gap-2.5 mb-1">
                             <div className="p-2 bg-blue-50 text-blue-600 rounded-2xl">
-                                <DollarSign className="w-5 h-5" />
+                                <Banknote className="w-5 h-5" />
                             </div>
                             <div>
                                 <DialogTitle className="text-base sm:text-lg font-black text-slate-900 tracking-tight">
