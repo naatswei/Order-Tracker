@@ -309,6 +309,22 @@ export async function removeWorkflowStage(id: string, name?: string) {
     return { success: true };
 }
 
+export async function reorderWorkflowStages(stageIds: string[]) {
+    const { orgId } = await auth();
+    if (!orgId) throw new Error("Unauthorized");
+
+    await initializeDefaultWorkflowStagesIfNeeded(orgId);
+
+    for (let i = 0; i < stageIds.length; i++) {
+        await db.update(workflows)
+            .set({ position: String(i + 1) })
+            .where(and(eq(workflows.id, stageIds[i]), eq(workflows.clerkOrgId, orgId)));
+    }
+
+    revalidatePath("/backoffice/operations");
+    return { success: true };
+}
+
 // --- Order Operations ---
 
 export async function assignOrder(orderId: string, staffId: string | null) {
