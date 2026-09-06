@@ -121,9 +121,11 @@ export function BackofficeHeader({ config }: BackofficeHeaderProps) {
                     <div className="flex items-center gap-3 lg:gap-5">
                     {/* Action Items */}
                     <div className="flex items-center gap-2">
-                        <Button onClick={handleLock} variant="ghost" size="icon" className="relative h-8 w-8 rounded-full bg-[#191A43] hover:bg-slate-800 border border-slate-200 shadow-sm transition-all text-white hover:text-white" title="Lock Terminal">
-                            <Lock className="w-3.5 h-3.5" />
-                        </Button>
+                        {!isLogistics && (
+                            <Button onClick={handleLock} variant="ghost" size="icon" className="relative h-8 w-8 rounded-full bg-[#191A43] hover:bg-slate-800 border border-slate-200 shadow-sm transition-all text-white hover:text-white" title="Lock Terminal">
+                                <Lock className="w-3.5 h-3.5" />
+                            </Button>
+                        )}
                         <Button asChild variant="ghost" size="icon" className="relative h-8 w-8 rounded-full bg-white hover:bg-slate-50 border border-slate-200 shadow-sm transition-all text-slate-600 hover:text-slate-900" title="Inbox">
                             <Link href="/backoffice/inbox">
                                 <Mail className="w-4 h-4" />
@@ -143,7 +145,7 @@ export function BackofficeHeader({ config }: BackofficeHeaderProps) {
                     <div className="w-[1px] h-6 bg-slate-200" />
 
                     {/* Identity & Workspace */}
-                    {activeStaff && (
+                    {!isLogistics && activeStaff && (
                         <div className="hidden sm:flex flex-col items-end mr-2">
                             <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Active Staff</span>
                             <span className="text-xs font-black text-[#191A43] truncate max-w-[120px]">{activeStaff.name}</span>
@@ -274,20 +276,24 @@ export function BackofficeHeader({ config }: BackofficeHeaderProps) {
                                     )
                                 })}
 
+                                {!isLogistics && (
+                                    <Link
+                                        href="/backoffice/clock-in"
+                                        onClick={() => setIsMenuOpen(false)}
+                                        className="flex items-center gap-3 px-3 py-3 rounded-xl bg-slate-800 text-white shadow-md hover:bg-[#191A43] transition-colors group mt-2"
+                                    >
+                                        <div className="w-9 h-9 rounded-lg bg-white/10 flex items-center justify-center transition-colors">
+                                            <Users className="w-4 h-4 text-white" />
+                                        </div>
+                                        <div className="flex-1">
+                                            <p className="text-sm font-semibold">Staff Clock-In</p>
+                                            <p className="text-[11px] text-white/70">Record your shift</p>
+                                        </div>
+                                        <ChevronRight className="w-4 h-4 text-white/50" />
+                                    </Link>
+                                )}
+
                                 <Link
-                                    href="/backoffice/clock-in"
-                                    onClick={() => setIsMenuOpen(false)}
-                                    className="flex items-center gap-3 px-3 py-3 rounded-xl bg-slate-800 text-white shadow-md hover:bg-[#191A43] transition-colors group mt-2"
-                                >
-                                    <div className="w-9 h-9 rounded-lg bg-white/10 flex items-center justify-center transition-colors">
-                                        <Users className="w-4 h-4 text-white" />
-                                    </div>
-                                    <div className="flex-1">
-                                        <p className="text-sm font-semibold">Staff Clock-In</p>
-                                        <p className="text-[11px] text-white/70">Record your shift</p>
-                                    </div>
-                                    <ChevronRight className="w-4 h-4 text-white/50" />
-                                </Link>                                <Link
                                     href="/backoffice/inbox"
                                     onClick={() => setIsMenuOpen(false)}
                                     className="flex items-center gap-3 px-3 py-3 rounded-xl text-slate-700 hover:bg-slate-50 transition-colors group"
