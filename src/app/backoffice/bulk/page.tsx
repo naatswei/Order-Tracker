@@ -8,16 +8,18 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { type Order } from "@/lib/storage"
 import { getOrders, bulkUpdateOrderStatus } from "@/app/actions/orders"
+import { getWorkflowStages } from "@/app/actions/operations"
 import Link from "next/link"
 import { ArrowLeft, Package, Check, X, Loader2, Lock } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { toast } from "sonner"
 import { useRouter, useSearchParams } from "next/navigation"
 import { OrganizationSwitcher, UserButton, useOrganization } from "@clerk/nextjs"
-import { getBusinessConfig } from "@/lib/business-configs"
+import { getBusinessConfig, getStatusTheme } from "@/lib/business-configs"
 import { BackofficeHeader } from "@/components/backoffice-header"
 import { getPlanLimits } from "@/lib/plan-config"
 import { RenewalBanner } from "@/components/renewal-banner"
+import { cn } from "@/lib/utils"
 
 
 export default function BulkUpdatePage() {
@@ -44,7 +46,10 @@ function BulkUpdateContent() {
     const { organization, isLoaded } = useOrganization()
     const [businessType, setBusinessType] = useState<string | null>(null)
     const config = getBusinessConfig(businessType)
-    const QUICK_STATUSES = config.statuses
+    const isLogistics = businessType === "logistics"
+
+    const [pipelineStages, setPipelineStages] = useState<string[]>([])
+    const QUICK_STATUSES = pipelineStages.length > 0 ? pipelineStages : config.statuses
 
     const [orders, setOrders] = useState<Order[]>([])
     const [selectedIds, setSelectedIds] = useState<string[]>([])
@@ -78,7 +83,7 @@ function BulkUpdateContent() {
         if (isLoaded) {
             loadOrders()
         }
-    }, [organization, isLoaded])
+    }, [organization, isLoaded, businessType])
 
     if (!isLoaded) {
         return (
@@ -144,8 +149,27 @@ function BulkUpdateContent() {
     const loadOrders = async () => {
         setIsLoading(true)
         try {
-            const allOrders = await getOrders()
+            const [allOrders, stagesData] = await Promise.all([
+                getOrders(),
+                getWorkflowStages()
+            ])
             
+            if (stagesData && stagesData.length > 0) {
+                const stageNames = stagesData.map((s: any) => s.name);
+                const combined = [...stageNames];
+                const terminalOptions = isLogistics 
+                    ? ["Delivered", "Cancelled", "Returned to Sender", "Held at Customs"] 
+                    : ["Completed", "Delivered", "Cancelled", "Refunded"];
+                terminalOptions.forEach(term => {
+                    if (!combined.some(s => s.toLowerCase() === term.toLowerCase())) {
+                        combined.push(term);
+                    }
+                });
+                setPipelineStages(combined);
+            } else {
+                setPipelineStages(config.statuses);
+            }
+
             const errorItem = allOrders.find(o => (o as any).__isError);
             if (errorItem) {
                 toast.error(`Failed to load orders: ${(errorItem as any).message}`);
@@ -233,7 +257,31 @@ function BulkUpdateContent() {
 
     const handleQuickStatusClick = (status: string) => {
         setSelectedStatus(status)
-        setCustomStatus(status) // Auto-fill custom input
+        setCustomStatus(status)
+        
+        const lower = status.toLowerCase()
+        if (lower.includes("booked") || lower.includes("received")) {
+            setLocation(isLogistics ? "Origin Station" : "Main Office")
+            setMessage(isLogistics ? "Shipment booked and confirmed in dispatch system." : "Order received and confirmed.")
+        } else if (lower.includes("pick") && lower.includes("up")) {
+            setLocation(isLogistics ? "Pickup Location" : "Workshop")
+            setMessage(isLogistics ? "Package picked up by courier and on way to dispatch hub." : "Item picked up for processing.")
+        } else if (lower.includes("transit") || lower.includes("delivery") || lower.includes("dispatched") || lower.includes("shipped")) {
+            setLocation(isLogistics ? "Out on Route" : "Delivery Fleet")
+            setMessage(isLogistics ? "Package is out for delivery. Have your Delivery PIN ready upon arrival." : "Your order is dispatched and on its way.")
+        } else if (lower.includes("facility") || lower.includes("sorting") || lower.includes("hub") || lower.includes("station") || lower.includes("customs") || lower.includes("packaging")) {
+            setLocation("Sorting & Dispatch Hub")
+            setMessage(`Package arrived at facility for ${status.toLowerCase()}.`)
+        } else if (lower.includes("delivered") || lower.includes("completed")) {
+            setLocation(isLogistics ? "Destination" : "Customer Destination")
+            setMessage(isLogistics ? "Package delivered successfully." : "Order completed and delivered successfully.")
+        } else if (lower.includes("cancel") || lower.includes("delayed") || lower.includes("hold") || lower.includes("returned")) {
+            setLocation("Operations Desk")
+            setMessage(`Shipment status updated to ${status}.`)
+        } else {
+            setLocation(isLogistics ? "Dispatch Operations" : "Main Office")
+            setMessage(`Order status updated to ${status}.`)
+        }
     }
 
     const handleSubmitUpdate = async () => {
@@ -498,23 +546,32 @@ function BulkUpdateContent() {
                         <div className="bg-white border border-slate-200 rounded-2xl p-6 md:p-8 shadow-sm space-y-8">
 
                             {/* Quick Status Options */}
-                            <div className="space-y-4">
-                                <h3 className="font-semibold text-slate-700">Quick Status Options</h3>
-                                <div className="flex flex-wrap gap-3">
-                                    {QUICK_STATUSES.map((status) => (
-                                        <Button
-                                            key={status}
-                                            variant="outline"
-                                            onClick={() => handleQuickStatusClick(status)}
-                                            className={`h-11 px-6 rounded-lg border text-sm font-medium transition-all duration-200 ${selectedStatus === status
-                                                ? "text-white shadow-md border-0 hover:brightness-95"
-                                                : "bg-white border-slate-200 text-slate-600 hover:bg-slate-50 hover:border-slate-300"
-                                                }`}
-                                            style={selectedStatus === status ? { backgroundColor: config.theme.accent } : undefined}
-                                        >
-                                            {status}
-                                        </Button>
-                                    ))}
+                            <div className="space-y-3">
+                                <h3 className="text-xs font-bold text-slate-700 uppercase tracking-wider">Quick Status Options</h3>
+                                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+                                    {QUICK_STATUSES.map((status) => {
+                                        const theme = getStatusTheme(status);
+                                        const isSelected = selectedStatus === status;
+                                        return (
+                                            <button
+                                                key={status}
+                                                type="button"
+                                                onClick={() => handleQuickStatusClick(status)}
+                                                className={cn(
+                                                    "p-3 rounded-2xl text-xs font-bold border transition-all text-left flex items-center justify-between gap-2 active:scale-95 shadow-2xs",
+                                                    isSelected 
+                                                        ? "bg-[#191A43] text-white border-[#191A43] shadow-sm shadow-[#191A43]/10"
+                                                        : "bg-white hover:bg-slate-50 text-slate-700 border-slate-200/90"
+                                                )}
+                                            >
+                                                <div className="flex items-center gap-2 min-w-0">
+                                                    <span className={cn("w-2.5 h-2.5 rounded-full shrink-0", theme.dot)} />
+                                                    <span className="truncate">{status}</span>
+                                                </div>
+                                                {isSelected && <Check className="w-3.5 h-3.5 text-white shrink-0" />}
+                                            </button>
+                                        );
+                                    })}
                                 </div>
                             </div>
 

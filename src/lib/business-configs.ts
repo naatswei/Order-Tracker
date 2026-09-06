@@ -193,3 +193,68 @@ export function getBusinessConfig(id: string | null): BusinessConfig {
     }
     return BUSINESS_CONFIGS[id]
 }
+
+export interface StatusTheme {
+    badge: string;
+    dot: string;
+    leftBorder: string;
+    text: string;
+    bg: string;
+}
+
+export function getStatusTheme(statusText: string): StatusTheme {
+    const lower = (statusText || "").toLowerCase();
+    if (lower.includes("delivered") || lower.includes("completed") || lower.includes("done")) {
+        return {
+            badge: "bg-emerald-50 text-emerald-700 border-emerald-200",
+            dot: "bg-emerald-500",
+            leftBorder: "border-l-emerald-500",
+            text: "text-emerald-700",
+            bg: "bg-emerald-50"
+        };
+    }
+    if (lower.includes("pick") && lower.includes("up")) {
+        return {
+            badge: "bg-amber-50 text-amber-700 border-amber-200",
+            dot: "bg-amber-500",
+            leftBorder: "border-l-amber-500",
+            text: "text-amber-700",
+            bg: "bg-amber-50"
+        };
+    }
+    if (lower.includes("transit") || lower.includes("delivery") || lower.includes("dispatched") || lower.includes("sewing") || lower.includes("production") || lower.includes("shipped")) {
+        return {
+            badge: "bg-indigo-50 text-indigo-700 border-indigo-200",
+            dot: "bg-indigo-500",
+            leftBorder: "border-l-indigo-500",
+            text: "text-indigo-700",
+            bg: "bg-indigo-50"
+        };
+    }
+    if (lower.includes("facility") || lower.includes("sorting") || lower.includes("ready") || lower.includes("fitting") || lower.includes("check") || lower.includes("label") || lower.includes("packaging")) {
+        return {
+            badge: "bg-purple-50 text-purple-700 border-purple-200",
+            dot: "bg-purple-500",
+            leftBorder: "border-l-purple-500",
+            text: "text-purple-700",
+            bg: "bg-purple-50"
+        };
+    }
+    if (lower.includes("cancel") || lower.includes("delayed") || lower.includes("hold") || lower.includes("returned") || lower.includes("customs") || lower.includes("refunded")) {
+        return {
+            badge: "bg-red-50 text-red-700 border-red-200",
+            dot: "bg-red-500",
+            leftBorder: "border-l-red-500",
+            text: "text-red-700",
+            bg: "bg-red-50"
+        };
+    }
+    return {
+        badge: "bg-slate-50 text-slate-700 border-slate-200",
+        dot: "bg-slate-400",
+        leftBorder: "border-l-slate-400",
+        text: "text-slate-700",
+        bg: "bg-slate-50"
+    };
+}
+

@@ -12,7 +12,7 @@ import { Badge } from "@/components/ui/badge"
 import { type Order } from "@/lib/storage"
 import { getOrderWithHistory, updateOrderStatus } from "@/app/actions/orders"
 import { initiateMomoCharge } from "@/app/actions/paystack"
-import { resendRiderSMS } from "@/app/actions/operations"
+import { resendRiderSMS, getWorkflowStages } from "@/app/actions/operations"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
 import { detectGhanaNetworkProvider } from "@/lib/utils"
@@ -47,7 +47,7 @@ import {
     Check
 } from "lucide-react"
 import { useOrganization } from "@clerk/nextjs"
-import { getBusinessConfig } from "@/lib/business-configs"
+import { getBusinessConfig, getStatusTheme } from "@/lib/business-configs"
 import { SignatureLoader } from "@/components/signature-loader"
 import { cn } from "@/lib/utils"
 
@@ -84,50 +84,6 @@ interface OrderWithPerformerAndMetadata extends Omit<Order, 'statusHistory' | 'm
     } | null;
 }
 
-function getStatusTheme(statusText: string) {
-    const lower = (statusText || "").toLowerCase();
-    if (lower.includes("delivered") || lower.includes("completed") || lower.includes("done")) {
-        return {
-            badge: "bg-emerald-50 text-emerald-700 border-emerald-200",
-            dot: "bg-emerald-500",
-            leftBorder: "border-l-emerald-500"
-        };
-    }
-    if (lower.includes("pick") && lower.includes("up")) {
-        return {
-            badge: "bg-amber-50 text-amber-700 border-amber-200",
-            dot: "bg-amber-500",
-            leftBorder: "border-l-amber-500"
-        };
-    }
-    if (lower.includes("transit") || lower.includes("delivery") || lower.includes("dispatched") || lower.includes("sewing") || lower.includes("production")) {
-        return {
-            badge: "bg-indigo-50 text-indigo-700 border-indigo-200",
-            dot: "bg-indigo-500",
-            leftBorder: "border-l-indigo-500"
-        };
-    }
-    if (lower.includes("facility") || lower.includes("sorting") || lower.includes("ready") || lower.includes("fitting")) {
-        return {
-            badge: "bg-purple-50 text-purple-700 border-purple-200",
-            dot: "bg-purple-500",
-            leftBorder: "border-l-purple-500"
-        };
-    }
-    if (lower.includes("cancel") || lower.includes("delayed") || lower.includes("hold") || lower.includes("returned")) {
-        return {
-            badge: "bg-red-50 text-red-700 border-red-200",
-            dot: "bg-red-500",
-            leftBorder: "border-l-red-500"
-        };
-    }
-    return {
-        badge: "bg-slate-50 text-slate-700 border-slate-200",
-        dot: "bg-slate-400",
-        leftBorder: "border-l-slate-400"
-    };
-}
-
 function getStatusDefaults(statusName: string, isLogistics: boolean, metadata: any) {
     const lower = (statusName || "").toLowerCase();
 
@@ -147,7 +103,7 @@ function getStatusDefaults(statusName: string, isLogistics: boolean, metadata: a
                 : "Item picked up for processing."
         };
     }
-    if (lower.includes("transit") || lower.includes("delivery") || lower.includes("dispatched") || lower.includes("road")) {
+    if (lower.includes("transit") || lower.includes("delivery") || lower.includes("dispatched") || lower.includes("road") || lower.includes("shipped")) {
         return {
             location: isLogistics ? (metadata?.deliveryLocation || "Out on Route") : "Delivery Fleet",
             message: isLogistics 
@@ -155,16 +111,22 @@ function getStatusDefaults(statusName: string, isLogistics: boolean, metadata: a
                 : "Your order is dispatched and on its way."
         };
     }
-    if (lower.includes("facility") || lower.includes("sorting") || lower.includes("hub") || lower.includes("station")) {
+    if (lower.includes("facility") || lower.includes("sorting") || lower.includes("hub") || lower.includes("station") || lower.includes("customs") || lower.includes("packaging")) {
         return {
             location: "Sorting & Dispatch Hub",
-            message: "Package arrived at central sorting facility for routing."
+            message: `Package arrived at facility for ${statusName.toLowerCase()}.`
         };
     }
-    if (lower.includes("ready") || lower.includes("fitting")) {
+    if (lower.includes("ready") || lower.includes("fitting") || lower.includes("pickup")) {
         return {
             location: "Storefront / Showroom",
             message: "Your order is ready for pickup or fitting."
+        };
+    }
+    if (lower.includes("sewing") || lower.includes("production") || lower.includes("measurement") || lower.includes("wigging") || lower.includes("styling")) {
+        return {
+            location: "Production Workshop",
+            message: `Your order is currently in ${statusName.toLowerCase()} stage.`
         };
     }
     if (lower.includes("delivered") || lower.includes("completed") || lower.includes("done")) {
@@ -178,13 +140,15 @@ function getStatusDefaults(statusName: string, isLogistics: boolean, metadata: a
     if (lower.includes("cancel") || lower.includes("hold") || lower.includes("delayed") || lower.includes("returned")) {
         return {
             location: "Operations Desk",
-            message: "Shipment status is on hold. Please contact support for assistance."
+            message: `Shipment status is ${statusName.toLowerCase()}. Please contact support for assistance.`
         };
     }
 
     return {
-        location: isLogistics ? "Dispatch Operations" : "Main Office",
-        message: `Order status updated to ${statusName}.`
+        location: isLogistics ? (metadata?.deliveryLocation || "Dispatch Operations") : "Main Office",
+        message: isLogistics 
+            ? `Shipment status updated to ${statusName}.` 
+            : `Order status updated to ${statusName}.`
     };
 }
 
@@ -194,6 +158,7 @@ export default function OrderUpdatePage() {
     const orderId = params.id as string
 
     const [order, setOrder] = useState<OrderWithPerformerAndMetadata | null>(null)
+    const [pipelineStages, setPipelineStages] = useState<string[]>([])
     const [loading, setLoading] = useState(true)
 
     // Form state
@@ -223,7 +188,7 @@ export default function OrderUpdatePage() {
     const [businessType, setBusinessType] = useState<string | null>(null)
     const config = getBusinessConfig(businessType)
     const isLogistics = businessType === "logistics"
-    const quickStatuses = config.statuses
+    const quickStatuses = pipelineStages.length > 0 ? pipelineStages : config.statuses
 
     useEffect(() => {
         const orgBusinessType = organization?.publicMetadata?.businessType as string
@@ -276,7 +241,26 @@ export default function OrderUpdatePage() {
     useEffect(() => {
         if (orderId) {
             setLoading(true)
-            getOrderWithHistory(orderId).then(foundOrder => {
+            Promise.all([
+                getOrderWithHistory(orderId),
+                getWorkflowStages()
+            ]).then(([foundOrder, stagesData]) => {
+                if (stagesData && stagesData.length > 0) {
+                    const stageNames = stagesData.map((s: any) => s.name);
+                    const combined = [...stageNames];
+                    const terminalOptions = isLogistics 
+                        ? ["Delivered", "Cancelled", "Returned to Sender", "Held at Customs"] 
+                        : ["Completed", "Delivered", "Cancelled", "Refunded"];
+                    terminalOptions.forEach(term => {
+                        if (!combined.some(s => s.toLowerCase() === term.toLowerCase())) {
+                            combined.push(term);
+                        }
+                    });
+                    setPipelineStages(combined);
+                } else {
+                    setPipelineStages(config.statuses);
+                }
+
                 if (foundOrder) {
                     const mappedOrder: OrderWithPerformerAndMetadata = {
                         id: foundOrder.id,
@@ -349,7 +333,7 @@ export default function OrderUpdatePage() {
                 setLoading(false)
             })
         }
-    }, [orderId])
+    }, [orderId, businessType])
 
     const handleQuickStatus = (statusText: string) => {
         setStatus(statusText)
