@@ -144,8 +144,7 @@ export default function BusinessTypePage() {
             currentStep={2}
             title="What type of business do you run?"
             subtitle="We'll customize your dashboard and workflow to match your industry."
-            backUrl="/onboarding/organization?restart=true"
-            backLabel="Back to Workspace"
+            backUrl="/onboarding/organization"
         >
             {/* Selection Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-8">
@@ -163,19 +162,11 @@ export default function BusinessTypePage() {
             </div>
 
             {/* Action Buttons */}
-            <div className="flex flex-col-reverse sm:flex-row items-center justify-between gap-3 pt-4 border-t border-slate-100">
-                <Link
-                    href="/onboarding/organization?restart=true"
-                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 h-11 px-5 rounded-xl text-xs sm:text-sm font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100/70 border border-slate-200 transition-all duration-200"
-                >
-                    <ArrowLeft className="h-4 w-4" />
-                    Back to Workspace
-                </Link>
-
+            <div className="flex justify-end pt-4 border-t border-slate-100">
                 <Button
                     onClick={handleNext}
                     disabled={!selectedType || isLoading}
-                    className="w-full sm:w-auto bg-[#191A43] hover:bg-[#25275e] text-white h-12 sm:h-11 px-8 rounded-xl font-semibold text-sm shadow-md shadow-[#191A43]/15 transition-all duration-200 disabled:bg-slate-100 disabled:text-slate-400 disabled:shadow-none cursor-pointer"
+                    className="w-full sm:w-auto bg-[#191A43] hover:bg-[#25275e] text-white h-12 sm:h-11 px-8 rounded-xl font-semibold text-sm shadow-md shadow-[#191A43]/15 transition-all duration-200 disabled:bg-slate-100 disabled:text-slate-400 disabled:shadow-none cursor-pointer ml-auto"
                 >
                     {isLoading ? (
                         <Loader2 className="h-4 w-4 animate-spin" />

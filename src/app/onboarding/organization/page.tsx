@@ -1,7 +1,6 @@
 "use client"
 
-import { OrganizationList, useOrganization, useOrganizationList, useUser } from "@clerk/nextjs"
-import { useRouter } from "next/navigation"
+import { OrganizationList, useOrganization, useUser } from "@clerk/nextjs"
 import Link from "next/link"
 import { useEffect } from "react"
 import { AppLoader } from "@/components/app-loader"
@@ -11,34 +10,6 @@ import { ArrowRight, Building2 } from "lucide-react"
 export default function OrganizationSelectionPage() {
     const { organization, isLoaded } = useOrganization()
     const { user } = useUser()
-    const { userMemberships, isLoaded: membershipsLoaded, setActive } = useOrganizationList({
-        userMemberships: {
-            infinite: true,
-        },
-    });
-    const router = useRouter()
-    const searchParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null
-    const isRestarting = searchParams?.get('restart') === 'true'
-
-    useEffect(() => {
-        if (!isLoaded || !membershipsLoaded) return
-
-        // Only auto-redirect if NOT explicitly restarting/switching
-        if (organization && !isRestarting) {
-            router.replace("/onboarding/business-type")
-            return
-        }
-
-        // Auto-select if they only have one organization AND NOT restarting
-        const memberships = userMemberships.data
-        if (memberships && memberships.length === 1 && setActive && !isRestarting) {
-            const autoSelect = async () => {
-                await setActive({ organization: memberships[0].organization.id })
-                router.replace("/onboarding/business-type")
-            }
-            autoSelect()
-        }
-    }, [isLoaded, organization, membershipsLoaded, userMemberships.data, setActive, router, isRestarting])
 
     // Disable browser autofill on Clerk's organization name input
     useEffect(() => {
@@ -56,7 +27,7 @@ export default function OrganizationSelectionPage() {
         return () => clearInterval(interval);
     }, []);
 
-    if (!isLoaded || (organization && !isRestarting)) {
+    if (!isLoaded) {
         return <AppLoader message="Loading your workspace..." />
     }
 
@@ -69,31 +40,24 @@ export default function OrganizationSelectionPage() {
             subtitle="This is your team's home base for managing orders, inventory, and deliveries."
         >
             {/* Quick continue if an organization is already active */}
-            {organization && isRestarting && (
-                <div className="mb-6 p-4 rounded-2xl bg-indigo-50/70 border border-indigo-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            {organization && (
+                <div className="mb-6 p-4 rounded-2xl bg-indigo-50/70 border border-indigo-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-indigo-100 flex items-center justify-center text-indigo-700">
+                        <div className="w-10 h-10 rounded-xl bg-indigo-100 flex items-center justify-center text-indigo-700 shrink-0">
                             <Building2 className="w-5 h-5" />
                         </div>
                         <div>
-                            <p className="text-xs text-indigo-600 font-medium">Currently Selected</p>
+                            <p className="text-xs text-indigo-600 font-medium">Currently Selected Workspace</p>
                             <p className="text-sm font-bold text-slate-800">{organization.name}</p>
                         </div>
                     </div>
                     <Link
                         href="/onboarding/business-type"
-                        className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-[#191A43] hover:bg-[#25275e] text-white text-xs font-semibold shadow-xs transition-all"
+                        className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-[#191A43] hover:bg-[#25275e] text-white text-xs font-semibold shadow-xs transition-all"
                     >
                         Continue with this workspace
                         <ArrowRight className="w-3.5 h-3.5" />
                     </Link>
-                </div>
-            )}
-
-            {/* Hint for returning users */}
-            {membershipsLoaded && userMemberships.data && userMemberships.data.length > 0 && !isRestarting && (
-                <div className="mb-4 px-4 py-3 rounded-xl bg-amber-50/90 border border-amber-200/60 text-xs sm:text-sm text-amber-800 leading-relaxed flex items-center gap-2.5">
-                    <span className="font-bold">Tip:</span> Use a unique name for each business to stay organized.
                 </div>
             )}
 
