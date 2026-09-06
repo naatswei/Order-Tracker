@@ -558,7 +558,7 @@ export default function ProfilePage() {
                                             <Button
                                                 type="submit"
                                                 disabled={profileLoading}
-                                                className="min-w-[140px] h-11 rounded-full bg-[#111827] hover:bg-[#1f2937] text-white font-bold shadow-[0_4px_20px_rgb(0,0,0,0.1)] transition-all hover:-translate-y-0.5 active:scale-[0.98]"
+                                                className="w-full sm:w-auto min-w-[140px] h-11 px-6 rounded-xl sm:rounded-full bg-[#111827] hover:bg-[#1f2937] text-white font-bold text-xs sm:text-sm shadow-sm transition-all hover:-translate-y-0.5 active:scale-[0.98] cursor-pointer"
                                             >
                                                 {profileLoading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
                                                 Save Changes
@@ -569,33 +569,39 @@ export default function ProfilePage() {
                             </Card>
 
                             {/* Dual Gateway Payout & Settlement Settings */}
-                            <div className="mt-8 space-y-6">
-                                <div>
-                                    <h2 className="text-xl font-black text-slate-900 flex items-center gap-2">
-                                        Payout & Settlement Settings
-                                        <span className="text-[10px] uppercase tracking-wider font-bold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
+                            <div className="mt-8 space-y-5">
+                                <div className="space-y-1">
+                                    <div className="flex flex-wrap items-center justify-between gap-2">
+                                        <h2 className="text-base sm:text-lg font-bold text-slate-900 tracking-tight">
+                                            Payout &amp; Settlement Settings
+                                        </h2>
+                                        <span className="text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 shrink-0">
                                             Instant Payout Active
                                         </span>
-                                    </h2>
-                                    <p className="text-xs sm:text-sm text-slate-500 font-medium mt-1">
-                                        Set up your Mobile Money wallet or Bank Account to receive customer payouts automatically.
+                                    </div>
+                                    <p className="text-xs text-slate-500 font-normal leading-relaxed">
+                                        Set up your Mobile Money or Bank Account to receive customer payouts automatically.
                                     </p>
                                 </div>
 
                                 {/* 1. Primary Gateway: Instant Payouts */}
-                                <Card className="border-emerald-200/80 shadow-md overflow-hidden bg-gradient-to-br from-white to-emerald-50/20 rounded-3xl relative">
-                                    <div className="absolute top-0 right-0 bg-emerald-600 text-white text-[10px] font-black uppercase tracking-widest px-4 py-1 rounded-bl-2xl shadow-sm">
-                                        Primary Instant Gateway
+                                <Card className="border-emerald-200/80 shadow-xs overflow-hidden bg-gradient-to-br from-white to-emerald-50/20 rounded-2xl relative">
+                                    <div className="flex items-center justify-between px-4 sm:px-6 py-2.5 border-b border-emerald-100/60 bg-emerald-50/50">
+                                        <div className="flex items-center gap-1.5">
+                                            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                                            <span className="text-[10px] sm:text-[11px] font-bold text-emerald-900 uppercase tracking-wider">Primary Gateway</span>
+                                        </div>
+                                        <span className="text-[9px] sm:text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-600 text-white shadow-xs">Instant Settlement</span>
                                     </div>
-                                    <CardHeader className="p-5 sm:p-8 pb-4">
-                                        <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-                                            Instant Mobile Money & Bank Settlement
+                                    <CardHeader className="p-4 sm:p-6 pb-3 pt-3.5">
+                                        <h3 className="text-sm sm:text-base font-bold text-slate-900 leading-snug">
+                                            Instant Mobile Money &amp; Bank Settlement
                                         </h3>
-                                        <p className="text-xs text-slate-600">
-                                            Automatic settlements directly into your Mobile Money or Bank Account the moment a customer completes a payment.
+                                        <p className="text-xs text-slate-500 font-normal leading-relaxed mt-0.5">
+                                            Direct settlements to your Mobile Money or Bank Account as soon as an order is paid.
                                         </p>
                                     </CardHeader>
-                                    <CardContent className="p-5 sm:p-8 pt-0">
+                                    <CardContent className="p-4 sm:p-6 pt-0">
                                         <form onSubmit={async (e) => {
                                             e.preventDefault()
                                             if (!organization) return
@@ -624,9 +630,9 @@ export default function ProfilePage() {
                                             } finally {
                                                 setBulkclixSaving(false)
                                             }
-                                        }} className="space-y-6">
+                                        }} className="space-y-5">
                                             {/* Payout Type Switcher */}
-                                            <div className="flex items-center gap-3 p-1.5 bg-slate-100 rounded-2xl w-fit">
+                                            <div className="grid grid-cols-2 sm:flex items-center gap-1.5 p-1 bg-slate-100 rounded-xl w-full sm:w-fit">
                                                 <button
                                                     type="button"
                                                     onClick={() => {
@@ -635,9 +641,9 @@ export default function ProfilePage() {
                                                         setBulkclixAccountName("")
                                                     }}
                                                     className={cn(
-                                                        "px-4 py-2 rounded-xl text-xs font-bold transition-all",
+                                                        "px-3 py-2 rounded-lg text-xs font-bold transition-all text-center cursor-pointer",
                                                         bulkclixPayoutType === "momo"
-                                                            ? "bg-white text-emerald-800 shadow-sm"
+                                                            ? "bg-white text-emerald-800 shadow-xs"
                                                             : "text-slate-500 hover:text-slate-800"
                                                     )}
                                                 >
@@ -651,9 +657,9 @@ export default function ProfilePage() {
                                                         setBulkclixAccountName("")
                                                     }}
                                                     className={cn(
-                                                        "px-4 py-2 rounded-xl text-xs font-bold transition-all",
+                                                        "px-3 py-2 rounded-lg text-xs font-bold transition-all text-center cursor-pointer",
                                                         bulkclixPayoutType === "bank"
-                                                            ? "bg-white text-emerald-800 shadow-sm"
+                                                            ? "bg-white text-emerald-800 shadow-xs"
                                                             : "text-slate-500 hover:text-slate-800"
                                                     )}
                                                 >
@@ -661,10 +667,10 @@ export default function ProfilePage() {
                                                 </button>
                                             </div>
 
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                                                 {bulkclixPayoutType === "momo" ? (
-                                                    <div className="space-y-2">
-                                                        <Label className="text-slate-700 font-semibold" htmlFor="bulkclixNetwork">Mobile Money Network</Label>
+                                                    <div className="space-y-1.5">
+                                                        <Label className="text-slate-700 font-semibold text-xs sm:text-sm" htmlFor="bulkclixNetwork">Mobile Money Network</Label>
                                                         <select
                                                             id="bulkclixNetwork"
                                                             value={bulkclixChannelOrBankId}
@@ -672,7 +678,7 @@ export default function ProfilePage() {
                                                                 setBulkclixChannelOrBankId(e.target.value)
                                                                 setBulkclixAccountName("")
                                                             }}
-                                                            className="w-full bg-slate-50/50 border border-slate-200 focus:bg-white rounded-xl h-11 px-3 transition-colors text-slate-800 focus:outline-none"
+                                                            className="w-full bg-slate-50/50 border border-slate-200 focus:bg-white rounded-xl h-11 px-3 transition-colors text-slate-800 focus:outline-none text-sm"
                                                         >
                                                             <option value="MTN">MTN Mobile Money</option>
                                                             <option value="TELECEL">Telecel Cash (Vodafone)</option>
@@ -680,8 +686,8 @@ export default function ProfilePage() {
                                                         </select>
                                                     </div>
                                                 ) : (
-                                                    <div className="space-y-2">
-                                                        <Label className="text-slate-700 font-semibold" htmlFor="bulkclixBank">Select Bank</Label>
+                                                    <div className="space-y-1.5">
+                                                        <Label className="text-slate-700 font-semibold text-xs sm:text-sm" htmlFor="bulkclixBank">Select Bank</Label>
                                                         <select
                                                             id="bulkclixBank"
                                                             disabled={bulkclixBanksLoading}
@@ -692,7 +698,7 @@ export default function ProfilePage() {
                                                                 setBulkclixBankName(selected ? selected.name : "")
                                                                 setBulkclixAccountName("")
                                                             }}
-                                                            className="w-full bg-slate-50/50 border border-slate-200 focus:bg-white rounded-xl h-11 px-3 transition-colors text-slate-800 focus:outline-none"
+                                                            className="w-full bg-slate-50/50 border border-slate-200 focus:bg-white rounded-xl h-11 px-3 transition-colors text-slate-800 focus:outline-none text-sm"
                                                         >
                                                             <option value="">Select Target Bank</option>
                                                             {bulkclixBanks.map((b) => (
@@ -702,8 +708,8 @@ export default function ProfilePage() {
                                                     </div>
                                                 )}
 
-                                                <div className="space-y-2">
-                                                    <Label className="text-slate-700 font-semibold" htmlFor="bulkclixAccountNumber">
+                                                <div className="space-y-1.5">
+                                                    <Label className="text-slate-700 font-semibold text-xs sm:text-sm" htmlFor="bulkclixAccountNumber">
                                                         {bulkclixPayoutType === "momo" ? "Mobile Money Phone Number" : "Bank Account Number"}
                                                     </Label>
                                                     <div className="flex gap-2">
@@ -715,13 +721,13 @@ export default function ProfilePage() {
                                                                 setBulkclixAccountName("")
                                                             }}
                                                             placeholder={bulkclixPayoutType === "momo" ? "e.g. 0548706430" : "e.g. 1441001234567"}
-                                                            className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-11 transition-colors flex-1"
+                                                            className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-11 transition-colors flex-1 text-sm"
                                                         />
                                                         <Button
                                                             type="button"
                                                             onClick={handleResolveBulkClixAccount}
                                                             disabled={resolvingBulkclixAccount || !bulkclixAccountNumber}
-                                                            className="h-11 rounded-xl bg-emerald-600 text-white hover:bg-emerald-700 font-bold px-4 shadow-sm"
+                                                            className="h-11 rounded-xl bg-emerald-600 text-white hover:bg-emerald-700 font-bold px-4 shadow-xs text-xs sm:text-sm cursor-pointer"
                                                         >
                                                             {resolvingBulkclixAccount ? <Loader2 className="w-4 h-4 animate-spin" /> : "Verify"}
                                                         </Button>
@@ -729,23 +735,23 @@ export default function ProfilePage() {
                                                 </div>
 
                                                 {bulkclixAccountName && (
-                                                    <div className="md:col-span-2 p-3.5 bg-emerald-100/70 border border-emerald-200 rounded-xl flex items-center justify-between">
+                                                    <div className="md:col-span-2 p-3 bg-emerald-100/70 border border-emerald-200 rounded-xl flex items-center justify-between">
                                                         <div>
-                                                            <p className="text-[10px] uppercase tracking-wider text-emerald-800 font-black">Verified Account Name</p>
-                                                            <p className="text-sm text-emerald-950 font-bold">{bulkclixAccountName}</p>
+                                                            <p className="text-[10px] uppercase tracking-wider text-emerald-800 font-bold">Verified Account Name</p>
+                                                            <p className="text-xs sm:text-sm text-emerald-950 font-bold">{bulkclixAccountName}</p>
                                                         </div>
-                                                        <span className="text-xs font-black text-emerald-700 bg-white px-2.5 py-1 rounded-lg border border-emerald-200">
-                                                            Ready for Instant Payouts
+                                                        <span className="text-[11px] font-bold text-emerald-700 bg-white px-2 py-0.5 rounded-md border border-emerald-200">
+                                                            Verified
                                                         </span>
                                                     </div>
                                                 )}
                                             </div>
 
-                                            <div className="flex justify-end pt-4 border-t border-slate-100">
+                                            <div className="flex justify-end pt-3 border-t border-slate-100">
                                                 <Button
                                                     type="submit"
                                                     disabled={bulkclixSaving || !bulkclixAccountName}
-                                                    className="min-w-[160px] h-11 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold shadow-[0_4px_20px_rgba(16,185,129,0.2)] transition-all hover:-translate-y-0.5 active:scale-[0.98]"
+                                                    className="w-full sm:w-auto h-11 px-6 rounded-xl sm:rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm shadow-sm transition-all hover:-translate-y-0.5 active:scale-[0.98] cursor-pointer"
                                                 >
                                                     {bulkclixSaving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
                                                     Save Settlement Details
@@ -756,16 +762,20 @@ export default function ProfilePage() {
                                 </Card>
 
                                 {/* 2. Secondary Gateway: Card & International Fallback */}
-                                <Card className="border-slate-200 shadow-sm overflow-hidden bg-white rounded-3xl">
-                                    <CardHeader className="p-5 sm:p-8 pb-4">
-                                        <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-                                            Card & International Payment Backup
+                                <Card className="border-slate-200 shadow-xs overflow-hidden bg-white rounded-2xl">
+                                    <div className="flex items-center justify-between px-4 sm:px-6 py-2.5 border-b border-slate-100 bg-slate-50/50">
+                                        <span className="text-[10px] sm:text-[11px] font-bold text-slate-600 uppercase tracking-wider">Fallback Gateway</span>
+                                        <span className="text-[9px] sm:text-[10px] font-medium px-2 py-0.5 rounded-md bg-slate-200/70 text-slate-700">Paystack</span>
+                                    </div>
+                                    <CardHeader className="p-4 sm:p-6 pb-3 pt-3.5">
+                                        <h3 className="text-sm sm:text-base font-bold text-slate-900 leading-snug">
+                                            Card &amp; International Payment Backup
                                         </h3>
-                                        <p className="text-xs text-slate-500">
+                                        <p className="text-xs text-slate-500 font-normal leading-relaxed mt-0.5">
                                             Secondary settlement account used for Visa / Mastercard credit card payments or network failover.
                                         </p>
                                     </CardHeader>
-                                    <CardContent className="p-5 sm:p-8 pt-0">
+                                    <CardContent className="p-4 sm:p-6 pt-0">
                                         <form onSubmit={async (e) => {
                                             e.preventDefault()
                                             if (!organization) return
@@ -793,10 +803,10 @@ export default function ProfilePage() {
                                             } finally {
                                                 setPayoutLoading(false)
                                             }
-                                        }} className="space-y-6">
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                                <div className="space-y-2">
-                                                    <Label className="text-slate-700 font-semibold" htmlFor="payoutBank">Paystack Settlement Bank</Label>
+                                        }} className="space-y-5">
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                                                <div className="space-y-1.5">
+                                                    <Label className="text-slate-700 font-semibold text-xs sm:text-sm" htmlFor="payoutBank">Paystack Settlement Bank</Label>
                                                     <select
                                                         id="payoutBank"
                                                         disabled={banksLoading}
@@ -810,7 +820,7 @@ export default function ProfilePage() {
                                                                 accountName: ""
                                                             }))
                                                         }}
-                                                        className="w-full bg-slate-50/50 border border-slate-200 focus:bg-white rounded-xl h-11 px-3 transition-colors text-slate-800 focus:outline-none"
+                                                        className="w-full bg-slate-50/50 border border-slate-200 focus:bg-white rounded-xl h-11 px-3 transition-colors text-slate-800 focus:outline-none text-sm"
                                                     >
                                                         <option value="">Select Settlement Bank</option>
                                                         {banks.map((b) => (
@@ -819,8 +829,8 @@ export default function ProfilePage() {
                                                     </select>
                                                 </div>
 
-                                                <div className="space-y-2">
-                                                    <Label className="text-slate-700 font-semibold" htmlFor="accountNumber">Account / Mobile Number</Label>
+                                                <div className="space-y-1.5">
+                                                    <Label className="text-slate-700 font-semibold text-xs sm:text-sm" htmlFor="accountNumber">Account / Mobile Number</Label>
                                                     <div className="flex gap-2">
                                                         <Input
                                                             id="accountNumber"
@@ -831,13 +841,13 @@ export default function ProfilePage() {
                                                                 accountName: ""
                                                             }))}
                                                             placeholder="Enter bank account / phone number"
-                                                            className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-11 transition-colors flex-1"
+                                                            className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-11 transition-colors flex-1 text-sm"
                                                         />
                                                         <Button
                                                             type="button"
                                                             onClick={handleResolveAccount}
                                                             disabled={resolvingAccount || !payoutSettings.bankCode || !payoutSettings.accountNumber}
-                                                            className="h-11 rounded-xl bg-slate-100 border border-slate-200 text-slate-700 hover:bg-slate-200 font-bold px-4"
+                                                            className="h-11 rounded-xl bg-slate-100 border border-slate-200 text-slate-700 hover:bg-slate-200 font-bold px-4 text-xs sm:text-sm cursor-pointer"
                                                         >
                                                             {resolvingAccount ? <Loader2 className="w-4 h-4 animate-spin" /> : "Verify"}
                                                         </Button>
@@ -846,17 +856,17 @@ export default function ProfilePage() {
 
                                                 {payoutSettings.accountName && (
                                                     <div className="md:col-span-2 p-3 bg-slate-50 border border-slate-200 rounded-xl">
-                                                        <p className="text-xs text-slate-500 font-bold">Verified Account Name</p>
-                                                        <p className="text-sm text-slate-900 font-medium">{payoutSettings.accountName}</p>
+                                                        <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Verified Account Name</p>
+                                                        <p className="text-xs sm:text-sm text-slate-900 font-medium">{payoutSettings.accountName}</p>
                                                     </div>
                                                 )}
                                             </div>
 
-                                            <div className="flex justify-end pt-4 border-t border-slate-100">
+                                            <div className="flex justify-end pt-3 border-t border-slate-100">
                                                 <Button
                                                     type="submit"
                                                     disabled={payoutLoading || !payoutSettings.accountName}
-                                                    className="min-w-[140px] h-11 rounded-full bg-[#111827] hover:bg-[#1f2937] text-white font-bold shadow-[0_4px_20px_rgb(0,0,0,0.1)] transition-all hover:-translate-y-0.5 active:scale-[0.98]"
+                                                    className="w-full sm:w-auto h-11 px-6 rounded-xl sm:rounded-full bg-[#111827] hover:bg-[#1f2937] text-white font-bold text-xs sm:text-sm shadow-sm transition-all hover:-translate-y-0.5 active:scale-[0.98] cursor-pointer"
                                                 >
                                                     {payoutLoading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
                                                     Save Paystack Details
