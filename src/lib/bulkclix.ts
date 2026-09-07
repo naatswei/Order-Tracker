@@ -1,6 +1,7 @@
 import { db } from "@/db"
 import { orders, staff } from "@/db/schema"
 import { eq } from "drizzle-orm"
+import { getOrderDeliveryPin } from "@/lib/delivery-pin"
 
 const BULKCLIX_API_KEY = process.env.BULKCLIX_API_KEY
 const BULKCLIX_SENDER_ID = process.env.BULKCLIX_SENDER_ID
@@ -81,8 +82,10 @@ export async function sendOrderTrackingSMS(orderId: string): Promise<{ success: 
         // 1. Notify Dropoff Recipient (if recipient phone exists)
         if (formattedRecipientPhone) {
             const recipientTrackingLink = `${APP_URL}/track/${orderId}?for=dropoff`.replace(/^https?:\/\//, "")
+            const deliveryPin = getOrderDeliveryPin(order)
+            const pinInfo = isLogistics ? `\nHandover PIN: ${deliveryPin}` : ""
             const recipientMessage = isLogistics
-                ? `Hello ${recipientName || 'Customer'}, a delivery (#${order.orderNumber}) is on its way to you from ${order.customerName}!\n\nPackage:${itemsList}${paymentInfo}\n\nTrack your incoming delivery here:\n${recipientTrackingLink}`
+                ? `Hello ${recipientName || 'Customer'}, a delivery (#${order.orderNumber}) is on its way to you from ${order.customerName}!\n\nPackage:${itemsList}${paymentInfo}${pinInfo}\n\nTrack incoming delivery & live alerts:\n${recipientTrackingLink}`
                 : `Hello ${recipientName || 'Customer'}, an order (#${order.orderNumber}) has been dispatched for delivery to you!\n\nItems:${itemsList}${paymentInfo}\n\nTrack progress here:\n${recipientTrackingLink}`
 
             smsPromises.push(
@@ -178,8 +181,10 @@ export async function sendOrderStatusSMS(orderId: string, status: string): Promi
         // 1. Notify Dropoff Recipient
         if (formattedRecipientPhone) {
             const recipientTrackingLink = `${APP_URL}/track/${orderId}?for=dropoff`.replace(/^https?:\/\//, "")
+            const deliveryPin = getOrderDeliveryPin(order)
+            const pinInfo = isLogistics ? `\nHandover PIN: ${deliveryPin}` : ""
             const recipientMessage = isLogistics
-                ? `Hello ${recipientName || 'Customer'}, your delivery #${order.orderNumber} status is now: ${status}.\n\nTrack your incoming shipment here:\n${recipientTrackingLink}`
+                ? `Hello ${recipientName || 'Customer'}, your delivery #${order.orderNumber} status is now: ${status}.${pinInfo}\n\nTrack incoming shipment & live alerts:\n${recipientTrackingLink}`
                 : `Hello ${recipientName || 'Customer'}, order #${order.orderNumber} status is now: ${status}.\n\nTrack progress here:\n${recipientTrackingLink}`
 
             smsPromises.push(

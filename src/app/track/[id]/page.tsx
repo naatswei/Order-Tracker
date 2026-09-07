@@ -62,7 +62,7 @@ export default function TrackingDetailsPage() {
     const [subscriptionLoading, setSubscriptionLoading] = useState(false)
     const [isIOS, setIsIOS] = useState(false)
     const [searchQuery, setSearchQuery] = useState("")
-    const [showOtpModal, setShowOtpModal] = useState(true)
+    const [showOtpModal, setShowOtpModal] = useState(false)
     const [copiedOtp, setCopiedOtp] = useState(false)
     
     const deliveryPin = order ? getOrderDeliveryPin(order) : ""
@@ -272,14 +272,41 @@ export default function TrackingDetailsPage() {
         return () => clearInterval(interval)
     }, [trackingId, order?.currentStatus])
 
+    const meta = (typeof order?.metadata === "object" && order?.metadata !== null) ? order?.metadata as Record<string, unknown> : {}
+    const recipientName = ((meta.recipientName as string) || "").trim()
+    const recipientPhone = ((meta.recipientPhone as string) || "").trim()
+    const pickupCustomerName = (order?.customerName || "").trim()
+    const pickupCustomerPhone = (order?.customerPhone || "").trim()
+
+    // Determine if current viewer is the dropoff recipient vs the pickup customer
+    const currentStatusLower = (order?.currentStatus || "").toLowerCase()
+    const isTransitOrDeliveryStage = [
+        "in transit",
+        "dispatched",
+        "out for delivery",
+        "arriving",
+        "arriving at destination",
+        "delivered",
+        "completed"
+    ].includes(currentStatusLower)
+
+    const isDropoffViewer = forParam === "dropoff" || (forParam !== "pickup" && Boolean(recipientName) && isTransitOrDeliveryStage)
+
+    const activeViewerName = (isDropoffViewer && recipientName) ? recipientName : (pickupCustomerName || "Customer")
+    const activeViewerPhone = (isDropoffViewer && recipientPhone) ? recipientPhone : pickupCustomerPhone
+    const viewerFirstName = activeViewerName.split(' ')[0]
+
     useEffect(() => {
         if (!loading && order) {
             const timer = setTimeout(() => {
                 setShowOverlay(false)
-            }, 3500)
+                if (isDropoffViewer) {
+                    setShowOtpModal(true)
+                }
+            }, 2500)
             return () => clearTimeout(timer)
         }
-    }, [loading, order])
+    }, [loading, order, isDropoffViewer])
 
     // Load and poll chat messages
     useEffect(() => {
@@ -347,30 +374,6 @@ export default function TrackingDetailsPage() {
             })
         }
     }, [chatMessages.length, chatOpen])
-
-    const meta = (typeof order?.metadata === "object" && order?.metadata !== null) ? order?.metadata as Record<string, unknown> : {}
-    const recipientName = ((meta.recipientName as string) || "").trim()
-    const recipientPhone = ((meta.recipientPhone as string) || "").trim()
-    const pickupCustomerName = (order?.customerName || "").trim()
-    const pickupCustomerPhone = (order?.customerPhone || "").trim()
-
-    // Determine if current viewer is the dropoff recipient vs the pickup customer
-    const currentStatusLower = (order?.currentStatus || "").toLowerCase()
-    const isTransitOrDeliveryStage = [
-        "in transit",
-        "dispatched",
-        "out for delivery",
-        "arriving",
-        "arriving at destination",
-        "delivered",
-        "completed"
-    ].includes(currentStatusLower)
-
-    const isDropoffViewer = forParam === "dropoff" || (forParam !== "pickup" && Boolean(recipientName) && isTransitOrDeliveryStage)
-
-    const activeViewerName = (isDropoffViewer && recipientName) ? recipientName : (pickupCustomerName || "Customer")
-    const activeViewerPhone = (isDropoffViewer && recipientPhone) ? recipientPhone : pickupCustomerPhone
-    const viewerFirstName = activeViewerName.split(' ')[0]
 
     const handleSendMessage = async () => {
         if (!messageBody.trim()) {
@@ -515,6 +518,20 @@ export default function TrackingDetailsPage() {
                                             )}
                                         </span>
                                     </p>
+
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setShowOverlay(false)
+                                            if (isDropoffViewer) {
+                                                setShowOtpModal(true)
+                                            }
+                                        }}
+                                        className="mt-8 inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/10 hover:bg-white/20 text-white/80 hover:text-white text-xs font-semibold tracking-wide transition-all border border-white/15 backdrop-blur-md active:scale-95 cursor-pointer"
+                                    >
+                                        <span>Continue to Live Tracking</span>
+                                        <ArrowRight className="w-3.5 h-3.5" />
+                                    </button>
                                 </motion.div>
                             </motion.div>
                         )}
@@ -549,17 +566,26 @@ export default function TrackingDetailsPage() {
                                     <h1 className="text-4xl sm:text-6xl font-black tracking-tighter text-black">
                                         {order.orderNumber}
                                     </h1>
-                                    {order.businessType === "logistics" && isDropoffViewer ? (
+                                    {isDropoffViewer ? (
                                         <button
                                             type="button"
                                             onClick={() => setShowOtpModal(true)}
                                             className="inline-flex items-center gap-2.5 px-4 py-2 rounded-2xl bg-white border border-black/[0.06] shadow-sm hover:bg-neutral-50 transition-all text-neutral-800 text-xs font-mono group"
-                                            title="Click to view full Delivery OTP"
+                                            title="Click to view Delivery Verification PIN & Notification Settings"
                                         >
                                             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                                            <span className="text-[10px] font-black text-neutral-400 uppercase tracking-wider">Delivery PIN:</span>
-                                            <span className="text-black font-black tracking-widest text-sm sm:text-base">{deliveryPin}</span>
-                                            <span className="text-[10px] text-neutral-400 underline ml-1 group-hover:text-black font-sans">View OTP</span>
+                                            {order.businessType === "logistics" ? (
+                                                <>
+                                                    <span className="text-[10px] font-black text-neutral-400 uppercase tracking-wider">Delivery PIN:</span>
+                                                    <span className="text-black font-black tracking-widest text-sm sm:text-base">{deliveryPin}</span>
+                                                    <span className="text-[10px] text-neutral-400 underline ml-1 group-hover:text-black font-sans">View PIN & Alerts</span>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <BellRing className="w-3.5 h-3.5 text-black" />
+                                                    <span className="text-[10px] font-black text-neutral-800 uppercase tracking-wider">Live Delivery Alerts</span>
+                                                </>
+                                            )}
                                         </button>
                                     ) : (
                                         <p className="text-neutral-500 font-medium tracking-wide">Ref: {order.id.slice(0, 8).toUpperCase()}</p>
@@ -1114,21 +1140,21 @@ export default function TrackingDetailsPage() {
                         </div>
                     )}
 
-                    {/* Delivery OTP Popup Modal for Logistics (Only for Dropoff Recipient) */}
+                    {/* Delivery Notification & OTP Popup Modal (Only for Dropoff Recipient) */}
                     <AnimatePresence>
-                        {order && order.businessType === "logistics" && isDropoffViewer && showOtpModal && (
+                        {order && isDropoffViewer && showOtpModal && (
                             <motion.div
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
                                 exit={{ opacity: 0 }}
-                                className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+                                className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-black/70 backdrop-blur-md"
                             >
                                 <motion.div
                                     initial={{ scale: 0.95, opacity: 0, y: 20 }}
                                     animate={{ scale: 1, opacity: 1, y: 0 }}
                                     exit={{ scale: 0.95, opacity: 0, y: 20 }}
                                     transition={{ type: "spring", damping: 25, stiffness: 350 }}
-                                    className="relative w-full max-w-sm rounded-[2.5rem] bg-white border border-black/[0.06] p-6 sm:p-7 text-center shadow-[0_20px_60px_rgba(0,0,0,0.15)] space-y-5"
+                                    className="relative w-full max-w-sm rounded-[2.5rem] bg-white border border-black/[0.08] p-6 sm:p-7 text-center shadow-[0_25px_70px_rgba(0,0,0,0.25)] space-y-4 max-h-[90vh] overflow-y-auto"
                                 >
                                     {/* Close Button */}
                                     <button
@@ -1139,57 +1165,106 @@ export default function TrackingDetailsPage() {
                                     </button>
 
                                     {/* Icon Header */}
-                                    <div className="w-16 h-16 rounded-3xl bg-neutral-100 text-black flex items-center justify-center mx-auto shadow-sm">
-                                        <ShieldCheck className="w-8 h-8" />
+                                    <div className="w-14 h-14 rounded-3xl bg-neutral-100 text-black flex items-center justify-center mx-auto shadow-sm">
+                                        <ShieldCheck className="w-7 h-7" />
                                     </div>
 
-                                    <div className="space-y-1.5">
-                                        <span className="text-[10px] font-black uppercase tracking-[0.25em] text-neutral-400 block">
-                                            Delivery Verification
-                                        </span>
-                                        <h3 className="text-xl font-black text-black tracking-tight">
-                                            Your Handover OTP
+                                    <div className="space-y-1">
+                                        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 text-[10px] font-black uppercase tracking-wider">
+                                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                                            <span>Live Delivery Alert</span>
+                                        </div>
+                                        <h3 className="text-xl font-black text-black tracking-tight pt-1">
+                                            Welcome, {viewerFirstName}
                                         </h3>
                                         <p className="text-xs text-neutral-500 font-medium leading-relaxed max-w-xs mx-auto">
-                                            Share this 4-digit numeric code with your dispatch rider upon delivery to confirm package handover.
+                                            {order.businessType === "logistics"
+                                                ? "Your live delivery tracking and verification are active."
+                                                : "Track your incoming delivery with real-time status updates."}
                                         </p>
                                     </div>
 
-                                    {/* 4-Digit Boxes */}
-                                    <div className="flex justify-center items-center gap-2.5 pt-2">
-                                        {deliveryPin.split("").map((digit: string, i: number) => (
-                                            <div
-                                                key={i}
-                                                className="w-14 h-16 rounded-2xl bg-neutral-50 border-2 border-neutral-300 flex items-center justify-center text-3xl font-mono font-black text-black shadow-sm"
-                                            >
-                                                {digit}
+                                    {/* 4-Digit Delivery PIN (for Logistics) */}
+                                    {order.businessType === "logistics" && (
+                                        <div className="p-4 rounded-3xl bg-neutral-50 border border-neutral-200/80 space-y-3">
+                                            <div className="space-y-0.5">
+                                                <span className="text-[10px] font-black uppercase tracking-widest text-neutral-400">
+                                                    Handover OTP PIN
+                                                </span>
+                                                <p className="text-[11px] text-neutral-500">
+                                                    Share with your rider upon arrival to confirm delivery
+                                                </p>
                                             </div>
-                                        ))}
-                                    </div>
 
-                                    {/* Actions */}
-                                    <div className="pt-2 space-y-2.5">
-                                        <Button
-                                            onClick={() => {
-                                                navigator.clipboard.writeText(deliveryPin)
-                                                setCopiedOtp(true)
-                                                toast.success("Delivery PIN copied to clipboard", {
-                                                    style: { background: "#000", color: "#fff", border: "none" }
-                                                })
-                                                setTimeout(() => setCopiedOtp(false), 2000)
-                                            }}
-                                            variant="outline"
-                                            className="w-full h-12 rounded-2xl bg-neutral-50 hover:bg-neutral-100 border-neutral-200 text-xs font-bold text-neutral-800 flex items-center justify-center gap-2"
-                                        >
-                                            {copiedOtp ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
-                                            <span>{copiedOtp ? "Copied PIN" : "Copy 4-Digit PIN"}</span>
-                                        </Button>
+                                            <div className="flex justify-center items-center gap-2">
+                                                {deliveryPin.split("").map((digit: string, i: number) => (
+                                                    <div
+                                                        key={i}
+                                                        className="w-12 h-14 rounded-2xl bg-white border-2 border-neutral-300 flex items-center justify-center text-2xl font-mono font-black text-black shadow-sm"
+                                                    >
+                                                        {digit}
+                                                    </div>
+                                                ))}
+                                            </div>
 
+                                            <Button
+                                                onClick={() => {
+                                                    navigator.clipboard.writeText(deliveryPin)
+                                                    setCopiedOtp(true)
+                                                    toast.success("Delivery PIN copied to clipboard", {
+                                                        style: { background: "#000", color: "#fff", border: "none" }
+                                                    })
+                                                    setTimeout(() => setCopiedOtp(false), 2000)
+                                                }}
+                                                variant="outline"
+                                                size="sm"
+                                                className="w-full h-10 rounded-xl bg-white hover:bg-neutral-100 border-neutral-200 text-xs font-bold text-neutral-800 flex items-center justify-center gap-2"
+                                            >
+                                                {copiedOtp ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                                                <span>{copiedOtp ? "Copied PIN" : "Copy 4-Digit PIN"}</span>
+                                            </Button>
+                                        </div>
+                                    )}
+
+                                    {/* Integrated Real-time Push Notifications Opt-In */}
+                                    {isPushSupported && (
+                                        <div className="p-3.5 rounded-3xl bg-neutral-50 border border-neutral-200/80 text-left">
+                                            {isSubscribed ? (
+                                                <div className="flex items-center gap-2 text-emerald-700 text-xs font-bold justify-center py-1">
+                                                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                                                    <span>Live Push Notifications Active</span>
+                                                </div>
+                                            ) : (
+                                                <div className="flex items-center justify-between gap-3">
+                                                    <div className="flex items-center gap-2.5 min-w-0">
+                                                        <div className="w-8 h-8 rounded-xl bg-black text-white flex items-center justify-center shrink-0">
+                                                            <BellRing className="w-4 h-4" />
+                                                        </div>
+                                                        <div className="min-w-0">
+                                                            <p className="text-xs font-black text-black">Instant Alerts</p>
+                                                            <p className="text-[10px] text-neutral-500 font-medium truncate">Get rider arrival updates</p>
+                                                        </div>
+                                                    </div>
+                                                    <Button
+                                                        size="sm"
+                                                        disabled={subscriptionLoading}
+                                                        onClick={handleSubscribe}
+                                                        className="h-8 px-3 rounded-xl bg-black hover:bg-neutral-800 text-white text-[10px] font-black uppercase tracking-wider shrink-0 shadow-sm active:scale-95"
+                                                    >
+                                                        {subscriptionLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : "Allow"}
+                                                    </Button>
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+
+                                    {/* Action Button */}
+                                    <div className="pt-2">
                                         <Button
                                             onClick={() => setShowOtpModal(false)}
-                                            className="w-full h-12 rounded-2xl bg-black hover:bg-neutral-800 text-white text-xs font-black uppercase tracking-wider shadow-md"
+                                            className="w-full h-12 rounded-2xl bg-black hover:bg-neutral-800 text-white text-xs font-black uppercase tracking-wider shadow-md active:scale-95"
                                         >
-                                            Got It
+                                            Track Live Delivery
                                         </Button>
                                     </div>
                                 </motion.div>
