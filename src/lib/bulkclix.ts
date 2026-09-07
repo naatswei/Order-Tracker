@@ -42,9 +42,16 @@ export async function sendOrderTrackingSMS(orderId: string): Promise<{ success: 
             return { success: false, error: "Order not found" }
         }
 
-        const formattedPhone = formatGhanaPhoneNumber(order.customerPhone)
-        if (!formattedPhone) {
-            return { success: false, error: "Invalid phone number" }
+        const meta = (typeof order.metadata === "object" && order.metadata !== null) ? order.metadata as Record<string, unknown> : {}
+        const isLogistics = order.businessType === "logistics"
+        const recipientName = (meta.recipientName as string) || ""
+        const recipientPhone = (meta.recipientPhone as string) || ""
+
+        const formattedCustomerPhone = formatGhanaPhoneNumber(order.customerPhone)
+        const formattedRecipientPhone = recipientPhone ? formatGhanaPhoneNumber(recipientPhone) : null
+
+        if (!formattedCustomerPhone && !formattedRecipientPhone) {
+            return { success: false, error: "No valid phone numbers found" }
         }
 
         // Strip https:// to help prevent large rich link previews
@@ -58,42 +65,79 @@ export async function sendOrderTrackingSMS(orderId: string): Promise<{ success: 
         }
 
         // Query invoice from metadata if exists
-        const invoice = (order.metadata as any)?.invoice
+        const invoice = (meta.invoice as any) || null
         let paymentInfo = ""
         if (invoice) {
             const amount = parseFloat(invoice.amountDue || "0").toFixed(2)
             if (invoice.invoiceStatus === "paid") {
                 paymentInfo = `\nTotal Paid: GH₵ ${amount} (Cash)`
             } else {
-                paymentInfo = `\nTotal Due: GH₵ ${amount}`
+                paymentInfo = `\nTotal Due: GH₵ ${amount} (Payment on Arrival)`
             }
         }
 
-        // Build professional SMS message
-        const message = `Hello ${order.customerName}, your order #${order.orderNumber} has been received!\n\nItems:${itemsList}${paymentInfo}\n\nTrack progress and view invoice details here:\n${trackingLink}`
+        const smsPromises: Promise<any>[] = []
 
-        const response = await fetch("https://api.bulkclix.com/api/v1/sms-api/send", {
-            method: "POST",
-            headers: {
-                "x-api-key": BULKCLIX_API_KEY,
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                sender_id: BULKCLIX_SENDER_ID,
-                message: message,
-                recipients: [formattedPhone]
-            })
-        })
+        // 1. Notify Dropoff Recipient (if recipient phone exists)
+        if (formattedRecipientPhone) {
+            const recipientMessage = isLogistics
+                ? `Hello ${recipientName || 'Customer'}, a delivery (#${order.orderNumber}) is on its way to you from ${order.customerName}!\n\nPackage:${itemsList}${paymentInfo}\n\nTrack your incoming delivery here:\n${trackingLink}`
+                : `Hello ${recipientName || 'Customer'}, an order (#${order.orderNumber}) has been dispatched for delivery to you!\n\nItems:${itemsList}${paymentInfo}\n\nTrack progress here:\n${trackingLink}`
 
-        const data = await response.json()
-
-        if (response.ok && (data.message === "Request Sent" || data.status === "success" || data.status === "Pending")) {
-            console.log(`BulkClix SMS sent to ${formattedPhone} for order ${order.orderNumber}`)
-            return { success: true }
-        } else {
-            console.error("BulkClix SMS API failure:", data)
-            return { success: false, error: data.message || "BulkClix API error" }
+            smsPromises.push(
+                fetch("https://api.bulkclix.com/api/v1/sms-api/send", {
+                    method: "POST",
+                    headers: {
+                        "x-api-key": BULKCLIX_API_KEY,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        sender_id: BULKCLIX_SENDER_ID,
+                        message: recipientMessage,
+                        recipients: [formattedRecipientPhone]
+                    })
+                }).then(async res => {
+                    const data = await res.json().catch(() => ({}))
+                    console.log(`BulkClix Dropoff Recipient SMS sent to ${formattedRecipientPhone} for order ${order.orderNumber}:`, data)
+                    return { success: res.ok, data }
+                }).catch(err => {
+                    console.error("BulkClix Dropoff Recipient SMS error:", err)
+                    return { success: false, error: err?.message }
+                })
+            )
         }
+
+        // 2. Notify Sender / Booking Customer (if customer phone is valid and distinct from recipient phone)
+        if (formattedCustomerPhone && formattedCustomerPhone !== formattedRecipientPhone) {
+            const customerMessage = isLogistics
+                ? `Hello ${order.customerName}, your delivery #${order.orderNumber} to ${recipientName || 'recipient'} has been booked!\n\nPackage:${itemsList}${paymentInfo}\n\nTrack shipment progress here:\n${trackingLink}`
+                : `Hello ${order.customerName}, your order #${order.orderNumber} has been received!\n\nItems:${itemsList}${paymentInfo}\n\nTrack progress and view invoice details here:\n${trackingLink}`
+
+            smsPromises.push(
+                fetch("https://api.bulkclix.com/api/v1/sms-api/send", {
+                    method: "POST",
+                    headers: {
+                        "x-api-key": BULKCLIX_API_KEY,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        sender_id: BULKCLIX_SENDER_ID,
+                        message: customerMessage,
+                        recipients: [formattedCustomerPhone]
+                    })
+                }).then(async res => {
+                    const data = await res.json().catch(() => ({}))
+                    console.log(`BulkClix Customer SMS sent to ${formattedCustomerPhone} for order ${order.orderNumber}:`, data)
+                    return { success: res.ok, data }
+                }).catch(err => {
+                    console.error("BulkClix Customer SMS error:", err)
+                    return { success: false, error: err?.message }
+                })
+            )
+        }
+
+        await Promise.all(smsPromises)
+        return { success: true }
     } catch (error: any) {
         console.error("Failed to send BulkClix tracking SMS:", error)
         return { success: false, error: error?.message || "Internal SMS sending error" }
@@ -115,42 +159,82 @@ export async function sendOrderStatusSMS(orderId: string, status: string): Promi
             return { success: false, error: "Order not found" }
         }
 
-        const formattedPhone = formatGhanaPhoneNumber(order.customerPhone)
-        if (!formattedPhone) {
-            return { success: false, error: "Invalid phone number" }
+        const meta = (typeof order.metadata === "object" && order.metadata !== null) ? order.metadata as Record<string, unknown> : {}
+        const isLogistics = order.businessType === "logistics"
+        const recipientName = (meta.recipientName as string) || ""
+        const recipientPhone = (meta.recipientPhone as string) || ""
+
+        const formattedCustomerPhone = formatGhanaPhoneNumber(order.customerPhone)
+        const formattedRecipientPhone = recipientPhone ? formatGhanaPhoneNumber(recipientPhone) : null
+
+        if (!formattedCustomerPhone && !formattedRecipientPhone) {
+            return { success: false, error: "No valid phone numbers found" }
         }
 
         // Strip https:// to help prevent large rich link previews
         const trackingLink = `${APP_URL}/track/${orderId}`.replace(/^https?:\/\//, "")
-        
-        // Build status update SMS message
-        const isLogistics = order.businessType === "logistics"
-        const message = isLogistics
-            ? `Hello ${order.customerName}, your delivery #${order.orderNumber} status is now: ${status}.\n\nTrack your shipment here:\n${trackingLink}`
-            : `Hello ${order.customerName}, your order #${order.orderNumber} status is now: ${status}.\n\nTrack progress and view available store items here:\n${trackingLink}`
+        const smsPromises: Promise<any>[] = []
 
-        const response = await fetch("https://api.bulkclix.com/api/v1/sms-api/send", {
-            method: "POST",
-            headers: {
-                "x-api-key": BULKCLIX_API_KEY,
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                sender_id: BULKCLIX_SENDER_ID,
-                message: message,
-                recipients: [formattedPhone]
-            })
-        })
+        // 1. Notify Dropoff Recipient
+        if (formattedRecipientPhone) {
+            const recipientMessage = isLogistics
+                ? `Hello ${recipientName || 'Customer'}, your delivery #${order.orderNumber} status is now: ${status}.\n\nTrack your incoming shipment here:\n${trackingLink}`
+                : `Hello ${recipientName || 'Customer'}, order #${order.orderNumber} status is now: ${status}.\n\nTrack progress here:\n${trackingLink}`
 
-        const data = await response.json()
-
-        if (response.ok && (data.message === "Request Sent" || data.status === "success" || data.status === "Pending")) {
-            console.log(`BulkClix Status SMS sent to ${formattedPhone} for order ${order.orderNumber} (${status})`)
-            return { success: true }
-        } else {
-            console.error("BulkClix SMS API failure:", data)
-            return { success: false, error: data.message || "BulkClix API error" }
+            smsPromises.push(
+                fetch("https://api.bulkclix.com/api/v1/sms-api/send", {
+                    method: "POST",
+                    headers: {
+                        "x-api-key": BULKCLIX_API_KEY,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        sender_id: BULKCLIX_SENDER_ID,
+                        message: recipientMessage,
+                        recipients: [formattedRecipientPhone]
+                    })
+                }).then(async res => {
+                    const data = await res.json().catch(() => ({}))
+                    console.log(`BulkClix Status SMS sent to recipient ${formattedRecipientPhone} for order ${order.orderNumber} (${status})`)
+                    return { success: res.ok, data }
+                }).catch(err => {
+                    console.error("BulkClix Recipient Status SMS error:", err)
+                    return { success: false, error: err?.message }
+                })
+            )
         }
+
+        // 2. Notify Sender / Customer
+        if (formattedCustomerPhone && formattedCustomerPhone !== formattedRecipientPhone) {
+            const customerMessage = isLogistics
+                ? `Hello ${order.customerName}, your delivery #${order.orderNumber} status is now: ${status}.\n\nTrack shipment here:\n${trackingLink}`
+                : `Hello ${order.customerName}, your order #${order.orderNumber} status is now: ${status}.\n\nTrack progress and view available store items here:\n${trackingLink}`
+
+            smsPromises.push(
+                fetch("https://api.bulkclix.com/api/v1/sms-api/send", {
+                    method: "POST",
+                    headers: {
+                        "x-api-key": BULKCLIX_API_KEY,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        sender_id: BULKCLIX_SENDER_ID,
+                        message: customerMessage,
+                        recipients: [formattedCustomerPhone]
+                    })
+                }).then(async res => {
+                    const data = await res.json().catch(() => ({}))
+                    console.log(`BulkClix Customer Status SMS sent to ${formattedCustomerPhone} for order ${order.orderNumber} (${status})`)
+                    return { success: res.ok, data }
+                }).catch(err => {
+                    console.error("BulkClix Customer Status SMS error:", err)
+                    return { success: false, error: err?.message }
+                })
+            )
+        }
+
+        await Promise.all(smsPromises)
+        return { success: true }
     } catch (error: any) {
         console.error("Failed to send BulkClix status SMS:", error)
         return { success: false, error: error?.message || "Internal SMS sending error" }
