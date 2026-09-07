@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
-import { useParams } from "next/navigation"
+import { useParams, useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import dynamic from "next/dynamic"
 import { Card, CardContent } from "@/components/ui/card"
@@ -47,7 +47,9 @@ const PaystackInvoiceCheckout = dynamic(() => import('@/components/paystack-invo
 
 export default function TrackingDetailsPage() {
     const params = useParams()
+    const searchParams = useSearchParams()
     const trackingId = params.id as string
+    const forParam = searchParams?.get("for")
     const [order, setOrder] = useState<Order | null>(null)
     const [loading, setLoading] = useState(true)
     const [messageBody, setMessageBody] = useState("")
@@ -346,6 +348,30 @@ export default function TrackingDetailsPage() {
         }
     }, [chatMessages.length, chatOpen])
 
+    const meta = (typeof order?.metadata === "object" && order?.metadata !== null) ? order?.metadata as Record<string, unknown> : {}
+    const recipientName = ((meta.recipientName as string) || "").trim()
+    const recipientPhone = ((meta.recipientPhone as string) || "").trim()
+    const pickupCustomerName = (order?.customerName || "").trim()
+    const pickupCustomerPhone = (order?.customerPhone || "").trim()
+
+    // Determine if current viewer is the dropoff recipient vs the pickup customer
+    const currentStatusLower = (order?.currentStatus || "").toLowerCase()
+    const isTransitOrDeliveryStage = [
+        "in transit",
+        "dispatched",
+        "out for delivery",
+        "arriving",
+        "arriving at destination",
+        "delivered",
+        "completed"
+    ].includes(currentStatusLower)
+
+    const isDropoffViewer = forParam === "dropoff" || (forParam !== "pickup" && Boolean(recipientName) && isTransitOrDeliveryStage)
+
+    const activeViewerName = (isDropoffViewer && recipientName) ? recipientName : (pickupCustomerName || "Customer")
+    const activeViewerPhone = (isDropoffViewer && recipientPhone) ? recipientPhone : pickupCustomerPhone
+    const viewerFirstName = activeViewerName.split(' ')[0]
+
     const handleSendMessage = async () => {
         if (!messageBody.trim()) {
             toast.error("Please compose your message")
@@ -355,6 +381,8 @@ export default function TrackingDetailsPage() {
 
         // Find existing threadId from chat
         const existingThread = chatMessages.length > 0 ? chatMessages[0].threadId : undefined
+        const senderRole = isDropoffViewer ? "Dropoff Recipient" : "Pickup Customer"
+        const senderDisplayName = `${activeViewerName} (${senderRole})`
 
         // Optimistic UI update
         const newMessage = {
@@ -362,10 +390,10 @@ export default function TrackingDetailsPage() {
             orderId: order!.id,
             threadId: existingThread || "new",
             sender: "customer",
-            customerName: order!.customerName,
+            customerName: senderDisplayName,
             customerEmail: order!.customerEmail,
-            customerPhone: order!.customerPhone,
-            subject: "Customer Inquiry",
+            customerPhone: activeViewerPhone,
+            subject: `${senderRole} Inquiry`,
             message: currentMessageBody,
             isRead: "false",
             createdAt: new Date().toISOString()
@@ -378,9 +406,12 @@ export default function TrackingDetailsPage() {
         try {
             const result = await submitCustomerMessage({
                 orderId: order!.id,
-                subject: "Customer Inquiry",
+                subject: `${senderRole} Inquiry`,
                 message: currentMessageBody,
-                threadId: existingThread !== "legacy" ? existingThread : undefined
+                threadId: existingThread !== "legacy" ? existingThread : undefined,
+                customerName: senderDisplayName,
+                customerPhone: activeViewerPhone,
+                customerEmail: order!.customerEmail
             })
 
             if (result.error) {
@@ -467,11 +498,15 @@ export default function TrackingDetailsPage() {
                                         Private Access
                                     </motion.span>
                                     <h1 className="text-4xl font-extralight text-white mb-4 tracking-tight">
-                                        Welcome, <span className="font-normal">{order.customerName.split(' ')[0]}</span>
+                                        Welcome, <span className="font-normal">{viewerFirstName}</span>
                                     </h1>
                                     <div className="h-[1px] w-12 bg-[#3B82F6] mx-auto mb-6" />
                                     <p className="text-sm text-white/90 font-light leading-loose tracking-wide">
-                                        {order.businessType === "logistics" ? "Track your order" : "Track your order and item availability"} <br />
+                                        {isDropoffViewer 
+                                            ? (pickupCustomerName ? `Incoming delivery from ${pickupCustomerName}` : "Track your incoming delivery")
+                                            : (order.businessType === "logistics" 
+                                                ? (recipientName ? `Delivery to ${recipientName}` : "Track your shipment")
+                                                : "Track your order and item availability")} <br />
                                         <span className="text-white/80 font-medium tracking-normal">
                                             {order.businessDetails?.name === "OTracker" ? (
                                                 <><span className="text-[#CE0003]">O</span>Tracker</>
@@ -955,7 +990,12 @@ export default function TrackingDetailsPage() {
                                                 <div className="w-8 h-8 rounded-xl bg-black text-white flex items-center justify-center">
                                                     <MessageSquare className="w-4 h-4" />
                                                 </div>
-                                                <span className="text-xs font-black text-black">Support Chat</span>
+                                                <div className="min-w-0">
+                                                    <span className="text-xs font-black text-black block">Support & Rider Chat</span>
+                                                    <span className="text-[10px] text-neutral-400 font-bold block truncate">
+                                                        {isDropoffViewer ? `Dropoff Recipient (${viewerFirstName})` : `Pickup Customer (${viewerFirstName})`}
+                                                    </span>
+                                                </div>
                                             </div>
                                             <button
                                                 onClick={() => setChatOpen(false)}
@@ -969,33 +1009,54 @@ export default function TrackingDetailsPage() {
                                             {chatMessages.length === 0 && (
                                                 <p className="text-center text-neutral-400 text-xs py-8 font-medium">No message history found.</p>
                                             )}
-                                            {chatMessages.map((msg: any) => (
-                                                <div
-                                                    key={msg.id}
-                                                    className={`flex ${msg.sender === "customer" ? "justify-end" : "justify-start"}`}
-                                                >
-                                                    <div className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 text-xs ${
-                                                        msg.sender === "customer"
-                                                            ? "bg-black text-white"
-                                                            : "bg-white text-neutral-900 border border-black/[0.06] shadow-sm"
-                                                    }`}>
-                                                        <div className="flex items-center gap-1.5 mb-1 opacity-70">
-                                                            {msg.sender === "customer" ? (
-                                                                <User className="w-3 h-3" />
-                                                            ) : (
-                                                                <Building2 className="w-3 h-3" />
-                                                            )}
-                                                            <span className="text-[9px] font-bold uppercase tracking-wider">
-                                                                {msg.sender === "customer" ? "You" : "Business"}
-                                                            </span>
+                                            {chatMessages.map((msg: any) => {
+                                                const isMe = msg.sender === "customer" && (
+                                                    msg.customerPhone === activeViewerPhone || 
+                                                    (msg.customerName && msg.customerName.toLowerCase().includes(viewerFirstName.toLowerCase())) ||
+                                                    msg.id?.startsWith("temp-")
+                                                )
+                                                const isRider = msg.sender === "rider"
+                                                const isBusiness = msg.sender === "business"
+
+                                                let senderLabel = "You"
+                                                if (isRider) {
+                                                    senderLabel = "Dispatch Rider"
+                                                } else if (isBusiness) {
+                                                    senderLabel = "Business Support"
+                                                } else if (!isMe) {
+                                                    senderLabel = msg.customerName || "Customer"
+                                                }
+
+                                                return (
+                                                    <div
+                                                        key={msg.id}
+                                                        className={`flex ${isMe ? "justify-end" : "justify-start"}`}
+                                                    >
+                                                        <div className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 text-xs ${
+                                                            isMe
+                                                                ? "bg-black text-white"
+                                                                : "bg-white text-neutral-900 border border-black/[0.06] shadow-sm"
+                                                        }`}>
+                                                            <div className="flex items-center gap-1.5 mb-1 opacity-70">
+                                                                {isMe ? (
+                                                                    <User className="w-3 h-3" />
+                                                                ) : isRider ? (
+                                                                    <Truck className="w-3 h-3" />
+                                                                ) : (
+                                                                    <Building2 className="w-3 h-3" />
+                                                                )}
+                                                                <span className="text-[9px] font-bold uppercase tracking-wider">
+                                                                    {senderLabel}
+                                                                </span>
+                                                            </div>
+                                                            <p className="leading-relaxed font-medium whitespace-pre-wrap">{msg.message}</p>
+                                                            <p className={`text-[9px] mt-1 font-mono ${isMe ? "text-neutral-400" : "text-neutral-400"}`}>
+                                                                {new Date(msg.createdAt).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit', hour12: false })}
+                                                            </p>
                                                         </div>
-                                                        <p className="leading-relaxed font-medium whitespace-pre-wrap">{msg.message}</p>
-                                                        <p className={`text-[9px] mt-1 font-mono ${msg.sender === "customer" ? "text-neutral-400" : "text-neutral-400"}`}>
-                                                            {new Date(msg.createdAt).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit', hour12: false })}
-                                                        </p>
                                                     </div>
-                                                </div>
-                                            ))}
+                                                )
+                                            })}
                                             <div ref={chatEndRef} />
                                         </div>
 

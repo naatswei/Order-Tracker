@@ -7,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
-import { Loader2, Mail, MailOpen, ArrowLeft, Send, MessageSquare, MessageSquareMore, User, Building2, Lock } from "lucide-react"
+import { Loader2, Mail, MailOpen, ArrowLeft, Send, MessageSquare, MessageSquareMore, User, Building2, Lock, Truck } from "lucide-react"
 import { getBusinessConfig } from "@/lib/business-configs"
 import { SignatureLoader } from "@/components/signature-loader"
 import Link from "next/link"
@@ -352,11 +352,13 @@ export default function InboxPage() {
                                                                         <div className="flex items-center gap-2 mb-1">
                                                                             {msg.sender === "customer" ? (
                                                                                 <User className="w-3 h-3 opacity-50" />
+                                                                            ) : msg.sender === "rider" ? (
+                                                                                <Truck className="w-3 h-3 opacity-70" />
                                                                             ) : (
                                                                                 <Building2 className="w-3 h-3 opacity-50" />
                                                                             )}
                                                                             <span className="text-[10px] font-semibold uppercase tracking-wider opacity-60">
-                                                                                {msg.sender === "customer" ? msg.customerName : "You"}
+                                                                                {msg.sender === "customer" ? msg.customerName : msg.sender === "rider" ? `Rider (${msg.customerName || 'Dispatch'})` : "You"}
                                                                             </span>
                                                                         </div>
                                                                         <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.message}</p>

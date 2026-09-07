@@ -287,14 +287,8 @@ export default function RiderActionPage() {
     const deliveryLoc = (meta.deliveryLocation as string) || null
     const recipientName = (meta.recipientName as string) || null
     const recipientPhone = (meta.recipientPhone as string) || null
-    const contactPhone = recipientPhone || order.customerPhone || ""
-    const contactName = recipientName || order.customerName || "Customer"
-    
-    // Invoicing & Payment on Arrival Data
-    const invoice = (meta.invoice as any) || null
-    const amountDue = Number(invoice?.amountDue ?? meta.deliveryFee ?? meta.amountDue ?? meta.packagePrice ?? meta.total ?? 0)
-    const isInvoicePaid = invoice && invoice.invoiceStatus === "paid" && amountDue > 0
-    const isInvoiceUnpaid = !isInvoicePaid && !isDelivered && amountDue > 0
+    const pickupCustomerName = order.customerName || "Sender"
+    const pickupCustomerPhone = order.customerPhone || ""
 
     // Workflow Stepper Definitions
     const steps = [
@@ -313,6 +307,28 @@ export default function RiderActionPage() {
     }
 
     const activeStep = getActiveStepIndex()
+    const isPickupStage = activeStep <= 1
+    const isDeliveryStage = activeStep >= 2
+
+    // Stage-determined target customer for the rider (Pickup customer during pickup, Dropoff customer during transit/delivery)
+    const targetCustomerName = isPickupStage 
+        ? pickupCustomerName 
+        : (recipientName || pickupCustomerName || "Recipient")
+
+    const targetCustomerPhone = isPickupStage 
+        ? pickupCustomerPhone 
+        : (recipientPhone || pickupCustomerPhone || "")
+
+    const targetCustomerRole = isPickupStage ? "Pickup Customer (Sender)" : "Dropoff Customer (Recipient)"
+    const targetFirstName = targetCustomerName.trim().split(' ')[0]
+    const contactPhone = targetCustomerPhone
+    const contactName = targetCustomerName
+    
+    // Invoicing & Payment on Arrival Data
+    const invoice = (meta.invoice as any) || null
+    const amountDue = Number(invoice?.amountDue ?? meta.deliveryFee ?? meta.amountDue ?? meta.packagePrice ?? meta.total ?? 0)
+    const isInvoicePaid = invoice && invoice.invoiceStatus === "paid" && amountDue > 0
+    const isInvoiceUnpaid = !isInvoicePaid && !isDelivered && amountDue > 0
 
     return (
         <div className="min-h-screen bg-[#F6F6F8] text-neutral-900 font-sans flex flex-col justify-start p-3 sm:p-6 selection:bg-black selection:text-white">
@@ -565,26 +581,76 @@ export default function RiderActionPage() {
                         <div className="space-y-3.5">
                             {/* Step 0: Confirm Package Pickup */}
                             {activeStep === 0 && (
-                                <Button
-                                    onClick={() => handleStatusUpdate("Picked Up")}
-                                    disabled={isUpdating}
-                                    className="w-full h-14 sm:h-16 rounded-2xl bg-black hover:bg-neutral-900 text-white text-sm sm:text-base font-black uppercase tracking-wider shadow-lg shadow-black/15 transition-all active:scale-[0.98] border-none flex items-center justify-center gap-2.5"
-                                >
-                                    <CheckCircle2 className="w-5 h-5" />
-                                    <span>{isUpdating ? "Updating..." : "Confirm Package Pickup"}</span>
-                                </Button>
+                                <div className="space-y-3.5">
+                                    {pickupCustomerPhone && (
+                                        <div className="flex items-center justify-between bg-white p-3.5 rounded-2xl shadow-[0_4px_20px_rgb(0,0,0,0.04)] border border-black/[0.04]">
+                                            <div className="flex items-center gap-3 min-w-0">
+                                                <div className="w-9 h-9 rounded-xl bg-neutral-100 flex items-center justify-center text-black font-black shrink-0">
+                                                    <Phone className="w-4 h-4" />
+                                                </div>
+                                                <div className="min-w-0">
+                                                    <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider block">
+                                                        Pickup Customer (Sender)
+                                                    </span>
+                                                    <span className="text-xs font-black text-black truncate block">
+                                                        {pickupCustomerName} ({pickupCustomerPhone})
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <a
+                                                href={`tel:${pickupCustomerPhone}`}
+                                                className="px-4 py-2 rounded-xl bg-black text-white text-xs font-black uppercase tracking-wider hover:bg-neutral-800 transition-colors shrink-0 shadow-xs"
+                                            >
+                                                Call
+                                            </a>
+                                        </div>
+                                    )}
+                                    <Button
+                                        onClick={() => handleStatusUpdate("Picked Up")}
+                                        disabled={isUpdating}
+                                        className="w-full h-14 sm:h-16 rounded-2xl bg-black hover:bg-neutral-900 text-white text-sm sm:text-base font-black uppercase tracking-wider shadow-lg shadow-black/15 transition-all active:scale-[0.98] border-none flex items-center justify-center gap-2.5"
+                                    >
+                                        <CheckCircle2 className="w-5 h-5" />
+                                        <span>{isUpdating ? "Updating..." : "Confirm Package Pickup"}</span>
+                                    </Button>
+                                </div>
                             )}
 
                             {/* Step 1: Start Transit */}
                             {activeStep === 1 && (
-                                <Button
-                                    onClick={() => handleStatusUpdate("In Transit")}
-                                    disabled={isUpdating}
-                                    className="w-full h-14 sm:h-16 rounded-2xl bg-black hover:bg-neutral-900 text-white text-sm sm:text-base font-black uppercase tracking-wider shadow-lg shadow-black/15 transition-all active:scale-[0.98] border-none flex items-center justify-center gap-2.5"
-                                >
-                                    <Truck className="w-5 h-5" />
-                                    <span>{isUpdating ? "Updating..." : "Start Delivery (In Transit)"}</span>
-                                </Button>
+                                <div className="space-y-3.5">
+                                    {pickupCustomerPhone && (
+                                        <div className="flex items-center justify-between bg-white p-3.5 rounded-2xl shadow-[0_4px_20px_rgb(0,0,0,0.04)] border border-black/[0.04]">
+                                            <div className="flex items-center gap-3 min-w-0">
+                                                <div className="w-9 h-9 rounded-xl bg-neutral-100 flex items-center justify-center text-black font-black shrink-0">
+                                                    <Phone className="w-4 h-4" />
+                                                </div>
+                                                <div className="min-w-0">
+                                                    <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider block">
+                                                        Pickup Customer (Sender)
+                                                    </span>
+                                                    <span className="text-xs font-black text-black truncate block">
+                                                        {pickupCustomerName} ({pickupCustomerPhone})
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <a
+                                                href={`tel:${pickupCustomerPhone}`}
+                                                className="px-4 py-2 rounded-xl bg-black text-white text-xs font-black uppercase tracking-wider hover:bg-neutral-800 transition-colors shrink-0 shadow-xs"
+                                            >
+                                                Call
+                                            </a>
+                                        </div>
+                                    )}
+                                    <Button
+                                        onClick={() => handleStatusUpdate("In Transit")}
+                                        disabled={isUpdating}
+                                        className="w-full h-14 sm:h-16 rounded-2xl bg-black hover:bg-neutral-900 text-white text-sm sm:text-base font-black uppercase tracking-wider shadow-lg shadow-black/15 transition-all active:scale-[0.98] border-none flex items-center justify-center gap-2.5"
+                                    >
+                                        <Truck className="w-5 h-5" />
+                                        <span>{isUpdating ? "Updating..." : "Start Delivery (In Transit)"}</span>
+                                    </Button>
+                                </div>
                             )}
 
                             {/* Step 2: Handover Confirmation with Customer Numeric Delivery PIN */}
@@ -599,10 +665,10 @@ export default function RiderActionPage() {
                                                 </div>
                                                 <div className="min-w-0">
                                                     <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider block">
-                                                        {recipientName ? "Dropoff Recipient" : "Customer Contact"}
+                                                        Dropoff Customer (Recipient)
                                                     </span>
                                                     <span className="text-xs font-black text-black truncate block">
-                                                        {contactName} ({contactPhone})
+                                                        {targetCustomerName} ({contactPhone})
                                                     </span>
                                                 </div>
                                             </div>
@@ -776,8 +842,12 @@ export default function RiderActionPage() {
                                         <MessageSquare className="w-4 h-4" />
                                     </div>
                                     <div className="min-w-0">
-                                        <span className="text-xs font-black text-black block truncate">Dispatch & Customer Chat</span>
-                                        <span className="text-[10px] text-neutral-400 font-mono font-bold block">#{order.orderNumber}</span>
+                                        <span className="text-xs font-black text-black block truncate">
+                                            {isPickupStage ? `Chat with Pickup Customer (${targetFirstName})` : `Chat with Dropoff Customer (${targetFirstName})`}
+                                        </span>
+                                        <span className="text-[10px] text-neutral-400 font-mono font-bold block truncate">
+                                            {isPickupStage ? `Pickup Stage • ${pickupCustomerPhone || 'Sender'}` : `Delivery Stage • ${targetCustomerPhone || 'Recipient'}`}
+                                        </span>
                                     </div>
                                 </div>
                                 <button
@@ -794,11 +864,16 @@ export default function RiderActionPage() {
                                     <div className="text-center py-12 space-y-1">
                                         <MessageSquare className="w-6 h-6 text-neutral-300 mx-auto" />
                                         <p className="text-neutral-400 text-xs font-medium">No messages on this order yet.</p>
-                                        <p className="text-neutral-300 text-[10px]">Send a quick update to dispatch & customer.</p>
+                                        <p className="text-neutral-300 text-[10px]">
+                                            {isPickupStage ? `Send a quick message to ${targetFirstName} (Pickup).` : `Send a quick message to ${targetFirstName} (Dropoff).`}
+                                        </p>
                                     </div>
                                 )}
                                 {chatMessages.map((msg: any) => {
                                     const isRider = msg.sender === "rider"
+                                    const isBusiness = msg.sender === "business"
+                                    const customerLabel = msg.customerName || (isPickupStage ? `Pickup Customer (${targetFirstName})` : `Dropoff Customer (${targetFirstName})`)
+
                                     return (
                                         <div
                                             key={msg.id}
@@ -812,13 +887,13 @@ export default function RiderActionPage() {
                                                 <div className="flex items-center gap-1.5 mb-1 opacity-70">
                                                     {isRider ? (
                                                         <Truck className="w-3 h-3" />
-                                                    ) : msg.sender === "customer" ? (
-                                                        <User className="w-3 h-3" />
-                                                    ) : (
+                                                    ) : isBusiness ? (
                                                         <Building2 className="w-3 h-3" />
+                                                    ) : (
+                                                        <User className="w-3 h-3" />
                                                     )}
                                                     <span className="text-[9px] font-bold uppercase tracking-wider">
-                                                        {isRider ? "You (Rider)" : msg.sender === "customer" ? `Customer (${msg.customerName || 'Client'})` : "Dispatch / Support"}
+                                                        {isRider ? "You (Rider)" : isBusiness ? "Dispatch / Support" : customerLabel}
                                                     </span>
                                                 </div>
                                                 <p className="leading-relaxed font-medium whitespace-pre-wrap">{msg.message}</p>
@@ -847,7 +922,7 @@ export default function RiderActionPage() {
                                             setChatInput(e.target.value)
                                             if (order?.id) updateTypingStatus(order.id, "rider")
                                         }}
-                                        placeholder="Type message to dispatch & customer..."
+                                        placeholder={isPickupStage ? `Type message to ${targetFirstName} (Pickup)...` : `Type message to ${targetFirstName} (Dropoff)...`}
                                         className="flex-1 min-h-[42px] max-h-[96px] bg-neutral-50 border border-neutral-200 rounded-2xl text-xs font-medium text-black placeholder:text-neutral-400 resize-none focus:border-black focus:ring-0 py-2.5 px-3"
                                         rows={1}
                                         onKeyDown={(e) => {

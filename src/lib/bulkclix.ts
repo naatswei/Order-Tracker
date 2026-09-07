@@ -80,9 +80,10 @@ export async function sendOrderTrackingSMS(orderId: string): Promise<{ success: 
 
         // 1. Notify Dropoff Recipient (if recipient phone exists)
         if (formattedRecipientPhone) {
+            const recipientTrackingLink = `${APP_URL}/track/${orderId}?for=dropoff`.replace(/^https?:\/\//, "")
             const recipientMessage = isLogistics
-                ? `Hello ${recipientName || 'Customer'}, a delivery (#${order.orderNumber}) is on its way to you from ${order.customerName}!\n\nPackage:${itemsList}${paymentInfo}\n\nTrack your incoming delivery here:\n${trackingLink}`
-                : `Hello ${recipientName || 'Customer'}, an order (#${order.orderNumber}) has been dispatched for delivery to you!\n\nItems:${itemsList}${paymentInfo}\n\nTrack progress here:\n${trackingLink}`
+                ? `Hello ${recipientName || 'Customer'}, a delivery (#${order.orderNumber}) is on its way to you from ${order.customerName}!\n\nPackage:${itemsList}${paymentInfo}\n\nTrack your incoming delivery here:\n${recipientTrackingLink}`
+                : `Hello ${recipientName || 'Customer'}, an order (#${order.orderNumber}) has been dispatched for delivery to you!\n\nItems:${itemsList}${paymentInfo}\n\nTrack progress here:\n${recipientTrackingLink}`
 
             smsPromises.push(
                 fetch("https://api.bulkclix.com/api/v1/sms-api/send", {
@@ -109,9 +110,10 @@ export async function sendOrderTrackingSMS(orderId: string): Promise<{ success: 
 
         // 2. Notify Sender / Booking Customer (if customer phone is valid and distinct from recipient phone)
         if (formattedCustomerPhone && formattedCustomerPhone !== formattedRecipientPhone) {
+            const customerTrackingLink = `${APP_URL}/track/${orderId}?for=pickup`.replace(/^https?:\/\//, "")
             const customerMessage = isLogistics
-                ? `Hello ${order.customerName}, your delivery #${order.orderNumber} to ${recipientName || 'recipient'} has been booked!\n\nPackage:${itemsList}${paymentInfo}\n\nTrack shipment progress here:\n${trackingLink}`
-                : `Hello ${order.customerName}, your order #${order.orderNumber} has been received!\n\nItems:${itemsList}${paymentInfo}\n\nTrack progress and view invoice details here:\n${trackingLink}`
+                ? `Hello ${order.customerName}, your delivery #${order.orderNumber} to ${recipientName || 'recipient'} has been booked!\n\nPackage:${itemsList}${paymentInfo}\n\nTrack shipment progress here:\n${customerTrackingLink}`
+                : `Hello ${order.customerName}, your order #${order.orderNumber} has been received!\n\nItems:${itemsList}${paymentInfo}\n\nTrack progress and view invoice details here:\n${customerTrackingLink}`
 
             smsPromises.push(
                 fetch("https://api.bulkclix.com/api/v1/sms-api/send", {
@@ -171,15 +173,14 @@ export async function sendOrderStatusSMS(orderId: string, status: string): Promi
             return { success: false, error: "No valid phone numbers found" }
         }
 
-        // Strip https:// to help prevent large rich link previews
-        const trackingLink = `${APP_URL}/track/${orderId}`.replace(/^https?:\/\//, "")
         const smsPromises: Promise<any>[] = []
 
         // 1. Notify Dropoff Recipient
         if (formattedRecipientPhone) {
+            const recipientTrackingLink = `${APP_URL}/track/${orderId}?for=dropoff`.replace(/^https?:\/\//, "")
             const recipientMessage = isLogistics
-                ? `Hello ${recipientName || 'Customer'}, your delivery #${order.orderNumber} status is now: ${status}.\n\nTrack your incoming shipment here:\n${trackingLink}`
-                : `Hello ${recipientName || 'Customer'}, order #${order.orderNumber} status is now: ${status}.\n\nTrack progress here:\n${trackingLink}`
+                ? `Hello ${recipientName || 'Customer'}, your delivery #${order.orderNumber} status is now: ${status}.\n\nTrack your incoming shipment here:\n${recipientTrackingLink}`
+                : `Hello ${recipientName || 'Customer'}, order #${order.orderNumber} status is now: ${status}.\n\nTrack progress here:\n${recipientTrackingLink}`
 
             smsPromises.push(
                 fetch("https://api.bulkclix.com/api/v1/sms-api/send", {
@@ -206,9 +207,10 @@ export async function sendOrderStatusSMS(orderId: string, status: string): Promi
 
         // 2. Notify Sender / Customer
         if (formattedCustomerPhone && formattedCustomerPhone !== formattedRecipientPhone) {
+            const customerTrackingLink = `${APP_URL}/track/${orderId}?for=pickup`.replace(/^https?:\/\//, "")
             const customerMessage = isLogistics
-                ? `Hello ${order.customerName}, your delivery #${order.orderNumber} status is now: ${status}.\n\nTrack shipment here:\n${trackingLink}`
-                : `Hello ${order.customerName}, your order #${order.orderNumber} status is now: ${status}.\n\nTrack progress and view available store items here:\n${trackingLink}`
+                ? `Hello ${order.customerName}, your delivery #${order.orderNumber} status is now: ${status}.\n\nTrack shipment here:\n${customerTrackingLink}`
+                : `Hello ${order.customerName}, your order #${order.orderNumber} status is now: ${status}.\n\nTrack progress and view available store items here:\n${customerTrackingLink}`
 
             smsPromises.push(
                 fetch("https://api.bulkclix.com/api/v1/sms-api/send", {

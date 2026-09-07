@@ -12,6 +12,9 @@ export async function submitCustomerMessage(data: {
     subject: string
     message: string
     threadId?: string // If replying to an existing thread
+    customerName?: string
+    customerEmail?: string | null
+    customerPhone?: string | null
 }) {
     try {
         const orderRecord = await db.query.orders.findFirst({
@@ -27,6 +30,9 @@ export async function submitCustomerMessage(data: {
         }
 
         const messageId = nanoid()
+        const finalCustomerName = data.customerName || orderRecord.customerName || "Customer"
+        const finalCustomerPhone = data.customerPhone !== undefined ? data.customerPhone : orderRecord.customerPhone
+        const finalCustomerEmail = data.customerEmail !== undefined ? data.customerEmail : orderRecord.customerEmail
 
         await db.insert(customerMessages).values({
             id: messageId,
@@ -34,9 +40,9 @@ export async function submitCustomerMessage(data: {
             clerkOrgId: orderRecord.clerkOrgId,
             threadId: data.threadId || messageId, // Use existing thread or start new one
             sender: "customer",
-            customerName: orderRecord.customerName,
-            customerEmail: orderRecord.customerEmail,
-            customerPhone: orderRecord.customerPhone,
+            customerName: finalCustomerName,
+            customerEmail: finalCustomerEmail,
+            customerPhone: finalCustomerPhone,
             subject: data.subject,
             message: data.message,
             isRead: "false"
