@@ -594,29 +594,8 @@ export default function RiderActionPage() {
                 )}
 
                 {/* 6. ACTION & DELIVERY PIN VERIFICATION AREA */}
-                <div className="space-y-4 pt-1">
-                    {isDelivered ? (
-                        <motion.div 
-                            initial={{ opacity: 0, scale: 0.96 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            transition={{ duration: 0.4 }}
-                            className="bg-white rounded-3xl p-8 text-center space-y-3 shadow-[0_12px_40px_rgb(0,0,0,0.08)] border border-black/[0.04]"
-                        >
-                            <div className="w-16 h-16 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto shadow-inner">
-                                <CheckCircle2 className="w-9 h-9" />
-                            </div>
-                            <h3 className="text-xl font-black tracking-tight text-black uppercase">
-                                Delivery Completed
-                            </h3>
-                            <p className="text-xs text-neutral-500 font-mono">
-                                Waybill #{order.orderNumber} successfully handed over
-                            </p>
-                            <div className="pt-2 flex items-center justify-center gap-1.5 text-xs font-bold text-neutral-400">
-                                <Lock className="w-3.5 h-3.5 text-neutral-400" />
-                                <span>All interface actions disabled</span>
-                            </div>
-                        </motion.div>
-                    ) : (
+                {!isDelivered && (
+                    <div className="space-y-4 pt-1">
                         <div className="space-y-3.5">
                             {/* Step 0: Confirm Package Pickup */}
                             {activeStep === 0 && (
@@ -682,8 +661,8 @@ export default function RiderActionPage() {
                                 </div>
                             )}
                         </div>
-                    )}
-                </div>
+                    </div>
+                )}
 
             </div>
 
