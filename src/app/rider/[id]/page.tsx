@@ -293,9 +293,8 @@ export default function RiderActionPage() {
     // Invoicing & Payment on Arrival Data
     const invoice = (meta.invoice as any) || null
     const amountDue = Number(invoice?.amountDue ?? meta.deliveryFee ?? meta.amountDue ?? meta.packagePrice ?? meta.total ?? 0)
-    const isInvoicePaid = invoice && invoice.invoiceStatus === "paid"
-    const isInvoiceUnpaid = !isInvoicePaid && !isDelivered && (invoice?.invoiceStatus === "unpaid" || amountDue > 0)
-    const isZeroAmountUnpaid = !isInvoicePaid && !isDelivered && amountDue === 0
+    const isInvoicePaid = invoice && invoice.invoiceStatus === "paid" && amountDue > 0
+    const isInvoiceUnpaid = !isInvoicePaid && !isDelivered && amountDue > 0
 
     // Workflow Stepper Definitions
     const steps = [
@@ -518,64 +517,7 @@ export default function RiderActionPage() {
                     </motion.div>
                 )}
 
-                {/* 4B. OPTIONAL PAYMENT ON HANDOVER CARD (When amountDue is 0) */}
-                {isZeroAmountUnpaid && (
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.98 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        className="bg-white border border-neutral-200 rounded-3xl p-4 sm:p-5 shadow-xs space-y-3"
-                    >
-                        <div className="flex items-center justify-between gap-2">
-                            <div className="flex items-center gap-2.5 min-w-0">
-                                <div className="w-8 h-8 rounded-2xl bg-neutral-100 text-neutral-800 flex items-center justify-center font-bold shrink-0">
-                                    <Banknote className="w-4 h-4" />
-                                </div>
-                                <div className="min-w-0">
-                                    <p className="text-[10px] font-black uppercase tracking-wider text-neutral-500">
-                                        Payment on Handover
-                                    </p>
-                                    <p className="text-xs sm:text-sm font-bold text-neutral-800">
-                                        Optional / Cash on Delivery
-                                    </p>
-                                </div>
-                            </div>
-                            <span className="px-2.5 py-0.5 rounded-full bg-neutral-100 text-neutral-600 text-[10px] font-bold shrink-0">
-                                On Arrival
-                            </span>
-                        </div>
-
-                        <p className="text-[11px] text-neutral-500 font-medium">
-                            If the customer is paying cash or Mobile Money on delivery, you can trigger a MoMo prompt or record cash.
-                        </p>
-
-                        <div className="grid grid-cols-2 gap-2 pt-0.5">
-                            <button
-                                type="button"
-                                onClick={() => {
-                                    setMomoPhone(contactPhone)
-                                    setCustomMomoAmount("")
-                                    setIsMomoModalOpen(true)
-                                }}
-                                className="p-2.5 rounded-2xl bg-black hover:bg-neutral-900 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-xs transition-all active:scale-95"
-                            >
-                                <Banknote className="w-3.5 h-3.5 text-amber-400" />
-                                <span>Prompt Momo</span>
-                            </button>
-
-                            <button
-                                type="button"
-                                onClick={handleCashCollection}
-                                disabled={isCollectingCash}
-                                className="p-2.5 rounded-2xl bg-neutral-50 hover:bg-neutral-100 text-neutral-900 font-bold text-xs border border-neutral-200 flex items-center justify-center gap-1.5 shadow-2xs transition-all active:scale-95"
-                            >
-                                <Banknote className="w-3.5 h-3.5 text-emerald-600" />
-                                <span>{isCollectingCash ? "Recording..." : "Record Cash"}</span>
-                            </button>
-                        </div>
-                    </motion.div>
-                )}
-
-                {isInvoicePaid && (
+                {isInvoicePaid && amountDue > 0 && (
                     <motion.div
                         initial={{ opacity: 0, scale: 0.98 }}
                         animate={{ opacity: 1, scale: 1 }}
