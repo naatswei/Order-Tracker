@@ -165,7 +165,7 @@ export async function saveMerchantPayoutSettings(
     }
 }
 
-export async function initiateMomoCharge(orderId: string, phone: string, provider?: 'mtn' | 'vod' | 'atl') {
+export async function initiateMomoCharge(orderId: string, phone: string, provider?: 'mtn' | 'vod' | 'atl', customAmount?: number) {
     if (!PAYSTACK_SECRET_KEY) {
         throw new Error('Paystack secret key is not configured.')
     }
@@ -196,13 +196,37 @@ export async function initiateMomoCharge(orderId: string, phone: string, provide
             return { success: false, error: 'Order not found' }
         }
 
-        const invoice = (order.metadata as any)?.invoice
+        const currentMeta = (order.metadata as any) || {}
+        const invoice = currentMeta.invoice
+        const rawAmount = customAmount !== undefined && customAmount > 0
+            ? customAmount
+            : Number(invoice?.amountDue ?? currentMeta?.deliveryFee ?? currentMeta?.amountDue ?? currentMeta?.packagePrice ?? 0)
+
+        if (rawAmount <= 0) {
+            return { success: false, error: 'No valid amount due for this order. Please specify an amount.' }
+        }
+
+        // Ensure invoice metadata is initialized/synced if missing
         if (!invoice) {
-            return { success: false, error: 'No invoice generated for this order yet.' }
+            const newInvoice = {
+                invoiceNumber: `INV-${order.orderNumber.replace(/^[^-]+-/, "")}-${Math.floor(100 + Math.random() * 900)}`,
+                invoiceStatus: "unpaid",
+                paymentMethod: "online",
+                amountDue: rawAmount,
+                amountPaid: 0,
+                subtotal: rawAmount,
+                tax: 0,
+                deliveryFee: 0,
+                discount: 0,
+                createdAt: new Date().toISOString()
+            }
+            await db.update(orders)
+                .set({ metadata: { ...currentMeta, invoice: newInvoice }, updatedAt: new Date() })
+                .where(eq(orders.id, orderId))
         }
 
         // Amount in GHS pesewas (multiplied by 100)
-        const amount = Math.round(invoice.amountDue * 100)
+        const amount = Math.round(rawAmount * 100)
         const email = order.customerEmail || 'customer@email.com'
 
         // Determine if subaccount code is present

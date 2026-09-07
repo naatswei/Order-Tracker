@@ -21,7 +21,7 @@ function getHeaders() {
  * 1. Mobile Money Collection (momopay)
  * Triggers instant MoMo PIN prompt on customer phone
  */
-export async function initiateBulkClixMomoCollection(orderId: string, phone: string, provider?: string) {
+export async function initiateBulkClixMomoCollection(orderId: string, phone: string, provider?: string, customAmount?: number) {
     try {
         const cleanPhone = phone.replace(/\D/g, "")
         let localPhone = cleanPhone
@@ -51,12 +51,35 @@ export async function initiateBulkClixMomoCollection(orderId: string, phone: str
             return { success: false, error: 'Order not found' }
         }
 
-        const invoice = (order.metadata as any)?.invoice
-        if (!invoice || !invoice.amountDue) {
-            return { success: false, error: 'No invoice generated for this order yet.' }
+        const currentMeta = (order.metadata as any) || {}
+        const invoice = currentMeta.invoice
+        const amount = customAmount !== undefined && customAmount > 0
+            ? customAmount
+            : Number(invoice?.amountDue ?? currentMeta?.deliveryFee ?? currentMeta?.amountDue ?? currentMeta?.packagePrice ?? 0)
+
+        if (amount <= 0) {
+            return { success: false, error: 'No valid amount due for this order. Please enter an amount.' }
         }
 
-        const amount = Number(invoice.amountDue)
+        // Initialize invoice in metadata if missing so webhook can reconcile seamlessly
+        if (!invoice) {
+            const newInvoice = {
+                invoiceNumber: `INV-${order.orderNumber.replace(/^[^-]+-/, "")}-${Math.floor(100 + Math.random() * 900)}`,
+                invoiceStatus: "unpaid",
+                paymentMethod: "online",
+                amountDue: amount,
+                amountPaid: 0,
+                subtotal: amount,
+                tax: 0,
+                deliveryFee: 0,
+                discount: 0,
+                createdAt: new Date().toISOString()
+            }
+            await db.update(orders)
+                .set({ metadata: { ...currentMeta, invoice: newInvoice }, updatedAt: new Date() })
+                .where(eq(orders.id, orderId))
+        }
+
         const transactionId = `MOMO-${order.id}-${Date.now()}`
         const callbackUrl = `${APP_URL}/api/webhooks/bulkclix`
 

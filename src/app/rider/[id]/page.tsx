@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react"
 import { useParams } from "next/navigation"
 import { getOrderWithHistory, riderUpdateStatus, riderCollectCashPayment } from "@/app/actions/orders"
 import { initiateMomoCharge } from "@/app/actions/paystack"
+import { initiateBulkClixMomoCollection } from "@/app/actions/bulkclix-payment"
 import { submitRiderMessage, getThreadMessages, updateTypingStatus, getTypingStatus } from "@/app/actions/messages"
 import { detectGhanaNetworkProvider } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -64,6 +65,7 @@ export default function RiderActionPage() {
     const [isMomoModalOpen, setIsMomoModalOpen] = useState(false)
     const [momoPhone, setMomoPhone] = useState("")
     const [momoProvider, setMomoProvider] = useState<'mtn' | 'vod' | 'atl'>("mtn")
+    const [customMomoAmount, setCustomMomoAmount] = useState("")
     const [isMomoCharging, setIsMomoCharging] = useState(false)
 
     // In-app chat state
@@ -136,7 +138,7 @@ export default function RiderActionPage() {
         if (!order) return
         setIsCollectingCash(true)
         try {
-            const res = await riderCollectCashPayment(order.id)
+            const res = await riderCollectCashPayment(order.id, amountDue > 0 ? amountDue : undefined)
             if (res.success) {
                 toast.success("Cash payment recorded successfully!", {
                     style: { background: "#000", color: "#fff", border: "none" }
@@ -198,8 +200,8 @@ export default function RiderActionPage() {
         const pollTyping = async () => {
             const res = await getTypingStatus(order.id)
             if (res.statuses) {
-                const isTyping = res.statuses.some(s => s.userType === "business" || s.userType === "customer")
-                setIsPartyTyping(isTyping)
+                const otherPartyTyping = res.statuses.some((s: any) => s.sender !== "rider")
+                setIsPartyTyping(otherPartyTyping)
             }
         }
 
@@ -208,29 +210,24 @@ export default function RiderActionPage() {
         return () => clearInterval(interval)
     }, [order?.id, chatOpen])
 
-    // Auto-scroll chat
+    // Auto-scroll to bottom of chat
     useEffect(() => {
-        if (!chatOpen || chatMessages.length === 0) return
-        const container = chatEndRef.current?.parentElement
-        if (container) {
-            container.scrollTo({
-                top: container.scrollHeight,
-                behavior: "smooth"
-            })
+        if (chatOpen) {
+            chatEndRef.current?.scrollIntoView({ behavior: "smooth" })
         }
-    }, [chatMessages.length, chatOpen])
+    }, [chatMessages, chatOpen])
 
     const handleSendRiderMessage = async () => {
-        if (!chatInput.trim() || isSendingMessage || !order?.id) return
+        if (!chatInput.trim() || !order?.id) return
+
         const messageText = chatInput.trim()
         const existingThread = chatMessages.length > 0 ? chatMessages[0].threadId : undefined
 
         const tempMsg = {
             id: `temp-${Date.now()}`,
             orderId: order.id,
-            threadId: existingThread || order.id,
             sender: "rider",
-            customerName: (order.metadata as any)?.assignedRiderName || "Rider",
+            senderName: "Rider",
             message: messageText,
             isRead: "false",
             createdAt: new Date().toISOString()
@@ -272,11 +269,11 @@ export default function RiderActionPage() {
     if (!order) {
         return (
             <div className="min-h-screen bg-[#F6F6F8] flex flex-col items-center justify-center p-6 text-center">
-                <div className="w-16 h-16 rounded-2xl bg-white shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-neutral-100 flex items-center justify-center text-red-500 mb-4">
-                    <AlertCircle className="w-8 h-8" />
+                <div className="w-12 h-12 rounded-full bg-red-100 text-red-600 flex items-center justify-center mb-3">
+                    <AlertCircle className="w-6 h-6" />
                 </div>
-                <h1 className="text-xl font-black text-neutral-900 tracking-tight">Shipment Not Found</h1>
-                <p className="text-xs text-neutral-500 max-w-xs mt-1.5 font-medium">
+                <h1 className="text-lg font-black text-black">Delivery Not Found</h1>
+                <p className="text-xs text-neutral-400 mt-1 max-w-xs">
                     This order link is invalid or has been archived.
                 </p>
             </div>
@@ -295,9 +292,10 @@ export default function RiderActionPage() {
     
     // Invoicing & Payment on Arrival Data
     const invoice = (meta.invoice as any) || null
-    const isInvoiceUnpaid = invoice && invoice.invoiceStatus === "unpaid" && Number(invoice.amountDue || 0) > 0
+    const amountDue = Number(invoice?.amountDue ?? meta.deliveryFee ?? meta.amountDue ?? meta.packagePrice ?? meta.total ?? 0)
     const isInvoicePaid = invoice && invoice.invoiceStatus === "paid"
-    const amountDue = Number(invoice?.amountDue || 0)
+    const isInvoiceUnpaid = !isInvoicePaid && !isDelivered && (invoice?.invoiceStatus === "unpaid" || amountDue > 0)
+    const isZeroAmountUnpaid = !isInvoicePaid && !isDelivered && amountDue === 0
 
     // Workflow Stepper Definitions
     const steps = [
@@ -378,24 +376,18 @@ export default function RiderActionPage() {
                                             isPassed || (isDelivered && idx === 3)
                                                 ? "bg-black text-white shadow-md shadow-black/10" 
                                                 : isCurrent 
-                                                ? "bg-black text-white ring-4 ring-black/10 scale-110 shadow-lg shadow-black/20" 
-                                                : "bg-white text-neutral-300 border-2 border-neutral-200"
+                                                    ? "bg-black text-white shadow-md shadow-black/20 ring-4 ring-neutral-200" 
+                                                    : "bg-white text-neutral-400 border-2 border-neutral-300"
                                         }`}
                                     >
                                         {isPassed || (isDelivered && idx === 3) ? (
                                             <Check className="w-3.5 h-3.5 stroke-[3]" />
-                                        ) : isCurrent ? (
-                                            <span className="w-2.5 h-2.5 rounded-full bg-white animate-pulse" />
                                         ) : (
-                                            <span className="w-1.5 h-1.5 rounded-full bg-neutral-300" />
+                                            idx + 1
                                         )}
                                     </div>
-                                    <span className={`text-[10px] sm:text-[11px] uppercase tracking-wider font-bold transition-colors ${
-                                        isCurrent 
-                                            ? "text-black font-black" 
-                                            : isPassed 
-                                            ? "text-neutral-700 font-bold" 
-                                            : "text-neutral-400 font-medium"
+                                    <span className={`text-[10px] sm:text-xs font-bold tracking-tight transition-colors duration-300 ${
+                                        isCurrent ? "text-black font-black" : isPassed ? "text-neutral-700" : "text-neutral-400"
                                     }`}>
                                         {step.label}
                                     </span>
@@ -405,27 +397,28 @@ export default function RiderActionPage() {
                     </div>
                 </motion.div>
 
-                {/* 3. ROUTE & GOOGLE MAPS LIVE NAVIGATION CARD */}
+                {/* 3. ROUTE DETAILS CARD */}
                 {(pickupLoc || deliveryLoc) && (
                     <motion.div 
-                        initial={{ opacity: 0, y: -2 }}
+                        initial={{ opacity: 0, y: 4 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="bg-white rounded-3xl p-4 sm:p-5 shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-black/[0.04] space-y-3.5"
+                        transition={{ duration: 0.35, delay: 0.1 }}
+                        className="bg-white rounded-3xl p-4 sm:p-5 shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-black/[0.04] space-y-4"
                     >
-                        <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-wider text-neutral-400">
-                            <div className="flex items-center gap-1.5">
+                        <div className="flex items-center justify-between">
+                            <span className="text-xs font-black uppercase tracking-wider text-black">Delivery Route</span>
+                            <div className="flex items-center gap-1 text-[11px] font-bold text-neutral-700">
                                 <Compass className="w-3.5 h-3.5 text-black" />
-                                <span>Route & GPS Navigation</span>
+                                <span>Navigation</span>
                             </div>
-                            <span className="text-[10px] text-neutral-400 font-mono font-bold">Google Maps</span>
                         </div>
 
-                        <div className="space-y-3 text-xs">
-                            {/* Pickup Address */}
+                        <div className="space-y-3.5">
+                            {/* Pickup Point */}
                             {pickupLoc && (
-                                <div className="p-3.5 rounded-2xl bg-[#F8F8FA] border border-black/[0.04] space-y-2">
-                                    <div className="min-w-0">
-                                        <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider">Pickup Address</p>
+                                <div className="space-y-2 p-3 rounded-2xl bg-neutral-50/80 border border-black/[0.04]">
+                                    <div>
+                                        <p className="text-[10px] font-black uppercase tracking-wider text-neutral-600">Pickup Address</p>
                                         <p className="font-bold text-neutral-900 text-xs sm:text-sm break-words mt-0.5">{pickupLoc}</p>
                                     </div>
                                     <div className="flex justify-end pt-1">
@@ -436,17 +429,17 @@ export default function RiderActionPage() {
                                             className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-black hover:bg-neutral-800 text-white text-xs font-bold shadow-xs active:scale-95 transition-all"
                                         >
                                             <Navigation className="w-3.5 h-3.5 text-white" />
-                                            <span>Open in Google Maps</span>
+                                            <span>Navigate in Google Maps</span>
                                         </a>
                                     </div>
                                 </div>
                             )}
 
-                            {/* Delivery Destination */}
+                            {/* Delivery Destination Point */}
                             {deliveryLoc && (
-                                <div className="p-3.5 rounded-2xl bg-[#F8F8FA] border border-black/[0.04] space-y-2">
-                                    <div className="min-w-0">
-                                        <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider">Delivery Destination</p>
+                                <div className="space-y-2 p-3 rounded-2xl bg-neutral-50/80 border border-black/[0.04]">
+                                    <div>
+                                        <p className="text-[10px] font-black uppercase tracking-wider text-neutral-600">Drop-off Destination</p>
                                         <p className="font-bold text-neutral-900 text-xs sm:text-sm break-words mt-0.5">{deliveryLoc}</p>
                                     </div>
                                     <div className="flex justify-end pt-1">
@@ -467,7 +460,7 @@ export default function RiderActionPage() {
                 )}
 
                 {/* 4. PAYMENT ON ARRIVAL CARD (GH₵ Ghana Cedis) */}
-                {isInvoiceUnpaid && (
+                {isInvoiceUnpaid && amountDue > 0 && (
                     <motion.div
                         initial={{ opacity: 0, scale: 0.98 }}
                         animate={{ opacity: 1, scale: 1 }}
@@ -502,6 +495,7 @@ export default function RiderActionPage() {
                                 type="button"
                                 onClick={() => {
                                     setMomoPhone(contactPhone)
+                                    setCustomMomoAmount(amountDue > 0 ? String(amountDue) : "")
                                     setIsMomoModalOpen(true)
                                 }}
                                 className="p-3 rounded-2xl bg-black hover:bg-neutral-900 text-white font-black text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 shadow-sm transition-all active:scale-95"
@@ -524,6 +518,63 @@ export default function RiderActionPage() {
                     </motion.div>
                 )}
 
+                {/* 4B. OPTIONAL PAYMENT ON HANDOVER CARD (When amountDue is 0) */}
+                {isZeroAmountUnpaid && (
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.98 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="bg-white border border-neutral-200 rounded-3xl p-4 sm:p-5 shadow-xs space-y-3"
+                    >
+                        <div className="flex items-center justify-between gap-2">
+                            <div className="flex items-center gap-2.5 min-w-0">
+                                <div className="w-8 h-8 rounded-2xl bg-neutral-100 text-neutral-800 flex items-center justify-center font-bold shrink-0">
+                                    <Banknote className="w-4 h-4" />
+                                </div>
+                                <div className="min-w-0">
+                                    <p className="text-[10px] font-black uppercase tracking-wider text-neutral-500">
+                                        Payment on Handover
+                                    </p>
+                                    <p className="text-xs sm:text-sm font-bold text-neutral-800">
+                                        Optional / Cash on Delivery
+                                    </p>
+                                </div>
+                            </div>
+                            <span className="px-2.5 py-0.5 rounded-full bg-neutral-100 text-neutral-600 text-[10px] font-bold shrink-0">
+                                On Arrival
+                            </span>
+                        </div>
+
+                        <p className="text-[11px] text-neutral-500 font-medium">
+                            If the customer is paying cash or Mobile Money on delivery, you can trigger a MoMo prompt or record cash.
+                        </p>
+
+                        <div className="grid grid-cols-2 gap-2 pt-0.5">
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setMomoPhone(contactPhone)
+                                    setCustomMomoAmount("")
+                                    setIsMomoModalOpen(true)
+                                }}
+                                className="p-2.5 rounded-2xl bg-black hover:bg-neutral-900 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-xs transition-all active:scale-95"
+                            >
+                                <Banknote className="w-3.5 h-3.5 text-amber-400" />
+                                <span>Prompt Momo</span>
+                            </button>
+
+                            <button
+                                type="button"
+                                onClick={handleCashCollection}
+                                disabled={isCollectingCash}
+                                className="p-2.5 rounded-2xl bg-neutral-50 hover:bg-neutral-100 text-neutral-900 font-bold text-xs border border-neutral-200 flex items-center justify-center gap-1.5 shadow-2xs transition-all active:scale-95"
+                            >
+                                <Banknote className="w-3.5 h-3.5 text-emerald-600" />
+                                <span>{isCollectingCash ? "Recording..." : "Record Cash"}</span>
+                            </button>
+                        </div>
+                    </motion.div>
+                )}
+
                 {isInvoicePaid && (
                     <motion.div
                         initial={{ opacity: 0, scale: 0.98 }}
@@ -539,7 +590,7 @@ export default function RiderActionPage() {
                                     Payment Confirmed
                                 </p>
                                 <p className="text-xs sm:text-sm font-black text-emerald-950 truncate">
-                                    GH₵ {Number(invoice.amountPaid || invoice.amountDue || 0).toFixed(2)} Paid ({invoice.paymentCollectedBy === "rider_cash" ? "Cash Collected" : "Online / Momo"})
+                                    GH₵ {Number(invoice?.amountPaid || invoice?.amountDue || amountDue || 0).toFixed(2)} Paid ({invoice?.paymentCollectedBy === "rider_cash" ? "Cash Collected" : "Online / Momo"})
                                 </p>
                             </div>
                         </div>
@@ -673,13 +724,27 @@ export default function RiderActionPage() {
                                     Prompt Customer Momo
                                 </DialogTitle>
                                 <DialogDescription className="text-xs text-slate-400 font-bold uppercase tracking-wider mt-0.5">
-                                    Sends direct USSD PIN prompt for GH₵ {amountDue.toFixed(2)}
+                                    Sends instant USSD PIN prompt to customer phone
                                 </DialogDescription>
                             </div>
                         </div>
                     </DialogHeader>
 
                     <div className="space-y-3.5 pt-2">
+                        <div className="space-y-1.5">
+                            <Label htmlFor="riderMomoAmount" className="text-xs font-bold text-slate-700">Amount to Charge (GH₵)</Label>
+                            <Input 
+                                id="riderMomoAmount"
+                                type="number"
+                                step="0.01"
+                                min="0.1"
+                                value={customMomoAmount} 
+                                onChange={(e) => setCustomMomoAmount(e.target.value)} 
+                                placeholder={amountDue > 0 ? amountDue.toFixed(2) : "0.00"} 
+                                className="h-11 rounded-2xl bg-slate-50/70 border-slate-200 text-xs sm:text-sm font-semibold text-slate-900"
+                            />
+                        </div>
+
                         <div className="space-y-1.5">
                             <Label htmlFor="riderMomoPhone" className="text-xs font-bold text-slate-700">Customer Momo Number</Label>
                             <Input 
@@ -712,14 +777,28 @@ export default function RiderActionPage() {
                     <DialogFooter className="mt-5 flex flex-col gap-2">
                         <Button
                             type="button"
-                            disabled={isMomoCharging || !momoPhone}
+                            disabled={isMomoCharging || !momoPhone || (parseFloat(customMomoAmount || String(amountDue || 0)) <= 0)}
                             onClick={async () => {
+                                const chargeAmount = parseFloat(customMomoAmount) || amountDue || 0
+                                if (chargeAmount <= 0) {
+                                    toast.error("Please enter a valid amount to charge.")
+                                    return
+                                }
                                 setIsMomoCharging(true)
                                 try {
-                                    const res = await initiateMomoCharge(orderId, momoPhone, momoProvider)
+                                    // Primary gateway: BulkClix instant collection
+                                    let res: any = await initiateBulkClixMomoCollection(orderId, momoPhone, momoProvider, chargeAmount)
+                                    // Fallback: Paystack charge
+                                    if (!res.success) {
+                                        console.warn("BulkClix MoMo prompt failed, attempting Paystack fallback:", res.error)
+                                        res = await initiateMomoCharge(orderId, momoPhone, momoProvider, chargeAmount)
+                                    }
+
                                     if (res.success) {
                                         toast.success("Momo Prompt sent to customer! Ask them to approve on their phone.")
                                         setIsMomoModalOpen(false)
+                                        const updated = await getOrderWithHistory(orderId)
+                                        setOrder(updated)
                                     } else {
                                         toast.error(`Could not trigger prompt: ${res.error}`)
                                     }
@@ -731,7 +810,7 @@ export default function RiderActionPage() {
                             }}
                             className="w-full text-white rounded-2xl h-11 sm:h-12 font-bold text-xs sm:text-sm shadow-md bg-black hover:bg-neutral-800 border-0"
                         >
-                            {isMomoCharging ? "Sending Prompt..." : `Send Prompt (GH₵ ${amountDue.toFixed(2)})`}
+                            {isMomoCharging ? "Sending Prompt..." : `Send Prompt (${(parseFloat(customMomoAmount) || amountDue) > 0 ? `GH₵ ${(parseFloat(customMomoAmount) || amountDue).toFixed(2)}` : "Enter Amount"})`}
                         </Button>
                     </DialogFooter>
                 </DialogContent>

@@ -541,7 +541,7 @@ export async function riderUpdateStatus(
     }
 }
 
-export async function riderCollectCashPayment(orderId: string): Promise<{ success: boolean; error?: string }> {
+export async function riderCollectCashPayment(orderId: string, customAmount?: number): Promise<{ success: boolean; error?: string }> {
     try {
         const order = await db.query.orders.findFirst({
             where: eq(orders.id, orderId),
@@ -551,17 +551,34 @@ export async function riderCollectCashPayment(orderId: string): Promise<{ succes
 
         const currentMetadata = (order.metadata as any) || {};
         const invoice = currentMetadata.invoice;
-        if (!invoice) return { success: false, error: "No invoice found for this shipment" };
+        const dueAmount = customAmount !== undefined && customAmount > 0
+            ? customAmount
+            : Number(invoice?.amountDue ?? currentMetadata?.deliveryFee ?? currentMetadata?.amountDue ?? currentMetadata?.packagePrice ?? 0);
+
+        const updatedInvoice = invoice ? {
+            ...invoice,
+            invoiceStatus: "paid",
+            amountPaid: dueAmount || invoice.amountDue || 0,
+            paidAt: new Date().toISOString(),
+            paymentCollectedBy: "rider_cash"
+        } : {
+            invoiceNumber: `INV-${order.orderNumber.replace(/^[^-]+-/, "")}-${Math.floor(100 + Math.random() * 900)}`,
+            invoiceStatus: "paid",
+            paymentMethod: "cash",
+            amountDue: dueAmount,
+            amountPaid: dueAmount,
+            subtotal: dueAmount,
+            tax: 0,
+            deliveryFee: 0,
+            discount: 0,
+            paidAt: new Date().toISOString(),
+            paymentCollectedBy: "rider_cash",
+            createdAt: new Date().toISOString()
+        };
 
         const updatedMetadata = {
             ...currentMetadata,
-            invoice: {
-                ...invoice,
-                invoiceStatus: "paid",
-                amountPaid: invoice.amountDue,
-                paidAt: new Date().toISOString(),
-                paymentCollectedBy: "rider_cash"
-            }
+            invoice: updatedInvoice
         };
 
         await db.update(orders)
@@ -576,7 +593,7 @@ export async function riderCollectCashPayment(orderId: string): Promise<{ succes
             orderId: orderId,
             status: order.currentStatus || "Payment Confirmed",
             location: "Customer Doorstep",
-            message: `Cash payment of GH₵ ${Number(invoice.amountDue || 0).toFixed(2)} collected by rider on arrival`,
+            message: `Cash payment of GH₵ ${Number(dueAmount).toFixed(2)} collected by rider on arrival`,
             staffId: order.assignedStaffId || null,
         });
 
@@ -591,3 +608,4 @@ export async function riderCollectCashPayment(orderId: string): Promise<{ succes
         return { success: false, error: error?.message || "Failed to record cash payment" };
     }
 }
+
