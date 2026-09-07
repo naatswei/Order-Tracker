@@ -114,7 +114,7 @@ export default function RiderActionPage() {
     }
 
     const handleStatusUpdate = async (newStatus: string, code?: string) => {
-        if (!order) return
+        if (!order || isUpdating) return
         setIsUpdating(true)
         try {
             const res = await riderUpdateStatus(order.id, newStatus, code)
@@ -122,6 +122,7 @@ export default function RiderActionPage() {
                 toast.success(`Status updated: ${newStatus}`, {
                     style: { background: "#000", color: "#fff", border: "none" }
                 })
+                // Instantly update current status to trigger immediate UI disable/completion
                 setOrder((prev: any) => ({ ...prev, currentStatus: newStatus }))
                 setVerificationCode("")
             } else {
@@ -131,6 +132,15 @@ export default function RiderActionPage() {
             toast.error(err.message || "Network error. Please try again.")
         } finally {
             setIsUpdating(false)
+        }
+    }
+
+    const handleOtpChange = (val: string) => {
+        const cleaned = val.replace(/\D/g, "").slice(0, 4)
+        setVerificationCode(cleaned)
+        // Automatically verify and mark delivered as soon as 4 digits are entered
+        if (cleaned.length === 4 && !isUpdating) {
+            handleStatusUpdate("Delivered", cleaned)
         }
     }
 
@@ -630,33 +640,53 @@ export default function RiderActionPage() {
                                 <div className="space-y-3.5">
                                     {/* Dedicated Numeric OTP Box */}
                                     <div className="bg-white rounded-3xl p-4 shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-black/[0.04]">
-                                        <div className="flex items-center gap-2 px-1 mb-2">
-                                            <Lock className="w-3.5 h-3.5 text-neutral-400" />
-                                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-400 font-mono">
-                                                Customer Delivery PIN (OTP)
-                                            </span>
+                                        <div className="flex items-center justify-between px-1 mb-2">
+                                            <div className="flex items-center gap-2">
+                                                <Lock className="w-3.5 h-3.5 text-neutral-400" />
+                                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-400 font-mono">
+                                                    Customer Delivery PIN (OTP)
+                                                </span>
+                                            </div>
+                                            {isUpdating && (
+                                                <span className="text-[10px] font-bold text-black animate-pulse flex items-center gap-1">
+                                                    <Loader2 className="w-3 h-3 animate-spin" />
+                                                    Verifying...
+                                                </span>
+                                            )}
                                         </div>
                                         <input
                                             type="text"
                                             inputMode="numeric"
                                             pattern="[0-9]*"
                                             value={verificationCode}
-                                            onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, ""))}
+                                            onChange={(e) => handleOtpChange(e.target.value)}
                                             placeholder="ENTER 4-DIGIT PIN"
-                                            maxLength={6}
+                                            maxLength={4}
+                                            disabled={isUpdating}
                                             autoComplete="one-time-code"
-                                            className="w-full h-14 px-4 text-center font-mono text-2xl font-black tracking-[0.35em] text-black bg-[#F6F6F8] rounded-2xl border border-neutral-200 focus:border-black focus:outline-none focus:ring-4 focus:ring-black/5 transition-all placeholder:text-neutral-300 placeholder:font-sans placeholder:tracking-normal placeholder:text-xs placeholder:font-bold"
+                                            className={`w-full h-14 px-4 text-center font-mono text-2xl font-black tracking-[0.35em] text-black bg-[#F6F6F8] rounded-2xl border border-neutral-200 focus:border-black focus:outline-none focus:ring-4 focus:ring-black/5 transition-all placeholder:text-neutral-300 placeholder:font-sans placeholder:tracking-normal placeholder:text-xs placeholder:font-bold ${
+                                                isUpdating ? "opacity-60 cursor-not-allowed" : ""
+                                            }`}
                                         />
                                     </div>
 
                                     {/* Action Button */}
                                     <Button
                                         onClick={() => handleStatusUpdate("Delivered", verificationCode)}
-                                        disabled={isUpdating || !verificationCode.trim()}
+                                        disabled={isUpdating || verificationCode.trim().length !== 4}
                                         className="w-full h-14 sm:h-16 rounded-2xl bg-black hover:bg-neutral-900 text-white text-sm sm:text-base font-black uppercase tracking-wider shadow-lg shadow-black/15 transition-all active:scale-[0.98] border-none disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center gap-2.5"
                                     >
-                                        <CheckCircle2 className="w-5 h-5" />
-                                        <span>{isUpdating ? "Verifying PIN..." : "Confirm Delivery"}</span>
+                                        {isUpdating ? (
+                                            <>
+                                                <Loader2 className="w-5 h-5 animate-spin" />
+                                                <span>Verifying PIN & Marking Delivered...</span>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <CheckCircle2 className="w-5 h-5" />
+                                                <span>Confirm Delivery</span>
+                                            </>
+                                        )}
                                     </Button>
                                 </div>
                             )}
