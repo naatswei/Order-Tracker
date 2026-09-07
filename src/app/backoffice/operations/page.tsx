@@ -314,7 +314,7 @@ export default function OperationsPage() {
                     <div className="flex items-center gap-2 w-full overflow-x-auto pt-1 pb-1 no-scrollbar">
                         <button
                             onClick={scrollToStart}
-                            className="px-3.5 py-2 rounded-xl bg-[#191A43] text-white text-xs font-bold shadow-2xs hover:bg-slate-800 transition-all flex items-center justify-center gap-2 active:scale-95 flex-1 min-w-max"
+                            className="w-auto shrink-0 px-3.5 py-2 rounded-xl bg-[#191A43] text-white text-xs font-bold shadow-2xs hover:bg-slate-800 transition-all flex items-center justify-center gap-2 active:scale-95"
                             title="Scroll to beginning"
                         >
                             <span>Total Orders</span>
@@ -323,23 +323,29 @@ export default function OperationsPage() {
                             </span>
                         </button>
 
-                        {stages.map((stage) => {
-                            const count = filteredOrders.filter(o => getOrderStageName(o) === stage.name).length;
+                        {isLoading ? (
+                            Array.from({ length: 4 }).map((_, i) => (
+                                <div key={i} className="h-8 rounded-xl bg-slate-200/70 animate-pulse flex-1 min-w-[120px]" />
+                            ))
+                        ) : (
+                            stages.map((stage) => {
+                                const count = filteredOrders.filter(o => getOrderStageName(o) === stage.name).length;
 
-                            return (
-                                <button
-                                    key={stage.name}
-                                    onClick={() => scrollToStage(stage.name)}
-                                    className="px-3.5 py-2 rounded-xl bg-slate-100/90 hover:bg-slate-200/90 text-slate-700 text-xs font-semibold transition-all flex items-center justify-center gap-2 border border-slate-200/70 active:scale-95 flex-1 min-w-max"
-                                    title={`Jump to ${stage.name}`}
-                                >
-                                    <span className="truncate">{stage.name}</span>
-                                    <span className="px-1.5 py-0.5 rounded-full bg-white text-slate-600 text-[10px] font-mono font-bold border border-slate-200/60 shadow-2xs leading-none">
-                                        {count}
-                                    </span>
-                                </button>
-                            );
-                        })}
+                                return (
+                                    <button
+                                        key={stage.name}
+                                        onClick={() => scrollToStage(stage.name)}
+                                        className="px-3.5 py-2 rounded-xl bg-slate-100/90 hover:bg-slate-200/90 text-slate-700 text-xs font-semibold transition-all flex items-center justify-center gap-2 border border-slate-200/70 active:scale-95 flex-1 min-w-max"
+                                        title={`Jump to ${stage.name}`}
+                                    >
+                                        <span className="truncate">{stage.name}</span>
+                                        <span className="px-1.5 py-0.5 rounded-full bg-white text-slate-600 text-[10px] font-mono font-bold border border-slate-200/60 shadow-2xs leading-none">
+                                            {count}
+                                        </span>
+                                    </button>
+                                );
+                            })
+                        )}
                     </div>
                 </div>
             </header>
@@ -347,8 +353,16 @@ export default function OperationsPage() {
             {/* Main Stage Columns Board with Mobile Scroll-Snap */}
             <main className="flex-1 max-w-full px-4 sm:px-6 pt-4 sm:pt-6 overflow-hidden flex flex-col">
                 {isLoading ? (
-                    <div className="py-20 flex-1 flex items-center justify-center">
-                        <SignatureLoader message="Loading operations board..." />
+                    <div className="flex gap-4 sm:gap-6 overflow-x-auto pb-8 snap-x snap-mandatory no-scrollbar items-start">
+                        {Array.from({ length: 4 }).map((_, i) => (
+                            <div key={i} className="w-[88vw] max-w-[340px] sm:w-[320px] shrink-0 flex flex-col space-y-3">
+                                <div className="h-11 bg-white border border-slate-200/80 rounded-2xl animate-pulse" />
+                                <div className="h-[380px] rounded-3xl bg-slate-100/60 border border-slate-200/60 p-3 space-y-3">
+                                    <div className="h-28 bg-white rounded-2xl border border-slate-200/70 animate-pulse" />
+                                    <div className="h-28 bg-white rounded-2xl border border-slate-200/70 animate-pulse" />
+                                </div>
+                            </div>
+                        ))}
                     </div>
                 ) : (
                     /* Horizontal Scrollable Stages Container */
