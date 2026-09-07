@@ -551,7 +551,7 @@ function CreateOrderContent() {
                                             </div>
                                             <div className="grid sm:grid-cols-2 gap-3 sm:gap-4">
                                                 <div className="space-y-1">
-                                                    <Label htmlFor="pickupCustomerName" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">Pick Up Customer Name <span className="text-red-500">*</span></Label>
+                                                    <Label htmlFor="pickupCustomerName" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">Name <span className="text-red-500">*</span></Label>
                                                     <Input
                                                         id="pickupCustomerName"
                                                         value={customerName}
@@ -563,20 +563,20 @@ function CreateOrderContent() {
                                                     />
                                                 </div>
                                                 <div className="space-y-1">
-                                                    <Label htmlFor="pickupCustomerPhone" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">Pick Up Customer Contact <span className="text-red-500">*</span></Label>
+                                                    <Label htmlFor="pickupCustomerPhone" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">Contact <span className="text-red-500">*</span></Label>
                                                     <PhoneInputWithCountry
                                                         id="pickupCustomerPhone"
                                                         countryCode={pickupCountryCode}
                                                         phoneLocal={pickupPhoneLocal}
                                                         onCountryCodeChange={(code) => {
-                                                            setPickupCountryCode(code)
-                                                            const formatted = formatFullPhone(code, pickupPhoneLocal)
-                                                            setCustomerPhone(formatted)
+                                                             setPickupCountryCode(code)
+                                                             const formatted = formatFullPhone(code, pickupPhoneLocal)
+                                                             setCustomerPhone(formatted)
                                                         }}
                                                         onPhoneLocalChange={(local) => {
-                                                            setPickupPhoneLocal(local)
-                                                            const formatted = formatFullPhone(pickupCountryCode, local)
-                                                            setCustomerPhone(formatted)
+                                                             setPickupPhoneLocal(local)
+                                                             const formatted = formatFullPhone(pickupCountryCode, local)
+                                                             setCustomerPhone(formatted)
                                                         }}
                                                         placeholder="54 870 6430"
                                                         required
@@ -597,7 +597,7 @@ function CreateOrderContent() {
                                             </div>
                                             <div className="grid sm:grid-cols-2 gap-3 sm:gap-4">
                                                 <div className="space-y-1">
-                                                    <Label htmlFor="dropoffCustomerName" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">Drop Off Customer Name <span className="text-red-500">*</span></Label>
+                                                    <Label htmlFor="dropoffCustomerName" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">Name <span className="text-red-500">*</span></Label>
                                                     <Input
                                                         id="dropoffCustomerName"
                                                         value={recipientName}
@@ -609,20 +609,20 @@ function CreateOrderContent() {
                                                     />
                                                 </div>
                                                 <div className="space-y-1">
-                                                    <Label htmlFor="dropoffCustomerPhone" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">Drop Off Customer Contact <span className="text-red-500">*</span></Label>
+                                                    <Label htmlFor="dropoffCustomerPhone" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">Contact <span className="text-red-500">*</span></Label>
                                                     <PhoneInputWithCountry
                                                         id="dropoffCustomerPhone"
                                                         countryCode={dropoffCountryCode}
                                                         phoneLocal={dropoffPhoneLocal}
                                                         onCountryCodeChange={(code) => {
-                                                            setDropoffCountryCode(code)
-                                                            const formatted = formatFullPhone(code, dropoffPhoneLocal)
-                                                            setRecipientPhone(formatted)
+                                                             setDropoffCountryCode(code)
+                                                             const formatted = formatFullPhone(code, dropoffPhoneLocal)
+                                                             setRecipientPhone(formatted)
                                                         }}
                                                         onPhoneLocalChange={(local) => {
-                                                            setDropoffPhoneLocal(local)
-                                                            const formatted = formatFullPhone(dropoffCountryCode, local)
-                                                            setRecipientPhone(formatted)
+                                                             setDropoffPhoneLocal(local)
+                                                             const formatted = formatFullPhone(dropoffCountryCode, local)
+                                                             setRecipientPhone(formatted)
                                                         }}
                                                         placeholder="24 400 0000"
                                                         required
