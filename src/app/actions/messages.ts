@@ -49,6 +49,50 @@ export async function submitCustomerMessage(data: {
     }
 }
 
+export async function submitRiderMessage(data: {
+    orderId: string
+    message: string
+    threadId?: string
+}) {
+    try {
+        const orderRecord = await db.query.orders.findFirst({
+            where: eq(orders.id, data.orderId)
+        })
+
+        if (!orderRecord) {
+            throw new Error("Order not found")
+        }
+
+        if (!orderRecord.clerkOrgId) {
+            throw new Error("Order is not associated with any organization")
+        }
+
+        const messageId = nanoid()
+        const meta = (orderRecord.metadata as Record<string, any>) || {}
+        const riderName = meta.assignedRiderName || "Rider"
+        const riderPhone = meta.assignedRiderPhone || null
+
+        await db.insert(customerMessages).values({
+            id: messageId,
+            orderId: orderRecord.id,
+            clerkOrgId: orderRecord.clerkOrgId,
+            threadId: data.threadId || orderRecord.id,
+            sender: "rider",
+            customerName: riderName,
+            customerEmail: null,
+            customerPhone: riderPhone,
+            subject: "Rider Dispatch Chat",
+            message: data.message,
+            isRead: "false"
+        })
+
+        return { success: true, messageId, threadId: data.threadId || orderRecord.id }
+    } catch (error: any) {
+        console.error("Error submitting rider message:", error)
+        return { error: error.message || "Failed to submit message" }
+    }
+}
+
 export async function submitBusinessReply(data: {
     threadId: string
     orderId: string | null
@@ -212,7 +256,7 @@ export async function markThreadAsRead(threadId: string) {
     }
 }
 
-export async function updateTypingStatus(threadId: string, userType: "customer" | "business") {
+export async function updateTypingStatus(threadId: string, userType: "customer" | "business" | "rider") {
     try {
         const id = `${threadId}:${userType}`
         await db.insert(typingStatus)

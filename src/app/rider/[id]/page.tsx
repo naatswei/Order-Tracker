@@ -1,13 +1,15 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useParams } from "next/navigation"
 import { getOrderWithHistory, riderUpdateStatus, riderCollectCashPayment } from "@/app/actions/orders"
 import { initiateMomoCharge } from "@/app/actions/paystack"
+import { submitRiderMessage, getThreadMessages, updateTypingStatus, getTypingStatus } from "@/app/actions/messages"
 import { detectGhanaNetworkProvider } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
 import {
     Dialog,
     DialogContent,
@@ -34,7 +36,14 @@ import {
     Banknote,
     Navigation,
     ShieldCheck,
-    Compass
+    Compass,
+    MessageSquare,
+    Send,
+    X,
+    User,
+    Building2,
+    MessageSquareMore,
+    Loader2
 } from "lucide-react"
 import { toast } from "sonner"
 import { SignatureLoader } from "@/components/signature-loader"
@@ -56,6 +65,14 @@ export default function RiderActionPage() {
     const [momoPhone, setMomoPhone] = useState("")
     const [momoProvider, setMomoProvider] = useState<'mtn' | 'vod' | 'atl'>("mtn")
     const [isMomoCharging, setIsMomoCharging] = useState(false)
+
+    // In-app chat state
+    const [chatOpen, setChatOpen] = useState(false)
+    const [chatMessages, setChatMessages] = useState<any[]>([])
+    const [chatInput, setChatInput] = useState("")
+    const [isSendingMessage, setIsSendingMessage] = useState(false)
+    const [isPartyTyping, setIsPartyTyping] = useState(false)
+    const chatEndRef = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
         let isMounted = true
@@ -138,6 +155,107 @@ export default function RiderActionPage() {
 
     const getGoogleMapsUrl = (location: string) => {
         return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(location)}`
+    }
+
+    // Polling chat messages
+    useEffect(() => {
+        if (!order?.id) return
+
+        const loadChat = async () => {
+            try {
+                const res = await getThreadMessages(order.id)
+                if (res.messages) {
+                    const prevCount = chatMessages.length
+                    if (res.messages.length !== prevCount) {
+                        setChatMessages(res.messages)
+                        if (res.messages.length > prevCount && prevCount > 0) {
+                            const latest = res.messages[res.messages.length - 1]
+                            if (latest.sender !== "rider") {
+                                toast.success("New message on dispatch thread!", {
+                                    style: { background: "#000", color: "#fff", border: "none" }
+                                })
+                            }
+                        }
+                    }
+                }
+            } catch (err) {
+                console.error("Failed to load chat for rider:", err)
+            }
+        }
+
+        loadChat()
+        const interval = setInterval(loadChat, 3000)
+        return () => clearInterval(interval)
+    }, [order?.id, chatMessages.length])
+
+    // Polling typing status
+    useEffect(() => {
+        if (!order?.id || !chatOpen) {
+            setIsPartyTyping(false)
+            return
+        }
+
+        const pollTyping = async () => {
+            const res = await getTypingStatus(order.id)
+            if (res.statuses) {
+                const isTyping = res.statuses.some(s => s.userType === "business" || s.userType === "customer")
+                setIsPartyTyping(isTyping)
+            }
+        }
+
+        pollTyping()
+        const interval = setInterval(pollTyping, 2000)
+        return () => clearInterval(interval)
+    }, [order?.id, chatOpen])
+
+    // Auto-scroll chat
+    useEffect(() => {
+        if (!chatOpen || chatMessages.length === 0) return
+        const container = chatEndRef.current?.parentElement
+        if (container) {
+            container.scrollTo({
+                top: container.scrollHeight,
+                behavior: "smooth"
+            })
+        }
+    }, [chatMessages.length, chatOpen])
+
+    const handleSendRiderMessage = async () => {
+        if (!chatInput.trim() || isSendingMessage || !order?.id) return
+        const messageText = chatInput.trim()
+        const existingThread = chatMessages.length > 0 ? chatMessages[0].threadId : undefined
+
+        const tempMsg = {
+            id: `temp-${Date.now()}`,
+            orderId: order.id,
+            threadId: existingThread || order.id,
+            sender: "rider",
+            customerName: (order.metadata as any)?.assignedRiderName || "Rider",
+            message: messageText,
+            isRead: "false",
+            createdAt: new Date().toISOString()
+        }
+
+        setChatMessages(prev => [...prev, tempMsg])
+        setChatInput("")
+        setIsSendingMessage(true)
+
+        try {
+            const res = await submitRiderMessage({
+                orderId: order.id,
+                message: messageText,
+                threadId: existingThread
+            })
+            if (res.error) {
+                toast.error(res.error)
+                setChatMessages(prev => prev.filter(m => m.id !== tempMsg.id))
+            }
+        } catch (err: any) {
+            toast.error("Failed to send message")
+            setChatMessages(prev => prev.filter(m => m.id !== tempMsg.id))
+        } finally {
+            setIsSendingMessage(false)
+        }
     }
 
     if (isLoading) {
@@ -299,19 +417,16 @@ export default function RiderActionPage() {
                                 <Compass className="w-3.5 h-3.5 text-black" />
                                 <span>Route & GPS Navigation</span>
                             </div>
-                            <span className="text-[10px] text-neutral-400 font-mono font-bold">1-Tap Maps</span>
+                            <span className="text-[10px] text-neutral-400 font-mono font-bold">Google Maps</span>
                         </div>
 
                         <div className="space-y-3 text-xs">
-                            {/* Pickup Address + Google Maps Button */}
+                            {/* Pickup Address */}
                             {pickupLoc && (
-                                <div className="p-3 rounded-2xl bg-slate-50/80 border border-slate-100 space-y-2">
-                                    <div className="flex items-start gap-2.5 min-w-0">
-                                        <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 mt-1 shrink-0" />
-                                        <div className="min-w-0 flex-1">
-                                            <p className="text-[10px] font-black text-emerald-800 uppercase tracking-wider">Pickup Address</p>
-                                            <p className="font-bold text-neutral-900 text-xs sm:text-sm break-words mt-0.5">{pickupLoc}</p>
-                                        </div>
+                                <div className="p-3.5 rounded-2xl bg-[#F8F8FA] border border-black/[0.04] space-y-2">
+                                    <div className="min-w-0">
+                                        <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider">Pickup Address</p>
+                                        <p className="font-bold text-neutral-900 text-xs sm:text-sm break-words mt-0.5">{pickupLoc}</p>
                                     </div>
                                     <div className="flex justify-end pt-1">
                                         <a
@@ -320,29 +435,26 @@ export default function RiderActionPage() {
                                             rel="noopener noreferrer"
                                             className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-black hover:bg-neutral-800 text-white text-xs font-bold shadow-xs active:scale-95 transition-all"
                                         >
-                                            <Navigation className="w-3.5 h-3.5 text-emerald-400" />
+                                            <Navigation className="w-3.5 h-3.5 text-white" />
                                             <span>Open in Google Maps</span>
                                         </a>
                                     </div>
                                 </div>
                             )}
 
-                            {/* Delivery Destination + Google Maps Button */}
+                            {/* Delivery Destination */}
                             {deliveryLoc && (
-                                <div className="p-3 rounded-2xl bg-sky-50/60 border border-sky-100/80 space-y-2">
-                                    <div className="flex items-start gap-2.5 min-w-0">
-                                        <span className="w-2.5 h-2.5 rounded-full bg-sky-500 mt-1 shrink-0" />
-                                        <div className="min-w-0 flex-1">
-                                            <p className="text-[10px] font-black text-sky-800 uppercase tracking-wider">Delivery Destination</p>
-                                            <p className="font-bold text-neutral-900 text-xs sm:text-sm break-words mt-0.5">{deliveryLoc}</p>
-                                        </div>
+                                <div className="p-3.5 rounded-2xl bg-[#F8F8FA] border border-black/[0.04] space-y-2">
+                                    <div className="min-w-0">
+                                        <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider">Delivery Destination</p>
+                                        <p className="font-bold text-neutral-900 text-xs sm:text-sm break-words mt-0.5">{deliveryLoc}</p>
                                     </div>
                                     <div className="flex justify-end pt-1">
                                         <a
                                             href={getGoogleMapsUrl(deliveryLoc)}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-sky-700 hover:bg-sky-800 text-white text-xs font-bold shadow-xs active:scale-95 transition-all"
+                                            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-black hover:bg-neutral-800 text-white text-xs font-bold shadow-xs active:scale-95 transition-all"
                                         >
                                             <Navigation className="w-3.5 h-3.5 text-white" />
                                             <span>Navigate in Google Maps</span>
@@ -624,6 +736,136 @@ export default function RiderActionPage() {
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
+            {/* Floating Dispatch & Customer Chat Box */}
+            <div className="fixed bottom-5 right-5 z-50 flex flex-col items-end gap-3">
+                <AnimatePresence>
+                    {chatOpen && (
+                        <motion.div
+                            initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0, y: 20, scale: 0.95 }}
+                            transition={{ duration: 0.2 }}
+                            className="w-[calc(100vw-32px)] max-w-[360px] sm:w-[380px] bg-white rounded-3xl border border-black/[0.08] overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.18)] flex flex-col"
+                            style={{ height: '460px' }}
+                        >
+                            {/* Chat Header */}
+                            <div className="flex items-center justify-between p-3.5 sm:p-4 border-b border-black/[0.06] bg-neutral-50">
+                                <div className="flex items-center gap-2.5 min-w-0">
+                                    <div className="w-8 h-8 rounded-xl bg-black text-white flex items-center justify-center shrink-0">
+                                        <MessageSquare className="w-4 h-4" />
+                                    </div>
+                                    <div className="min-w-0">
+                                        <span className="text-xs font-black text-black block truncate">Dispatch & Customer Chat</span>
+                                        <span className="text-[10px] text-neutral-400 font-mono font-bold block">#{order.orderNumber}</span>
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={() => setChatOpen(false)}
+                                    className="p-1.5 rounded-full text-neutral-400 hover:text-black hover:bg-neutral-200 transition-colors"
+                                >
+                                    <X className="w-4 h-4" />
+                                </button>
+                            </div>
+
+                            {/* Message List */}
+                            <div className="flex-1 p-3.5 sm:p-4 space-y-3 overflow-y-auto bg-[#FBFBFC]">
+                                {chatMessages.length === 0 && (
+                                    <div className="text-center py-12 space-y-1">
+                                        <MessageSquare className="w-6 h-6 text-neutral-300 mx-auto" />
+                                        <p className="text-neutral-400 text-xs font-medium">No messages on this order yet.</p>
+                                        <p className="text-neutral-300 text-[10px]">Send a quick update to dispatch & customer.</p>
+                                    </div>
+                                )}
+                                {chatMessages.map((msg: any) => {
+                                    const isRider = msg.sender === "rider"
+                                    return (
+                                        <div
+                                            key={msg.id}
+                                            className={`flex ${isRider ? "justify-end" : "justify-start"}`}
+                                        >
+                                            <div className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 text-xs ${
+                                                isRider
+                                                    ? "bg-black text-white"
+                                                    : "bg-white text-neutral-900 border border-black/[0.06] shadow-2xs"
+                                            }`}>
+                                                <div className="flex items-center gap-1.5 mb-1 opacity-70">
+                                                    {isRider ? (
+                                                        <Truck className="w-3 h-3" />
+                                                    ) : msg.sender === "customer" ? (
+                                                        <User className="w-3 h-3" />
+                                                    ) : (
+                                                        <Building2 className="w-3 h-3" />
+                                                    )}
+                                                    <span className="text-[9px] font-bold uppercase tracking-wider">
+                                                        {isRider ? "You (Rider)" : msg.sender === "customer" ? `Customer (${msg.customerName || 'Client'})` : "Dispatch / Support"}
+                                                    </span>
+                                                </div>
+                                                <p className="leading-relaxed font-medium whitespace-pre-wrap">{msg.message}</p>
+                                                <p className={`text-[9px] mt-1 font-mono ${isRider ? "text-neutral-400" : "text-neutral-400"}`}>
+                                                    {new Date(msg.createdAt).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit', hour12: false })}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    )
+                                })}
+                                <div ref={chatEndRef} />
+                            </div>
+
+                            {/* Typing indicator & Input */}
+                            <div className="p-3 border-t border-black/[0.06] bg-white">
+                                {isPartyTyping && (
+                                    <div className="px-2 pb-2 flex items-center gap-2 text-[10px] text-neutral-500 font-medium">
+                                        <MessageSquareMore className="w-3.5 h-3.5 animate-pulse text-black" />
+                                        <span>Typing a reply...</span>
+                                    </div>
+                                )}
+                                <div className="flex gap-2 items-end">
+                                    <Textarea
+                                        value={chatInput}
+                                        onChange={(e) => {
+                                            setChatInput(e.target.value)
+                                            if (order?.id) updateTypingStatus(order.id, "rider")
+                                        }}
+                                        placeholder="Type message to dispatch & customer..."
+                                        className="flex-1 min-h-[42px] max-h-[96px] bg-neutral-50 border border-neutral-200 rounded-2xl text-xs font-medium text-black placeholder:text-neutral-400 resize-none focus:border-black focus:ring-0 py-2.5 px-3"
+                                        rows={1}
+                                        onKeyDown={(e) => {
+                                            if (e.key === "Enter" && !e.shiftKey) {
+                                                e.preventDefault()
+                                                handleSendRiderMessage()
+                                            }
+                                        }}
+                                    />
+                                    <Button
+                                        onClick={handleSendRiderMessage}
+                                        disabled={!chatInput.trim() || isSendingMessage}
+                                        size="icon"
+                                        className="h-11 w-11 bg-black hover:bg-neutral-800 text-white rounded-2xl shrink-0 transition-all active:scale-95"
+                                    >
+                                        {isSendingMessage ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+                                    </Button>
+                                </div>
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+
+                {/* Floating Chat Button */}
+                {!chatOpen && (
+                    <button
+                        onClick={() => setChatOpen(true)}
+                        className="relative bg-black hover:bg-neutral-900 text-white h-13 w-13 sm:h-14 sm:w-14 rounded-2xl sm:rounded-3xl shadow-[0_10px_30px_rgba(0,0,0,0.25)] flex items-center justify-center transition-all duration-300 hover:scale-105 active:scale-95 border border-black/10"
+                        title="Open Chat"
+                    >
+                        <MessageSquare className="w-5 h-5 sm:w-6 sm:h-6" />
+                        {chatMessages.length > 0 && (
+                            <span className="absolute -top-1.5 -right-1.5 bg-black text-white text-[9px] font-black h-5 w-5 rounded-full flex items-center justify-center border-2 border-white">
+                                {chatMessages.length}
+                            </span>
+                        )}
+                    </button>
+                )}
+            </div>
         </div>
     )
 }
