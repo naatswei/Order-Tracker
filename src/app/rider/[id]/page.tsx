@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { useParams } from "next/navigation"
 import { getOrderWithHistory, riderUpdateStatus, riderCollectCashPayment } from "@/app/actions/orders"
 import { initiateMomoCharge } from "@/app/actions/paystack"
-import { detectGhanaNetworkProvider, cn } from "@/lib/utils"
+import { detectGhanaNetworkProvider } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -30,16 +30,11 @@ import {
     Copy, 
     Check, 
     Lock,
-    ArrowRight,
     Phone,
     Banknote,
     Navigation,
-    MapPin,
     ShieldCheck,
-    Loader2,
-    MessageCircle,
-    Compass,
-    Package
+    Compass
 } from "lucide-react"
 import { toast } from "sonner"
 import { SignatureLoader } from "@/components/signature-loader"
@@ -145,16 +140,6 @@ export default function RiderActionPage() {
         return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(location)}`
     }
 
-    const getWhatsAppUrl = (phone: string, name?: string) => {
-        if (!phone) return null
-        let clean = phone.replace(/\D/g, "")
-        if (clean.startsWith("0")) {
-            clean = "233" + clean.substring(1)
-        }
-        const text = encodeURIComponent(`Hello ${name || 'Customer'}, I am your delivery rider regarding shipment #${order?.orderNumber}. I am on my way to your location.`)
-        return `https://wa.me/${clean}?text=${text}`
-    }
-
     if (isLoading) {
         return (
             <div className="min-h-screen bg-[#F6F6F8] flex flex-col items-center justify-center p-6 text-center">
@@ -218,7 +203,7 @@ export default function RiderActionPage() {
         <div className="min-h-screen bg-[#F6F6F8] text-neutral-900 font-sans flex flex-col justify-start p-3 sm:p-6 selection:bg-black selection:text-white">
             <div className="max-w-md w-full mx-auto space-y-3.5 sm:space-y-5 pt-1 sm:pt-3 pb-8">
 
-                {/* 1. TOP HEADER: Vehicle Badge + Live Dot + Waybill # */}
+                {/* 1. TOP HEADER: Vehicle Badge + Waybill # */}
                 <motion.div 
                     initial={{ opacity: 0, y: -8 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -231,20 +216,11 @@ export default function RiderActionPage() {
                             <Truck className="w-5 h-5 sm:w-6 sm:h-6" />
                         </div>
 
-                        {/* Status Dot + Waybill */}
+                        {/* Waybill # */}
                         <div className="flex items-center gap-2 min-w-0">
-                            <span className={cn(
-                                "w-2.5 h-2.5 rounded-full shrink-0",
-                                isDelivered ? "bg-emerald-500" : "bg-emerald-500"
-                            )} />
                             <span className="text-lg sm:text-2xl font-black tracking-tighter text-black truncate">
                                 #{order.orderNumber}
                             </span>
-                            {isDelivered && (
-                                <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-black uppercase tracking-wider shrink-0">
-                                    Delivered
-                                </span>
-                            )}
                         </div>
                     </div>
 
@@ -281,14 +257,14 @@ export default function RiderActionPage() {
                                 <div key={step.label} className="relative z-10 flex flex-col items-center gap-1.5 sm:gap-2">
                                     <div 
                                         className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-black transition-all duration-500 ${
-                                            isPassed 
+                                            isPassed || (isDelivered && idx === 3)
                                                 ? "bg-black text-white shadow-md shadow-black/10" 
                                                 : isCurrent 
                                                 ? "bg-black text-white ring-4 ring-black/10 scale-110 shadow-lg shadow-black/20" 
                                                 : "bg-white text-neutral-300 border-2 border-neutral-200"
                                         }`}
                                     >
-                                        {isPassed ? (
+                                        {isPassed || (isDelivered && idx === 3) ? (
                                             <Check className="w-3.5 h-3.5 stroke-[3]" />
                                         ) : isCurrent ? (
                                             <span className="w-2.5 h-2.5 rounded-full bg-white animate-pulse" />
@@ -378,58 +354,7 @@ export default function RiderActionPage() {
                     </motion.div>
                 )}
 
-                {/* 4. RECIPIENT & 1-TAP CONTACT CARD */}
-                {contactPhone && (
-                    <motion.div 
-                        initial={{ opacity: 0, y: -2 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="bg-white rounded-3xl p-4 shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-black/[0.04] space-y-3"
-                    >
-                        <div className="flex items-center justify-between">
-                            <div className="min-w-0">
-                                <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider block">
-                                    {recipientName ? "Dropoff Recipient" : "Customer Contact"}
-                                </span>
-                                <span className="text-sm font-black text-black truncate block mt-0.5">
-                                    {contactName}
-                                </span>
-                                <span className="text-xs text-neutral-500 font-mono font-medium block">
-                                    {contactPhone}
-                                </span>
-                            </div>
-                            {order.itemType && (
-                                <div className="px-2.5 py-1 rounded-xl bg-slate-100 text-slate-700 text-[11px] font-bold shrink-0 flex items-center gap-1">
-                                    <Package className="w-3.5 h-3.5 text-slate-500" />
-                                    <span>{order.itemType}</span>
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Quick Action Contact Buttons (Call & WhatsApp) */}
-                        <div className="grid grid-cols-2 gap-2 pt-1 border-t border-neutral-100">
-                            <a
-                                href={`tel:${contactPhone}`}
-                                className="py-2.5 px-3 rounded-2xl bg-black hover:bg-neutral-800 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-xs transition-all active:scale-95"
-                            >
-                                <Phone className="w-3.5 h-3.5 text-emerald-400" />
-                                <span>Call Customer</span>
-                            </a>
-                            {getWhatsAppUrl(contactPhone, contactName) && (
-                                <a
-                                    href={getWhatsAppUrl(contactPhone, contactName)!}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="py-2.5 px-3 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-xs transition-all active:scale-95"
-                                >
-                                    <MessageCircle className="w-3.5 h-3.5" />
-                                    <span>WhatsApp</span>
-                                </a>
-                            )}
-                        </div>
-                    </motion.div>
-                )}
-
-                {/* 5. PAYMENT ON ARRIVAL CARD (GH₵ Ghana Cedis) */}
+                {/* 4. PAYMENT ON ARRIVAL CARD (GH₵ Ghana Cedis) */}
                 {isInvoiceUnpaid && (
                     <motion.div
                         initial={{ opacity: 0, scale: 0.98 }}
@@ -512,7 +437,7 @@ export default function RiderActionPage() {
                     </motion.div>
                 )}
 
-                {/* 6. ACTION & DELIVERY PIN VERIFICATION AREA */}
+                {/* 5. ACTION & DELIVERY PIN VERIFICATION AREA */}
                 <div className="space-y-4 pt-1">
                     {isDelivered ? (
                         <motion.div 
@@ -560,6 +485,31 @@ export default function RiderActionPage() {
                             {/* Step 2: Handover Confirmation with Customer Numeric Delivery PIN */}
                             {activeStep >= 2 && (
                                 <div className="space-y-3.5">
+                                    {/* Dropoff Customer Contact Quick Call */}
+                                    {contactPhone && (
+                                        <div className="flex items-center justify-between bg-white p-3.5 rounded-2xl shadow-[0_4px_20px_rgb(0,0,0,0.04)] border border-black/[0.04]">
+                                            <div className="flex items-center gap-3 min-w-0">
+                                                <div className="w-9 h-9 rounded-xl bg-neutral-100 flex items-center justify-center text-black font-black shrink-0">
+                                                    <Phone className="w-4 h-4" />
+                                                </div>
+                                                <div className="min-w-0">
+                                                    <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider block">
+                                                        {recipientName ? "Dropoff Recipient" : "Customer Contact"}
+                                                    </span>
+                                                    <span className="text-xs font-black text-black truncate block">
+                                                        {contactName} ({contactPhone})
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <a
+                                                href={`tel:${contactPhone}`}
+                                                className="px-4 py-2 rounded-xl bg-black text-white text-xs font-black uppercase tracking-wider hover:bg-neutral-800 transition-colors shrink-0 shadow-xs"
+                                            >
+                                                Call
+                                            </a>
+                                        </div>
+                                    )}
+
                                     {/* Dedicated Numeric OTP Box */}
                                     <div className="bg-white rounded-3xl p-4 shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-black/[0.04]">
                                         <div className="flex items-center gap-2 px-1 mb-2">
