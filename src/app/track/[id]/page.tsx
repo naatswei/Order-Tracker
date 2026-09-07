@@ -549,7 +549,7 @@ export default function TrackingDetailsPage() {
                                     <h1 className="text-4xl sm:text-6xl font-black tracking-tighter text-black">
                                         {order.orderNumber}
                                     </h1>
-                                    {order.businessType === "logistics" ? (
+                                    {order.businessType === "logistics" && isDropoffViewer ? (
                                         <button
                                             type="button"
                                             onClick={() => setShowOtpModal(true)}
@@ -1114,9 +1114,9 @@ export default function TrackingDetailsPage() {
                         </div>
                     )}
 
-                    {/* Delivery OTP Popup Modal for Logistics */}
+                    {/* Delivery OTP Popup Modal for Logistics (Only for Dropoff Recipient) */}
                     <AnimatePresence>
-                        {order && order.businessType === "logistics" && showOtpModal && (
+                        {order && order.businessType === "logistics" && isDropoffViewer && showOtpModal && (
                             <motion.div
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
