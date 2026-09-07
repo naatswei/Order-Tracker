@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { useParams } from "next/navigation"
 import { getOrderWithHistory, riderUpdateStatus, riderCollectCashPayment } from "@/app/actions/orders"
 import { initiateMomoCharge } from "@/app/actions/paystack"
-import { detectGhanaNetworkProvider } from "@/lib/utils"
+import { detectGhanaNetworkProvider, cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -233,10 +233,18 @@ export default function RiderActionPage() {
 
                         {/* Status Dot + Waybill */}
                         <div className="flex items-center gap-2 min-w-0">
-                            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping shrink-0" />
+                            <span className={cn(
+                                "w-2.5 h-2.5 rounded-full shrink-0",
+                                isDelivered ? "bg-emerald-500" : "bg-emerald-500"
+                            )} />
                             <span className="text-lg sm:text-2xl font-black tracking-tighter text-black truncate">
                                 #{order.orderNumber}
                             </span>
+                            {isDelivered && (
+                                <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-black uppercase tracking-wider shrink-0">
+                                    Delivered
+                                </span>
+                            )}
                         </div>
                     </div>
 
