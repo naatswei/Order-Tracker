@@ -341,15 +341,15 @@ export default function RiderActionPage() {
     const isInvoiceUnpaid = !isInvoicePaid && !isDelivered && amountDue > 0
 
     return (
-        <div className="min-h-screen bg-[#F6F6F8] text-neutral-900 font-sans flex flex-col justify-start p-3 sm:p-6 md:p-8 lg:p-10 selection:bg-black selection:text-white">
-            <div className="max-w-md md:max-w-4xl lg:max-w-5xl w-full mx-auto space-y-4 sm:space-y-6 pt-1 sm:pt-3 pb-16">
+        <div className="min-h-screen bg-[#F6F6F8] text-neutral-900 font-sans flex flex-col justify-start p-3 sm:p-6 md:p-8 selection:bg-black selection:text-white">
+            <div className="w-full max-w-2xl md:max-w-3xl mx-auto space-y-4 sm:space-y-6 pt-1 sm:pt-3 pb-20">
 
                 {/* 1. TOP HEADER: Vehicle Badge + Waybill # */}
                 <motion.div 
                     initial={{ opacity: 0, y: -8 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3 }}
-                    className="flex items-center justify-between bg-white rounded-3xl p-3.5 sm:p-5 md:p-6 shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-black/[0.04]"
+                    className="flex items-center justify-between bg-white rounded-3xl p-4 sm:p-5 md:p-6 shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-black/[0.04]"
                 >
                     <div className="flex items-center gap-3.5 sm:gap-4 min-w-0">
                         {/* Vehicle Icon Badge */}
@@ -427,363 +427,293 @@ export default function RiderActionPage() {
                     </div>
                 </motion.div>
 
-                {/* 3. MAIN BODY CONTENT AUTO-LAYOUT (Adaptive 2-Column on iPad / Tablets / Desktop) */}
-                <div className="grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-6 items-start">
-                    
-                    {/* LEFT COLUMN: Route Details, Customer Contact & Payment (7 cols on tablet/desktop) */}
-                    <div className="md:col-span-7 lg:col-span-7 space-y-4 sm:space-y-6">
-
-                        {/* ROUTE DETAILS CARD */}
-                        {(pickupLoc || deliveryLoc) && (
-                            <motion.div 
-                                initial={{ opacity: 0, y: 4 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.35, delay: 0.1 }}
-                                className="bg-white rounded-3xl p-4 sm:p-6 shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-black/[0.04] space-y-4"
-                            >
-                                <div className="flex items-center justify-between">
-                                    <span className="text-xs sm:text-sm font-black uppercase tracking-wider text-black">Delivery Route</span>
-                                    <div className="flex items-center gap-1.5 text-[11px] sm:text-xs font-bold text-neutral-700">
-                                        <Compass className="w-3.5 h-3.5 text-black" />
-                                        <span>Navigation</span>
-                                    </div>
-                                </div>
-
-                                <div className="space-y-3.5">
-                                    {/* Pickup Point */}
-                                    {pickupLoc && (
-                                        <div className="space-y-2 p-3.5 sm:p-4 rounded-2xl bg-neutral-50/80 border border-black/[0.04]">
-                                            <div>
-                                                <p className="text-[10px] sm:text-xs font-black uppercase tracking-wider text-neutral-600">Pickup Address</p>
-                                                <p className="font-bold text-neutral-900 text-xs sm:text-sm md:text-base break-words mt-0.5">{pickupLoc}</p>
-                                            </div>
-                                            <div className="flex justify-center sm:justify-start pt-1">
-                                                {isDelivered ? (
-                                                    <div className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-neutral-200 text-neutral-500 text-xs font-bold cursor-not-allowed select-none">
-                                                        <Check className="w-3.5 h-3.5 text-neutral-500" />
-                                                        <span>Pickup Completed</span>
-                                                    </div>
-                                                ) : (
-                                                    <a
-                                                        href={getGoogleMapsUrl(pickupLoc)}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-black hover:bg-neutral-800 text-white text-xs font-bold shadow-xs active:scale-95 transition-all"
-                                                    >
-                                                        <Navigation className="w-3.5 h-3.5 text-white" />
-                                                        <span>Navigate in Google Maps</span>
-                                                    </a>
-                                                )}
-                                            </div>
-                                        </div>
-                                    )}
-
-                                    {/* Delivery Destination Point */}
-                                    {deliveryLoc && (
-                                        <div className="space-y-2 p-3.5 sm:p-4 rounded-2xl bg-neutral-50/80 border border-black/[0.04]">
-                                            <div>
-                                                <p className="text-[10px] sm:text-xs font-black uppercase tracking-wider text-neutral-600">Drop-off Destination</p>
-                                                <p className="font-bold text-neutral-900 text-xs sm:text-sm md:text-base break-words mt-0.5">{deliveryLoc}</p>
-                                            </div>
-                                            <div className="flex justify-center sm:justify-start pt-1">
-                                                {isDelivered ? (
-                                                    <div className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-100 text-emerald-800 text-xs font-bold cursor-not-allowed select-none">
-                                                        <Check className="w-3.5 h-3.5 text-emerald-700" />
-                                                        <span>Delivery Completed</span>
-                                                    </div>
-                                                ) : (
-                                                    <a
-                                                        href={getGoogleMapsUrl(deliveryLoc)}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-black hover:bg-neutral-800 text-white text-xs font-bold shadow-xs active:scale-95 transition-all"
-                                                    >
-                                                        <Navigation className="w-3.5 h-3.5 text-white" />
-                                                        <span>Navigate in Google Maps</span>
-                                                    </a>
-                                                )}
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-                            </motion.div>
-                        )}
-
-                        {/* CUSTOMER CONTACT & QUICK CALL CARD */}
-                        {contactPhone && (
-                            <motion.div
-                                initial={{ opacity: 0, y: 4 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.35, delay: 0.12 }}
-                                className="flex items-center justify-between bg-white p-4 sm:p-5 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-black/[0.04]"
-                            >
-                                <div className="flex items-center gap-3 sm:gap-4 min-w-0">
-                                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-neutral-100 flex items-center justify-center text-black font-black shrink-0">
-                                        <Phone className="w-4 h-4 sm:w-5 sm:h-5" />
-                                    </div>
-                                    <div className="min-w-0">
-                                        <span className="text-[10px] sm:text-xs font-bold text-neutral-400 uppercase tracking-wider block">
-                                            {targetCustomerRole}
-                                        </span>
-                                        <span className="text-xs sm:text-sm md:text-base font-black text-black truncate block">
-                                            {contactName} ({contactPhone})
-                                        </span>
-                                    </div>
-                                </div>
-                                {isDelivered ? (
-                                    <div className="px-3.5 py-2 rounded-xl bg-neutral-100 text-neutral-400 text-xs font-bold uppercase tracking-wider cursor-not-allowed select-none flex items-center gap-1.5">
-                                        <Lock className="w-3 h-3 text-neutral-400" />
-                                        <span>Closed</span>
-                                    </div>
-                                ) : (
-                                    <a
-                                        href={`tel:${contactPhone}`}
-                                        className="px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl bg-black text-white text-xs sm:text-sm font-black uppercase tracking-wider hover:bg-neutral-800 transition-colors shrink-0 shadow-xs active:scale-95"
-                                    >
-                                        Call
-                                    </a>
-                                )}
-                            </motion.div>
-                        )}
-
-                        {/* PAYMENT ON ARRIVAL CARD (GH₵ Ghana Cedis) */}
-                        {isInvoiceUnpaid && amountDue > 0 && (
-                            <motion.div
-                                initial={{ opacity: 0, scale: 0.98 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                className="bg-gradient-to-br from-amber-500/15 to-amber-500/5 border-2 border-amber-500/30 rounded-3xl p-4 sm:p-6 shadow-md shadow-amber-500/5 space-y-3.5"
-                            >
-                                <div className="flex items-center justify-between gap-2">
-                                    <div className="flex items-center gap-2.5 min-w-0">
-                                        <div className="w-10 h-10 rounded-2xl bg-amber-500 text-white flex items-center justify-center font-bold shadow-xs shrink-0">
-                                            <Banknote className="w-5 h-5" />
-                                        </div>
-                                        <div className="min-w-0">
-                                            <p className="text-[10px] sm:text-xs font-black uppercase tracking-wider text-amber-900">
-                                                Payment on Arrival Required
-                                            </p>
-                                            <p className="text-lg sm:text-2xl font-black text-black">
-                                                GH₵ {amountDue.toFixed(2)}
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <span className="px-2.5 py-1 rounded-full bg-amber-500 text-white text-[10px] sm:text-xs font-black uppercase tracking-wider shrink-0">
-                                        Unpaid
-                                    </span>
-                                </div>
-
-                                <p className="text-[11px] sm:text-xs text-amber-950 font-medium leading-relaxed">
-                                    Collect payment before or upon handover. Customer can pay via Mobile Money prompt or cash.
-                                </p>
-
-                                <div className="grid grid-cols-2 gap-2.5 pt-1">
-                                    {/* Prompt Momo Button */}
-                                    <button
-                                        type="button"
-                                        onClick={() => {
-                                            setMomoPhone(contactPhone)
-                                            setCustomMomoAmount(amountDue > 0 ? String(amountDue) : "")
-                                            setIsMomoModalOpen(true)
-                                        }}
-                                        className="p-3 sm:p-3.5 rounded-2xl bg-black hover:bg-neutral-900 text-white font-black text-xs sm:text-sm uppercase tracking-wider flex items-center justify-center gap-2 shadow-sm transition-all active:scale-95"
-                                    >
-                                        <Banknote className="w-4 h-4 text-amber-400" />
-                                        <span>Prompt Momo</span>
-                                    </button>
-
-                                    {/* Confirm Cash Received Button */}
-                                    <button
-                                        type="button"
-                                        onClick={handleCashCollection}
-                                        disabled={isCollectingCash}
-                                        className="p-3 sm:p-3.5 rounded-2xl bg-white hover:bg-neutral-50 text-black font-black text-xs sm:text-sm uppercase tracking-wider border-2 border-black/10 flex items-center justify-center gap-2 shadow-2xs transition-all active:scale-95"
-                                    >
-                                        <Banknote className="w-4 h-4 text-emerald-600" />
-                                        <span>{isCollectingCash ? "Recording..." : "Cash Received"}</span>
-                                    </button>
-                                </div>
-                            </motion.div>
-                        )}
-
-                        {isInvoicePaid && amountDue > 0 && (
-                            <motion.div
-                                initial={{ opacity: 0, scale: 0.98 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                className="bg-emerald-50 border border-emerald-200 rounded-3xl p-4 sm:p-5 flex items-center justify-between gap-3 shadow-2xs"
-                            >
-                                <div className="flex items-center gap-3 min-w-0">
-                                    <div className="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0">
-                                        <ShieldCheck className="w-5 h-5" />
-                                    </div>
-                                    <div className="min-w-0">
-                                        <p className="text-[10px] sm:text-xs font-black uppercase tracking-wider text-emerald-800">
-                                            Payment Confirmed
-                                        </p>
-                                        <p className="text-xs sm:text-sm md:text-base font-black text-emerald-950 truncate">
-                                            GH₵ {Number(invoice?.amountPaid || invoice?.amountDue || amountDue || 0).toFixed(2)} Paid ({invoice?.paymentCollectedBy === "rider_cash" ? "Cash Collected" : "Online / Momo"})
-                                        </p>
-                                    </div>
-                                </div>
-                                <span className="px-2.5 py-1 rounded-full bg-emerald-600 text-white text-[10px] sm:text-xs font-black uppercase shrink-0">
-                                    Paid
-                                </span>
-                            </motion.div>
-                        )}
-                    </div>
-
-                    {/* RIGHT COLUMN: Actions, PIN Verification & Order Overview (5 cols on tablet/desktop, sticky) */}
-                    <div className="md:col-span-5 lg:col-span-5 space-y-4 sm:space-y-6 md:sticky md:top-6">
-                        
-                        {/* ACTION & DELIVERY PIN VERIFICATION AREA */}
-                        {!isDelivered ? (
-                            <div className="space-y-4">
-                                <div className="space-y-3.5">
-                                    {/* Step 0: Confirm Package Pickup */}
-                                    {activeStep === 0 && (
-                                        <div className="bg-white rounded-3xl p-5 sm:p-6 shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-black/[0.04] space-y-3.5">
-                                            <div className="space-y-1">
-                                                <h3 className="text-sm sm:text-base font-black text-black">Pickup Handover</h3>
-                                                <p className="text-xs text-neutral-400 font-medium">
-                                                    Collect parcel from sender at pickup location and confirm pickup.
-                                                </p>
-                                            </div>
-                                            <Button
-                                                onClick={() => handleStatusUpdate("Picked Up")}
-                                                disabled={isUpdating}
-                                                className="w-full h-14 sm:h-16 rounded-2xl bg-black hover:bg-neutral-900 text-white text-sm sm:text-base font-black uppercase tracking-wider shadow-lg shadow-black/15 transition-all active:scale-[0.98] border-none flex items-center justify-center gap-2.5"
-                                            >
-                                                <CheckCircle2 className="w-5 h-5" />
-                                                <span>{isUpdating ? "Updating..." : "Confirm Package Pickup"}</span>
-                                            </Button>
-                                        </div>
-                                    )}
-
-                                    {/* Step 1: Start Transit */}
-                                    {activeStep === 1 && (
-                                        <div className="bg-white rounded-3xl p-5 sm:p-6 shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-black/[0.04] space-y-3.5">
-                                            <div className="space-y-1">
-                                                <h3 className="text-sm sm:text-base font-black text-black">Start Delivery Transit</h3>
-                                                <p className="text-xs text-neutral-400 font-medium">
-                                                    Package picked up. Begin delivery transit towards destination.
-                                                </p>
-                                            </div>
-                                            <Button
-                                                onClick={() => handleStatusUpdate("In Transit")}
-                                                disabled={isUpdating}
-                                                className="w-full h-14 sm:h-16 rounded-2xl bg-black hover:bg-neutral-900 text-white text-sm sm:text-base font-black uppercase tracking-wider shadow-lg shadow-black/15 transition-all active:scale-[0.98] border-none flex items-center justify-center gap-2.5"
-                                            >
-                                                <Truck className="w-5 h-5" />
-                                                <span>{isUpdating ? "Updating..." : "Start Delivery (In Transit)"}</span>
-                                            </Button>
-                                        </div>
-                                    )}
-
-                                    {/* Step 2: Handover Confirmation with Customer Numeric Delivery PIN */}
-                                    {activeStep >= 2 && (
-                                        <div className="space-y-3.5">
-                                            {/* Dedicated Numeric OTP Box */}
-                                            <div className="bg-white rounded-3xl p-4 sm:p-6 shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-black/[0.04] space-y-2">
-                                                <div className="flex items-center justify-between px-1">
-                                                    <div className="flex items-center gap-2">
-                                                        <Lock className="w-3.5 h-3.5 text-neutral-400" />
-                                                        <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] text-neutral-400 font-mono">
-                                                            Customer Delivery PIN (OTP)
-                                                        </span>
-                                                    </div>
-                                                    {isUpdating && (
-                                                        <span className="text-[10px] sm:text-xs font-bold text-black animate-pulse flex items-center gap-1">
-                                                            <Loader2 className="w-3 h-3 animate-spin" />
-                                                            Verifying...
-                                                        </span>
-                                                    )}
-                                                </div>
-                                                <input
-                                                    type="text"
-                                                    inputMode="numeric"
-                                                    pattern="[0-9]*"
-                                                    value={verificationCode}
-                                                    onChange={(e) => handleOtpChange(e.target.value)}
-                                                    placeholder="ENTER 4-DIGIT PIN"
-                                                    maxLength={4}
-                                                    disabled={isUpdating}
-                                                    autoComplete="one-time-code"
-                                                    className={`w-full h-14 sm:h-16 px-4 text-center font-mono text-2xl sm:text-3xl font-black tracking-[0.35em] text-black bg-[#F6F6F8] rounded-2xl border border-neutral-200 focus:border-black focus:outline-none focus:ring-4 focus:ring-black/5 transition-all placeholder:text-neutral-300 placeholder:font-sans placeholder:tracking-normal placeholder:text-xs placeholder:font-bold ${
-                                                        isUpdating ? "opacity-60 cursor-not-allowed" : ""
-                                                    }`}
-                                                />
-                                                <p className="text-[11px] text-neutral-400 text-center font-medium">
-                                                    Ask recipient for the 4-digit PIN on their tracking screen
-                                                </p>
-                                            </div>
-
-                                            {/* Action Button */}
-                                            <Button
-                                                onClick={() => handleStatusUpdate("Delivered", verificationCode)}
-                                                disabled={isUpdating || verificationCode.trim().length !== 4}
-                                                className="w-full h-14 sm:h-16 rounded-2xl bg-black hover:bg-neutral-900 text-white text-sm sm:text-base font-black uppercase tracking-wider shadow-lg shadow-black/15 transition-all active:scale-[0.98] border-none disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center gap-2.5"
-                                            >
-                                                {isUpdating ? (
-                                                    <>
-                                                        <Loader2 className="w-5 h-5 animate-spin" />
-                                                        <span>Verifying PIN & Marking Delivered...</span>
-                                                    </>
-                                                ) : (
-                                                    <>
-                                                        <CheckCircle2 className="w-5 h-5" />
-                                                        <span>Confirm Delivery</span>
-                                                    </>
-                                                )}
-                                            </Button>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                        ) : (
-                            <div className="bg-white rounded-3xl p-5 sm:p-6 shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-black/[0.04] text-center space-y-3">
-                                <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center mx-auto">
-                                    <CheckCircle2 className="w-6 h-6" />
-                                </div>
-                                <h3 className="text-base sm:text-lg font-black text-black">Delivery Completed</h3>
-                                <p className="text-xs sm:text-sm text-neutral-500 font-medium leading-relaxed">
-                                    Order #{order.orderNumber} was marked delivered. All dispatch controls and actions are locked.
-                                </p>
-                                <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-neutral-100 text-neutral-500 text-[10px] sm:text-xs font-bold uppercase tracking-wider">
-                                    <Lock className="w-3.5 h-3.5" />
-                                    <span>Interface Closed</span>
-                                </div>
-                            </div>
-                        )}
-
-                        {/* ORDER SUMMARY CARD (Balanced on Tablet/Desktop) */}
-                        <div className="bg-white rounded-3xl p-4 sm:p-5 shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-black/[0.04] space-y-3">
-                            <span className="text-[10px] sm:text-xs font-black uppercase tracking-wider text-neutral-400">Order Overview</span>
-                            <div className="space-y-2.5 text-xs sm:text-sm">
-                                <div className="flex justify-between py-1 border-b border-neutral-100">
-                                    <span className="text-neutral-500 font-medium">Waybill #</span>
-                                    <span className="font-bold text-black font-mono">#{order.orderNumber}</span>
-                                </div>
-                                {order.itemType && (
-                                    <div className="flex justify-between py-1 border-b border-neutral-100">
-                                        <span className="text-neutral-500 font-medium">Item / Type</span>
-                                        <span className="font-bold text-black">{order.itemType}</span>
-                                    </div>
-                                )}
-                                {amountDue > 0 && (
-                                    <div className="flex justify-between py-1 border-b border-neutral-100">
-                                        <span className="text-neutral-500 font-medium">Total / Delivery Fee</span>
-                                        <span className="font-black text-black">GH₵ {amountDue.toFixed(2)}</span>
-                                    </div>
-                                )}
-                                <div className="flex justify-between py-1">
-                                    <span className="text-neutral-500 font-medium">Current Status</span>
-                                    <span className="font-black text-black">{currentStatus}</span>
-                                </div>
+                {/* 3. ROUTE DETAILS CARD */}
+                {(pickupLoc || deliveryLoc) && (
+                    <motion.div 
+                        initial={{ opacity: 0, y: 4 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.35, delay: 0.1 }}
+                        className="bg-white rounded-3xl p-4 sm:p-6 shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-black/[0.04] space-y-4"
+                    >
+                        <div className="flex items-center justify-between">
+                            <span className="text-xs sm:text-sm font-black uppercase tracking-wider text-black">Delivery Route</span>
+                            <div className="flex items-center gap-1.5 text-[11px] sm:text-xs font-bold text-neutral-700">
+                                <Compass className="w-3.5 h-3.5 text-black" />
+                                <span>Navigation</span>
                             </div>
                         </div>
 
-                    </div>
+                        <div className="space-y-3.5">
+                            {/* Pickup Point */}
+                            {pickupLoc && (
+                                <div className="space-y-2 p-3.5 sm:p-4 rounded-2xl bg-neutral-50/80 border border-black/[0.04]">
+                                    <div>
+                                        <p className="text-[10px] sm:text-xs font-black uppercase tracking-wider text-neutral-600">Pickup Address</p>
+                                        <p className="font-bold text-neutral-900 text-xs sm:text-sm md:text-base break-words mt-0.5">{pickupLoc}</p>
+                                    </div>
+                                    <div className="flex justify-center sm:justify-start pt-1">
+                                        {isDelivered ? (
+                                            <div className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-neutral-200 text-neutral-500 text-xs font-bold cursor-not-allowed select-none">
+                                                <Check className="w-3.5 h-3.5 text-neutral-500" />
+                                                <span>Pickup Completed</span>
+                                            </div>
+                                        ) : (
+                                            <a
+                                                href={getGoogleMapsUrl(pickupLoc)}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-black hover:bg-neutral-800 text-white text-xs font-bold shadow-xs active:scale-95 transition-all"
+                                            >
+                                                <Navigation className="w-3.5 h-3.5 text-white" />
+                                                <span>Navigate in Google Maps</span>
+                                            </a>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
 
-                </div>
+                            {/* Delivery Destination Point */}
+                            {deliveryLoc && (
+                                <div className="space-y-2 p-3.5 sm:p-4 rounded-2xl bg-neutral-50/80 border border-black/[0.04]">
+                                    <div>
+                                        <p className="text-[10px] sm:text-xs font-black uppercase tracking-wider text-neutral-600">Drop-off Destination</p>
+                                        <p className="font-bold text-neutral-900 text-xs sm:text-sm md:text-base break-words mt-0.5">{deliveryLoc}</p>
+                                    </div>
+                                    <div className="flex justify-center sm:justify-start pt-1">
+                                        {isDelivered ? (
+                                            <div className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-100 text-emerald-800 text-xs font-bold cursor-not-allowed select-none">
+                                                <Check className="w-3.5 h-3.5 text-emerald-700" />
+                                                <span>Delivery Completed</span>
+                                            </div>
+                                        ) : (
+                                            <a
+                                                href={getGoogleMapsUrl(deliveryLoc)}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-black hover:bg-neutral-800 text-white text-xs font-bold shadow-xs active:scale-95 transition-all"
+                                            >
+                                                <Navigation className="w-3.5 h-3.5 text-white" />
+                                                <span>Navigate in Google Maps</span>
+                                            </a>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </motion.div>
+                )}
+
+                {/* 4. CUSTOMER CONTACT & QUICK CALL CARD */}
+                {contactPhone && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 4 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.35, delay: 0.12 }}
+                        className="flex items-center justify-between bg-white p-4 sm:p-5 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-black/[0.04]"
+                    >
+                        <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+                            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-neutral-100 flex items-center justify-center text-black font-black shrink-0">
+                                <Phone className="w-4 h-4 sm:w-5 sm:h-5" />
+                            </div>
+                            <div className="min-w-0">
+                                <span className="text-[10px] sm:text-xs font-bold text-neutral-400 uppercase tracking-wider block">
+                                    {targetCustomerRole}
+                                </span>
+                                <span className="text-xs sm:text-sm md:text-base font-black text-black truncate block">
+                                    {contactName} ({contactPhone})
+                                </span>
+                            </div>
+                        </div>
+                        {isDelivered ? (
+                            <div className="px-3.5 py-2 rounded-xl bg-neutral-100 text-neutral-400 text-xs font-bold uppercase tracking-wider cursor-not-allowed select-none flex items-center gap-1.5">
+                                <Lock className="w-3 h-3 text-neutral-400" />
+                                <span>Closed</span>
+                            </div>
+                        ) : (
+                            <a
+                                href={`tel:${contactPhone}`}
+                                className="px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl bg-black text-white text-xs sm:text-sm font-black uppercase tracking-wider hover:bg-neutral-800 transition-colors shrink-0 shadow-xs active:scale-95"
+                            >
+                                Call
+                            </a>
+                        )}
+                    </motion.div>
+                )}
+
+                {/* 5. PAYMENT ON ARRIVAL CARD (GH₵ Ghana Cedis) */}
+                {isInvoiceUnpaid && amountDue > 0 && (
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.98 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="bg-gradient-to-br from-amber-500/15 to-amber-500/5 border-2 border-amber-500/30 rounded-3xl p-4 sm:p-6 shadow-md shadow-amber-500/5 space-y-3.5"
+                    >
+                        <div className="flex items-center justify-between gap-2">
+                            <div className="flex items-center gap-2.5 min-w-0">
+                                <div className="w-10 h-10 rounded-2xl bg-amber-500 text-white flex items-center justify-center font-bold shadow-xs shrink-0">
+                                    <Banknote className="w-5 h-5" />
+                                </div>
+                                <div className="min-w-0">
+                                    <p className="text-[10px] sm:text-xs font-black uppercase tracking-wider text-amber-900">
+                                        Payment on Arrival Required
+                                    </p>
+                                    <p className="text-lg sm:text-2xl font-black text-black">
+                                        GH₵ {amountDue.toFixed(2)}
+                                    </p>
+                                </div>
+                            </div>
+                            <span className="px-2.5 py-1 rounded-full bg-amber-500 text-white text-[10px] sm:text-xs font-black uppercase tracking-wider shrink-0">
+                                Unpaid
+                            </span>
+                        </div>
+
+                        <p className="text-[11px] sm:text-xs text-amber-950 font-medium leading-relaxed">
+                            Collect payment before or upon handover. Customer can pay via Mobile Money prompt or cash.
+                        </p>
+
+                        <div className="grid grid-cols-2 gap-2.5 pt-1">
+                            {/* Prompt Momo Button */}
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setMomoPhone(contactPhone)
+                                    setCustomMomoAmount(amountDue > 0 ? String(amountDue) : "")
+                                    setIsMomoModalOpen(true)
+                                }}
+                                className="p-3 sm:p-3.5 rounded-2xl bg-black hover:bg-neutral-900 text-white font-black text-xs sm:text-sm uppercase tracking-wider flex items-center justify-center gap-2 shadow-sm transition-all active:scale-95"
+                            >
+                                <Banknote className="w-4 h-4 text-amber-400" />
+                                <span>Prompt Momo</span>
+                            </button>
+
+                            {/* Confirm Cash Received Button */}
+                            <button
+                                type="button"
+                                onClick={handleCashCollection}
+                                disabled={isCollectingCash}
+                                className="p-3 sm:p-3.5 rounded-2xl bg-white hover:bg-neutral-50 text-black font-black text-xs sm:text-sm uppercase tracking-wider border-2 border-black/10 flex items-center justify-center gap-2 shadow-2xs transition-all active:scale-95"
+                            >
+                                <Banknote className="w-4 h-4 text-emerald-600" />
+                                <span>{isCollectingCash ? "Recording..." : "Cash Received"}</span>
+                            </button>
+                        </div>
+                    </motion.div>
+                )}
+
+                {isInvoicePaid && amountDue > 0 && (
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.98 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="bg-emerald-50 border border-emerald-200 rounded-3xl p-4 sm:p-5 flex items-center justify-between gap-3 shadow-2xs"
+                    >
+                        <div className="flex items-center gap-3 min-w-0">
+                            <div className="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0">
+                                <ShieldCheck className="w-5 h-5" />
+                            </div>
+                            <div className="min-w-0">
+                                <p className="text-[10px] sm:text-xs font-black uppercase tracking-wider text-emerald-800">
+                                    Payment Confirmed
+                                </p>
+                                <p className="text-xs sm:text-sm md:text-base font-black text-emerald-950 truncate">
+                                    GH₵ {Number(invoice?.amountPaid || invoice?.amountDue || amountDue || 0).toFixed(2)} Paid ({invoice?.paymentCollectedBy === "rider_cash" ? "Cash Collected" : "Online / Momo"})
+                                </p>
+                            </div>
+                        </div>
+                        <span className="px-2.5 py-1 rounded-full bg-emerald-600 text-white text-[10px] sm:text-xs font-black uppercase shrink-0">
+                            Paid
+                        </span>
+                    </motion.div>
+                )}
+
+                {/* 6. ACTION & DELIVERY PIN VERIFICATION AREA */}
+                {!isDelivered && (
+                    <div className="space-y-4 pt-1">
+                        <div className="space-y-3.5">
+                            {/* Step 0: Confirm Package Pickup */}
+                            {activeStep === 0 && (
+                                <div className="space-y-3.5">
+                                    <Button
+                                        onClick={() => handleStatusUpdate("Picked Up")}
+                                        disabled={isUpdating}
+                                        className="w-full h-14 sm:h-16 rounded-2xl bg-black hover:bg-neutral-900 text-white text-sm sm:text-base font-black uppercase tracking-wider shadow-lg shadow-black/15 transition-all active:scale-[0.98] border-none flex items-center justify-center gap-2.5"
+                                    >
+                                        <CheckCircle2 className="w-5 h-5" />
+                                        <span>{isUpdating ? "Updating..." : "Confirm Package Pickup"}</span>
+                                    </Button>
+                                </div>
+                            )}
+
+                            {/* Step 1: Start Transit */}
+                            {activeStep === 1 && (
+                                <div className="space-y-3.5">
+                                    <Button
+                                        onClick={() => handleStatusUpdate("In Transit")}
+                                        disabled={isUpdating}
+                                        className="w-full h-14 sm:h-16 rounded-2xl bg-black hover:bg-neutral-900 text-white text-sm sm:text-base font-black uppercase tracking-wider shadow-lg shadow-black/15 transition-all active:scale-[0.98] border-none flex items-center justify-center gap-2.5"
+                                    >
+                                        <Truck className="w-5 h-5" />
+                                        <span>{isUpdating ? "Updating..." : "Start Delivery (In Transit)"}</span>
+                                    </Button>
+                                </div>
+                            )}
+
+                            {/* Step 2: Handover Confirmation with Customer Numeric Delivery PIN */}
+                            {activeStep >= 2 && (
+                                <div className="space-y-3.5">
+                                    {/* Dedicated Numeric OTP Box */}
+                                    <div className="bg-white rounded-3xl p-4 sm:p-6 shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-black/[0.04] space-y-2">
+                                        <div className="flex items-center justify-between px-1 mb-1">
+                                            <div className="flex items-center gap-2">
+                                                <Lock className="w-3.5 h-3.5 text-neutral-400" />
+                                                <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] text-neutral-400 font-mono">
+                                                    Customer Delivery PIN (OTP)
+                                                </span>
+                                            </div>
+                                            {isUpdating && (
+                                                <span className="text-[10px] sm:text-xs font-bold text-black animate-pulse flex items-center gap-1">
+                                                    <Loader2 className="w-3 h-3 animate-spin" />
+                                                    Verifying...
+                                                </span>
+                                            )}
+                                        </div>
+                                        <input
+                                            type="text"
+                                            inputMode="numeric"
+                                            pattern="[0-9]*"
+                                            value={verificationCode}
+                                            onChange={(e) => handleOtpChange(e.target.value)}
+                                            placeholder="ENTER 4-DIGIT PIN"
+                                            maxLength={4}
+                                            disabled={isUpdating}
+                                            autoComplete="one-time-code"
+                                            className={`w-full h-14 sm:h-16 px-4 text-center font-mono text-2xl sm:text-3xl font-black tracking-[0.35em] text-black bg-[#F6F6F8] rounded-2xl border border-neutral-200 focus:border-black focus:outline-none focus:ring-4 focus:ring-black/5 transition-all placeholder:text-neutral-300 placeholder:font-sans placeholder:tracking-normal placeholder:text-xs placeholder:font-bold ${
+                                                isUpdating ? "opacity-60 cursor-not-allowed" : ""
+                                            }`}
+                                        />
+                                    </div>
+
+                                    {/* Action Button */}
+                                    <Button
+                                        onClick={() => handleStatusUpdate("Delivered", verificationCode)}
+                                        disabled={isUpdating || verificationCode.trim().length !== 4}
+                                        className="w-full h-14 sm:h-16 rounded-2xl bg-black hover:bg-neutral-900 text-white text-sm sm:text-base font-black uppercase tracking-wider shadow-lg shadow-black/15 transition-all active:scale-[0.98] border-none disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center gap-2.5"
+                                    >
+                                        {isUpdating ? (
+                                            <>
+                                                <Loader2 className="w-5 h-5 animate-spin" />
+                                                <span>Verifying PIN & Marking Delivered...</span>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <CheckCircle2 className="w-5 h-5" />
+                                                <span>Confirm Delivery</span>
+                                            </>
+                                        )}
+                                    </Button>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                )}
 
             </div>
 
