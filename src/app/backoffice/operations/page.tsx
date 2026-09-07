@@ -425,10 +425,8 @@ export default function OperationsPage() {
                                                             <div className="text-xs text-slate-600 space-y-1.5">
                                                                 {isLogistics && (pickupLoc || deliveryLoc) ? (
                                                                     <div className="flex items-center gap-1.5 font-medium truncate py-0.5">
-                                                                        <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" title="Pickup" />
                                                                         <span className="text-slate-800 font-semibold truncate text-[11px]">{pickupLoc || "Origin"}</span>
                                                                         <ArrowRight className="w-3 h-3 text-indigo-400 shrink-0" />
-                                                                        <span className="w-2 h-2 rounded-full bg-sky-500 shrink-0" title="Dropoff" />
                                                                         <span className="text-slate-800 font-semibold truncate text-[11px]">{deliveryLoc || "Destination"}</span>
                                                                     </div>
                                                                 ) : (

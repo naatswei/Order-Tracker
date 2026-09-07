@@ -45,7 +45,6 @@ import {
     Send,
     SendHorizonal,
     ArrowRight,
-    Sparkles,
     Check
 } from "lucide-react"
 import { useOrganization } from "@clerk/nextjs"
@@ -527,19 +526,13 @@ export default function OrderUpdatePage() {
                                     <span>Delivery Route</span>
                                 </div>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                    <div className="flex items-start gap-2 min-w-0">
-                                        <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 mt-1 shrink-0" />
-                                        <div className="min-w-0">
-                                            <p className="text-[10px] font-bold text-slate-400">PICKUP / ORIGIN</p>
-                                            <p className="text-xs sm:text-sm font-bold text-slate-800 break-words">{pickupLoc || "Origin Station"}</p>
-                                        </div>
+                                    <div className="min-w-0">
+                                        <p className="text-[10px] font-bold text-slate-400">PICKUP / ORIGIN</p>
+                                        <p className="text-xs sm:text-sm font-bold text-slate-800 break-words">{pickupLoc || "Origin Station"}</p>
                                     </div>
-                                    <div className="flex items-start gap-2 min-w-0">
-                                        <span className="w-2.5 h-2.5 rounded-full bg-sky-500 mt-1 shrink-0" />
-                                        <div className="min-w-0">
-                                            <p className="text-[10px] font-bold text-slate-400">DROPOFF / DESTINATION</p>
-                                            <p className="text-xs sm:text-sm font-bold text-slate-800 break-words">{deliveryLoc || "Customer Destination"}</p>
-                                        </div>
+                                    <div className="min-w-0">
+                                        <p className="text-[10px] font-bold text-slate-400">DROPOFF / DESTINATION</p>
+                                        <p className="text-xs sm:text-sm font-bold text-slate-800 break-words">{deliveryLoc || "Customer Destination"}</p>
                                     </div>
                                 </div>
                             </div>
@@ -705,7 +698,6 @@ export default function OrderUpdatePage() {
                         <div className="flex items-center justify-between gap-2">
                             <div>
                                 <CardTitle className="text-base sm:text-lg font-black text-[#191A43] flex items-center gap-2">
-                                    <Sparkles className="w-4 h-4 text-indigo-600" />
                                     <span>Update Order Status</span>
                                 </CardTitle>
                                 <CardDescription className="text-xs text-slate-500 font-medium">
