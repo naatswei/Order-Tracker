@@ -21,9 +21,9 @@
   --muted: #F9FAFB;
   --muted-foreground: #6B7280;
 
-  /* Strong Action / Brand Red */
-  --accent: #CE0003;
-  --accent-foreground: #FFFFFF;
+  /* Subtle Neutral Accent / Hover */
+  --accent: #F1F5F9;
+  --accent-foreground: #0F172A;
 
   --destructive: #CE0003;
   --destructive-foreground: #FFFFFF;
@@ -67,8 +67,8 @@
   --muted: #1E293B;
   --muted-foreground: #94A3B8;
 
-  --accent: #CE0003;
-  --accent-foreground: #FFFFFF;
+  --accent: #1E293B;
+  --accent-foreground: #F8FAFC;
 
   --destructive: #CE0003;
   --destructive-foreground: #FFFFFF;

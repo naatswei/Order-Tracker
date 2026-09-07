@@ -463,30 +463,48 @@ export default function OperationsPage() {
                                                             {/* Line 3: Rider Assignment & Dispatch SMS */}
                                                             <div className="pt-1 flex items-center gap-2">
                                                                 <div className={cn(
-                                                                    "flex-1 min-w-0 rounded-xl px-3 py-1.5 flex items-center gap-1.5 border transition-all",
+                                                                    "flex-1 min-w-0 rounded-2xl px-3 py-1.5 flex items-center gap-2 border transition-all",
                                                                     order.assignedStaffId && order.assignedStaffId !== "none"
-                                                                        ? "bg-indigo-50/40 border-indigo-200/80"
-                                                                        : "bg-slate-50 border-slate-200/80"
+                                                                        ? "bg-indigo-50/50 border-indigo-200/90 shadow-2xs"
+                                                                        : "bg-slate-50/90 border-slate-200/80"
                                                                 )}>
-                                                                    <User className={cn(
-                                                                        "w-3.5 h-3.5 shrink-0",
-                                                                        order.assignedStaffId && order.assignedStaffId !== "none" ? "text-indigo-600" : "text-slate-400"
-                                                                    )} />
+                                                                    <div className={cn(
+                                                                        "w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black shrink-0 transition-colors",
+                                                                        order.assignedStaffId && order.assignedStaffId !== "none"
+                                                                            ? "bg-indigo-600 text-white shadow-xs"
+                                                                            : "bg-slate-200 text-slate-500"
+                                                                    )}>
+                                                                        {order.assignedStaffId && order.assignedStaffId !== "none"
+                                                                            ? (staff.find(s => s.id === order.assignedStaffId)?.name?.charAt(0).toUpperCase() || <User className="w-3 h-3" />)
+                                                                            : <User className="w-3 h-3" />}
+                                                                    </div>
                                                                     <Select
                                                                         value={order.assignedStaffId || "none"}
                                                                         onValueChange={(val) => handleAssign(order.id, val)}
                                                                     >
-                                                                        <SelectTrigger className="h-7 border-none bg-transparent p-0 focus:ring-0 text-xs font-bold text-slate-700 w-full shadow-none">
+                                                                        <SelectTrigger className="h-7 border-none bg-transparent p-0 focus:ring-0 text-xs font-bold text-slate-800 w-full shadow-none cursor-pointer">
                                                                             <SelectValue placeholder={isLogistics ? "Assign Rider" : "Assign Staff"} />
                                                                         </SelectTrigger>
-                                                                        <SelectContent className="rounded-2xl border-slate-200 shadow-xl">
-                                                                            <SelectItem value="none">
-                                                                                <span className="text-slate-400">Unassigned</span>
+                                                                        <SelectContent className="rounded-2xl border-slate-200/90 shadow-2xl bg-white p-1.5 min-w-[220px]">
+                                                                            <SelectItem value="none" className="rounded-xl font-medium text-slate-500">
+                                                                                <div className="flex items-center gap-2">
+                                                                                    <span className="w-2 h-2 rounded-full bg-slate-300 shrink-0" />
+                                                                                    <span className="font-semibold text-slate-600">Unassigned</span>
+                                                                                </div>
                                                                             </SelectItem>
                                                                             {staff.map(s => (
-                                                                                <SelectItem key={s.id} value={s.id}>
-                                                                                    <span className="font-bold text-slate-800">{s.name}</span>
-                                                                                    {s.phone && <span className="text-[11px] text-slate-400 ml-1.5">({s.phone})</span>}
+                                                                                <SelectItem key={s.id} value={s.id} className="rounded-xl">
+                                                                                    <div className="flex items-center gap-2 min-w-0">
+                                                                                        <div className="w-5 h-5 rounded-full bg-indigo-100 text-indigo-800 flex items-center justify-center text-[10px] font-black shrink-0">
+                                                                                            {s.name.charAt(0).toUpperCase()}
+                                                                                        </div>
+                                                                                        <span className="font-bold text-slate-900 truncate">{s.name}</span>
+                                                                                        {s.phone && (
+                                                                                            <span className="text-[11px] text-slate-400 font-mono shrink-0">
+                                                                                                ({s.phone})
+                                                                                            </span>
+                                                                                        )}
+                                                                                    </div>
                                                                                 </SelectItem>
                                                                             ))}
                                                                         </SelectContent>
@@ -499,7 +517,7 @@ export default function OperationsPage() {
                                                                         type="button"
                                                                         size="sm"
                                                                         onClick={() => handleResendSMS(order.id)}
-                                                                        className="h-9 px-3 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white text-xs font-bold shrink-0 shadow-xs shadow-sky-500/20 transition-all flex items-center gap-1.5"
+                                                                        className="h-8 px-3 rounded-xl bg-black hover:bg-neutral-800 text-white text-xs font-bold shrink-0 shadow-xs transition-all flex items-center gap-1.5 active:scale-95"
                                                                         title="Send SMS to rider"
                                                                     >
                                                                         <Send className="w-3 h-3 text-white" />
