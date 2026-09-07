@@ -118,12 +118,12 @@ const SelectItem = React.forwardRef<
   <SelectPrimitive.Item
     ref={ref}
     className={cn(
-      "relative flex w-full cursor-pointer select-none items-center rounded-xl py-2 pl-3 pr-8 text-xs font-semibold text-slate-700 outline-none transition-all hover:bg-slate-100 hover:text-slate-950 focus:bg-slate-100 focus:text-slate-950 data-[state=checked]:bg-slate-100/80 data-[state=checked]:font-bold data-[state=checked]:text-slate-950 data-[disabled]:pointer-events-none data-[disabled]:opacity-40 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white dark:focus:bg-slate-800 dark:focus:text-white",
+      "relative flex w-full cursor-pointer select-none items-center rounded-xl py-2 pl-3 pr-8 text-xs font-semibold outline-none transition-colors text-slate-800 hover:bg-accent hover:text-white hover:[&_*]:text-white focus:bg-accent focus:text-white focus:[&_*]:text-white data-[state=checked]:bg-accent data-[state=checked]:text-white data-[state=checked]:[&_*]:text-white data-[disabled]:pointer-events-none data-[disabled]:opacity-40",
       className
     )}
     {...props}
   >
-    <span className="absolute right-2.5 flex h-4 w-4 items-center justify-center text-slate-900 dark:text-white">
+    <span className="absolute right-2.5 flex h-4 w-4 items-center justify-center text-current">
       <SelectPrimitive.ItemIndicator>
         <Check className="h-3.5 w-3.5 stroke-[2.5]" />
       </SelectPrimitive.ItemIndicator>
