@@ -311,32 +311,30 @@ export default function OperationsPage() {
                     </div>
 
                     {/* Total Sum & 1-Tap Stage Jump Strip (Mobile-First) */}
-                    <div className="flex items-center gap-2 overflow-x-auto pt-1 pb-1 no-scrollbar">
+                    <div className="flex items-center gap-2 w-full overflow-x-auto pt-1 pb-1 no-scrollbar">
                         <button
                             onClick={scrollToStart}
-                            className="px-3 py-1.5 rounded-xl bg-[#191A43] text-white text-xs font-bold shrink-0 shadow-2xs hover:bg-slate-800 transition-all flex items-center gap-2 active:scale-95"
+                            className="px-3.5 py-2 rounded-xl bg-[#191A43] text-white text-xs font-bold shadow-2xs hover:bg-slate-800 transition-all flex items-center justify-center gap-2 active:scale-95 flex-1 min-w-max"
                             title="Scroll to beginning"
                         >
                             <span>Total Orders</span>
-                            <span className="px-1.5 py-0.5 rounded-full bg-white/20 text-white text-[10px] font-black leading-none">
+                            <span className="px-1.5 py-0.5 rounded-full bg-white/20 text-white text-[10px] font-mono font-bold leading-none">
                                 {filteredOrders.length}
                             </span>
                         </button>
 
                         {stages.map((stage) => {
                             const count = filteredOrders.filter(o => getOrderStageName(o) === stage.name).length;
-                            const theme = getStageTheme(stage.name);
 
                             return (
                                 <button
                                     key={stage.name}
                                     onClick={() => scrollToStage(stage.name)}
-                                    className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200/80 text-slate-700 text-xs font-semibold shrink-0 transition-all flex items-center gap-2 border border-slate-200/60 active:scale-95"
+                                    className="px-3.5 py-2 rounded-xl bg-slate-100/90 hover:bg-slate-200/90 text-slate-700 text-xs font-semibold transition-all flex items-center justify-center gap-2 border border-slate-200/70 active:scale-95 flex-1 min-w-max"
                                     title={`Jump to ${stage.name}`}
                                 >
-                                    <span className={cn("w-2 h-2 rounded-full shrink-0", theme.dot)} />
                                     <span className="truncate">{stage.name}</span>
-                                    <span className="px-1.5 py-0.5 rounded-full bg-white text-slate-600 text-[10px] font-bold border border-slate-200/60 shadow-2xs leading-none">
+                                    <span className="px-1.5 py-0.5 rounded-full bg-white text-slate-600 text-[10px] font-mono font-bold border border-slate-200/60 shadow-2xs leading-none">
                                         {count}
                                     </span>
                                 </button>
@@ -371,7 +369,6 @@ export default function OperationsPage() {
                                     {/* Stage Header */}
                                     <div className="flex items-center justify-between px-3.5 py-2.5 sm:px-4 sm:py-3 bg-white border border-slate-200/80 rounded-2xl shadow-2xs">
                                         <div className="flex items-center gap-2 min-w-0">
-                                            <span className={cn("w-2 h-2 rounded-full shrink-0", stageTheme.dot)} />
                                             <h2 className="text-xs font-bold text-slate-800 uppercase tracking-wider truncate">
                                                 {stage.name}
                                             </h2>
