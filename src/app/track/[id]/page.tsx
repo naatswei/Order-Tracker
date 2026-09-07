@@ -1147,6 +1147,7 @@ export default function TrackingDetailsPage() {
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
                                 exit={{ opacity: 0 }}
+                                onClick={() => setShowOtpModal(false)}
                                 className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-black/70 backdrop-blur-md"
                             >
                                 <motion.div
@@ -1154,6 +1155,7 @@ export default function TrackingDetailsPage() {
                                     animate={{ scale: 1, opacity: 1, y: 0 }}
                                     exit={{ scale: 0.95, opacity: 0, y: 20 }}
                                     transition={{ type: "spring", damping: 25, stiffness: 350 }}
+                                    onClick={(e) => e.stopPropagation()}
                                     className="relative w-full max-w-sm rounded-[2.5rem] bg-white border border-black/[0.08] p-6 sm:p-7 text-center shadow-[0_25px_70px_rgba(0,0,0,0.25)] space-y-4 max-h-[90vh] overflow-y-auto"
                                 >
                                     {/* Close Button */}
@@ -1170,10 +1172,6 @@ export default function TrackingDetailsPage() {
                                     </div>
 
                                     <div className="space-y-1">
-                                        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 text-[10px] font-black uppercase tracking-wider">
-                                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                                            <span>Live Delivery Alert</span>
-                                        </div>
                                         <h3 className="text-xl font-black text-black tracking-tight pt-1">
                                             Welcome, {viewerFirstName}
                                         </h3>
@@ -1225,48 +1223,6 @@ export default function TrackingDetailsPage() {
                                             </Button>
                                         </div>
                                     )}
-
-                                    {/* Integrated Real-time Push Notifications Opt-In */}
-                                    {isPushSupported && (
-                                        <div className="p-3.5 rounded-3xl bg-neutral-50 border border-neutral-200/80 text-left">
-                                            {isSubscribed ? (
-                                                <div className="flex items-center gap-2 text-emerald-700 text-xs font-bold justify-center py-1">
-                                                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                                                    <span>Live Push Notifications Active</span>
-                                                </div>
-                                            ) : (
-                                                <div className="flex items-center justify-between gap-3">
-                                                    <div className="flex items-center gap-2.5 min-w-0">
-                                                        <div className="w-8 h-8 rounded-xl bg-black text-white flex items-center justify-center shrink-0">
-                                                            <BellRing className="w-4 h-4" />
-                                                        </div>
-                                                        <div className="min-w-0">
-                                                            <p className="text-xs font-black text-black">Instant Alerts</p>
-                                                            <p className="text-[10px] text-neutral-500 font-medium truncate">Get rider arrival updates</p>
-                                                        </div>
-                                                    </div>
-                                                    <Button
-                                                        size="sm"
-                                                        disabled={subscriptionLoading}
-                                                        onClick={handleSubscribe}
-                                                        className="h-8 px-3 rounded-xl bg-black hover:bg-neutral-800 text-white text-[10px] font-black uppercase tracking-wider shrink-0 shadow-sm active:scale-95"
-                                                    >
-                                                        {subscriptionLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : "Allow"}
-                                                    </Button>
-                                                </div>
-                                            )}
-                                        </div>
-                                    )}
-
-                                    {/* Action Button */}
-                                    <div className="pt-2">
-                                        <Button
-                                            onClick={() => setShowOtpModal(false)}
-                                            className="w-full h-12 rounded-2xl bg-black hover:bg-neutral-800 text-white text-xs font-black uppercase tracking-wider shadow-md active:scale-95"
-                                        >
-                                            Track Live Delivery
-                                        </Button>
-                                    </div>
                                 </motion.div>
                             </motion.div>
                         )}
