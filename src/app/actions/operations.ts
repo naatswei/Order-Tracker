@@ -216,39 +216,48 @@ export async function lockTerminal() {
 // --- Workflow Management ---
 
 async function initializeDefaultWorkflowStagesIfNeeded(orgId: string) {
-    const existingStages = await db.select().from(workflows).where(eq(workflows.clerkOrgId, orgId));
-    if (existingStages.length > 0) {
-        return;
-    }
+    try {
+        const existingStages = await db.select().from(workflows).where(eq(workflows.clerkOrgId, orgId));
+        if (existingStages.length > 0) {
+            return;
+        }
 
-    // Fetch organization businessType from Clerk
-    const client = await clerkClient();
-    const org = await client.organizations.getOrganization({ organizationId: orgId });
-    const businessType = org.publicMetadata?.businessType as string || "tailoring";
+        // Fetch organization businessType from Clerk
+        let businessType = "tailoring";
+        try {
+            const client = await clerkClient();
+            const org = await client.organizations.getOrganization({ organizationId: orgId });
+            businessType = (org.publicMetadata?.businessType as string) || "tailoring";
+        } catch (e) {
+            console.warn("Could not fetch org businessType from Clerk:", e);
+        }
 
-    const config = getBusinessConfig(businessType);
-    const activeStatuses = config.statuses.filter(status => 
-        status !== "Completed" && 
-        status !== "Delivered" && 
-        status !== "Pending" && 
-        status !== "Refunded" && 
-        status !== "Cancelled" && 
-        status !== "Order Cancelled" && 
-        status !== "Order Delayed" &&
-        status !== "Delayed" &&
-        status !== "Returned" &&
-        status !== "Returned to Sender" &&
-        status !== "On Hold"
-    );
+        const config = getBusinessConfig(businessType);
+        const activeStatuses = config.statuses.filter(status => 
+            status !== "Completed" && 
+            status !== "Delivered" && 
+            status !== "Pending" && 
+            status !== "Refunded" && 
+            status !== "Cancelled" && 
+            status !== "Order Cancelled" && 
+            status !== "Order Delayed" &&
+            status !== "Delayed" &&
+            status !== "Returned" &&
+            status !== "Returned to Sender" &&
+            status !== "On Hold"
+        );
 
-    // Insert fallback stages
-    for (let i = 0; i < activeStatuses.length; i++) {
-        await db.insert(workflows).values({
-            id: `wf_${nanoid(10)}`,
-            name: activeStatuses[i],
-            position: String(i + 1),
-            clerkOrgId: orgId,
-        });
+        // Insert fallback stages
+        for (let i = 0; i < activeStatuses.length; i++) {
+            await db.insert(workflows).values({
+                id: `wf_${nanoid(10)}`,
+                name: activeStatuses[i],
+                position: String(i + 1),
+                clerkOrgId: orgId,
+            });
+        }
+    } catch (err) {
+        console.error("Error in initializeDefaultWorkflowStagesIfNeeded:", err);
     }
 }
 
@@ -288,6 +297,8 @@ export async function addWorkflowStage(name: string, position: string) {
 export async function getWorkflowStages() {
     const { orgId } = await auth();
     if (!orgId) return [];
+
+    await initializeDefaultWorkflowStagesIfNeeded(orgId);
 
     return await db.select().from(workflows).where(eq(workflows.clerkOrgId, orgId)).orderBy(asc(workflows.position));
 }

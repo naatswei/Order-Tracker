@@ -49,7 +49,25 @@ function BulkUpdateContent() {
     const isLogistics = businessType === "logistics"
 
     const [pipelineStages, setPipelineStages] = useState<string[]>([])
-    const QUICK_STATUSES = pipelineStages.length > 0 ? pipelineStages : config.statuses
+    const QUICK_STATUSES = useMemo(() => {
+        if (pipelineStages && pipelineStages.length > 0) {
+            return pipelineStages;
+        }
+        const activeStatuses = config.statuses.filter(status => 
+            status !== "Completed" && 
+            status !== "Delivered" && 
+            status !== "Pending" && 
+            status !== "Refunded" && 
+            status !== "Cancelled" && 
+            status !== "Order Cancelled" && 
+            status !== "Order Delayed" &&
+            status !== "Delayed" &&
+            status !== "Returned" && 
+            status !== "Returned to Sender" &&
+            status !== "On Hold"
+        );
+        return activeStatuses;
+    }, [pipelineStages, config.statuses]);
 
     const [orders, setOrders] = useState<Order[]>([])
     const [selectedIds, setSelectedIds] = useState<string[]>([])
@@ -155,19 +173,9 @@ function BulkUpdateContent() {
             ])
             
             if (stagesData && stagesData.length > 0) {
-                const stageNames = stagesData.map((s: any) => s.name);
-                const combined = [...stageNames];
-                const terminalOptions = isLogistics 
-                    ? ["Delivered", "Cancelled", "Returned to Sender", "Held at Customs"] 
-                    : ["Completed", "Delivered", "Cancelled", "Refunded"];
-                terminalOptions.forEach(term => {
-                    if (!combined.some(s => s.toLowerCase() === term.toLowerCase())) {
-                        combined.push(term);
-                    }
-                });
-                setPipelineStages(combined);
+                setPipelineStages(stagesData.map((s: any) => s.name));
             } else {
-                setPipelineStages(config.statuses);
+                setPipelineStages([]);
             }
 
             const errorItem = allOrders.find(o => (o as any).__isError);
@@ -550,7 +558,6 @@ function BulkUpdateContent() {
                                 <h3 className="text-xs font-bold text-slate-700 uppercase tracking-wider">Quick Status Options</h3>
                                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
                                     {QUICK_STATUSES.map((status) => {
-                                        const theme = getStatusTheme(status);
                                         const isSelected = selectedStatus === status;
                                         return (
                                             <button
@@ -564,10 +571,7 @@ function BulkUpdateContent() {
                                                         : "bg-white hover:bg-slate-50 text-slate-700 border-slate-200/90"
                                                 )}
                                             >
-                                                <div className="flex items-center gap-2 min-w-0">
-                                                    <span className={cn("w-2.5 h-2.5 rounded-full shrink-0", theme.dot)} />
-                                                    <span className="truncate">{status}</span>
-                                                </div>
+                                                <span className="truncate">{status}</span>
                                                 {isSelected && <Check className="w-3.5 h-3.5 text-white shrink-0" />}
                                             </button>
                                         );

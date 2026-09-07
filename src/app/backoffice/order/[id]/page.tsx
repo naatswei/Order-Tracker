@@ -189,7 +189,25 @@ export default function OrderUpdatePage() {
     const [businessType, setBusinessType] = useState<string | null>(null)
     const config = getBusinessConfig(businessType)
     const isLogistics = businessType === "logistics"
-    const quickStatuses = pipelineStages.length > 0 ? pipelineStages : config.statuses
+    const quickStatuses = useMemo(() => {
+        if (pipelineStages && pipelineStages.length > 0) {
+            return pipelineStages;
+        }
+        const activeStatuses = config.statuses.filter(status => 
+            status !== "Completed" && 
+            status !== "Delivered" && 
+            status !== "Pending" && 
+            status !== "Refunded" && 
+            status !== "Cancelled" && 
+            status !== "Order Cancelled" && 
+            status !== "Order Delayed" &&
+            status !== "Delayed" &&
+            status !== "Returned" &&
+            status !== "Returned to Sender" &&
+            status !== "On Hold"
+        );
+        return activeStatuses;
+    }, [pipelineStages, config.statuses]);
 
     useEffect(() => {
         const orgBusinessType = organization?.publicMetadata?.businessType as string
@@ -247,19 +265,9 @@ export default function OrderUpdatePage() {
                 getWorkflowStages()
             ]).then(([foundOrder, stagesData]) => {
                 if (stagesData && stagesData.length > 0) {
-                    const stageNames = stagesData.map((s: any) => s.name);
-                    const combined = [...stageNames];
-                    const terminalOptions = isLogistics 
-                        ? ["Delivered", "Cancelled", "Returned to Sender", "Held at Customs"] 
-                        : ["Completed", "Delivered", "Cancelled", "Refunded"];
-                    terminalOptions.forEach(term => {
-                        if (!combined.some(s => s.toLowerCase() === term.toLowerCase())) {
-                            combined.push(term);
-                        }
-                    });
-                    setPipelineStages(combined);
+                    setPipelineStages(stagesData.map((s: any) => s.name));
                 } else {
-                    setPipelineStages(config.statuses);
+                    setPipelineStages([]);
                 }
 
                 if (foundOrder) {
@@ -715,7 +723,6 @@ export default function OrderUpdatePage() {
                             </Label>
                             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
                                 {quickStatuses.map((qs: string) => {
-                                    const theme = getStatusTheme(qs)
                                     const isSelected = status === qs
 
                                     return (
@@ -730,10 +737,7 @@ export default function OrderUpdatePage() {
                                                     : "bg-white hover:bg-slate-50 text-slate-700 border-slate-200/90"
                                             )}
                                         >
-                                            <div className="flex items-center gap-2 min-w-0">
-                                                <span className={cn("w-2 h-2 rounded-full shrink-0", theme.dot)} />
-                                                <span className="truncate">{qs}</span>
-                                            </div>
+                                            <span className="truncate">{qs}</span>
                                             {isSelected && <Check className="w-3.5 h-3.5 shrink-0 text-white" />}
                                         </button>
                                     )

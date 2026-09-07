@@ -154,27 +154,46 @@ export default function BackofficePage() {
         setTimeout(() => setCopiedId(null), 2000)
     }
 
-    // Dynamic status options from pipeline stages + fallback
+    // Dynamic status options directly from pipeline stages
     const statusOptions = useMemo(() => {
-        const base = customStages.length > 0 ? customStages : config.statuses;
-        const set = new Set<string>();
-        base.forEach(s => set.add(s));
-        
-        // Ensure standard terminal options are present if custom stages only contain in-progress steps
-        const terminalOptions = isLogistics 
-            ? ["Delivered", "Cancelled", "Returned to Sender", "Held at Customs"] 
-            : ["Completed", "Delivered", "Cancelled", "Refunded"];
-        terminalOptions.forEach(t => set.add(t));
+        const list: string[] = [];
 
-        // Also include any active status currently on orders
+        // 1. Pipeline stages configured in Operations
+        if (customStages && customStages.length > 0) {
+            customStages.forEach(s => {
+                if (s && !list.includes(s)) {
+                    list.push(s);
+                }
+            });
+        }
+
+        // 2. Also include any active status currently on orders if not already in the list
         orders.forEach(o => {
-            if (o.currentStatus && o.currentStatus.trim()) {
-                set.add(o.currentStatus);
+            if (o.currentStatus && o.currentStatus.trim() && !list.includes(o.currentStatus)) {
+                list.push(o.currentStatus);
             }
         });
 
-        return Array.from(set);
-    }, [customStages, config.statuses, orders, isLogistics]);
+        // 3. Fallback only if no stages and no orders yet
+        if (list.length === 0 && config.statuses.length > 0) {
+            const activeStatuses = config.statuses.filter(status => 
+                status !== "Completed" && 
+                status !== "Delivered" && 
+                status !== "Pending" && 
+                status !== "Refunded" && 
+                status !== "Cancelled" && 
+                status !== "Order Cancelled" && 
+                status !== "Order Delayed" &&
+                status !== "Delayed" &&
+                status !== "Returned" &&
+                status !== "Returned to Sender" &&
+                status !== "On Hold"
+            );
+            return activeStatuses;
+        }
+
+        return list;
+    }, [customStages, config.statuses, orders]);
 
     // Live counts per status
     const statusCounts = useMemo(() => {
