@@ -452,15 +452,22 @@ export default function RiderActionPage() {
                                         <p className="font-bold text-neutral-900 text-xs sm:text-sm break-words mt-0.5">{pickupLoc}</p>
                                     </div>
                                     <div className="flex justify-center pt-1">
-                                        <a
-                                            href={getGoogleMapsUrl(pickupLoc)}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-black hover:bg-neutral-800 text-white text-xs font-bold shadow-xs active:scale-95 transition-all"
-                                        >
-                                            <Navigation className="w-3.5 h-3.5 text-white" />
-                                            <span>Navigate in Google Maps</span>
-                                        </a>
+                                        {isDelivered ? (
+                                            <div className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-neutral-200 text-neutral-500 text-xs font-bold cursor-not-allowed select-none">
+                                                <Check className="w-3.5 h-3.5 text-neutral-500" />
+                                                <span>Pickup Completed</span>
+                                            </div>
+                                        ) : (
+                                            <a
+                                                href={getGoogleMapsUrl(pickupLoc)}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-black hover:bg-neutral-800 text-white text-xs font-bold shadow-xs active:scale-95 transition-all"
+                                            >
+                                                <Navigation className="w-3.5 h-3.5 text-white" />
+                                                <span>Navigate in Google Maps</span>
+                                            </a>
+                                        )}
                                     </div>
                                 </div>
                             )}
@@ -473,15 +480,22 @@ export default function RiderActionPage() {
                                         <p className="font-bold text-neutral-900 text-xs sm:text-sm break-words mt-0.5">{deliveryLoc}</p>
                                     </div>
                                     <div className="flex justify-center pt-1">
-                                        <a
-                                            href={getGoogleMapsUrl(deliveryLoc)}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-black hover:bg-neutral-800 text-white text-xs font-bold shadow-xs active:scale-95 transition-all"
-                                        >
-                                            <Navigation className="w-3.5 h-3.5 text-white" />
-                                            <span>Navigate in Google Maps</span>
-                                        </a>
+                                        {isDelivered ? (
+                                            <div className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-100 text-emerald-800 text-xs font-bold cursor-not-allowed select-none">
+                                                <Check className="w-3.5 h-3.5 text-emerald-700" />
+                                                <span>Delivery Completed</span>
+                                            </div>
+                                        ) : (
+                                            <a
+                                                href={getGoogleMapsUrl(deliveryLoc)}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-black hover:bg-neutral-800 text-white text-xs font-bold shadow-xs active:scale-95 transition-all"
+                                            >
+                                                <Navigation className="w-3.5 h-3.5 text-white" />
+                                                <span>Navigate in Google Maps</span>
+                                            </a>
+                                        )}
                                     </div>
                                 </div>
                             )}
@@ -510,12 +524,19 @@ export default function RiderActionPage() {
                                 </span>
                             </div>
                         </div>
-                        <a
-                            href={`tel:${contactPhone}`}
-                            className="px-4 py-2 rounded-xl bg-black text-white text-xs font-black uppercase tracking-wider hover:bg-neutral-800 transition-colors shrink-0 shadow-xs active:scale-95"
-                        >
-                            Call
-                        </a>
+                        {isDelivered ? (
+                            <div className="px-3.5 py-2 rounded-xl bg-neutral-100 text-neutral-400 text-xs font-bold uppercase tracking-wider cursor-not-allowed select-none flex items-center gap-1.5">
+                                <Lock className="w-3 h-3 text-neutral-400" />
+                                <span>Closed</span>
+                            </div>
+                        ) : (
+                            <a
+                                href={`tel:${contactPhone}`}
+                                className="px-4 py-2 rounded-xl bg-black text-white text-xs font-black uppercase tracking-wider hover:bg-neutral-800 transition-colors shrink-0 shadow-xs active:scale-95"
+                            >
+                                Call
+                            </a>
+                        )}
                     </motion.div>
                 )}
 
