@@ -441,7 +441,7 @@ export default function RiderActionPage() {
                                         <p className="text-[10px] font-black uppercase tracking-wider text-neutral-600">Pickup Address</p>
                                         <p className="font-bold text-neutral-900 text-xs sm:text-sm break-words mt-0.5">{pickupLoc}</p>
                                     </div>
-                                    <div className="flex justify-start pt-1">
+                                    <div className="flex justify-center pt-1">
                                         {isDelivered ? (
                                             <span className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-neutral-100 text-neutral-400 text-xs font-bold cursor-not-allowed select-none">
                                                 <Check className="w-3.5 h-3.5" />
@@ -469,7 +469,7 @@ export default function RiderActionPage() {
                                         <p className="text-[10px] font-black uppercase tracking-wider text-neutral-600">Drop-off Destination</p>
                                         <p className="font-bold text-neutral-900 text-xs sm:text-sm break-words mt-0.5">{deliveryLoc}</p>
                                     </div>
-                                    <div className="flex justify-start pt-1">
+                                    <div className="flex justify-center pt-1">
                                         {isDelivered ? (
                                             <span className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-50 text-emerald-700 text-xs font-bold cursor-not-allowed select-none">
                                                 <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
