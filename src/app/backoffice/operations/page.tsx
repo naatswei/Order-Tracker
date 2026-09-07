@@ -437,10 +437,10 @@ export default function OperationsPage() {
                                                                     <div className="flex items-center gap-2 pt-0.5 text-[11px] text-slate-500">
                                                                         <a 
                                                                             href={`tel:${order.customerPhone}`}
-                                                                            className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-slate-100/80 hover:bg-slate-200/80 text-slate-700 font-semibold border border-slate-200/60 transition-colors"
+                                                                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold border border-emerald-200/70 transition-colors"
                                                                             title="Call Customer"
                                                                         >
-                                                                            <Phone className="w-3 h-3 text-slate-400" />
+                                                                            <Phone className="w-3 h-3 text-emerald-600" />
                                                                             <span>{order.customerPhone}</span>
                                                                         </a>
                                                                         {recipientName && (
@@ -486,7 +486,7 @@ export default function OperationsPage() {
                                                                         type="button"
                                                                         size="sm"
                                                                         onClick={() => handleResendSMS(order.id)}
-                                                                        className="h-8 px-2.5 rounded-xl bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold shrink-0 shadow-none transition-all flex items-center gap-1.5"
+                                                                        className="h-9 px-3 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white text-xs font-bold shrink-0 shadow-xs shadow-sky-500/20 transition-all flex items-center gap-1.5"
                                                                         title="Send SMS to rider"
                                                                     >
                                                                         <Send className="w-3 h-3 text-white" />
