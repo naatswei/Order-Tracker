@@ -23,13 +23,12 @@ import { RenewalBanner } from "@/components/renewal-banner"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
 
 interface BusinessProfile {
     companyName: string
@@ -235,120 +234,45 @@ export default function BackofficePage() {
 
                         {/* Action Buttons */}
                         <div className="flex flex-wrap items-center gap-3 w-full lg:w-auto">
-                            <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                    <Button 
-                                        variant="outline" 
-                                        className={cn(
-                                            "h-11 rounded-full border gap-2 px-4 sm:px-5 transition-all duration-300 text-sm font-semibold active:scale-95",
-                                            statusFilter !== "All"
-                                                ? "bg-[#191A43] text-white border-[#191A43] hover:bg-slate-800 shadow-md shadow-[#191A43]/15"
-                                                : "bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 hover:text-slate-900 shadow-sm"
-                                        )}
-                                    >
-                                        <Filter className={cn("w-4 h-4", statusFilter !== "All" ? "text-indigo-400" : "text-slate-500")} />
+                            <Select value={statusFilter} onValueChange={setStatusFilter}>
+                                <SelectTrigger 
+                                    className={cn(
+                                        "h-11 rounded-full border gap-2 px-4 sm:px-5 transition-all duration-300 text-sm font-semibold active:scale-95 shadow-sm min-w-[140px] cursor-pointer",
+                                        statusFilter !== "All"
+                                            ? "bg-[#191A43] text-white border-[#191A43] hover:bg-slate-800 shadow-md shadow-[#191A43]/15 [&>span]:text-white [&_svg]:text-white"
+                                            : "bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 hover:text-slate-900"
+                                    )}
+                                >
+                                    <div className="flex items-center gap-2 mr-1">
+                                        <Filter className={cn("w-4 h-4 shrink-0", statusFilter !== "All" ? "text-white" : "text-slate-500")} />
                                         {statusFilter === "All" ? (
-                                            <span>Filter</span>
+                                            <span>All {isLogistics ? "Shipments" : "Orders"}</span>
                                         ) : (
-                                            <div className="flex items-center gap-1.5 max-w-[140px] sm:max-w-none truncate">
-                                                <span className={cn("w-2 h-2 rounded-full shrink-0", getStatusTheme(statusFilter).dot)} />
+                                            <div className="flex items-center gap-1.5 max-w-[130px] sm:max-w-none truncate">
                                                 <span className="truncate">{statusFilter}</span>
                                                 <span className="ml-1 px-1.5 py-0.2 rounded-full bg-white/20 text-[11px] font-mono">
                                                     {statusCounts[statusFilter] || 0}
                                                 </span>
                                             </div>
                                         )}
-                                    </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent 
-                                    align="end" 
-                                    className="w-[280px] sm:w-[320px] max-h-[380px] overflow-y-auto rounded-3xl p-2 shadow-2xl border-slate-200/80 bg-white/95 backdrop-blur-xl z-50 animate-in fade-in-50 zoom-in-95"
-                                >
-                                    <div className="flex items-center justify-between px-3 py-2 border-b border-slate-100 mb-1">
-                                        <DropdownMenuLabel className="p-0 text-xs font-black text-slate-800 uppercase tracking-wider">
-                                            Filter by Status
-                                        </DropdownMenuLabel>
-                                        {statusFilter !== "All" && (
-                                            <button
-                                                type="button"
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    setStatusFilter("All");
-                                                }}
-                                                className="text-[11px] font-bold text-indigo-600 hover:text-indigo-800 hover:underline"
-                                            >
-                                                Reset Filter
-                                            </button>
-                                        )}
                                     </div>
-
-                                    {/* All Shipments / All Orders Option */}
-                                    <DropdownMenuItem
-                                        className={cn(
-                                            "cursor-pointer rounded-2xl px-3 py-2.5 transition-colors flex items-center justify-between gap-2 text-xs sm:text-sm font-medium",
-                                            statusFilter === "All"
-                                                ? "bg-[#191A43] text-white font-bold"
-                                                : "text-slate-700 hover:bg-slate-100/80 focus:bg-slate-100"
-                                        )}
-                                        onSelect={() => setStatusFilter("All")}
-                                    >
-                                        <div className="flex items-center gap-2.5 min-w-0">
-                                            <span className={cn(
-                                                "w-2.5 h-2.5 rounded-full shrink-0",
-                                                statusFilter === "All" ? "bg-white" : "bg-slate-400"
-                                            )} />
-                                            <span className="truncate">{isLogistics ? "All Shipments" : "All Orders"}</span>
-                                        </div>
-                                        <div className="flex items-center gap-1.5">
-                                            <span className={cn(
-                                                "px-2 py-0.5 rounded-full text-[11px] font-mono font-bold",
-                                                statusFilter === "All" ? "bg-white/20 text-white" : "bg-slate-100 text-slate-600"
-                                            )}>
-                                                {orders.length}
-                                            </span>
-                                            {statusFilter === "All" && <Check className="w-3.5 h-3.5 text-white shrink-0" />}
-                                        </div>
-                                    </DropdownMenuItem>
-
-                                    <DropdownMenuSeparator className="my-1.5 bg-slate-100" />
-
-                                    {/* Pipeline Stages & Status Options */}
-                                    <div className="space-y-0.5">
-                                        {statusOptions.map((status) => {
-                                            const count = statusCounts[status] || 0;
-                                            const isSelected = statusFilter === status;
-                                            const theme = getStatusTheme(status);
-
-                                            return (
-                                                <DropdownMenuItem
-                                                    key={status}
-                                                    className={cn(
-                                                        "cursor-pointer rounded-2xl px-3 py-2.5 transition-colors flex items-center justify-between gap-2 text-xs sm:text-sm",
-                                                        isSelected
-                                                            ? "bg-indigo-50 text-indigo-900 font-bold border border-indigo-200/60"
-                                                            : "text-slate-700 hover:bg-slate-50 focus:bg-slate-50"
-                                                    )}
-                                                    onSelect={() => setStatusFilter(status)}
-                                                >
-                                                    <div className="flex items-center gap-2.5 min-w-0">
-                                                        <span className={cn("w-2.5 h-2.5 rounded-full shrink-0", theme.dot)} />
-                                                        <span className="truncate">{status}</span>
-                                                    </div>
-                                                    <div className="flex items-center gap-1.5">
-                                                        <span className={cn(
-                                                            "px-2 py-0.5 rounded-full text-[11px] font-mono font-bold",
-                                                            isSelected ? "bg-indigo-200/60 text-indigo-900" : "bg-slate-100 text-slate-500"
-                                                        )}>
-                                                            {count}
-                                                        </span>
-                                                        {isSelected && <Check className="w-3.5 h-3.5 text-indigo-600 shrink-0" />}
-                                                    </div>
-                                                </DropdownMenuItem>
-                                            );
-                                        })}
-                                    </div>
-                                </DropdownMenuContent>
-                            </DropdownMenu>
+                                </SelectTrigger>
+                                <SelectContent className="rounded-2xl border-slate-200 shadow-xl bg-white p-1.5 min-w-[220px] max-h-[380px]">
+                                    <SelectItem value="All">
+                                        <span className="font-bold">All {isLogistics ? "Shipments" : "Orders"}</span>
+                                        <span className="text-[11px] opacity-75 font-mono ml-2">({orders.length})</span>
+                                    </SelectItem>
+                                    {statusOptions.map((status) => {
+                                        const count = statusCounts[status] || 0;
+                                        return (
+                                            <SelectItem key={status} value={status}>
+                                                <span className="font-bold">{status}</span>
+                                                <span className="text-[11px] opacity-75 font-mono ml-2">({count})</span>
+                                            </SelectItem>
+                                        );
+                                    })}
+                                </SelectContent>
+                            </Select>
 
                             <Button
                                 asChild={!needsRenewal}
@@ -394,7 +318,6 @@ export default function BackofficePage() {
                 {statusFilter !== "All" && (
                     <div className="flex items-center justify-between bg-slate-100/90 border border-slate-200/80 rounded-2xl px-4 py-2.5 text-xs text-slate-700 shadow-2xs">
                         <div className="flex items-center gap-2">
-                            <span className={cn("w-2.5 h-2.5 rounded-full shrink-0", getStatusTheme(statusFilter).dot)} />
                             <span>
                                 Filtered by <strong className="text-slate-900">{statusFilter}</strong> ({filteredOrders.length} {filteredOrders.length === 1 ? (isLogistics ? 'shipment' : 'order') : (isLogistics ? 'shipments' : 'orders')})
                             </span>
@@ -402,7 +325,7 @@ export default function BackofficePage() {
                         <button
                             type="button"
                             onClick={() => setStatusFilter("All")}
-                            className="flex items-center gap-1 text-indigo-600 hover:text-indigo-800 font-bold hover:underline ml-2"
+                            className="flex items-center gap-1 text-slate-600 hover:text-slate-900 font-bold hover:underline ml-2 cursor-pointer"
                         >
                             <X className="w-3.5 h-3.5" />
                             <span>Clear Filter</span>
