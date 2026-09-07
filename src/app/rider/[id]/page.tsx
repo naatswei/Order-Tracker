@@ -493,7 +493,43 @@ export default function RiderActionPage() {
                     </motion.div>
                 )}
 
-                {/* 4. PAYMENT ON ARRIVAL CARD (GH₵ Ghana Cedis) */}
+                {/* 4. CUSTOMER CONTACT & QUICK CALL CARD */}
+                {contactPhone && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 4 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.35, delay: 0.12 }}
+                        className="flex items-center justify-between bg-white p-3.5 sm:p-4 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-black/[0.04]"
+                    >
+                        <div className="flex items-center gap-3 min-w-0">
+                            <div className="w-10 h-10 rounded-2xl bg-neutral-100 flex items-center justify-center text-black font-black shrink-0">
+                                <Phone className="w-4 h-4" />
+                            </div>
+                            <div className="min-w-0">
+                                <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider block">
+                                    {targetCustomerRole}
+                                </span>
+                                <span className="text-xs sm:text-sm font-black text-black truncate block">
+                                    {contactName} ({contactPhone})
+                                </span>
+                            </div>
+                        </div>
+                        {isDelivered ? (
+                            <span className="px-4 py-2 rounded-xl bg-neutral-100 text-neutral-400 text-xs font-black uppercase tracking-wider cursor-not-allowed select-none">
+                                Call
+                            </span>
+                        ) : (
+                            <a
+                                href={`tel:${contactPhone}`}
+                                className="px-4 py-2 rounded-xl bg-black text-white text-xs font-black uppercase tracking-wider hover:bg-neutral-800 transition-colors shrink-0 shadow-xs active:scale-95"
+                            >
+                                Call
+                            </a>
+                        )}
+                    </motion.div>
+                )}
+
+                {/* 5. PAYMENT ON ARRIVAL CARD (GH₵ Ghana Cedis) */}
                 {isInvoiceUnpaid && amountDue > 0 && (
                     <motion.div
                         initial={{ opacity: 0, scale: 0.98 }}
@@ -577,7 +613,7 @@ export default function RiderActionPage() {
                     </motion.div>
                 )}
 
-                {/* 5. ACTION & DELIVERY PIN VERIFICATION AREA */}
+                {/* 6. ACTION & DELIVERY PIN VERIFICATION AREA */}
                 <div className="space-y-4 pt-1">
                     {isDelivered ? (
                         <motion.div 
@@ -605,29 +641,6 @@ export default function RiderActionPage() {
                             {/* Step 0: Confirm Package Pickup */}
                             {activeStep === 0 && (
                                 <div className="space-y-3.5">
-                                    {pickupCustomerPhone && (
-                                        <div className="flex items-center justify-between bg-white p-3.5 rounded-2xl shadow-[0_4px_20px_rgb(0,0,0,0.04)] border border-black/[0.04]">
-                                            <div className="flex items-center gap-3 min-w-0">
-                                                <div className="w-9 h-9 rounded-xl bg-neutral-100 flex items-center justify-center text-black font-black shrink-0">
-                                                    <Phone className="w-4 h-4" />
-                                                </div>
-                                                <div className="min-w-0">
-                                                    <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider block">
-                                                        Pickup Customer (Sender)
-                                                    </span>
-                                                    <span className="text-xs font-black text-black truncate block">
-                                                        {pickupCustomerName} ({pickupCustomerPhone})
-                                                    </span>
-                                                </div>
-                                            </div>
-                                            <a
-                                                href={`tel:${pickupCustomerPhone}`}
-                                                className="px-4 py-2 rounded-xl bg-black text-white text-xs font-black uppercase tracking-wider hover:bg-neutral-800 transition-colors shrink-0 shadow-xs"
-                                            >
-                                                Call
-                                            </a>
-                                        </div>
-                                    )}
                                     <Button
                                         onClick={() => handleStatusUpdate("Picked Up")}
                                         disabled={isUpdating}
@@ -642,29 +655,6 @@ export default function RiderActionPage() {
                             {/* Step 1: Start Transit */}
                             {activeStep === 1 && (
                                 <div className="space-y-3.5">
-                                    {pickupCustomerPhone && (
-                                        <div className="flex items-center justify-between bg-white p-3.5 rounded-2xl shadow-[0_4px_20px_rgb(0,0,0,0.04)] border border-black/[0.04]">
-                                            <div className="flex items-center gap-3 min-w-0">
-                                                <div className="w-9 h-9 rounded-xl bg-neutral-100 flex items-center justify-center text-black font-black shrink-0">
-                                                    <Phone className="w-4 h-4" />
-                                                </div>
-                                                <div className="min-w-0">
-                                                    <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider block">
-                                                        Pickup Customer (Sender)
-                                                    </span>
-                                                    <span className="text-xs font-black text-black truncate block">
-                                                        {pickupCustomerName} ({pickupCustomerPhone})
-                                                    </span>
-                                                </div>
-                                            </div>
-                                            <a
-                                                href={`tel:${pickupCustomerPhone}`}
-                                                className="px-4 py-2 rounded-xl bg-black text-white text-xs font-black uppercase tracking-wider hover:bg-neutral-800 transition-colors shrink-0 shadow-xs"
-                                            >
-                                                Call
-                                            </a>
-                                        </div>
-                                    )}
                                     <Button
                                         onClick={() => handleStatusUpdate("In Transit")}
                                         disabled={isUpdating}
@@ -679,31 +669,6 @@ export default function RiderActionPage() {
                             {/* Step 2: Handover Confirmation with Customer Numeric Delivery PIN */}
                             {activeStep >= 2 && (
                                 <div className="space-y-3.5">
-                                    {/* Dropoff Customer Contact Quick Call */}
-                                    {contactPhone && (
-                                        <div className="flex items-center justify-between bg-white p-3.5 rounded-2xl shadow-[0_4px_20px_rgb(0,0,0,0.04)] border border-black/[0.04]">
-                                            <div className="flex items-center gap-3 min-w-0">
-                                                <div className="w-9 h-9 rounded-xl bg-neutral-100 flex items-center justify-center text-black font-black shrink-0">
-                                                    <Phone className="w-4 h-4" />
-                                                </div>
-                                                <div className="min-w-0">
-                                                    <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider block">
-                                                        Dropoff Customer (Recipient)
-                                                    </span>
-                                                    <span className="text-xs font-black text-black truncate block">
-                                                        {targetCustomerName} ({contactPhone})
-                                                    </span>
-                                                </div>
-                                            </div>
-                                            <a
-                                                href={`tel:${contactPhone}`}
-                                                className="px-4 py-2 rounded-xl bg-black text-white text-xs font-black uppercase tracking-wider hover:bg-neutral-800 transition-colors shrink-0 shadow-xs"
-                                            >
-                                                Call
-                                            </a>
-                                        </div>
-                                    )}
-
                                     {/* Dedicated Numeric OTP Box */}
                                     <div className="bg-white rounded-3xl p-4 shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-black/[0.04]">
                                         <div className="flex items-center gap-2 px-1 mb-2">
