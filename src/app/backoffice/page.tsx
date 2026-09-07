@@ -237,16 +237,16 @@ export default function BackofficePage() {
                             <Select value={statusFilter} onValueChange={setStatusFilter}>
                                 <SelectTrigger 
                                     className={cn(
-                                        "h-11 rounded-full border gap-2 px-4 sm:px-5 transition-all duration-300 text-sm font-semibold active:scale-95 shadow-sm min-w-[140px] cursor-pointer",
+                                        "w-auto flex-none h-11 rounded-full border gap-2 px-4 sm:px-5 transition-all duration-300 text-sm font-semibold active:scale-95 shadow-sm cursor-pointer",
                                         statusFilter !== "All"
                                             ? "bg-[#191A43] text-white border-[#191A43] hover:bg-slate-800 shadow-md shadow-[#191A43]/15 [&>span]:text-white [&_svg]:text-white"
                                             : "bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 hover:text-slate-900"
                                     )}
                                 >
-                                    <div className="flex items-center gap-2 mr-1">
+                                    <div className="flex items-center gap-2">
                                         <Filter className={cn("w-4 h-4 shrink-0", statusFilter !== "All" ? "text-white" : "text-slate-500")} />
                                         {statusFilter === "All" ? (
-                                            <span>All {isLogistics ? "Shipments" : "Orders"}</span>
+                                            <span>Filter</span>
                                         ) : (
                                             <div className="flex items-center gap-1.5 max-w-[130px] sm:max-w-none truncate">
                                                 <span className="truncate">{statusFilter}</span>
