@@ -281,7 +281,7 @@ export default function RiderActionPage() {
     }
 
     const currentStatus = order.currentStatus || "Shipment Booked"
-    const isDelivered = currentStatus.toLowerCase() === "delivered"
+    const isDelivered = ["delivered", "completed"].includes(currentStatus.toLowerCase())
     const meta = (order.metadata as Record<string, unknown>) || {}
     const pickupLoc = (meta.pickupLocation as string) || null
     const deliveryLoc = (meta.deliveryLocation as string) || null
@@ -347,11 +347,16 @@ export default function RiderActionPage() {
                             <Truck className="w-5 h-5 sm:w-6 sm:h-6" />
                         </div>
 
-                        {/* Waybill # */}
+                        {/* Waybill # & Status */}
                         <div className="flex items-center gap-2 min-w-0">
                             <span className="text-lg sm:text-2xl font-black tracking-tighter text-black truncate">
                                 #{order.orderNumber}
                             </span>
+                            {isDelivered && (
+                                <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-black uppercase tracking-wider shrink-0">
+                                    Delivered
+                                </span>
+                            )}
                         </div>
                     </div>
 
@@ -437,15 +442,22 @@ export default function RiderActionPage() {
                                         <p className="font-bold text-neutral-900 text-xs sm:text-sm break-words mt-0.5">{pickupLoc}</p>
                                     </div>
                                     <div className="flex justify-end pt-1">
-                                        <a
-                                            href={getGoogleMapsUrl(pickupLoc)}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-black hover:bg-neutral-800 text-white text-xs font-bold shadow-xs active:scale-95 transition-all"
-                                        >
-                                            <Navigation className="w-3.5 h-3.5 text-white" />
-                                            <span>Navigate in Google Maps</span>
-                                        </a>
+                                        {isDelivered ? (
+                                            <span className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-neutral-100 text-neutral-400 text-xs font-bold cursor-not-allowed select-none">
+                                                <Check className="w-3.5 h-3.5" />
+                                                <span>Pickup Completed</span>
+                                            </span>
+                                        ) : (
+                                            <a
+                                                href={getGoogleMapsUrl(pickupLoc)}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-black hover:bg-neutral-800 text-white text-xs font-bold shadow-xs active:scale-95 transition-all"
+                                            >
+                                                <Navigation className="w-3.5 h-3.5 text-white" />
+                                                <span>Navigate in Google Maps</span>
+                                            </a>
+                                        )}
                                     </div>
                                 </div>
                             )}
@@ -458,15 +470,22 @@ export default function RiderActionPage() {
                                         <p className="font-bold text-neutral-900 text-xs sm:text-sm break-words mt-0.5">{deliveryLoc}</p>
                                     </div>
                                     <div className="flex justify-end pt-1">
-                                        <a
-                                            href={getGoogleMapsUrl(deliveryLoc)}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-black hover:bg-neutral-800 text-white text-xs font-bold shadow-xs active:scale-95 transition-all"
-                                        >
-                                            <Navigation className="w-3.5 h-3.5 text-white" />
-                                            <span>Navigate in Google Maps</span>
-                                        </a>
+                                        {isDelivered ? (
+                                            <span className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-50 text-emerald-700 text-xs font-bold cursor-not-allowed select-none">
+                                                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                                                <span>Delivered</span>
+                                            </span>
+                                        ) : (
+                                            <a
+                                                href={getGoogleMapsUrl(deliveryLoc)}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-black hover:bg-neutral-800 text-white text-xs font-bold shadow-xs active:scale-95 transition-all"
+                                            >
+                                                <Navigation className="w-3.5 h-3.5 text-white" />
+                                                <span>Navigate in Google Maps</span>
+                                            </a>
+                                        )}
                                     </div>
                                 </div>
                             )}
@@ -576,6 +595,10 @@ export default function RiderActionPage() {
                             <p className="text-xs text-neutral-500 font-mono">
                                 Waybill #{order.orderNumber} successfully handed over
                             </p>
+                            <div className="pt-2 flex items-center justify-center gap-1.5 text-xs font-bold text-neutral-400">
+                                <Lock className="w-3.5 h-3.5 text-neutral-400" />
+                                <span>All interface actions disabled</span>
+                            </div>
                         </motion.div>
                     ) : (
                         <div className="space-y-3.5">
@@ -908,40 +931,47 @@ export default function RiderActionPage() {
                             </div>
 
                             {/* Typing indicator & Input */}
-                            <div className="p-3 border-t border-black/[0.06] bg-white">
-                                {isPartyTyping && (
-                                    <div className="px-2 pb-2 flex items-center gap-2 text-[10px] text-neutral-500 font-medium">
-                                        <MessageSquareMore className="w-3.5 h-3.5 animate-pulse text-black" />
-                                        <span>Typing a reply...</span>
-                                    </div>
-                                )}
-                                <div className="flex gap-2 items-end">
-                                    <Textarea
-                                        value={chatInput}
-                                        onChange={(e) => {
-                                            setChatInput(e.target.value)
-                                            if (order?.id) updateTypingStatus(order.id, "rider")
-                                        }}
-                                        placeholder={isPickupStage ? `Type message to ${targetFirstName} (Pickup)...` : `Type message to ${targetFirstName} (Dropoff)...`}
-                                        className="flex-1 min-h-[42px] max-h-[96px] bg-neutral-50 border border-neutral-200 rounded-2xl text-xs font-medium text-black placeholder:text-neutral-400 resize-none focus:border-black focus:ring-0 py-2.5 px-3"
-                                        rows={1}
-                                        onKeyDown={(e) => {
-                                            if (e.key === "Enter" && !e.shiftKey) {
-                                                e.preventDefault()
-                                                handleSendRiderMessage()
-                                            }
-                                        }}
-                                    />
-                                    <Button
-                                        onClick={handleSendRiderMessage}
-                                        disabled={!chatInput.trim() || isSendingMessage}
-                                        size="icon"
-                                        className="h-11 w-11 bg-black hover:bg-neutral-800 text-white rounded-2xl shrink-0 transition-all active:scale-95"
-                                    >
-                                        {isSendingMessage ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-                                    </Button>
+                            {isDelivered ? (
+                                <div className="p-4 border-t border-black/[0.06] bg-neutral-100/80 text-center flex items-center justify-center gap-2 text-xs font-bold text-neutral-500">
+                                    <Lock className="w-3.5 h-3.5 text-neutral-400" />
+                                    <span>Delivery completed • Chat is read-only</span>
                                 </div>
-                            </div>
+                            ) : (
+                                <div className="p-3 border-t border-black/[0.06] bg-white">
+                                    {isPartyTyping && (
+                                        <div className="px-2 pb-2 flex items-center gap-2 text-[10px] text-neutral-500 font-medium">
+                                            <MessageSquareMore className="w-3.5 h-3.5 animate-pulse text-black" />
+                                            <span>Typing a reply...</span>
+                                        </div>
+                                    )}
+                                    <div className="flex gap-2 items-end">
+                                        <Textarea
+                                            value={chatInput}
+                                            onChange={(e) => {
+                                                setChatInput(e.target.value)
+                                                if (order?.id) updateTypingStatus(order.id, "rider")
+                                            }}
+                                            placeholder={isPickupStage ? `Type message to ${targetFirstName} (Pickup)...` : `Type message to ${targetFirstName} (Dropoff)...`}
+                                            className="flex-1 min-h-[42px] max-h-[96px] bg-neutral-50 border border-neutral-200 rounded-2xl text-xs font-medium text-black placeholder:text-neutral-400 resize-none focus:border-black focus:ring-0 py-2.5 px-3"
+                                            rows={1}
+                                            onKeyDown={(e) => {
+                                                if (e.key === "Enter" && !e.shiftKey) {
+                                                    e.preventDefault()
+                                                    handleSendRiderMessage()
+                                                }
+                                            }}
+                                        />
+                                        <Button
+                                            onClick={handleSendRiderMessage}
+                                            disabled={!chatInput.trim() || isSendingMessage}
+                                            size="icon"
+                                            className="h-11 w-11 bg-black hover:bg-neutral-800 text-white rounded-2xl shrink-0 transition-all active:scale-95"
+                                        >
+                                            {isSendingMessage ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+                                        </Button>
+                                    </div>
+                                </div>
+                            )}
                         </motion.div>
                     )}
                 </AnimatePresence>
