@@ -426,7 +426,7 @@ export default function OperationsPage() {
                                                                 {isLogistics && (pickupLoc || deliveryLoc) ? (
                                                                     <div className="flex items-center gap-1.5 font-medium truncate py-0.5">
                                                                         <span className="text-slate-800 font-semibold truncate text-[11px]">{pickupLoc || "Origin"}</span>
-                                                                        <ArrowRight className="w-3 h-3 text-indigo-400 shrink-0" />
+                                                                        <ArrowRight className="w-3 h-3 text-slate-400 shrink-0" />
                                                                         <span className="text-slate-800 font-semibold truncate text-[11px]">{deliveryLoc || "Destination"}</span>
                                                                     </div>
                                                                 ) : (
@@ -460,16 +460,8 @@ export default function OperationsPage() {
 
                                                             {/* Line 3: Rider Assignment & Dispatch SMS */}
                                                             <div className="pt-1 flex items-center gap-2">
-                                                                <div className={cn(
-                                                                    "flex-1 min-w-0 rounded-xl px-3 py-1.5 flex items-center gap-1.5 border transition-all",
-                                                                    order.assignedStaffId && order.assignedStaffId !== "none"
-                                                                        ? "bg-indigo-50/40 border-indigo-200/80"
-                                                                        : "bg-slate-50 border-slate-200/80"
-                                                                )}>
-                                                                    <User className={cn(
-                                                                        "w-3.5 h-3.5 shrink-0",
-                                                                        order.assignedStaffId && order.assignedStaffId !== "none" ? "text-indigo-600" : "text-slate-400"
-                                                                    )} />
+                                                                <div className="flex-1 min-w-0 rounded-xl px-3 py-1.5 flex items-center gap-1.5 border border-slate-200/80 bg-slate-50 transition-all">
+                                                                    <User className="w-3.5 h-3.5 shrink-0 text-slate-400" />
                                                                     <Select
                                                                         value={order.assignedStaffId || "none"}
                                                                         onValueChange={(val) => handleAssign(order.id, val)}
