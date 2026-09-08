@@ -506,14 +506,22 @@ function CreateOrderContent() {
             ? selectedInventory.reduce((sum, item) => sum + (parseInt(item.quantity) || 0), 0)
             : (parseInt(quantity) || 1));
 
+        const finalCustomerName = (businessType === "logistics")
+            ? (recipientName.trim() || customerName.trim() || "Customer")
+            : customerName.trim();
+
+        const finalCustomerPhone = (businessType === "logistics")
+            ? (recipientPhone.trim() || customerPhone.trim() || "")
+            : customerPhone.trim();
+
         try {
             let res;
             if (editingId) {
                 res = await updateOrder(editingId, {
                     orderNumber,
-                    customerName,
+                    customerName: finalCustomerName,
                     customerEmail,
-                    customerPhone,
+                    customerPhone: finalCustomerPhone,
                     itemType: finalItemType,
                     pickupDate: pickupDate ? format(pickupDate, "yyyy-MM-dd") : "",
                     measurements: businessType === "logistics" && deliveryLocation ? deliveryLocation : measurements,
@@ -523,8 +531,10 @@ function CreateOrderContent() {
                         ...(businessType === "logistics" ? { 
                             pickupLocation, 
                             deliveryLocation, 
-                            recipientName, 
-                            recipientPhone,
+                            recipientName: recipientName.trim() || customerName.trim(), 
+                            recipientPhone: recipientPhone.trim() || customerPhone.trim(),
+                            senderName: customerName.trim() || undefined,
+                            senderPhone: customerPhone.trim() || undefined,
                             logisticsMode,
                             cargoWeight: cargoWeight || undefined,
                             cargoDimensions: cargoDimensions || undefined,
@@ -568,9 +578,9 @@ function CreateOrderContent() {
 
                 res = await createOrder({
                     orderNumber,
-                    customerName,
+                    customerName: finalCustomerName,
                     customerEmail,
-                    customerPhone,
+                    customerPhone: finalCustomerPhone,
                     itemType: finalItemType,
                     pickupDate: pickupDate ? format(pickupDate, "yyyy-MM-dd") : "",
                     measurements: businessType === "logistics" && deliveryLocation ? deliveryLocation : measurements,
@@ -580,8 +590,10 @@ function CreateOrderContent() {
                         ...(businessType === "logistics" ? { 
                             pickupLocation, 
                             deliveryLocation, 
-                            recipientName, 
-                            recipientPhone,
+                            recipientName: recipientName.trim() || customerName.trim(), 
+                            recipientPhone: recipientPhone.trim() || customerPhone.trim(),
+                            senderName: customerName.trim() || undefined,
+                            senderPhone: customerPhone.trim() || undefined,
                             logisticsMode,
                             cargoWeight: cargoWeight || undefined,
                             cargoDimensions: cargoDimensions || undefined,
@@ -640,10 +652,20 @@ function CreateOrderContent() {
         }
     }
 
-    const hasRequiredFields =
-        customerName.trim() !== "" &&
-        (selectedInventory.length > 0 || orderMenuItems.length > 0 || (!isRetailBusiness && itemType.trim() !== "")) &&
-        (selectedInventory.length > 0 || orderMenuItems.length > 0 || (!isRetailBusiness && quantity.trim() !== "" && parseInt(quantity) > 0))
+    const hasRequiredFields = businessType === "logistics"
+        ? (
+            deliveryLocation.trim() !== "" &&
+            (recipientName.trim() !== "" || customerName.trim() !== "") &&
+            (logisticsMode === "restaurant" 
+                ? (orderMenuItems.length > 0 || itemType.trim() !== "") 
+                : true
+            )
+        )
+        : (
+            customerName.trim() !== "" &&
+            (selectedInventory.length > 0 || orderMenuItems.length > 0 || (!isRetailBusiness && itemType.trim() !== "")) &&
+            (selectedInventory.length > 0 || orderMenuItems.length > 0 || (!isRetailBusiness && quantity.trim() !== "" && parseInt(quantity) > 0))
+        );
 
     return (
         <div className="min-h-screen bg-background font-sans selection:bg-primary/20">
@@ -710,9 +732,8 @@ function CreateOrderContent() {
                             </div>
                         </div>
                         )}
-
                         <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
-                            {/* B2B Client Account Selector */}
+                            {/* B2B Client Account Selector (Non-Logistics Wholesale) */}
                             {businessType !== "logistics" && orderMode === "wholesale" && (
                                 <div className="p-3.5 sm:p-5 bg-slate-50/70 border border-slate-100 rounded-2xl sm:rounded-3xl flex flex-col lg:flex-row lg:items-center justify-between gap-3 sm:gap-4">
                                     <div className="space-y-0.5 text-left">
@@ -740,226 +761,9 @@ function CreateOrderContent() {
                                 </div>
                             )}
 
-                            {/* Customer / Logistics Contacts */}
-                            <div className="bg-slate-50/60 p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-200/70 space-y-3.5 sm:space-y-4">
-                                <h3 className="text-xs sm:text-sm font-bold text-slate-900 tracking-tight flex items-center gap-2">
-                                    {businessType === "logistics" ? "Customer & Delivery Contacts" : "Customer Information"}
-                                </h3>
-
-                                {businessType === "logistics" ? (
-                                    <div className="space-y-3 sm:space-y-4">
-                                        {/* Pick Up Customer Details */}
-                                        <div className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-white border border-slate-200/70 shadow-2xs space-y-2.5 sm:space-y-3">
-                                            <div className="flex items-center justify-between pb-1.5 border-b border-slate-100">
-                                                <span className="text-xs font-bold text-emerald-800 flex items-center gap-1.5">
-                                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                                                    1. Pick Up Contact
-                                                </span>
-                                                <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200/60">Pickup</span>
-                                            </div>
-                                            <div className="grid sm:grid-cols-2 gap-3 sm:gap-4">
-                                                <div className="space-y-1">
-                                                    <Label htmlFor="pickupCustomerName" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">Name <span className="text-red-500">*</span></Label>
-                                                    <Input
-                                                        id="pickupCustomerName"
-                                                        value={customerName}
-                                                        onChange={(e) => setCustomerName(e.target.value)}
-                                                        placeholder="e.g. Ama Mensah"
-                                                        required
-                                                        disabled={!canCreateOrder}
-                                                        className="h-10 sm:h-11 rounded-xl bg-slate-50/50 border-zinc-200 text-xs sm:text-sm font-medium"
-                                                    />
-                                                </div>
-                                                <div className="space-y-1">
-                                                    <Label htmlFor="pickupCustomerPhone" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">Contact <span className="text-red-500">*</span></Label>
-                                                    <PhoneInputWithCountry
-                                                        id="pickupCustomerPhone"
-                                                        countryCode={pickupCountryCode}
-                                                        phoneLocal={pickupPhoneLocal}
-                                                        onCountryCodeChange={(code) => {
-                                                             setPickupCountryCode(code)
-                                                             const formatted = formatFullPhone(code, pickupPhoneLocal)
-                                                             setCustomerPhone(formatted)
-                                                        }}
-                                                        onPhoneLocalChange={(local) => {
-                                                             setPickupPhoneLocal(local)
-                                                             const formatted = formatFullPhone(pickupCountryCode, local)
-                                                             setCustomerPhone(formatted)
-                                                        }}
-                                                        placeholder="54 870 6430"
-                                                        required
-                                                        disabled={!canCreateOrder}
-                                                    />
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        {/* Drop Off Customer Details */}
-                                        <div className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-white border border-slate-200/70 shadow-2xs space-y-2.5 sm:space-y-3">
-                                            <div className="flex items-center justify-between pb-1.5 border-b border-slate-100">
-                                                <span className="text-xs font-bold text-sky-800 flex items-center gap-1.5">
-                                                    <span className="w-1.5 h-1.5 rounded-full bg-sky-500" />
-                                                    2. Drop Off Contact
-                                                </span>
-                                                <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-sky-50 text-sky-700 border border-sky-200/60">Recipient</span>
-                                            </div>
-                                            <div className="grid sm:grid-cols-2 gap-3 sm:gap-4">
-                                                <div className="space-y-1">
-                                                    <Label htmlFor="dropoffCustomerName" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">Name <span className="text-red-500">*</span></Label>
-                                                    <Input
-                                                        id="dropoffCustomerName"
-                                                        value={recipientName}
-                                                        onChange={(e) => setRecipientName(e.target.value)}
-                                                        placeholder="e.g. Kofi Boateng"
-                                                        required
-                                                        disabled={!canCreateOrder}
-                                                        className="h-10 sm:h-11 rounded-xl bg-slate-50/50 border-zinc-200 text-xs sm:text-sm font-medium"
-                                                    />
-                                                </div>
-                                                <div className="space-y-1">
-                                                    <Label htmlFor="dropoffCustomerPhone" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">Contact <span className="text-red-500">*</span></Label>
-                                                    <PhoneInputWithCountry
-                                                        id="dropoffCustomerPhone"
-                                                        countryCode={dropoffCountryCode}
-                                                        phoneLocal={dropoffPhoneLocal}
-                                                        onCountryCodeChange={(code) => {
-                                                             setDropoffCountryCode(code)
-                                                             const formatted = formatFullPhone(code, dropoffPhoneLocal)
-                                                             setRecipientPhone(formatted)
-                                                        }}
-                                                        onPhoneLocalChange={(local) => {
-                                                             setDropoffPhoneLocal(local)
-                                                             const formatted = formatFullPhone(dropoffCountryCode, local)
-                                                             setRecipientPhone(formatted)
-                                                        }}
-                                                        placeholder="24 400 0000"
-                                                        required
-                                                        disabled={!canCreateOrder}
-                                                    />
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ) : (
-                                    <div className="space-y-3 sm:space-y-4">
-                                        <div className="grid sm:grid-cols-2 gap-3 sm:gap-6">
-                                            <div className="space-y-1 sm:space-y-2">
-                                                <Label htmlFor={`${businessType}-customerName`} className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">Customer Name <span className="text-red-500">*</span></Label>
-                                                <Input
-                                                    id={`${businessType}-customerName`}
-                                                    value={customerName}
-                                                    onChange={(e) => setCustomerName(e.target.value)}
-                                                    placeholder="Naa"
-                                                    required
-                                                    disabled={!canCreateOrder}
-                                                    className="h-10 sm:h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80 text-xs sm:text-sm"
-                                                />
-                                            </div>
-
-                                            <div className="space-y-1 sm:space-y-2">
-                                                <Label htmlFor={`${businessType}-customerPhone`} className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">Customer Contact</Label>
-                                                <PhoneInputWithCountry
-                                                    id={`${businessType}-customerPhone`}
-                                                    countryCode={pickupCountryCode}
-                                                    phoneLocal={pickupPhoneLocal}
-                                                    onCountryCodeChange={(code) => {
-                                                        setPickupCountryCode(code)
-                                                        const formatted = formatFullPhone(code, pickupPhoneLocal)
-                                                        setCustomerPhone(formatted)
-                                                    }}
-                                                    onPhoneLocalChange={(local) => {
-                                                        setPickupPhoneLocal(local)
-                                                        const formatted = formatFullPhone(pickupCountryCode, local)
-                                                        setCustomerPhone(formatted)
-                                                    }}
-                                                    disabled={!canCreateOrder}
-                                                />
-                                            </div>
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-
-                            {/* Payment Method Selector */}
-                            <div className="bg-slate-50/60 p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-200/70 space-y-3 sm:space-y-4">
-                                <h3 className="text-xs sm:text-sm font-bold text-slate-900 tracking-tight flex items-center gap-2">
-                                    Expected Payment Method
-                                </h3>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-4">
-                                    <div 
-                                        onClick={() => setPaymentMethod("online")}
-                                        className={`border rounded-xl sm:rounded-2xl p-3 sm:p-4 cursor-pointer flex flex-col gap-1 transition-all ${paymentMethod === "online" ? "bg-blue-50 border-blue-200 ring-2 ring-blue-500/20" : "bg-white border-slate-200 hover:bg-slate-50"}`}
-                                    >
-                                        <span className={`text-xs sm:text-sm font-bold ${paymentMethod === "online" ? "text-blue-700" : "text-slate-700"}`}>Online Payment</span>
-                                        <span className="text-[11px] sm:text-xs text-slate-500 leading-tight">Customer receives payment link via SMS</span>
-                                    </div>
-                                    <div 
-                                        onClick={() => setPaymentMethod("cash")}
-                                        className={`border rounded-xl sm:rounded-2xl p-3 sm:p-4 cursor-pointer flex flex-col gap-1 transition-all ${paymentMethod === "cash" ? "bg-emerald-50 border-emerald-200 ring-2 ring-emerald-500/20" : "bg-white border-slate-200 hover:bg-slate-50"}`}
-                                    >
-                                        <span className={`text-xs sm:text-sm font-bold ${paymentMethod === "cash" ? "text-emerald-700" : "text-slate-700"}`}>Cash / Manual Payment</span>
-                                        <span className="text-[11px] sm:text-xs text-slate-500 leading-tight">Order marked paid immediately. No link.</span>
-                                    </div>
-                                </div>
-
-                                {paymentMethod === "online" && (
-                                    <div className="mt-3 sm:mt-4 p-3.5 sm:p-5 bg-blue-50/40 rounded-xl sm:rounded-2xl border border-blue-100/60 space-y-3 sm:space-y-4">
-                                        <div className="flex items-center gap-2.5 sm:gap-3">
-                                            <Checkbox
-                                                id="triggerMomoPrompt"
-                                                checked={triggerMomoPrompt}
-                                                onCheckedChange={(checked) => {
-                                                    setTriggerMomoPrompt(!!checked)
-                                                    if (checked && !momoPhone) {
-                                                        setMomoPhone(customerPhone)
-                                                    }
-                                                }}
-                                                className="rounded-md border-slate-300 text-blue-600 focus:ring-blue-500/20"
-                                            />
-                                            <Label htmlFor="triggerMomoPrompt" className="text-xs font-bold text-slate-700 cursor-pointer">
-                                                Trigger instant Mobile Money PIN Prompt on customer's phone
-                                            </Label>
-                                        </div>
-
-                                        {triggerMomoPrompt && (
-                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 pt-1 sm:pt-2">
-                                                <div className="space-y-1 sm:space-y-2">
-                                                    <Label htmlFor="momoPhone" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">Momo Phone Number</Label>
-                                                    <Input
-                                                        id="momoPhone"
-                                                        type="tel"
-                                                        placeholder="e.g. 0244000000"
-                                                        value={momoPhone}
-                                                        onChange={(e) => setMomoPhone(e.target.value)}
-                                                        className="h-10 sm:h-11 rounded-xl bg-white border-zinc-200 focus-visible:border-blue-400 text-xs sm:text-sm font-medium"
-                                                    />
-                                                </div>
-                                                <div className="space-y-1 sm:space-y-2">
-                                                    <Label htmlFor="momoProvider" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">Network Provider</Label>
-                                                    <Select 
-                                                        value={momoProvider} 
-                                                        onValueChange={(val: 'mtn' | 'vod' | 'atl') => setMomoProvider(val)}
-                                                        disabled={!!detectGhanaNetworkProvider(momoPhone)}
-                                                    >
-                                                        <SelectTrigger id="momoProvider" className="h-10 sm:h-11 rounded-xl bg-white border-zinc-200 focus:border-blue-400 text-xs sm:text-sm font-medium">
-                                                            <SelectValue placeholder="Select provider" />
-                                                        </SelectTrigger>
-                                                        <SelectContent className="rounded-xl border-zinc-100 shadow-xl">
-                                                             <SelectItem value="mtn" className="rounded-lg text-xs sm:text-sm">MTN Ghana</SelectItem>
-                                                             <SelectItem value="vod" className="rounded-lg text-xs sm:text-sm">Telecel (Vodafone)</SelectItem>
-                                                             <SelectItem value="atl" className="rounded-lg text-xs sm:text-sm">AT (AirtelTigo)</SelectItem>
-                                                        </SelectContent>
-                                                    </Select>
-                                                </div>
-                                            </div>
-                                        )}
-                                    </div>
-                                )}
-                            </div>
-
-                            {/* Logistics Operational System — Dynamic Administrative Defaults Integration */}
+                            {/* LOGISTICS OPERATIONAL SYSTEM — Displayed Directly at Top for Logistics Businesses */}
                             {businessType === "logistics" && (
-                                <div className="space-y-4">
+                                <div className="space-y-4 sm:space-y-6">
                                     {/* Top Operational Subtype Switcher */}
                                     <div className="bg-slate-900 text-white p-3 sm:p-4 rounded-2xl sm:rounded-3xl shadow-sm space-y-2.5">
                                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5">
@@ -1033,7 +837,7 @@ function CreateOrderContent() {
                                     {/* 1. RESTAURANT DELIVERY VIEW */}
                                     {logisticsMode === "restaurant" && (
                                         <div className="space-y-4">
-                                            {/* Restaurant Route Card */}
+                                            {/* Restaurant Route & Contact Card */}
                                             <div className="bg-amber-50/50 p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl border border-amber-200/70 space-y-3.5 sm:space-y-4">
                                                 <div className="flex items-center justify-between">
                                                     <h3 className="text-xs sm:text-sm font-bold text-amber-950 tracking-tight flex items-center gap-2">
@@ -1045,42 +849,127 @@ function CreateOrderContent() {
                                                     </span>
                                                 </div>
 
-                                                <div className="grid sm:grid-cols-2 gap-3 sm:gap-6">
-                                                    {/* Pickup Location */}
-                                                    <div className="space-y-1 sm:space-y-2">
-                                                        <Label htmlFor="pickupLocation" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">
-                                                            Restaurant / Branch Pick Up <span className="text-amber-600">(e.g. Marwako)</span>
-                                                        </Label>
-                                                        <Input
-                                                            id="pickupLocation"
-                                                            value={pickupLocation}
-                                                            onChange={(e) => setPickupLocation(e.target.value)}
-                                                            placeholder="e.g. Marwako Fast Food, Spintex Branch"
-                                                            disabled={!canCreateOrder}
-                                                            className="h-10 sm:h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-amber-400 focus-visible:ring-[4px] focus-visible:ring-amber-100/80 text-xs sm:text-sm"
-                                                        />
+                                                {/* Restaurant Branch (Pickup) & Customer Dropoff Contact Details */}
+                                                <div className="grid sm:grid-cols-2 gap-3.5 sm:gap-6">
+                                                    {/* 1. Restaurant Branch Details */}
+                                                    <div className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-white border border-amber-200/60 shadow-2xs space-y-3">
+                                                        <div className="flex items-center justify-between pb-1.5 border-b border-amber-100">
+                                                            <span className="text-xs font-bold text-amber-900 flex items-center gap-1.5">
+                                                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                                                                1. Restaurant / Branch Details
+                                                            </span>
+                                                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200/60">Pickup</span>
+                                                        </div>
+                                                        <div className="space-y-2.5">
+                                                            <div className="space-y-1">
+                                                                <Label htmlFor="restaurantPickupLocation" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">
+                                                                    Branch Name / Pick Up Location <span className="text-amber-600 font-normal">(e.g. Marwako Spintex)</span>
+                                                                </Label>
+                                                                <Input
+                                                                    id="restaurantPickupLocation"
+                                                                    value={pickupLocation}
+                                                                    onChange={(e) => setPickupLocation(e.target.value)}
+                                                                    placeholder="e.g. Marwako Fast Food, Spintex Branch"
+                                                                    disabled={!canCreateOrder}
+                                                                    className="h-10 sm:h-11 rounded-xl bg-slate-50/50 border-zinc-200 focus-visible:border-amber-400 text-xs sm:text-sm font-medium"
+                                                                />
+                                                            </div>
+                                                            <div className="space-y-1">
+                                                                <Label htmlFor="branchContactPhone" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">Branch Contact Phone</Label>
+                                                                <PhoneInputWithCountry
+                                                                    id="branchContactPhone"
+                                                                    countryCode={pickupCountryCode}
+                                                                    phoneLocal={pickupPhoneLocal}
+                                                                    onCountryCodeChange={(code) => {
+                                                                        setPickupCountryCode(code)
+                                                                        const formatted = formatFullPhone(code, pickupPhoneLocal)
+                                                                        setCustomerPhone(formatted)
+                                                                    }}
+                                                                    onPhoneLocalChange={(local) => {
+                                                                        setPickupPhoneLocal(local)
+                                                                        const formatted = formatFullPhone(pickupCountryCode, local)
+                                                                        setCustomerPhone(formatted)
+                                                                    }}
+                                                                    placeholder="54 870 6430"
+                                                                    disabled={!canCreateOrder}
+                                                                />
+                                                            </div>
+                                                        </div>
                                                     </div>
 
-                                                    {/* Drop Off Location */}
-                                                    <div className="space-y-1 sm:space-y-2">
-                                                        <Label htmlFor="deliveryLocation" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">
-                                                            Customer Delivery Drop Off Location <span className="text-red-500">*</span>
-                                                        </Label>
-                                                        <Input
-                                                            id="deliveryLocation"
-                                                            value={deliveryLocation}
-                                                            onChange={(e) => setDeliveryLocation(e.target.value)}
-                                                            placeholder="e.g. East Legon, near Shell / Accra Mall"
-                                                            required
-                                                            disabled={!canCreateOrder}
-                                                            className="h-10 sm:h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-amber-400 focus-visible:ring-[4px] focus-visible:ring-amber-100/80 text-xs sm:text-sm"
-                                                        />
+                                                    {/* 2. Customer Drop Off Details */}
+                                                    <div className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-white border border-amber-200/60 shadow-2xs space-y-3">
+                                                        <div className="flex items-center justify-between pb-1.5 border-b border-amber-100">
+                                                            <span className="text-xs font-bold text-amber-900 flex items-center gap-1.5">
+                                                                <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                                                                2. Customer Dropoff Details
+                                                            </span>
+                                                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-amber-50 text-amber-700 border border-amber-200/60">Recipient</span>
+                                                        </div>
+                                                        <div className="space-y-2.5">
+                                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                                                <div className="space-y-1">
+                                                                    <Label htmlFor="restaurantCustomerName" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">
+                                                                        Customer Name <span className="text-red-500">*</span>
+                                                                    </Label>
+                                                                    <Input
+                                                                        id="restaurantCustomerName"
+                                                                        value={recipientName}
+                                                                        onChange={(e) => {
+                                                                            setRecipientName(e.target.value)
+                                                                            if (!customerName) setCustomerName(e.target.value)
+                                                                        }}
+                                                                        placeholder="e.g. Kofi Boateng"
+                                                                        required
+                                                                        disabled={!canCreateOrder}
+                                                                        className="h-10 sm:h-11 rounded-xl bg-slate-50/50 border-zinc-200 focus-visible:border-amber-400 text-xs sm:text-sm font-medium"
+                                                                    />
+                                                                </div>
+                                                                <div className="space-y-1">
+                                                                    <Label htmlFor="restaurantCustomerPhone" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">
+                                                                        Customer Contact <span className="text-red-500">*</span>
+                                                                    </Label>
+                                                                    <PhoneInputWithCountry
+                                                                        id="restaurantCustomerPhone"
+                                                                        countryCode={dropoffCountryCode}
+                                                                        phoneLocal={dropoffPhoneLocal}
+                                                                        onCountryCodeChange={(code) => {
+                                                                            setDropoffCountryCode(code)
+                                                                            const formatted = formatFullPhone(code, dropoffPhoneLocal)
+                                                                            setRecipientPhone(formatted)
+                                                                        }}
+                                                                        onPhoneLocalChange={(local) => {
+                                                                            setDropoffPhoneLocal(local)
+                                                                            const formatted = formatFullPhone(dropoffCountryCode, local)
+                                                                            setRecipientPhone(formatted)
+                                                                        }}
+                                                                        placeholder="24 400 0000"
+                                                                        required
+                                                                        disabled={!canCreateOrder}
+                                                                    />
+                                                                </div>
+                                                            </div>
+                                                            <div className="space-y-1">
+                                                                <Label htmlFor="restaurantDeliveryLocation" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">
+                                                                    Customer Drop Off Address / Location <span className="text-red-500">*</span>
+                                                                </Label>
+                                                                <Input
+                                                                    id="restaurantDeliveryLocation"
+                                                                    value={deliveryLocation}
+                                                                    onChange={(e) => setDeliveryLocation(e.target.value)}
+                                                                    placeholder="e.g. East Legon, near Shell / Accra Mall"
+                                                                    required
+                                                                    disabled={!canCreateOrder}
+                                                                    className="h-10 sm:h-11 rounded-xl bg-slate-50/50 border-zinc-200 focus-visible:border-amber-400 text-xs sm:text-sm font-medium"
+                                                                />
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
 
                                                 {/* Live Google Maps Preview */}
                                                 {(pickupLocation || deliveryLocation) && (
-                                                    <div className="grid sm:grid-cols-2 gap-3 sm:gap-4">
+                                                    <div className="grid sm:grid-cols-2 gap-3 sm:gap-4 pt-1">
                                                         {pickupLocation && (
                                                             <div className="space-y-1.5">
                                                                 <div className="flex items-center gap-1.5">
@@ -1250,7 +1139,7 @@ function CreateOrderContent() {
                                     {/* 2. COURIER / PARCEL DELIVERY VIEW */}
                                     {logisticsMode === "delivery" && (
                                         <div className="space-y-4">
-                                            {/* Courier Route Card */}
+                                            {/* Courier Route & Contact Card */}
                                             <div className="bg-sky-50/50 p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl border border-sky-200/70 space-y-3.5 sm:space-y-4">
                                                 <div className="flex items-center justify-between">
                                                     <h3 className="text-xs sm:text-sm font-bold text-sky-950 tracking-tight flex items-center gap-2">
@@ -1262,42 +1151,137 @@ function CreateOrderContent() {
                                                     </span>
                                                 </div>
 
-                                                <div className="grid sm:grid-cols-2 gap-3 sm:gap-6">
-                                                    {/* Pickup / Hub Location */}
-                                                    <div className="space-y-1 sm:space-y-2">
-                                                        <Label htmlFor="pickupLocation" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">
-                                                            Dispatch Hub / Sender Pick Up Address
-                                                        </Label>
-                                                        <Input
-                                                            id="pickupLocation"
-                                                            value={pickupLocation}
-                                                            onChange={(e) => setPickupLocation(e.target.value)}
-                                                            placeholder="e.g. Central Dispatch Hub, Kwame Nkrumah Circle"
-                                                            disabled={!canCreateOrder}
-                                                            className="h-10 sm:h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-sky-400 focus-visible:ring-[4px] focus-visible:ring-sky-100/80 text-xs sm:text-sm"
-                                                        />
+                                                {/* Hub / Sender & Recipient Details */}
+                                                <div className="grid sm:grid-cols-2 gap-3.5 sm:gap-6">
+                                                    {/* 1. Sender / Hub Details */}
+                                                    <div className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-white border border-sky-200/60 shadow-2xs space-y-3">
+                                                        <div className="flex items-center justify-between pb-1.5 border-b border-sky-100">
+                                                            <span className="text-xs font-bold text-sky-900 flex items-center gap-1.5">
+                                                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                                                                1. Dispatch Hub / Sender Details
+                                                            </span>
+                                                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200/60">Sender</span>
+                                                        </div>
+                                                        <div className="space-y-2.5">
+                                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                                                <div className="space-y-1">
+                                                                    <Label htmlFor="courierSenderName" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">Sender / Business Name</Label>
+                                                                    <Input
+                                                                        id="courierSenderName"
+                                                                        value={customerName}
+                                                                        onChange={(e) => setCustomerName(e.target.value)}
+                                                                        placeholder="e.g. Ama Mensah"
+                                                                        disabled={!canCreateOrder}
+                                                                        className="h-10 sm:h-11 rounded-xl bg-slate-50/50 border-zinc-200 text-xs sm:text-sm font-medium"
+                                                                    />
+                                                                </div>
+                                                                <div className="space-y-1">
+                                                                    <Label htmlFor="courierSenderPhone" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">Sender Phone</Label>
+                                                                    <PhoneInputWithCountry
+                                                                        id="courierSenderPhone"
+                                                                        countryCode={pickupCountryCode}
+                                                                        phoneLocal={pickupPhoneLocal}
+                                                                        onCountryCodeChange={(code) => {
+                                                                            setPickupCountryCode(code)
+                                                                            const formatted = formatFullPhone(code, pickupPhoneLocal)
+                                                                            setCustomerPhone(formatted)
+                                                                        }}
+                                                                        onPhoneLocalChange={(local) => {
+                                                                            setPickupPhoneLocal(local)
+                                                                            const formatted = formatFullPhone(pickupCountryCode, local)
+                                                                            setCustomerPhone(formatted)
+                                                                        }}
+                                                                        placeholder="54 870 6430"
+                                                                        disabled={!canCreateOrder}
+                                                                    />
+                                                                </div>
+                                                            </div>
+                                                            <div className="space-y-1">
+                                                                <Label htmlFor="courierPickupLocation" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">
+                                                                    Dispatch Hub / Sender Pick Up Address
+                                                                </Label>
+                                                                <Input
+                                                                    id="courierPickupLocation"
+                                                                    value={pickupLocation}
+                                                                    onChange={(e) => setPickupLocation(e.target.value)}
+                                                                    placeholder="e.g. Central Dispatch Hub, Kwame Nkrumah Circle"
+                                                                    disabled={!canCreateOrder}
+                                                                    className="h-10 sm:h-11 rounded-xl bg-slate-50/50 border-zinc-200 focus-visible:border-sky-400 text-xs sm:text-sm font-medium"
+                                                                />
+                                                            </div>
+                                                        </div>
                                                     </div>
 
-                                                    {/* Drop Off Location */}
-                                                    <div className="space-y-1 sm:space-y-2">
-                                                        <Label htmlFor="deliveryLocation" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">
-                                                            Recipient Delivery Drop Off Address <span className="text-red-500">*</span>
-                                                        </Label>
-                                                        <Input
-                                                            id="deliveryLocation"
-                                                            value={deliveryLocation}
-                                                            onChange={(e) => setDeliveryLocation(e.target.value)}
-                                                            placeholder="e.g. Airport Residential, 5th Avenue"
-                                                            required
-                                                            disabled={!canCreateOrder}
-                                                            className="h-10 sm:h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-sky-400 focus-visible:ring-[4px] focus-visible:ring-sky-100/80 text-xs sm:text-sm"
-                                                        />
+                                                    {/* 2. Recipient Details */}
+                                                    <div className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-white border border-sky-200/60 shadow-2xs space-y-3">
+                                                        <div className="flex items-center justify-between pb-1.5 border-b border-sky-100">
+                                                            <span className="text-xs font-bold text-sky-900 flex items-center gap-1.5">
+                                                                <span className="w-1.5 h-1.5 rounded-full bg-sky-500" />
+                                                                2. Recipient Delivery Details
+                                                            </span>
+                                                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-sky-50 text-sky-700 border border-sky-200/60">Recipient</span>
+                                                        </div>
+                                                        <div className="space-y-2.5">
+                                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                                                <div className="space-y-1">
+                                                                    <Label htmlFor="courierRecipientName" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">
+                                                                        Recipient Name <span className="text-red-500">*</span>
+                                                                    </Label>
+                                                                    <Input
+                                                                        id="courierRecipientName"
+                                                                        value={recipientName}
+                                                                        onChange={(e) => setRecipientName(e.target.value)}
+                                                                        placeholder="e.g. Kofi Boateng"
+                                                                        required
+                                                                        disabled={!canCreateOrder}
+                                                                        className="h-10 sm:h-11 rounded-xl bg-slate-50/50 border-zinc-200 focus-visible:border-sky-400 text-xs sm:text-sm font-medium"
+                                                                    />
+                                                                </div>
+                                                                <div className="space-y-1">
+                                                                    <Label htmlFor="courierRecipientPhone" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">
+                                                                        Recipient Phone <span className="text-red-500">*</span>
+                                                                    </Label>
+                                                                    <PhoneInputWithCountry
+                                                                        id="courierRecipientPhone"
+                                                                        countryCode={dropoffCountryCode}
+                                                                        phoneLocal={dropoffPhoneLocal}
+                                                                        onCountryCodeChange={(code) => {
+                                                                            setDropoffCountryCode(code)
+                                                                            const formatted = formatFullPhone(code, dropoffPhoneLocal)
+                                                                            setRecipientPhone(formatted)
+                                                                        }}
+                                                                        onPhoneLocalChange={(local) => {
+                                                                            setDropoffPhoneLocal(local)
+                                                                            const formatted = formatFullPhone(dropoffCountryCode, local)
+                                                                            setRecipientPhone(formatted)
+                                                                        }}
+                                                                        placeholder="24 400 0000"
+                                                                        required
+                                                                        disabled={!canCreateOrder}
+                                                                    />
+                                                                </div>
+                                                            </div>
+                                                            <div className="space-y-1">
+                                                                <Label htmlFor="courierDeliveryLocation" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">
+                                                                    Recipient Delivery Address <span className="text-red-500">*</span>
+                                                                </Label>
+                                                                <Input
+                                                                    id="courierDeliveryLocation"
+                                                                    value={deliveryLocation}
+                                                                    onChange={(e) => setDeliveryLocation(e.target.value)}
+                                                                    placeholder="e.g. Airport Residential, 5th Avenue"
+                                                                    required
+                                                                    disabled={!canCreateOrder}
+                                                                    className="h-10 sm:h-11 rounded-xl bg-slate-50/50 border-zinc-200 focus-visible:border-sky-400 text-xs sm:text-sm font-medium"
+                                                                />
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
 
                                                 {/* Live Google Maps Preview */}
                                                 {(pickupLocation || deliveryLocation) && (
-                                                    <div className="grid sm:grid-cols-2 gap-3 sm:gap-4">
+                                                    <div className="grid sm:grid-cols-2 gap-3 sm:gap-4 pt-1">
                                                         {pickupLocation && (
                                                             <div className="space-y-1.5">
                                                                 <div className="flex items-center gap-1.5">
@@ -1433,7 +1417,7 @@ function CreateOrderContent() {
                                     {/* 3. SHIPPING / FREIGHT & CARGO VIEW */}
                                     {logisticsMode === "shipping" && (
                                         <div className="space-y-4">
-                                            {/* Shipping Terminal Route */}
+                                            {/* Shipping Terminal & Consignee Route Card */}
                                             <div className="bg-indigo-50/50 p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl border border-indigo-200/70 space-y-3.5 sm:space-y-4">
                                                 <div className="flex items-center justify-between">
                                                     <h3 className="text-xs sm:text-sm font-bold text-indigo-950 tracking-tight flex items-center gap-2">
@@ -1445,42 +1429,137 @@ function CreateOrderContent() {
                                                     </span>
                                                 </div>
 
-                                                <div className="grid sm:grid-cols-2 gap-3 sm:gap-6">
-                                                    {/* Origin Port */}
-                                                    <div className="space-y-1 sm:space-y-2">
-                                                        <Label htmlFor="pickupLocation" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">
-                                                            Origin Port / Air Cargo Terminal
-                                                        </Label>
-                                                        <Input
-                                                            id="pickupLocation"
-                                                            value={pickupLocation}
-                                                            onChange={(e) => setPickupLocation(e.target.value)}
-                                                            placeholder="e.g. Tema Port Terminal 3 / Kotoka Cargo Village"
-                                                            disabled={!canCreateOrder}
-                                                            className="h-10 sm:h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-indigo-400 focus-visible:ring-[4px] focus-visible:ring-indigo-100/80 text-xs sm:text-sm"
-                                                        />
+                                                {/* Consignor & Consignee Details */}
+                                                <div className="grid sm:grid-cols-2 gap-3.5 sm:gap-6">
+                                                    {/* 1. Consignor / Shipper Details */}
+                                                    <div className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-white border border-indigo-200/60 shadow-2xs space-y-3">
+                                                        <div className="flex items-center justify-between pb-1.5 border-b border-indigo-100">
+                                                            <span className="text-xs font-bold text-indigo-900 flex items-center gap-1.5">
+                                                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                                                                1. Consignor / Shipper Details
+                                                            </span>
+                                                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200/60">Shipper</span>
+                                                        </div>
+                                                        <div className="space-y-2.5">
+                                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                                                <div className="space-y-1">
+                                                                    <Label htmlFor="shippingConsignorName" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">Consignor / Shipper Name</Label>
+                                                                    <Input
+                                                                        id="shippingConsignorName"
+                                                                        value={customerName}
+                                                                        onChange={(e) => setCustomerName(e.target.value)}
+                                                                        placeholder="e.g. Global Traders Ltd"
+                                                                        disabled={!canCreateOrder}
+                                                                        className="h-10 sm:h-11 rounded-xl bg-slate-50/50 border-zinc-200 text-xs sm:text-sm font-medium"
+                                                                    />
+                                                                </div>
+                                                                <div className="space-y-1">
+                                                                    <Label htmlFor="shippingConsignorPhone" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">Consignor Phone</Label>
+                                                                    <PhoneInputWithCountry
+                                                                        id="shippingConsignorPhone"
+                                                                        countryCode={pickupCountryCode}
+                                                                        phoneLocal={pickupPhoneLocal}
+                                                                        onCountryCodeChange={(code) => {
+                                                                            setPickupCountryCode(code)
+                                                                            const formatted = formatFullPhone(code, pickupPhoneLocal)
+                                                                            setCustomerPhone(formatted)
+                                                                        }}
+                                                                        onPhoneLocalChange={(local) => {
+                                                                            setPickupPhoneLocal(local)
+                                                                            const formatted = formatFullPhone(pickupCountryCode, local)
+                                                                            setCustomerPhone(formatted)
+                                                                        }}
+                                                                        placeholder="54 870 6430"
+                                                                        disabled={!canCreateOrder}
+                                                                    />
+                                                                </div>
+                                                            </div>
+                                                            <div className="space-y-1">
+                                                                <Label htmlFor="shippingOriginPort" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">
+                                                                    Origin Port / Air Cargo Terminal
+                                                                </Label>
+                                                                <Input
+                                                                    id="shippingOriginPort"
+                                                                    value={pickupLocation}
+                                                                    onChange={(e) => setPickupLocation(e.target.value)}
+                                                                    placeholder="e.g. Tema Port Terminal 3 / Kotoka Cargo Village"
+                                                                    disabled={!canCreateOrder}
+                                                                    className="h-10 sm:h-11 rounded-xl bg-slate-50/50 border-zinc-200 focus-visible:border-indigo-400 text-xs sm:text-sm font-medium"
+                                                                />
+                                                            </div>
+                                                        </div>
                                                     </div>
 
-                                                    {/* Destination Hub */}
-                                                    <div className="space-y-1 sm:space-y-2">
-                                                        <Label htmlFor="deliveryLocation" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">
-                                                            Destination Port / Inland Terminal <span className="text-red-500">*</span>
-                                                        </Label>
-                                                        <Input
-                                                            id="deliveryLocation"
-                                                            value={deliveryLocation}
-                                                            onChange={(e) => setDeliveryLocation(e.target.value)}
-                                                            placeholder="e.g. Kumasi Inland Freight Hub"
-                                                            required
-                                                            disabled={!canCreateOrder}
-                                                            className="h-10 sm:h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-indigo-400 focus-visible:ring-[4px] focus-visible:ring-indigo-100/80 text-xs sm:text-sm"
-                                                        />
+                                                    {/* 2. Consignee / Receiver Details */}
+                                                    <div className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-white border border-indigo-200/60 shadow-2xs space-y-3">
+                                                        <div className="flex items-center justify-between pb-1.5 border-b border-indigo-100">
+                                                            <span className="text-xs font-bold text-indigo-900 flex items-center gap-1.5">
+                                                                <span className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
+                                                                2. Consignee / Receiver Details
+                                                            </span>
+                                                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-indigo-50 text-indigo-700 border border-indigo-200/60">Consignee</span>
+                                                        </div>
+                                                        <div className="space-y-2.5">
+                                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                                                <div className="space-y-1">
+                                                                    <Label htmlFor="shippingConsigneeName" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">
+                                                                        Consignee Name <span className="text-red-500">*</span>
+                                                                    </Label>
+                                                                    <Input
+                                                                        id="shippingConsigneeName"
+                                                                        value={recipientName}
+                                                                        onChange={(e) => setRecipientName(e.target.value)}
+                                                                        placeholder="e.g. Kwame Mensah"
+                                                                        required
+                                                                        disabled={!canCreateOrder}
+                                                                        className="h-10 sm:h-11 rounded-xl bg-slate-50/50 border-zinc-200 focus-visible:border-indigo-400 text-xs sm:text-sm font-medium"
+                                                                    />
+                                                                </div>
+                                                                <div className="space-y-1">
+                                                                    <Label htmlFor="shippingConsigneePhone" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">
+                                                                        Consignee Phone <span className="text-red-500">*</span>
+                                                                    </Label>
+                                                                    <PhoneInputWithCountry
+                                                                        id="shippingConsigneePhone"
+                                                                        countryCode={dropoffCountryCode}
+                                                                        phoneLocal={dropoffPhoneLocal}
+                                                                        onCountryCodeChange={(code) => {
+                                                                            setDropoffCountryCode(code)
+                                                                            const formatted = formatFullPhone(code, dropoffPhoneLocal)
+                                                                            setRecipientPhone(formatted)
+                                                                        }}
+                                                                        onPhoneLocalChange={(local) => {
+                                                                            setDropoffPhoneLocal(local)
+                                                                            const formatted = formatFullPhone(dropoffCountryCode, local)
+                                                                            setRecipientPhone(formatted)
+                                                                        }}
+                                                                        placeholder="24 400 0000"
+                                                                        required
+                                                                        disabled={!canCreateOrder}
+                                                                    />
+                                                                </div>
+                                                            </div>
+                                                            <div className="space-y-1">
+                                                                <Label htmlFor="shippingDestinationPort" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">
+                                                                    Destination Port / Inland Terminal <span className="text-red-500">*</span>
+                                                                </Label>
+                                                                <Input
+                                                                    id="shippingDestinationPort"
+                                                                    value={deliveryLocation}
+                                                                    onChange={(e) => setDeliveryLocation(e.target.value)}
+                                                                    placeholder="e.g. Kumasi Inland Freight Hub"
+                                                                    required
+                                                                    disabled={!canCreateOrder}
+                                                                    className="h-10 sm:h-11 rounded-xl bg-slate-50/50 border-zinc-200 focus-visible:border-indigo-400 text-xs sm:text-sm font-medium"
+                                                                />
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
 
                                                 {/* Live Google Maps Preview */}
                                                 {(pickupLocation || deliveryLocation) && (
-                                                    <div className="grid sm:grid-cols-2 gap-3 sm:gap-4">
+                                                    <div className="grid sm:grid-cols-2 gap-3 sm:gap-4 pt-1">
                                                         {pickupLocation && (
                                                             <div className="space-y-1.5">
                                                                 <div className="flex items-center gap-1.5">
@@ -1497,6 +1576,15 @@ function CreateOrderContent() {
                                                                         className="w-full h-full border-0"
                                                                     />
                                                                 </div>
+                                                                <a
+                                                                    href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(pickupLocation)}`}
+                                                                    target="_blank"
+                                                                    rel="noopener noreferrer"
+                                                                    className="inline-flex items-center gap-1 text-[10px] font-bold text-indigo-700 hover:text-indigo-800 transition-colors"
+                                                                >
+                                                                    <Navigation className="w-3 h-3" />
+                                                                    Open in Google Maps
+                                                                </a>
                                                             </div>
                                                         )}
 
@@ -1516,6 +1604,15 @@ function CreateOrderContent() {
                                                                         className="w-full h-full border-0"
                                                                     />
                                                                 </div>
+                                                                <a
+                                                                    href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(deliveryLocation)}`}
+                                                                    target="_blank"
+                                                                    rel="noopener noreferrer"
+                                                                    className="inline-flex items-center gap-1 text-[10px] font-bold text-indigo-700 hover:text-indigo-800 transition-colors"
+                                                                >
+                                                                    <Navigation className="w-3 h-3" />
+                                                                    Open in Google Maps
+                                                                </a>
                                                             </div>
                                                         )}
                                                     </div>
@@ -1604,7 +1701,127 @@ function CreateOrderContent() {
                                 </div>
                             )}
 
-                            {/* Stock Usage & Product Selection */}
+                            {/* Customer Information (Retail / Fashion / Non-Logistics Only) */}
+                            {businessType !== "logistics" && (
+                                <div className="bg-slate-50/60 p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-200/70 space-y-3.5 sm:space-y-4">
+                                    <h3 className="text-xs sm:text-sm font-bold text-slate-900 tracking-tight flex items-center gap-2">
+                                        Customer Information
+                                    </h3>
+                                    <div className="grid sm:grid-cols-2 gap-3 sm:gap-6">
+                                        <div className="space-y-1 sm:space-y-2">
+                                            <Label htmlFor={`${businessType}-customerName`} className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">Customer Name <span className="text-red-500">*</span></Label>
+                                            <Input
+                                                id={`${businessType}-customerName`}
+                                                value={customerName}
+                                                onChange={(e) => setCustomerName(e.target.value)}
+                                                placeholder="Naa"
+                                                required
+                                                disabled={!canCreateOrder}
+                                                className="h-10 sm:h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80 text-xs sm:text-sm"
+                                            />
+                                        </div>
+
+                                        <div className="space-y-1 sm:space-y-2">
+                                            <Label htmlFor={`${businessType}-customerPhone`} className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">Customer Contact</Label>
+                                            <PhoneInputWithCountry
+                                                id={`${businessType}-customerPhone`}
+                                                countryCode={pickupCountryCode}
+                                                phoneLocal={pickupPhoneLocal}
+                                                onCountryCodeChange={(code) => {
+                                                    setPickupCountryCode(code)
+                                                    const formatted = formatFullPhone(code, pickupPhoneLocal)
+                                                    setCustomerPhone(formatted)
+                                                }}
+                                                onPhoneLocalChange={(local) => {
+                                                    setPickupPhoneLocal(local)
+                                                    const formatted = formatFullPhone(pickupCountryCode, local)
+                                                    setCustomerPhone(formatted)
+                                                }}
+                                                disabled={!canCreateOrder}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Payment Method Selector (Common to all businesses) */}
+                            <div className="bg-slate-50/60 p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-200/70 space-y-3 sm:space-y-4">
+                                <h3 className="text-xs sm:text-sm font-bold text-slate-900 tracking-tight flex items-center gap-2">
+                                    Expected Payment Method
+                                </h3>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-4">
+                                    <div 
+                                        onClick={() => setPaymentMethod("online")}
+                                        className={`border rounded-xl sm:rounded-2xl p-3 sm:p-4 cursor-pointer flex flex-col gap-1 transition-all ${paymentMethod === "online" ? "bg-blue-50 border-blue-200 ring-2 ring-blue-500/20" : "bg-white border-slate-200 hover:bg-slate-50"}`}
+                                    >
+                                        <span className={`text-xs sm:text-sm font-bold ${paymentMethod === "online" ? "text-blue-700" : "text-slate-700"}`}>Online Payment</span>
+                                        <span className="text-[11px] sm:text-xs text-slate-500 leading-tight">Customer receives payment link via SMS</span>
+                                    </div>
+                                    <div 
+                                        onClick={() => setPaymentMethod("cash")}
+                                        className={`border rounded-xl sm:rounded-2xl p-3 sm:p-4 cursor-pointer flex flex-col gap-1 transition-all ${paymentMethod === "cash" ? "bg-emerald-50 border-emerald-200 ring-2 ring-emerald-500/20" : "bg-white border-slate-200 hover:bg-slate-50"}`}
+                                    >
+                                        <span className={`text-xs sm:text-sm font-bold ${paymentMethod === "cash" ? "text-emerald-700" : "text-slate-700"}`}>Cash / Manual Payment</span>
+                                        <span className="text-[11px] sm:text-xs text-slate-500 leading-tight">Order marked paid immediately. No link.</span>
+                                    </div>
+                                </div>
+
+                                {paymentMethod === "online" && (
+                                    <div className="mt-3 sm:mt-4 p-3.5 sm:p-5 bg-blue-50/40 rounded-xl sm:rounded-2xl border border-blue-100/60 space-y-3 sm:space-y-4">
+                                        <div className="flex items-center gap-2.5 sm:gap-3">
+                                            <Checkbox
+                                                id="triggerMomoPrompt"
+                                                checked={triggerMomoPrompt}
+                                                onCheckedChange={(checked) => {
+                                                    setTriggerMomoPrompt(!!checked)
+                                                    if (checked && !momoPhone) {
+                                                        setMomoPhone(recipientPhone || customerPhone)
+                                                    }
+                                                }}
+                                                className="rounded-md border-slate-300 text-blue-600 focus:ring-blue-500/20"
+                                            />
+                                            <Label htmlFor="triggerMomoPrompt" className="text-xs font-bold text-slate-700 cursor-pointer">
+                                                Trigger instant Mobile Money PIN Prompt on customer's phone
+                                            </Label>
+                                        </div>
+
+                                        {triggerMomoPrompt && (
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 pt-1 sm:pt-2">
+                                                <div className="space-y-1 sm:space-y-2">
+                                                    <Label htmlFor="momoPhone" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">Momo Phone Number</Label>
+                                                    <Input
+                                                        id="momoPhone"
+                                                        type="tel"
+                                                        placeholder="e.g. 0244000000"
+                                                        value={momoPhone}
+                                                        onChange={(e) => setMomoPhone(e.target.value)}
+                                                        className="h-10 sm:h-11 rounded-xl bg-white border-zinc-200 focus-visible:border-blue-400 text-xs sm:text-sm font-medium"
+                                                    />
+                                                </div>
+                                                <div className="space-y-1 sm:space-y-2">
+                                                    <Label htmlFor="momoProvider" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">Network Provider</Label>
+                                                    <Select 
+                                                        value={momoProvider} 
+                                                        onValueChange={(val: 'mtn' | 'vod' | 'atl') => setMomoProvider(val)}
+                                                        disabled={!!detectGhanaNetworkProvider(momoPhone)}
+                                                    >
+                                                        <SelectTrigger id="momoProvider" className="h-10 sm:h-11 rounded-xl bg-white border-zinc-200 focus:border-blue-400 text-xs sm:text-sm font-medium">
+                                                            <SelectValue placeholder="Select provider" />
+                                                        </SelectTrigger>
+                                                        <SelectContent className="rounded-xl border-zinc-100 shadow-xl">
+                                                             <SelectItem value="mtn" className="rounded-lg text-xs sm:text-sm">MTN Ghana</SelectItem>
+                                                             <SelectItem value="vod" className="rounded-lg text-xs sm:text-sm">Telecel (Vodafone)</SelectItem>
+                                                             <SelectItem value="atl" className="rounded-lg text-xs sm:text-sm">AT (AirtelTigo)</SelectItem>
+                                                        </SelectContent>
+                                                    </Select>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Stock Usage & Product Selection (Non-Logistics Only) */}
                             {businessType !== "logistics" && (
                             <div className="bg-slate-50/50 p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-200/70 space-y-3.5 sm:space-y-4">
                                 <div className="flex items-center justify-between">
@@ -1855,121 +2072,156 @@ function CreateOrderContent() {
                             )}
 
                             {/* Additional Specifications / Details */}
-                            <div className="bg-slate-50/50 p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-200/70 space-y-3.5 sm:space-y-4">
-                                <h3 className="text-xs sm:text-sm font-bold text-slate-900 tracking-tight">
-                                    {selectedInventory.length > 0 ? "Specifications & Delivery" : "Product Specifications & Delivery"}
-                                </h3>
-                                <div className="grid sm:grid-cols-2 gap-3.5 sm:gap-6">
-                                    {/* Manual fields: only rendered if NO inventory is linked and it is NOT a retail business */}
-                                    {selectedInventory.length === 0 && !isRetailBusiness && (
-                                        <>
-                                            <div className="space-y-1 sm:space-y-2 relative">
-                                                <Label htmlFor={`${businessType}-itemType`} className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">{config.itemLabel} <span className="text-red-500">*</span></Label>
-                                                <div className="relative">
-                                                    <Input
-                                                        name="order-item-type-search"
-                                                        id={`${businessType}-itemType`}
-                                                        value={itemType}
-                                                        onChange={(e) => setItemType(e.target.value)}
-                                                        placeholder={config.itemPlaceholder}
-                                                        required={selectedInventory.length === 0 && !isRetailBusiness}
-                                                        autoComplete="off"
-                                                        spellCheck="false"
-                                                        disabled={!canCreateOrder}
-                                                        className="h-10 sm:h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80 text-xs sm:text-sm"
-                                                    />
+                            {businessType !== "logistics" ? (
+                                <div className="bg-slate-50/50 p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-200/70 space-y-3.5 sm:space-y-4">
+                                    <h3 className="text-xs sm:text-sm font-bold text-slate-900 tracking-tight">
+                                        {selectedInventory.length > 0 ? "Specifications & Delivery" : "Product Specifications & Delivery"}
+                                    </h3>
+                                    <div className="grid sm:grid-cols-2 gap-3.5 sm:gap-6">
+                                        {/* Manual fields: only rendered if NO inventory is linked and it is NOT a retail business */}
+                                        {selectedInventory.length === 0 && !isRetailBusiness && (
+                                            <>
+                                                <div className="space-y-1 sm:space-y-2 relative">
+                                                    <Label htmlFor={`${businessType}-itemType`} className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">{config.itemLabel} <span className="text-red-500">*</span></Label>
+                                                    <div className="relative">
+                                                        <Input
+                                                            name="order-item-type-search"
+                                                            id={`${businessType}-itemType`}
+                                                            value={itemType}
+                                                            onChange={(e) => setItemType(e.target.value)}
+                                                            placeholder={config.itemPlaceholder}
+                                                            required={selectedInventory.length === 0 && !isRetailBusiness}
+                                                            autoComplete="off"
+                                                            spellCheck="false"
+                                                            disabled={!canCreateOrder}
+                                                            className="h-10 sm:h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80 text-xs sm:text-sm"
+                                                        />
+                                                    </div>
                                                 </div>
-                                            </div>
 
-                                            {!config.extraFields?.some(f => f.id === "quantity") && (
-                                                <div className="space-y-1 sm:space-y-2">
-                                                    <Label htmlFor={`${businessType}-quantity`} className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">Quantity <span className="text-red-500">*</span></Label>
-                                                    <Input
-                                                        id={`${businessType}-quantity`} type="number" min="1"
-                                                        value={quantity}
-                                                        disabled={!canCreateOrder} onChange={(e) => setQuantity(e.target.value)} required
-                                                        placeholder="1"
-                                                        className="h-10 sm:h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80 text-xs sm:text-sm"
-                                                    />
-                                                </div>
-                                            )}
-                                        </>
-                                    )}
+                                                {!config.extraFields?.some(f => f.id === "quantity") && (
+                                                    <div className="space-y-1 sm:space-y-2">
+                                                        <Label htmlFor={`${businessType}-quantity`} className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">Quantity <span className="text-red-500">*</span></Label>
+                                                        <Input
+                                                            id={`${businessType}-quantity`} type="number" min="1"
+                                                            value={quantity}
+                                                            disabled={!canCreateOrder} onChange={(e) => setQuantity(e.target.value)} required
+                                                            placeholder="1"
+                                                            className="h-10 sm:h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80 text-xs sm:text-sm"
+                                                        />
+                                                    </div>
+                                                )}
+                                            </>
+                                        )}
 
-                                    {/* Pickup/Delivery Date */}
-                                    <div className="space-y-1 sm:space-y-2">
-                                        <Label htmlFor={`${businessType}-pickupDate`} className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">{config.orderLabel === "Tracking Number" ? "Date" : "Delivery Date"}</Label>
-                                        <DatePicker
-                                            date={pickupDate}
-                                            setDate={setPickupDate}
-                                            placeholder="Select a date"
-                                            disabled={!canCreateOrder}
-                                            fromDate={new Date(new Date().setHours(0, 0, 0, 0))}
-                                        />
-                                    </div>
+                                        {/* Pickup/Delivery Date */}
+                                        <div className="space-y-1 sm:space-y-2">
+                                            <Label htmlFor={`${businessType}-pickupDate`} className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">{config.orderLabel === "Tracking Number" ? "Date" : "Delivery Date"}</Label>
+                                            <DatePicker
+                                                date={pickupDate}
+                                                setDate={setPickupDate}
+                                                placeholder="Select a date"
+                                                disabled={!canCreateOrder}
+                                                fromDate={new Date(new Date().setHours(0, 0, 0, 0))}
+                                            />
+                                        </div>
 
-                                    {/* Delivery Fee Input */}
-                                    <div className="space-y-1 sm:space-y-2">
-                                        <Label htmlFor="deliveryFee" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">Delivery Fee (GH₵)</Label>
-                                        <Input 
-                                            type="number" 
-                                            id="deliveryFee" 
-                                            step="0.01"
-                                            value={deliveryFee || ""}
-                                            onChange={(e) => setDeliveryFee(Number(e.target.value) || 0)}
-                                            placeholder="0.00"
-                                            disabled={!canCreateOrder}
-                                            className="h-10 sm:h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80 text-xs sm:text-sm"
-                                        />
-                                    </div>
+                                        {/* Delivery Fee Input */}
+                                        <div className="space-y-1 sm:space-y-2">
+                                            <Label htmlFor="deliveryFee" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">Delivery Fee (GH₵)</Label>
+                                            <Input 
+                                                type="number" 
+                                                id="deliveryFee" 
+                                                step="0.01"
+                                                value={deliveryFee || ""}
+                                                onChange={(e) => setDeliveryFee(Number(e.target.value) || 0)}
+                                                placeholder="0.00"
+                                                disabled={!canCreateOrder}
+                                                className="h-10 sm:h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80 text-xs sm:text-sm"
+                                            />
+                                        </div>
 
-                                    {/* Custom metadata fields */}
-                                    {config.extraFields
-                                        ?.filter(field => {
-                                            // Hide 'quantity' and 'sku' when inventory item is linked OR if it's a retail business
-                                            if (selectedInventory.length > 0 || isRetailBusiness) {
-                                                if (businessType === "hair-retail" && selectedInventory.length > 0) {
-                                                    return field.id !== "quantity" && field.id !== "sku" && field.id !== "length" && field.id !== "color";
+                                        {/* Custom metadata fields */}
+                                        {config.extraFields
+                                            ?.filter(field => {
+                                                // Hide 'quantity' and 'sku' when inventory item is linked OR if it's a retail business
+                                                if (selectedInventory.length > 0 || isRetailBusiness) {
+                                                    if (businessType === "hair-retail" && selectedInventory.length > 0) {
+                                                        return field.id !== "quantity" && field.id !== "sku" && field.id !== "length" && field.id !== "color";
+                                                    }
+                                                    return field.id !== "quantity" && field.id !== "sku";
                                                 }
-                                                return field.id !== "quantity" && field.id !== "sku";
-                                            }
-                                            return true;
-                                        })
-                                        .map((field) => (
-                                            <div key={field.id} className="space-y-1 sm:space-y-2">
-                                                <Label htmlFor={`${businessType}-${field.id}`} className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">{field.label}</Label>
-                                                <Input
-                                                    id={`${businessType}-${field.id}`}
-                                                    type={field.type === "number" ? "number" : "text"}
-                                                    value={field.id === "quantity" ? quantity : ((metadata[field.id] as string) || "")}
-                                                    onChange={(e) => {
-                                                         if (field.id === "quantity") {
-                                                             setQuantity(e.target.value);
-                                                         } else {
-                                                             setMetadata({ ...metadata, [field.id]: e.target.value });
-                                                         }
-                                                     }}
-                                                     placeholder={field.placeholder}
-                                                     disabled={!canCreateOrder}
-                                                     className="h-10 sm:h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80 text-xs sm:text-sm"
-                                                />
-                                            </div>
-                                        ))}
+                                                return true;
+                                            })
+                                            .map((field) => (
+                                                <div key={field.id} className="space-y-1 sm:space-y-2">
+                                                    <Label htmlFor={`${businessType}-${field.id}`} className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">{field.label}</Label>
+                                                    <Input
+                                                        id={`${businessType}-${field.id}`}
+                                                        type={field.type === "number" ? "number" : "text"}
+                                                        value={field.id === "quantity" ? quantity : ((metadata[field.id] as string) || "")}
+                                                        onChange={(e) => {
+                                                             if (field.id === "quantity") {
+                                                                 setQuantity(e.target.value);
+                                                             } else {
+                                                                 setMetadata({ ...metadata, [field.id]: e.target.value });
+                                                             }
+                                                         }}
+                                                         placeholder={field.placeholder}
+                                                         disabled={!canCreateOrder}
+                                                         className="h-10 sm:h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80 text-xs sm:text-sm"
+                                                    />
+                                                </div>
+                                            ))}
+                                    </div>
                                 </div>
+                            ) : (
+                                <div className="bg-slate-50/50 p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-200/70 space-y-3.5 sm:space-y-4">
+                                    <h3 className="text-xs sm:text-sm font-bold text-slate-900 tracking-tight">
+                                        Schedule &amp; Delivery Fee
+                                    </h3>
+                                    <div className="grid sm:grid-cols-2 gap-3.5 sm:gap-6">
+                                        <div className="space-y-1 sm:space-y-2">
+                                            <Label htmlFor="logistics-pickupDate" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">Dispatch / Delivery Date</Label>
+                                            <DatePicker
+                                                date={pickupDate}
+                                                setDate={setPickupDate}
+                                                placeholder="Select dispatch date"
+                                                disabled={!canCreateOrder}
+                                                fromDate={new Date(new Date().setHours(0, 0, 0, 0))}
+                                            />
+                                        </div>
+                                        <div className="space-y-1 sm:space-y-2">
+                                            <Label htmlFor="deliveryFee" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">
+                                                {logisticsMode === "shipping" ? "Freight &amp; Handling Fee (GH₵)" : "Delivery Fee (GH₵)"}
+                                            </Label>
+                                            <Input 
+                                                type="number" 
+                                                id="deliveryFee" 
+                                                step="0.01"
+                                                value={deliveryFee || ""}
+                                                onChange={(e) => setDeliveryFee(Number(e.target.value) || 0)}
+                                                placeholder="0.00"
+                                                disabled={!canCreateOrder}
+                                                className="h-10 sm:h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80 text-xs sm:text-sm"
+                                            />
+                                        </div>
+                                    </div>
                                 </div>
+                            )}
 
                             <div className="space-y-2">
                                 <Label htmlFor="measurements" className="ml-1 text-xs font-semibold text-muted-foreground tracking-wider">
-                                    {config.id === "tailoring" ? "Notes / Measurements" : businessType === "logistics" ? "Special Instructions" : "Notes"}
+                                    {config.id === "tailoring" ? "Notes / Measurements" : businessType === "logistics" ? "Special Delivery Instructions" : "Notes"}
                                 </Label>
                                 <Textarea
                                     id="measurements"
-                                    value={businessType === "logistics" ? measurements : measurements}
+                                    value={measurements}
                                     onChange={(e) => setMeasurements(e.target.value)}
                                     placeholder={config.id === "tailoring" ? "Details, measurements or special instructions..." : businessType === "logistics" ? "e.g. Ring the bell, leave at gate, fragile package..." : "Additional notes or special instructions..."}
                                     rows={3}
                                     disabled={!canCreateOrder}
-                                    className="rounded-xl bg-white border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80 resize-none p-4"
+                                    className="rounded-xl bg-white border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80 resize-none p-4 text-xs sm:text-sm"
                                 />
                             </div>
 
