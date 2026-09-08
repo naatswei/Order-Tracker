@@ -125,6 +125,9 @@ function CreateOrderContent() {
 
     // Administrative Menu Items state
     const [orderMenuItems, setOrderMenuItems] = useState<{ id: string; name: string; price: number; quantity: number }[]>([])
+    const [menuSearchQuery, setMenuSearchQuery] = useState("")
+    const [customItemPrice, setCustomItemPrice] = useState("")
+    const [isMenuDropdownOpen, setIsMenuDropdownOpen] = useState(false)
 
     // Business Config
     const { organization } = useOrganization()
@@ -230,6 +233,14 @@ function CreateOrderContent() {
             return next
         })
         toast.success(`Added "${preset.name}" (GH₵ ${Number(preset.price).toFixed(2)})`)
+    }
+
+    const handleAddCustomMenuItem = (name: string, price: number) => {
+        if (!name.trim()) return
+        handleAddMenuItem({ name: name.trim(), price: price || 0 })
+        setMenuSearchQuery("")
+        setCustomItemPrice("")
+        setIsMenuDropdownOpen(false)
     }
 
     const handleUpdateMenuItemQty = (index: number, newQty: number) => {
@@ -965,62 +976,174 @@ function CreateOrderContent() {
                                                     <div className="flex items-center gap-2">
                                                         <UtensilsCrossed className="w-4 h-4 text-amber-600" />
                                                         <Label className="text-xs sm:text-sm font-bold text-slate-900 tracking-tight">
-                                                            Quick Menu Presets (1-Click Add)
+                                                            MENU
                                                         </Label>
                                                     </div>
                                                     <span className="text-[9px] sm:text-[10px] font-bold text-amber-800 bg-amber-100 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
                                                         Administrative Defaults
                                                     </span>
                                                 </div>
-                                                
-                                                {/* Preset Chips */}
-                                                {menuPresets.length > 0 ? (
-                                                    <div className="flex flex-wrap gap-2">
-                                                        {menuPresets.map((preset: any) => {
-                                                            const isAdded = orderMenuItems.some(m => m.name.toLowerCase() === preset.name.toLowerCase())
-                                                            const currentCount = orderMenuItems.find(m => m.name.toLowerCase() === preset.name.toLowerCase())?.quantity || 0
-                                                            return (
-                                                                <button
-                                                                    key={preset.id || preset.name}
-                                                                    type="button"
-                                                                    onClick={() => handleAddMenuItem(preset)}
-                                                                    className={cn(
-                                                                        "px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 border shadow-2xs cursor-pointer",
-                                                                        isAdded
-                                                                            ? "bg-amber-500 text-white border-amber-600 hover:bg-amber-600"
-                                                                            : "bg-white text-slate-800 border-amber-200/80 hover:bg-amber-50 hover:border-amber-300"
-                                                                    )}
-                                                                >
-                                                                    <Plus className="w-3 h-3" />
-                                                                    <span>{preset.name}</span>
-                                                                    <span className={cn(
-                                                                        "text-[10px] px-1.5 py-0.2 rounded-md font-extrabold",
-                                                                        isAdded ? "bg-white/20 text-white" : "bg-amber-100 text-amber-800"
-                                                                    )}>
-                                                                        GH₵ {Number(preset.price).toFixed(2)}
-                                                                    </span>
-                                                                    {currentCount > 0 && (
-                                                                        <span className="w-4 h-4 rounded-full bg-white text-amber-700 text-[10px] font-black flex items-center justify-center ml-0.5">
-                                                                            {currentCount}
-                                                                        </span>
-                                                                    )}
-                                                                </button>
-                                                            )
-                                                        })}
+
+                                                {/* Search Form Input & Dynamic Results */}
+                                                <div className="space-y-2 relative">
+                                                    <div className="relative">
+                                                        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                                                        <Input
+                                                            type="text"
+                                                            value={menuSearchQuery}
+                                                            onChange={(e) => {
+                                                                setMenuSearchQuery(e.target.value)
+                                                                setIsMenuDropdownOpen(true)
+                                                            }}
+                                                            onFocus={() => setIsMenuDropdownOpen(true)}
+                                                            placeholder="Search menu items (e.g. Assorted Fried Rice, Chicken Shawarma, Jollof, Drinks)..."
+                                                            disabled={!canCreateOrder}
+                                                            className="h-11 sm:h-12 pl-10 pr-9 rounded-xl bg-white border-zinc-200 focus-visible:border-amber-400 focus-visible:ring-[4px] focus-visible:ring-amber-100 text-xs sm:text-sm font-medium"
+                                                        />
+                                                        {menuSearchQuery && (
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => {
+                                                                    setMenuSearchQuery("")
+                                                                    setIsMenuDropdownOpen(false)
+                                                                }}
+                                                                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs font-bold"
+                                                            >
+                                                                ✕
+                                                            </button>
+                                                        )}
                                                     </div>
-                                                ) : (
-                                                    <div className="bg-white p-3 rounded-xl border border-amber-200/60 text-xs text-slate-600 flex items-center justify-between">
-                                                        <span>No menu presets configured yet.</span>
-                                                        <Link href="/backoffice/profile?tab=defaults" className="text-amber-700 font-bold hover:underline">
-                                                            Add menu items in Settings &rarr;
-                                                        </Link>
-                                                    </div>
-                                                )}
+
+                                                    {/* Dropdown / Search Results */}
+                                                    {isMenuDropdownOpen && (
+                                                        <div className="bg-white rounded-2xl border border-amber-200 shadow-xl overflow-hidden max-h-72 overflow-y-auto divide-y divide-slate-100 z-20">
+                                                            {(() => {
+                                                                const query = menuSearchQuery.toLowerCase().trim()
+                                                                const filteredPresets = menuPresets.filter((preset: any) =>
+                                                                    preset.name?.toLowerCase().includes(query)
+                                                                )
+                                                                const exactMatch = menuPresets.some((preset: any) =>
+                                                                    preset.name?.toLowerCase() === query
+                                                                )
+
+                                                                return (
+                                                                    <>
+                                                                        {filteredPresets.length > 0 ? (
+                                                                            filteredPresets.map((preset: any) => {
+                                                                                const isAdded = orderMenuItems.some(m => m.name.toLowerCase() === preset.name.toLowerCase())
+                                                                                const currentCount = orderMenuItems.find(m => m.name.toLowerCase() === preset.name.toLowerCase())?.quantity || 0
+
+                                                                                return (
+                                                                                    <div
+                                                                                        key={preset.id || preset.name}
+                                                                                        className="p-3 hover:bg-amber-50/60 flex items-center justify-between gap-3 transition-colors cursor-pointer"
+                                                                                        onClick={() => {
+                                                                                            handleAddMenuItem(preset)
+                                                                                            setMenuSearchQuery("")
+                                                                                            setIsMenuDropdownOpen(false)
+                                                                                        }}
+                                                                                    >
+                                                                                        <div className="flex items-center gap-2.5 min-w-0">
+                                                                                            <div className="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center text-amber-700 shrink-0 font-bold text-xs">
+                                                                                                <UtensilsCrossed className="w-3.5 h-3.5" />
+                                                                                            </div>
+                                                                                            <div className="min-w-0">
+                                                                                                <p className="text-xs sm:text-sm font-bold text-slate-800 truncate">
+                                                                                                    {preset.name}
+                                                                                                </p>
+                                                                                                <p className="text-[10px] text-slate-400 font-medium">
+                                                                                                    Preset Menu Item
+                                                                                                </p>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                        <div className="flex items-center gap-2 shrink-0">
+                                                                                            <span className="text-xs sm:text-sm font-black text-amber-900 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200">
+                                                                                                GH₵ {Number(preset.price).toFixed(2)}
+                                                                                            </span>
+                                                                                            {currentCount > 0 && (
+                                                                                                <span className="w-5 h-5 rounded-full bg-amber-500 text-white text-[10px] font-black flex items-center justify-center">
+                                                                                                    {currentCount}
+                                                                                                </span>
+                                                                                            )}
+                                                                                            <button
+                                                                                                type="button"
+                                                                                                className="px-2.5 py-1 rounded-lg bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold flex items-center gap-1 shadow-xs"
+                                                                                            >
+                                                                                                <Plus className="w-3 h-3" />
+                                                                                                Add
+                                                                                            </button>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                )
+                                                                            })
+                                                                        ) : query ? (
+                                                                            <div className="p-4 text-center text-xs text-slate-500">
+                                                                                No preset matching &ldquo;<span className="font-semibold text-slate-700">{menuSearchQuery}</span>&rdquo;
+                                                                            </div>
+                                                                        ) : (
+                                                                            <div className="p-4 text-center text-xs text-slate-500">
+                                                                                No menu presets found in Settings.
+                                                                            </div>
+                                                                        )}
+
+                                                                        {/* Add custom / unlisted dish if query is typed */}
+                                                                        {query && !exactMatch && (
+                                                                            <div className="p-3 bg-amber-50/80 border-t border-amber-200/80 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
+                                                                                <div className="text-xs">
+                                                                                    <span className="font-bold text-slate-800">Add custom item: </span>
+                                                                                    <span className="text-amber-800 font-black">&ldquo;{menuSearchQuery}&rdquo;</span>
+                                                                                </div>
+                                                                                <div className="flex items-center gap-2">
+                                                                                    <div className="relative w-28">
+                                                                                        <span className="absolute left-2 top-1/2 -translate-y-1/2 text-[10px] font-bold text-slate-400">GH₵</span>
+                                                                                        <Input
+                                                                                            type="number"
+                                                                                            step="0.01"
+                                                                                            placeholder="0.00"
+                                                                                            value={customItemPrice}
+                                                                                            onChange={(e) => setCustomItemPrice(e.target.value)}
+                                                                                            className="h-8 pl-7 text-xs rounded-lg bg-white border-zinc-200"
+                                                                                        />
+                                                                                    </div>
+                                                                                    <button
+                                                                                        type="button"
+                                                                                        onClick={() => {
+                                                                                            const p = parseFloat(customItemPrice) || 0
+                                                                                            handleAddCustomMenuItem(menuSearchQuery, p)
+                                                                                        }}
+                                                                                        className="px-3 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold shrink-0 shadow-xs flex items-center gap-1 cursor-pointer"
+                                                                                    >
+                                                                                        <Plus className="w-3 h-3" />
+                                                                                        Add to Order
+                                                                                    </button>
+                                                                                </div>
+                                                                            </div>
+                                                                        )}
+                                                                    </>
+                                                                )
+                                                            })()}
+                                                        </div>
+                                                    )}
+                                                </div>
 
                                                 {/* Selected Menu Items Table */}
-                                                {orderMenuItems.length > 0 && (
+                                                {orderMenuItems.length > 0 ? (
                                                     <div className="space-y-2 pt-2 border-t border-amber-200/50">
-                                                        <p className="text-[11px] font-bold text-amber-900 uppercase tracking-wider">Selected Order Items</p>
+                                                        <div className="flex items-center justify-between">
+                                                            <p className="text-[11px] font-bold text-amber-900 uppercase tracking-wider">
+                                                                Selected Order Items ({orderMenuItems.reduce((s, i) => s + i.quantity, 0)})
+                                                            </p>
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => {
+                                                                    setOrderMenuItems([])
+                                                                    setItemType("")
+                                                                }}
+                                                                className="text-[10px] font-bold text-red-500 hover:text-red-700 hover:underline cursor-pointer"
+                                                            >
+                                                                Clear All
+                                                            </button>
+                                                        </div>
                                                         <div className="space-y-1.5">
                                                             {orderMenuItems.map((item, idx) => (
                                                                 <div key={item.id || idx} className="flex items-center justify-between gap-3 p-2.5 sm:p-3 bg-white rounded-xl border border-amber-200/60 shadow-xs">
@@ -1060,6 +1183,16 @@ function CreateOrderContent() {
                                                                 </div>
                                                             ))}
                                                         </div>
+                                                        <div className="p-3 bg-amber-100/60 rounded-xl flex items-center justify-between text-xs font-bold text-amber-950">
+                                                            <span>Menu Subtotal:</span>
+                                                            <span className="text-sm font-black text-amber-900">
+                                                                GH₵ {orderMenuItems.reduce((s, i) => s + (i.quantity * i.price), 0).toFixed(2)}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                ) : (
+                                                    <div className="bg-amber-50/50 p-3 rounded-xl border border-dashed border-amber-200 text-center text-xs text-amber-800">
+                                                        Use the search bar above to search dishes and add them to this order.
                                                     </div>
                                                 )}
                                             </div>
