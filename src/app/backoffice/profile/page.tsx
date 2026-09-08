@@ -3,13 +3,13 @@
 import { useState, useEffect, useRef } from "react"
 import { useOrganization, useUser, OrganizationProfile } from "@clerk/nextjs"
 import { useRouter } from "next/navigation"
-import { updateOrgProfile, updateOrgSubscriptionStatus, updateOrgInvoiceSettings, updateOrgOrderDefaults, type MenuPresetItem } from "@/app/actions/org-metadata"
+import { updateOrgProfile, updateOrgSubscriptionStatus, updateOrgInvoiceSettings, updateOrgOrderDefaults, type MenuPresetItem, type LogisticsSubType } from "@/app/actions/org-metadata"
 import { Card, CardContent, CardHeader, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Loader2, ArrowLeft, Camera, Settings, Building2, CreditCard, Check, Clock, Users, Sparkles, UtensilsCrossed, Plus, Trash2, MapPin, Phone, Wallet, DollarSign, Store, Tag } from "lucide-react"
+import { Loader2, ArrowLeft, Camera, Settings, Building2, CreditCard, Check, Clock, Users, Sparkles, UtensilsCrossed, Plus, Trash2, MapPin, Phone, Wallet, DollarSign, Store, Tag, Truck, Ship, Package, Box, Layers, Navigation, Globe } from "lucide-react"
 import { getBusinessConfig } from "@/lib/business-configs"
 import { validateLocation } from "@/lib/location-validator"
 import Link from "next/link"
@@ -144,27 +144,61 @@ export default function ProfilePage() {
     const [resolvingBulkclixAccount, setResolvingBulkclixAccount] = useState(false)
     const [bulkclixSaving, setBulkclixSaving] = useState(false)
 
-    // Administrative Order & Menu Defaults State
+    // Administrative Defaults State (Logistics Sub-Types: Restaurant, Delivery Courier, Shipping)
     const [orderDefaults, setOrderDefaults] = useState<{
+        logisticsType: LogisticsSubType
+        // Restaurant
         defaultPickupLocation: string
         defaultPickupContact: string
         defaultDeliveryFee: string
         defaultPaymentNumber: string
         defaultPaymentProvider: string
         menuPresets: MenuPresetItem[]
+        // Courier Delivery
+        defaultDispatchHub: string
+        defaultSenderContact: string
+        defaultCourierFee: string
+        packageCategories: string[]
+        defaultCourierMoMoNumber: string
+        defaultCourierPaymentProvider: string
+        // Shipping
+        defaultOriginPort: string
+        defaultOriginContact: string
+        defaultDestinationHub: string
+        defaultFreightRatePerKg: string
+        defaultHandlingFee: string
+        defaultWaybillPrefix: string
+        defaultShippingMoMoNumber: string
+        defaultShippingPaymentProvider: string
     }>({
+        logisticsType: "restaurant",
         defaultPickupLocation: "",
         defaultPickupContact: "",
         defaultDeliveryFee: "0",
         defaultPaymentNumber: "",
         defaultPaymentProvider: "MTN",
-        menuPresets: []
+        menuPresets: [],
+        defaultDispatchHub: "",
+        defaultSenderContact: "",
+        defaultCourierFee: "0",
+        packageCategories: ["Documents", "Small Parcel", "Food/Cake Box", "Electronics", "Fragile"],
+        defaultCourierMoMoNumber: "",
+        defaultCourierPaymentProvider: "MTN",
+        defaultOriginPort: "Tema Port / Kotoka Airport",
+        defaultOriginContact: "",
+        defaultDestinationHub: "Accra Central Hub",
+        defaultFreightRatePerKg: "15.00",
+        defaultHandlingFee: "50.00",
+        defaultWaybillPrefix: "SHP",
+        defaultShippingMoMoNumber: "",
+        defaultShippingPaymentProvider: "MTN"
     })
     const [newPreset, setNewPreset] = useState<{ name: string; price: string; description: string }>({
         name: "",
         price: "",
         description: ""
     })
+    const [newCategoryInput, setNewCategoryInput] = useState("")
     const [orderDefaultsSaving, setOrderDefaultsSaving] = useState(false)
 
     useEffect(() => {
@@ -302,12 +336,30 @@ export default function ProfilePage() {
 
             // Initialize administrative order defaults settings
             setOrderDefaults({
+                logisticsType: (metadata?.logisticsType as LogisticsSubType) || "restaurant",
+                // Restaurant
                 defaultPickupLocation: (metadata?.defaultPickupLocation as string) || (metadata?.location as string) || "",
                 defaultPickupContact: (metadata?.defaultPickupContact as string) || (metadata?.contact as string) || "",
                 defaultDeliveryFee: (metadata?.defaultDeliveryFee as string) || "0",
                 defaultPaymentNumber: (metadata?.defaultPaymentNumber as string) || (metadata?.bulkclixAccountNumber as string) || "",
                 defaultPaymentProvider: (metadata?.defaultPaymentProvider as string) || (metadata?.bulkclixChannelOrBankId as string) || "MTN",
-                menuPresets: Array.isArray(metadata?.menuPresets) ? metadata.menuPresets : []
+                menuPresets: Array.isArray(metadata?.menuPresets) ? metadata.menuPresets : [],
+                // Courier Delivery
+                defaultDispatchHub: (metadata?.defaultDispatchHub as string) || (metadata?.location as string) || "",
+                defaultSenderContact: (metadata?.defaultSenderContact as string) || (metadata?.contact as string) || "",
+                defaultCourierFee: (metadata?.defaultCourierFee as string) || "0",
+                packageCategories: Array.isArray(metadata?.packageCategories) ? metadata.packageCategories : ["Documents", "Small Parcel", "Food/Cake Box", "Electronics", "Fragile"],
+                defaultCourierMoMoNumber: (metadata?.defaultCourierMoMoNumber as string) || (metadata?.bulkclixAccountNumber as string) || "",
+                defaultCourierPaymentProvider: (metadata?.defaultCourierPaymentProvider as string) || "MTN",
+                // Shipping
+                defaultOriginPort: (metadata?.defaultOriginPort as string) || "Tema Port / Kotoka Airport",
+                defaultOriginContact: (metadata?.defaultOriginContact as string) || (metadata?.contact as string) || "",
+                defaultDestinationHub: (metadata?.defaultDestinationHub as string) || "Accra Central Hub",
+                defaultFreightRatePerKg: (metadata?.defaultFreightRatePerKg as string) || "15.00",
+                defaultHandlingFee: (metadata?.defaultHandlingFee as string) || "50.00",
+                defaultWaybillPrefix: (metadata?.defaultWaybillPrefix as string) || "SHP",
+                defaultShippingMoMoNumber: (metadata?.defaultShippingMoMoNumber as string) || (metadata?.bulkclixAccountNumber as string) || "",
+                defaultShippingPaymentProvider: (metadata?.defaultShippingPaymentProvider as string) || "MTN"
             })
         }
     }, [isLoaded, organization])
@@ -441,8 +493,8 @@ export default function ProfilePage() {
                                 Business Profile
                             </TabsTrigger>
                             <TabsTrigger value="defaults" className="rounded-xl px-4 sm:px-6 data-[state=active]:bg-slate-100 data-[state=active]:text-slate-900 data-[state=active]:shadow-none text-slate-500 font-medium transition-all gap-1.5 sm:gap-2 flex-1 sm:flex-none text-xs sm:text-sm">
-                                <UtensilsCrossed className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-600" />
-                                Order & Menu Defaults
+                                <Store className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-indigo-600" />
+                                Administrative Defaults
                             </TabsTrigger>
                             <TabsTrigger value="team" className="rounded-xl px-4 sm:px-6 data-[state=active]:bg-slate-100 data-[state=active]:text-slate-900 data-[state=active]:shadow-none text-slate-500 font-medium transition-all gap-1.5 sm:gap-2 flex-1 sm:flex-none text-xs sm:text-sm">
                                 <Users className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
@@ -920,14 +972,14 @@ export default function ProfilePage() {
                     <TabsContent value="defaults">
                         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
                             <Card className="border-slate-200 shadow-sm overflow-hidden bg-white rounded-3xl">
-                                <CardHeader className="p-5 sm:p-8 pb-4 border-b border-slate-100 bg-gradient-to-r from-amber-50/40 via-white to-slate-50/30">
+                                <CardHeader className="p-5 sm:p-8 pb-4 border-b border-slate-100 bg-gradient-to-r from-indigo-50/40 via-white to-slate-50/30">
                                     <div className="flex items-center gap-2.5">
-                                        <div className="p-2 rounded-xl bg-amber-500/10 text-amber-600">
-                                            <UtensilsCrossed className="w-5 h-5" />
+                                        <div className="p-2 rounded-xl bg-indigo-500/10 text-indigo-600">
+                                            <Store className="w-5 h-5" />
                                         </div>
                                         <div>
-                                            <h2 className="text-base sm:text-lg font-bold text-slate-900 tracking-tight">Administrative Order &amp; Menu Defaults</h2>
-                                            <p className="text-xs text-slate-500 font-medium">Configure standard branch pickups, menu item presets, delivery fees, and payment channels for order entry.</p>
+                                            <h2 className="text-base sm:text-lg font-bold text-slate-900 tracking-tight">Administrative Default Business Entry</h2>
+                                            <p className="text-xs text-slate-500 font-medium">Configure your primary logistics operation type and default business parameters (Pickup branch, Menu entries, Delivery/Shipping rates, MoMo payments) that directly determine your Create Order page.</p>
                                         </div>
                                     </div>
                                 </CardHeader>
@@ -938,274 +990,693 @@ export default function ProfilePage() {
                                         setOrderDefaultsSaving(true)
                                         try {
                                             await updateOrgOrderDefaults(organization.id, orderDefaults)
-                                            // Also sync defaultDeliveryFee to invoice settings for consistency
+                                            // Also sync active delivery fee to invoice settings for consistency
+                                            const activeDeliveryFee = orderDefaults.logisticsType === 'restaurant'
+                                                ? orderDefaults.defaultDeliveryFee
+                                                : orderDefaults.logisticsType === 'delivery'
+                                                    ? orderDefaults.defaultCourierFee
+                                                    : orderDefaults.defaultHandlingFee
                                             await updateOrgInvoiceSettings(organization.id, {
-                                                defaultDeliveryFee: orderDefaults.defaultDeliveryFee
+                                                defaultDeliveryFee: activeDeliveryFee || "0"
                                             })
-                                            toast.success("Order & Menu Defaults saved successfully!")
+                                            toast.success("Administrative Defaults saved successfully!")
                                         } catch (err) {
                                             console.error(err)
-                                            toast.error("Failed to save order defaults")
+                                            toast.error("Failed to save administrative defaults")
                                         } finally {
                                             setOrderDefaultsSaving(false)
                                         }
                                     }} className="space-y-8">
-                                        {/* 1. Branch Pickup Location & Contact */}
-                                        <div className="space-y-4">
-                                            <div className="flex items-center gap-2 pb-1 border-b border-slate-100">
-                                                <Store className="w-4 h-4 text-emerald-600" />
-                                                <h3 className="text-xs sm:text-sm font-bold text-slate-900">Branch Pickup Location &amp; Contact</h3>
-                                            </div>
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                <div className="space-y-1.5">
-                                                    <Label htmlFor="defaultPickupLocation" className="text-xs font-semibold text-slate-700 flex items-center gap-1.5">
-                                                        <MapPin className="w-3.5 h-3.5 text-slate-400" />
-                                                        Default Pickup Location / Branch
-                                                    </Label>
-                                                    <Input
-                                                        id="defaultPickupLocation"
-                                                        value={orderDefaults.defaultPickupLocation}
-                                                        onChange={(e) => setOrderDefaults(prev => ({ ...prev, defaultPickupLocation: e.target.value }))}
-                                                        placeholder="e.g. Marwako Fast Food - East Legon Branch"
-                                                        className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-11 text-xs sm:text-sm"
-                                                    />
-                                                    <p className="text-[10px] text-slate-400">Pre-populates the pickup branch for new delivery and customer orders.</p>
-                                                </div>
 
-                                                <div className="space-y-1.5">
-                                                    <Label htmlFor="defaultPickupContact" className="text-xs font-semibold text-slate-700 flex items-center gap-1.5">
-                                                        <Phone className="w-3.5 h-3.5 text-slate-400" />
-                                                        Default Branch / Pickup Phone
-                                                    </Label>
-                                                    <Input
-                                                        id="defaultPickupContact"
-                                                        value={orderDefaults.defaultPickupContact}
-                                                        onChange={(e) => setOrderDefaults(prev => ({ ...prev, defaultPickupContact: e.target.value }))}
-                                                        placeholder="e.g. 0244123456"
-                                                        className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-11 text-xs sm:text-sm"
-                                                    />
-                                                    <p className="text-[10px] text-slate-400">Default contact number displayed for riders and dispatchers.</p>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        {/* 2. Standard Delivery Fee & Payment Number */}
-                                        <div className="space-y-4 pt-2">
-                                            <div className="flex items-center gap-2 pb-1 border-b border-slate-100">
-                                                <Wallet className="w-4 h-4 text-blue-600" />
-                                                <h3 className="text-xs sm:text-sm font-bold text-slate-900">Standard Delivery Fee &amp; Payment Number</h3>
-                                            </div>
-                                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                                <div className="space-y-1.5">
-                                                    <Label htmlFor="defaultDeliveryFeeSetting" className="text-xs font-semibold text-slate-700">
-                                                        Default Delivery Fee (GH₵)
-                                                    </Label>
-                                                    <Input
-                                                        id="defaultDeliveryFeeSetting"
-                                                        type="number"
-                                                        step="0.01"
-                                                        value={orderDefaults.defaultDeliveryFee}
-                                                        onChange={(e) => setOrderDefaults(prev => ({ ...prev, defaultDeliveryFee: e.target.value }))}
-                                                        placeholder="25.00"
-                                                        className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-11 text-xs sm:text-sm"
-                                                    />
-                                                    <p className="text-[10px] text-slate-400">Automatically added to new orders as the baseline dispatch charge.</p>
-                                                </div>
-
-                                                <div className="space-y-1.5">
-                                                    <Label htmlFor="defaultPaymentNumber" className="text-xs font-semibold text-slate-700">
-                                                        Receiving MoMo Number
-                                                    </Label>
-                                                    <Input
-                                                        id="defaultPaymentNumber"
-                                                        value={orderDefaults.defaultPaymentNumber}
-                                                        onChange={(e) => setOrderDefaults(prev => ({ ...prev, defaultPaymentNumber: e.target.value }))}
-                                                        placeholder="e.g. 0548706430"
-                                                        className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-11 text-xs sm:text-sm"
-                                                    />
-                                                    <p className="text-[10px] text-slate-400">Default merchant MoMo line for payments and automated prompts.</p>
-                                                </div>
-
-                                                <div className="space-y-1.5">
-                                                    <Label htmlFor="defaultPaymentProvider" className="text-xs font-semibold text-slate-700">
-                                                        MoMo Network Provider
-                                                    </Label>
-                                                    <select
-                                                        id="defaultPaymentProvider"
-                                                        value={orderDefaults.defaultPaymentProvider}
-                                                        onChange={(e) => setOrderDefaults(prev => ({ ...prev, defaultPaymentProvider: e.target.value }))}
-                                                        className="w-full bg-slate-50/50 border border-slate-200 focus:bg-white rounded-xl h-11 px-3 transition-colors text-slate-800 focus:outline-none text-xs sm:text-sm"
-                                                    >
-                                                        <option value="MTN">MTN Mobile Money</option>
-                                                        <option value="TELECEL">Telecel Cash (Vodafone)</option>
-                                                        <option value="AIRTELTIGO">AirtelTigo Money</option>
-                                                    </select>
-                                                    <p className="text-[10px] text-slate-400">Primary telco gateway for instant prompt processing.</p>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        {/* 3. Menu Presets Catalog */}
-                                        <div className="space-y-4 pt-2">
-                                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-1 border-b border-slate-100">
-                                                <div className="flex items-center gap-2">
-                                                    <Tag className="w-4 h-4 text-amber-600" />
-                                                    <h3 className="text-xs sm:text-sm font-bold text-slate-900">Menu Entries &amp; Cost Presets</h3>
-                                                </div>
-                                                <Button
-                                                    type="button"
-                                                    variant="outline"
-                                                    size="sm"
-                                                    onClick={() => {
-                                                        const sampleItems: MenuPresetItem[] = [
-                                                            { id: `preset_${Date.now()}_1`, name: "Assorted Fried Rice", price: 75, description: "Main Meal" },
-                                                            { id: `preset_${Date.now()}_2`, name: "Grilled Chicken with Jollof", price: 70, description: "Main Meal" },
-                                                            { id: `preset_${Date.now()}_3`, name: "Marwako Beef Shawarma", price: 45, description: "Shawarma" },
-                                                            { id: `preset_${Date.now()}_4`, name: "Marwako Chicken Shawarma", price: 45, description: "Shawarma" },
-                                                            { id: `preset_${Date.now()}_5`, name: "Grilled Whole Chicken (Only)", price: 120, description: "Grill" },
-                                                            { id: `preset_${Date.now()}_6`, name: "Fresh Juice / Drink", price: 20, description: "Beverage" }
-                                                        ]
-                                                        setOrderDefaults(prev => ({
-                                                            ...prev,
-                                                            menuPresets: [...prev.menuPresets, ...sampleItems]
-                                                        }))
-                                                        toast.success("Loaded sample restaurant menu presets!")
-                                                    }}
-                                                    className="h-8 rounded-lg text-xs font-semibold text-amber-700 border-amber-200 bg-amber-50 hover:bg-amber-100"
+                                        {/* 1. Logistics Operation Type Selection */}
+                                        <div className="space-y-3">
+                                            <Label className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
+                                                <Layers className="w-3.5 h-3.5 text-indigo-600" />
+                                                Select Logistics Operation Model
+                                            </Label>
+                                            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                                {/* Option 1: Restaurant Delivery Service */}
+                                                <div
+                                                    onClick={() => setOrderDefaults(prev => ({ ...prev, logisticsType: 'restaurant' }))}
+                                                    className={cn(
+                                                        "p-4 rounded-2xl border-2 transition-all cursor-pointer flex flex-col justify-between space-y-3 relative",
+                                                        orderDefaults.logisticsType === 'restaurant'
+                                                            ? "border-amber-500 bg-amber-50/30 ring-2 ring-amber-500/20 shadow-sm"
+                                                            : "border-slate-200/80 bg-slate-50/50 hover:bg-white hover:border-slate-300"
+                                                    )}
                                                 >
-                                                    <Sparkles className="w-3.5 h-3.5 mr-1" />
-                                                    Load Sample Restaurant Menu
-                                                </Button>
-                                            </div>
-
-                                            {/* Add Preset Item Form */}
-                                            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-3">
-                                                <p className="text-[11px] font-bold text-slate-700 uppercase tracking-wider">Add New Menu Preset Item</p>
-                                                <div className="grid grid-cols-1 sm:grid-cols-12 gap-2.5 sm:gap-3">
-                                                    <div className="sm:col-span-5 space-y-1">
-                                                        <Label className="text-[11px] text-slate-600 font-medium">Menu Item Name</Label>
-                                                        <Input
-                                                            value={newPreset.name}
-                                                            onChange={(e) => setNewPreset(prev => ({ ...prev, name: e.target.value }))}
-                                                            placeholder="e.g. Assorted Fried Rice & Chicken"
-                                                            className="h-9 rounded-xl bg-white border-slate-200 text-xs"
-                                                        />
+                                                    <div className="flex items-start justify-between">
+                                                        <div className="p-2.5 rounded-xl bg-amber-500/10 text-amber-600">
+                                                            <UtensilsCrossed className="w-5 h-5" />
+                                                        </div>
+                                                        {orderDefaults.logisticsType === 'restaurant' && (
+                                                            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500 text-white shadow-xs">
+                                                                Active Default
+                                                            </span>
+                                                        )}
                                                     </div>
-                                                    <div className="sm:col-span-3 space-y-1">
-                                                        <Label className="text-[11px] text-slate-600 font-medium">Price / Cost (GH₵)</Label>
+                                                    <div>
+                                                        <h4 className="text-sm font-bold text-slate-900">Restaurant Delivery Service</h4>
+                                                        <p className="text-[11px] text-slate-500 mt-1 leading-relaxed">
+                                                            Contract food orders (e.g. Marwako, Papaye) with branch pickups, 1-click menu catalog, dish pricing, and delivery fees.
+                                                        </p>
+                                                    </div>
+                                                </div>
+
+                                                {/* Option 2: Delivery Service (Courier) */}
+                                                <div
+                                                    onClick={() => setOrderDefaults(prev => ({ ...prev, logisticsType: 'delivery' }))}
+                                                    className={cn(
+                                                        "p-4 rounded-2xl border-2 transition-all cursor-pointer flex flex-col justify-between space-y-3 relative",
+                                                        orderDefaults.logisticsType === 'delivery'
+                                                            ? "border-blue-500 bg-blue-50/30 ring-2 ring-blue-500/20 shadow-sm"
+                                                            : "border-slate-200/80 bg-slate-50/50 hover:bg-white hover:border-slate-300"
+                                                    )}
+                                                >
+                                                    <div className="flex items-start justify-between">
+                                                        <div className="p-2.5 rounded-xl bg-blue-500/10 text-blue-600">
+                                                            <Truck className="w-5 h-5" />
+                                                        </div>
+                                                        {orderDefaults.logisticsType === 'delivery' && (
+                                                            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-500 text-white shadow-xs">
+                                                                Active Default
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                    <div>
+                                                        <h4 className="text-sm font-bold text-slate-900">Delivery Service (Courier)</h4>
+                                                        <p className="text-[11px] text-slate-500 mt-1 leading-relaxed">
+                                                            Local on-demand courier &amp; dispatch. Pickup hub, recipient dropoff, package category tags, and courier delivery rates.
+                                                        </p>
+                                                    </div>
+                                                </div>
+
+                                                {/* Option 3: Shipping (Freight / Cargo) */}
+                                                <div
+                                                    onClick={() => setOrderDefaults(prev => ({ ...prev, logisticsType: 'shipping' }))}
+                                                    className={cn(
+                                                        "p-4 rounded-2xl border-2 transition-all cursor-pointer flex flex-col justify-between space-y-3 relative",
+                                                        orderDefaults.logisticsType === 'shipping'
+                                                            ? "border-emerald-500 bg-emerald-50/30 ring-2 ring-emerald-500/20 shadow-sm"
+                                                            : "border-slate-200/80 bg-slate-50/50 hover:bg-white hover:border-slate-300"
+                                                    )}
+                                                >
+                                                    <div className="flex items-start justify-between">
+                                                        <div className="p-2.5 rounded-xl bg-emerald-500/10 text-emerald-600">
+                                                            <Ship className="w-5 h-5" />
+                                                        </div>
+                                                        {orderDefaults.logisticsType === 'shipping' && (
+                                                            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500 text-white shadow-xs">
+                                                                Active Default
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                    <div>
+                                                        <h4 className="text-sm font-bold text-slate-900">Shipping (Freight &amp; Cargo)</h4>
+                                                        <p className="text-[11px] text-slate-500 mt-1 leading-relaxed">
+                                                            Intercity/international cargo &amp; forwarding. Origin ports, destination hubs, per-kg rates, handling fees, and waybill numbers.
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* ========================================================================= */}
+                                        {/* TYPE A: RESTAURANT DELIVERY SERVICE CONFIGURATION                         */}
+                                        {/* ========================================================================= */}
+                                        {orderDefaults.logisticsType === 'restaurant' && (
+                                            <div className="space-y-6 pt-4 border-t border-slate-100 animate-in fade-in-50 duration-200">
+                                                <div className="flex items-center gap-2 pb-1 border-b border-slate-100">
+                                                    <UtensilsCrossed className="w-4 h-4 text-amber-600" />
+                                                    <h3 className="text-xs sm:text-sm font-bold text-slate-900">Restaurant Branch &amp; MoMo Settlement</h3>
+                                                </div>
+
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                    <div className="space-y-1.5">
+                                                        <Label htmlFor="defaultPickupLocation" className="text-xs font-semibold text-slate-700 flex items-center gap-1.5">
+                                                            <MapPin className="w-3.5 h-3.5 text-slate-400" />
+                                                            Default Pickup Location / Branch
+                                                        </Label>
                                                         <Input
+                                                            id="defaultPickupLocation"
+                                                            value={orderDefaults.defaultPickupLocation}
+                                                            onChange={(e) => setOrderDefaults(prev => ({ ...prev, defaultPickupLocation: e.target.value }))}
+                                                            placeholder="e.g. Marwako Fast Food - East Legon Branch"
+                                                            className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-11 text-xs sm:text-sm"
+                                                        />
+                                                        <p className="text-[10px] text-slate-400">Pre-populates the pickup branch for new delivery and customer orders.</p>
+                                                    </div>
+
+                                                    <div className="space-y-1.5">
+                                                        <Label htmlFor="defaultPickupContact" className="text-xs font-semibold text-slate-700 flex items-center gap-1.5">
+                                                            <Phone className="w-3.5 h-3.5 text-slate-400" />
+                                                            Default Branch / Pickup Phone
+                                                        </Label>
+                                                        <Input
+                                                            id="defaultPickupContact"
+                                                            value={orderDefaults.defaultPickupContact}
+                                                            onChange={(e) => setOrderDefaults(prev => ({ ...prev, defaultPickupContact: e.target.value }))}
+                                                            placeholder="e.g. 0244123456"
+                                                            className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-11 text-xs sm:text-sm"
+                                                        />
+                                                        <p className="text-[10px] text-slate-400">Default contact number displayed for riders and dispatchers.</p>
+                                                    </div>
+                                                </div>
+
+                                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                                    <div className="space-y-1.5">
+                                                        <Label htmlFor="defaultDeliveryFeeSetting" className="text-xs font-semibold text-slate-700">
+                                                            Default Delivery Fee (GH₵)
+                                                        </Label>
+                                                        <Input
+                                                            id="defaultDeliveryFeeSetting"
                                                             type="number"
                                                             step="0.01"
-                                                            value={newPreset.price}
-                                                            onChange={(e) => setNewPreset(prev => ({ ...prev, price: e.target.value }))}
-                                                            placeholder="75.00"
-                                                            className="h-9 rounded-xl bg-white border-slate-200 text-xs font-bold"
+                                                            value={orderDefaults.defaultDeliveryFee}
+                                                            onChange={(e) => setOrderDefaults(prev => ({ ...prev, defaultDeliveryFee: e.target.value }))}
+                                                            placeholder="25.00"
+                                                            className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-11 text-xs sm:text-sm"
                                                         />
+                                                        <p className="text-[10px] text-slate-400">Baseline dispatch charge pre-filled on new orders.</p>
                                                     </div>
-                                                    <div className="sm:col-span-2 space-y-1">
-                                                        <Label className="text-[11px] text-slate-600 font-medium">Category / Note</Label>
+
+                                                    <div className="space-y-1.5">
+                                                        <Label htmlFor="defaultPaymentNumber" className="text-xs font-semibold text-slate-700">
+                                                            Receiving MoMo Number
+                                                        </Label>
                                                         <Input
-                                                            value={newPreset.description}
-                                                            onChange={(e) => setNewPreset(prev => ({ ...prev, description: e.target.value }))}
-                                                            placeholder="e.g. Main Dish"
-                                                            className="h-9 rounded-xl bg-white border-slate-200 text-xs"
+                                                            id="defaultPaymentNumber"
+                                                            value={orderDefaults.defaultPaymentNumber}
+                                                            onChange={(e) => setOrderDefaults(prev => ({ ...prev, defaultPaymentNumber: e.target.value }))}
+                                                            placeholder="e.g. 0548706430"
+                                                            className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-11 text-xs sm:text-sm"
                                                         />
+                                                        <p className="text-[10px] text-slate-400">Merchant MoMo line for payments and prompt requests.</p>
                                                     </div>
-                                                    <div className="sm:col-span-2 flex items-end">
-                                                        <Button
-                                                            type="button"
-                                                            onClick={() => {
-                                                                if (!newPreset.name.trim()) {
-                                                                    toast.error("Please enter a menu item name")
-                                                                    return
-                                                                }
-                                                                const priceNum = parseFloat(newPreset.price) || 0
-                                                                if (priceNum <= 0) {
-                                                                    toast.error("Please enter a valid price")
-                                                                    return
-                                                                }
-                                                                const item: MenuPresetItem = {
-                                                                    id: `preset_${Date.now()}`,
-                                                                    name: newPreset.name.trim(),
-                                                                    price: priceNum,
-                                                                    description: newPreset.description.trim() || undefined
-                                                                }
-                                                                setOrderDefaults(prev => ({
-                                                                    ...prev,
-                                                                    menuPresets: [...prev.menuPresets, item]
-                                                                }))
-                                                                setNewPreset({ name: "", price: "", description: "" })
-                                                                toast.success(`Added "${item.name}" (GH₵ ${item.price})`)
-                                                            }}
-                                                            className="w-full h-9 rounded-xl bg-slate-900 text-white hover:bg-slate-800 text-xs font-bold shadow-xs cursor-pointer"
+
+                                                    <div className="space-y-1.5">
+                                                        <Label htmlFor="defaultPaymentProvider" className="text-xs font-semibold text-slate-700">
+                                                            MoMo Network Provider
+                                                        </Label>
+                                                        <select
+                                                            id="defaultPaymentProvider"
+                                                            value={orderDefaults.defaultPaymentProvider}
+                                                            onChange={(e) => setOrderDefaults(prev => ({ ...prev, defaultPaymentProvider: e.target.value }))}
+                                                            className="w-full bg-slate-50/50 border border-slate-200 focus:bg-white rounded-xl h-11 px-3 transition-colors text-slate-800 focus:outline-none text-xs sm:text-sm"
                                                         >
-                                                            <Plus className="w-3.5 h-3.5 mr-1" />
-                                                            Add Item
-                                                        </Button>
+                                                            <option value="MTN">MTN Mobile Money</option>
+                                                            <option value="TELECEL">Telecel Cash (Vodafone)</option>
+                                                            <option value="AIRTELTIGO">AirtelTigo Money</option>
+                                                        </select>
+                                                        <p className="text-[10px] text-slate-400">Primary telco gateway for instant prompt processing.</p>
                                                     </div>
                                                 </div>
-                                            </div>
 
-                                            {/* Existing Menu Items List */}
-                                            {orderDefaults.menuPresets.length > 0 ? (
-                                                <div className="space-y-2">
-                                                    <p className="text-[11px] text-slate-500 font-medium">
-                                                        {orderDefaults.menuPresets.length} Menu item(s) configured. These will display as 1-click buttons when creating new orders.
-                                                    </p>
-                                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                                        {orderDefaults.menuPresets.map((item, idx) => (
-                                                            <div
-                                                                key={item.id || idx}
-                                                                className="flex items-center justify-between p-3 bg-white rounded-xl border border-slate-200/80 shadow-xs hover:border-slate-300 transition-all"
-                                                            >
-                                                                <div className="min-w-0 flex-1 pr-3">
-                                                                    <div className="flex items-center gap-1.5">
-                                                                        <span className="text-xs font-bold text-slate-900 truncate">{item.name}</span>
-                                                                        {item.description && (
-                                                                            <span className="text-[9px] font-semibold text-slate-500 bg-slate-100 px-1.5 py-0.2 rounded">
-                                                                                {item.description}
-                                                                            </span>
-                                                                        )}
-                                                                    </div>
-                                                                    <p className="text-xs font-black text-emerald-700 mt-0.5">
-                                                                        GH₵ {Number(item.price).toFixed(2)}
-                                                                    </p>
-                                                                </div>
+                                                {/* Menu Presets Catalog */}
+                                                <div className="space-y-4 pt-2">
+                                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-1 border-b border-slate-100">
+                                                        <div className="flex items-center gap-2">
+                                                            <Tag className="w-4 h-4 text-amber-600" />
+                                                            <h3 className="text-xs sm:text-sm font-bold text-slate-900">Menu Entries &amp; Cost Presets</h3>
+                                                        </div>
+                                                        <Button
+                                                            type="button"
+                                                            variant="outline"
+                                                            size="sm"
+                                                            onClick={() => {
+                                                                const sampleItems: MenuPresetItem[] = [
+                                                                    { id: `preset_${Date.now()}_1`, name: "Assorted Fried Rice", price: 75, description: "Main Meal" },
+                                                                    { id: `preset_${Date.now()}_2`, name: "Grilled Chicken with Jollof", price: 70, description: "Main Meal" },
+                                                                    { id: `preset_${Date.now()}_3`, name: "Marwako Beef Shawarma", price: 45, description: "Shawarma" },
+                                                                    { id: `preset_${Date.now()}_4`, name: "Marwako Chicken Shawarma", price: 45, description: "Shawarma" },
+                                                                    { id: `preset_${Date.now()}_5`, name: "Grilled Whole Chicken (Only)", price: 120, description: "Grill" },
+                                                                    { id: `preset_${Date.now()}_6`, name: "Fresh Juice / Drink", price: 20, description: "Beverage" }
+                                                                ]
+                                                                setOrderDefaults(prev => ({
+                                                                    ...prev,
+                                                                    menuPresets: [...prev.menuPresets, ...sampleItems]
+                                                                }))
+                                                                toast.success("Loaded sample restaurant menu presets!")
+                                                            }}
+                                                            className="h-8 rounded-lg text-xs font-semibold text-amber-700 border-amber-200 bg-amber-50 hover:bg-amber-100 cursor-pointer"
+                                                        >
+                                                            <Sparkles className="w-3.5 h-3.5 mr-1" />
+                                                            Load Sample Restaurant Menu
+                                                        </Button>
+                                                    </div>
+
+                                                    {/* Add Preset Item Form */}
+                                                    <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-3">
+                                                        <p className="text-[11px] font-bold text-slate-700 uppercase tracking-wider">Add New Menu Preset Item</p>
+                                                        <div className="grid grid-cols-1 sm:grid-cols-12 gap-2.5 sm:gap-3">
+                                                            <div className="sm:col-span-5 space-y-1">
+                                                                <Label className="text-[11px] text-slate-600 font-medium">Menu Item Name</Label>
+                                                                <Input
+                                                                    value={newPreset.name}
+                                                                    onChange={(e) => setNewPreset(prev => ({ ...prev, name: e.target.value }))}
+                                                                    placeholder="e.g. Assorted Fried Rice & Chicken"
+                                                                    className="h-9 rounded-xl bg-white border-slate-200 text-xs"
+                                                                />
+                                                            </div>
+                                                            <div className="sm:col-span-3 space-y-1">
+                                                                <Label className="text-[11px] text-slate-600 font-medium">Price / Cost (GH₵)</Label>
+                                                                <Input
+                                                                    type="number"
+                                                                    step="0.01"
+                                                                    value={newPreset.price}
+                                                                    onChange={(e) => setNewPreset(prev => ({ ...prev, price: e.target.value }))}
+                                                                    placeholder="75.00"
+                                                                    className="h-9 rounded-xl bg-white border-slate-200 text-xs font-bold"
+                                                                />
+                                                            </div>
+                                                            <div className="sm:col-span-2 space-y-1">
+                                                                <Label className="text-[11px] text-slate-600 font-medium">Category / Note</Label>
+                                                                <Input
+                                                                    value={newPreset.description}
+                                                                    onChange={(e) => setNewPreset(prev => ({ ...prev, description: e.target.value }))}
+                                                                    placeholder="e.g. Main Dish"
+                                                                    className="h-9 rounded-xl bg-white border-slate-200 text-xs"
+                                                                />
+                                                            </div>
+                                                            <div className="sm:col-span-2 flex items-end">
                                                                 <Button
                                                                     type="button"
-                                                                    variant="ghost"
-                                                                    size="icon"
+                                                                    onClick={() => {
+                                                                        if (!newPreset.name.trim()) {
+                                                                            toast.error("Please enter a menu item name")
+                                                                            return
+                                                                        }
+                                                                        const priceNum = parseFloat(newPreset.price) || 0
+                                                                        if (priceNum <= 0) {
+                                                                            toast.error("Please enter a valid price")
+                                                                            return
+                                                                        }
+                                                                        const item: MenuPresetItem = {
+                                                                            id: `preset_${Date.now()}`,
+                                                                            name: newPreset.name.trim(),
+                                                                            price: priceNum,
+                                                                            description: newPreset.description.trim() || undefined
+                                                                        }
+                                                                        setOrderDefaults(prev => ({
+                                                                            ...prev,
+                                                                            menuPresets: [...prev.menuPresets, item]
+                                                                        }))
+                                                                        setNewPreset({ name: "", price: "", description: "" })
+                                                                        toast.success(`Added "${item.name}" (GH₵ ${item.price})`)
+                                                                    }}
+                                                                    className="w-full h-9 rounded-xl bg-slate-900 text-white hover:bg-slate-800 text-xs font-bold shadow-xs cursor-pointer"
+                                                                >
+                                                                    <Plus className="w-3.5 h-3.5 mr-1" />
+                                                                    Add Item
+                                                                </Button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Existing Menu Items List */}
+                                                    {orderDefaults.menuPresets.length > 0 ? (
+                                                        <div className="space-y-2">
+                                                            <p className="text-[11px] text-slate-500 font-medium">
+                                                                {orderDefaults.menuPresets.length} Menu item(s) configured. These will display as 1-click buttons when creating new orders.
+                                                            </p>
+                                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                                                {orderDefaults.menuPresets.map((item, idx) => (
+                                                                    <div
+                                                                        key={item.id || idx}
+                                                                        className="flex items-center justify-between p-3 bg-white rounded-xl border border-slate-200/80 shadow-xs hover:border-slate-300 transition-all"
+                                                                    >
+                                                                        <div className="min-w-0 flex-1 pr-3">
+                                                                            <div className="flex items-center gap-1.5">
+                                                                                <span className="text-xs font-bold text-slate-900 truncate">{item.name}</span>
+                                                                                {item.description && (
+                                                                                    <span className="text-[9px] font-semibold text-slate-500 bg-slate-100 px-1.5 py-0.2 rounded">
+                                                                                        {item.description}
+                                                                                    </span>
+                                                                                )}
+                                                                            </div>
+                                                                            <p className="text-xs font-black text-emerald-700 mt-0.5">
+                                                                                GH₵ {Number(item.price).toFixed(2)}
+                                                                            </p>
+                                                                        </div>
+                                                                        <Button
+                                                                            type="button"
+                                                                            variant="ghost"
+                                                                            size="icon"
+                                                                            onClick={() => {
+                                                                                setOrderDefaults(prev => ({
+                                                                                    ...prev,
+                                                                                    menuPresets: prev.menuPresets.filter((_, i) => i !== idx)
+                                                                                }))
+                                                                            }}
+                                                                            className="w-7 h-7 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 cursor-pointer"
+                                                                        >
+                                                                            <Trash2 className="w-3.5 h-3.5" />
+                                                                        </Button>
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                        </div>
+                                                    ) : (
+                                                        <div className="p-6 text-center border-2 border-dashed border-slate-200 rounded-2xl bg-slate-50/50">
+                                                            <UtensilsCrossed className="w-8 h-8 text-slate-300 mx-auto mb-2" />
+                                                            <p className="text-xs font-semibold text-slate-700">No menu presets added yet</p>
+                                                            <p className="text-[11px] text-slate-400 mt-0.5">Add your common food items and prices above to quickly select them on the order creation page.</p>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {/* ========================================================================= */}
+                                        {/* TYPE B: DELIVERY SERVICE (COURIER) CONFIGURATION                          */}
+                                        {/* ========================================================================= */}
+                                        {orderDefaults.logisticsType === 'delivery' && (
+                                            <div className="space-y-6 pt-4 border-t border-slate-100 animate-in fade-in-50 duration-200">
+                                                <div className="flex items-center gap-2 pb-1 border-b border-slate-100">
+                                                    <Truck className="w-4 h-4 text-blue-600" />
+                                                    <h3 className="text-xs sm:text-sm font-bold text-slate-900">Courier Dispatch Hub &amp; Delivery Parameters</h3>
+                                                </div>
+
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                    <div className="space-y-1.5">
+                                                        <Label htmlFor="defaultDispatchHub" className="text-xs font-semibold text-slate-700 flex items-center gap-1.5">
+                                                            <MapPin className="w-3.5 h-3.5 text-slate-400" />
+                                                            Default Dispatch Hub / Sender Address
+                                                        </Label>
+                                                        <Input
+                                                            id="defaultDispatchHub"
+                                                            value={orderDefaults.defaultDispatchHub}
+                                                            onChange={(e) => setOrderDefaults(prev => ({ ...prev, defaultDispatchHub: e.target.value }))}
+                                                            placeholder="e.g. Accra Central Dispatch Hub, Osu"
+                                                            className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-11 text-xs sm:text-sm"
+                                                        />
+                                                        <p className="text-[10px] text-slate-400">Pre-populates the default sender/pickup hub for courier bookings.</p>
+                                                    </div>
+
+                                                    <div className="space-y-1.5">
+                                                        <Label htmlFor="defaultSenderContact" className="text-xs font-semibold text-slate-700 flex items-center gap-1.5">
+                                                            <Phone className="w-3.5 h-3.5 text-slate-400" />
+                                                            Default Dispatch / Sender Phone
+                                                        </Label>
+                                                        <Input
+                                                            id="defaultSenderContact"
+                                                            value={orderDefaults.defaultSenderContact}
+                                                            onChange={(e) => setOrderDefaults(prev => ({ ...prev, defaultSenderContact: e.target.value }))}
+                                                            placeholder="e.g. 0548706430"
+                                                            className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-11 text-xs sm:text-sm"
+                                                        />
+                                                        <p className="text-[10px] text-slate-400">Default contact number for sender dispatch inquiries.</p>
+                                                    </div>
+                                                </div>
+
+                                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                                    <div className="space-y-1.5">
+                                                        <Label htmlFor="defaultCourierFee" className="text-xs font-semibold text-slate-700">
+                                                            Base Courier Delivery Fee (GH₵)
+                                                        </Label>
+                                                        <Input
+                                                            id="defaultCourierFee"
+                                                            type="number"
+                                                            step="0.01"
+                                                            value={orderDefaults.defaultCourierFee}
+                                                            onChange={(e) => setOrderDefaults(prev => ({ ...prev, defaultCourierFee: e.target.value }))}
+                                                            placeholder="30.00"
+                                                            className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-11 text-xs sm:text-sm font-bold"
+                                                        />
+                                                        <p className="text-[10px] text-slate-400">Base fee automatically applied to courier shipments.</p>
+                                                    </div>
+
+                                                    <div className="space-y-1.5">
+                                                        <Label htmlFor="defaultCourierMoMoNumber" className="text-xs font-semibold text-slate-700">
+                                                            Courier MoMo Payment Number
+                                                        </Label>
+                                                        <Input
+                                                            id="defaultCourierMoMoNumber"
+                                                            value={orderDefaults.defaultCourierMoMoNumber}
+                                                            onChange={(e) => setOrderDefaults(prev => ({ ...prev, defaultCourierMoMoNumber: e.target.value }))}
+                                                            placeholder="e.g. 0548706430"
+                                                            className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-11 text-xs sm:text-sm"
+                                                        />
+                                                        <p className="text-[10px] text-slate-400">Receiving mobile money line for courier payment prompts.</p>
+                                                    </div>
+
+                                                    <div className="space-y-1.5">
+                                                        <Label htmlFor="defaultCourierPaymentProvider" className="text-xs font-semibold text-slate-700">
+                                                            MoMo Network Provider
+                                                        </Label>
+                                                        <select
+                                                            id="defaultCourierPaymentProvider"
+                                                            value={orderDefaults.defaultCourierPaymentProvider}
+                                                            onChange={(e) => setOrderDefaults(prev => ({ ...prev, defaultCourierPaymentProvider: e.target.value }))}
+                                                            className="w-full bg-slate-50/50 border border-slate-200 focus:bg-white rounded-xl h-11 px-3 transition-colors text-slate-800 focus:outline-none text-xs sm:text-sm"
+                                                        >
+                                                            <option value="MTN">MTN Mobile Money</option>
+                                                            <option value="TELECEL">Telecel Cash (Vodafone)</option>
+                                                            <option value="AIRTELTIGO">AirtelTigo Money</option>
+                                                        </select>
+                                                        <p className="text-[10px] text-slate-400">Provider network for courier billing.</p>
+                                                    </div>
+                                                </div>
+
+                                                {/* Package Categories / Presets */}
+                                                <div className="space-y-4 pt-2">
+                                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-1 border-b border-slate-100">
+                                                        <div className="flex items-center gap-2">
+                                                            <Package className="w-4 h-4 text-blue-600" />
+                                                            <h3 className="text-xs sm:text-sm font-bold text-slate-900">Standard Package Categories</h3>
+                                                        </div>
+                                                        <Button
+                                                            type="button"
+                                                            variant="outline"
+                                                            size="sm"
+                                                            onClick={() => {
+                                                                const sampleCategories = ["Documents / Envelope", "Small Parcel (<2kg)", "Medium Box (2-5kg)", "Large Box (>5kg)", "Food / Cake Box", "Fragile Electronics", "Clothing / Apparel"]
+                                                                setOrderDefaults(prev => ({
+                                                                    ...prev,
+                                                                    packageCategories: Array.from(new Set([...prev.packageCategories, ...sampleCategories]))
+                                                                }))
+                                                                toast.success("Loaded standard courier package categories!")
+                                                            }}
+                                                            className="h-8 rounded-lg text-xs font-semibold text-blue-700 border-blue-200 bg-blue-50 hover:bg-blue-100 cursor-pointer"
+                                                        >
+                                                            <Sparkles className="w-3.5 h-3.5 mr-1" />
+                                                            Load Standard Categories
+                                                        </Button>
+                                                    </div>
+
+                                                    {/* Add Category Form */}
+                                                    <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-3">
+                                                        <p className="text-[11px] font-bold text-slate-700 uppercase tracking-wider">Add Custom Package Type</p>
+                                                        <div className="flex gap-2">
+                                                            <Input
+                                                                value={newCategoryInput}
+                                                                onChange={(e) => setNewCategoryInput(e.target.value)}
+                                                                placeholder="e.g. Sealed Medical Sample, Perfume Fragile"
+                                                                className="h-9 rounded-xl bg-white border-slate-200 text-xs flex-1"
+                                                            />
+                                                            <Button
+                                                                type="button"
+                                                                onClick={() => {
+                                                                    if (!newCategoryInput.trim()) {
+                                                                        toast.error("Please enter a category name")
+                                                                        return
+                                                                    }
+                                                                    const val = newCategoryInput.trim()
+                                                                    if (orderDefaults.packageCategories.includes(val)) {
+                                                                        toast.error("Category already exists")
+                                                                        return
+                                                                    }
+                                                                    setOrderDefaults(prev => ({
+                                                                        ...prev,
+                                                                        packageCategories: [...prev.packageCategories, val]
+                                                                    }))
+                                                                    setNewCategoryInput("")
+                                                                    toast.success(`Added "${val}" category`)
+                                                                }}
+                                                                className="h-9 rounded-xl bg-slate-900 text-white hover:bg-slate-800 text-xs font-bold px-4 cursor-pointer"
+                                                            >
+                                                                <Plus className="w-3.5 h-3.5 mr-1" />
+                                                                Add
+                                                            </Button>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Existing Categories Badges */}
+                                                    <div className="flex flex-wrap gap-2">
+                                                        {orderDefaults.packageCategories.map((cat, idx) => (
+                                                            <span
+                                                                key={idx}
+                                                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-slate-200 shadow-xs text-xs font-semibold text-slate-800"
+                                                            >
+                                                                <Package className="w-3 h-3 text-blue-500" />
+                                                                {cat}
+                                                                <button
+                                                                    type="button"
                                                                     onClick={() => {
                                                                         setOrderDefaults(prev => ({
                                                                             ...prev,
-                                                                            menuPresets: prev.menuPresets.filter((_, i) => i !== idx)
+                                                                            packageCategories: prev.packageCategories.filter((_, i) => i !== idx)
                                                                         }))
                                                                     }}
-                                                                    className="w-7 h-7 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50"
+                                                                    className="text-slate-400 hover:text-red-500 ml-1 cursor-pointer"
                                                                 >
-                                                                    <Trash2 className="w-3.5 h-3.5" />
-                                                                </Button>
-                                                            </div>
+                                                                    <Trash2 className="w-3 h-3" />
+                                                                </button>
+                                                            </span>
                                                         ))}
                                                     </div>
                                                 </div>
-                                            ) : (
-                                                <div className="p-6 text-center border-2 border-dashed border-slate-200 rounded-2xl bg-slate-50/50">
-                                                    <UtensilsCrossed className="w-8 h-8 text-slate-300 mx-auto mb-2" />
-                                                    <p className="text-xs font-semibold text-slate-700">No menu presets added yet</p>
-                                                    <p className="text-[11px] text-slate-400 mt-0.5">Add your common food items and prices above to quickly select them on the order creation page.</p>
-                                                </div>
-                                            )}
-                                        </div>
+                                            </div>
+                                        )}
 
+                                        {/* ========================================================================= */}
+                                        {/* TYPE C: SHIPPING (FREIGHT & CARGO) CONFIGURATION                          */}
+                                        {/* ========================================================================= */}
+                                        {orderDefaults.logisticsType === 'shipping' && (
+                                            <div className="space-y-6 pt-4 border-t border-slate-100 animate-in fade-in-50 duration-200">
+                                                <div className="flex items-center gap-2 pb-1 border-b border-slate-100">
+                                                    <Ship className="w-4 h-4 text-emerald-600" />
+                                                    <h3 className="text-xs sm:text-sm font-bold text-slate-900">Freight Origin Ports &amp; Cargo Rates</h3>
+                                                </div>
+
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                    <div className="space-y-1.5">
+                                                        <Label htmlFor="defaultOriginPort" className="text-xs font-semibold text-slate-700 flex items-center gap-1.5">
+                                                            <Navigation className="w-3.5 h-3.5 text-slate-400" />
+                                                            Default Origin Port / Terminal
+                                                        </Label>
+                                                        <Input
+                                                            id="defaultOriginPort"
+                                                            value={orderDefaults.defaultOriginPort}
+                                                            onChange={(e) => setOrderDefaults(prev => ({ ...prev, defaultOriginPort: e.target.value }))}
+                                                            placeholder="e.g. Tema Sea Port / Kotoka Air Cargo Terminal"
+                                                            className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-11 text-xs sm:text-sm"
+                                                        />
+                                                        <p className="text-[10px] text-slate-400">Primary origin departure terminal for international / regional freight.</p>
+                                                    </div>
+
+                                                    <div className="space-y-1.5">
+                                                        <Label htmlFor="defaultDestinationHub" className="text-xs font-semibold text-slate-700 flex items-center gap-1.5">
+                                                            <MapPin className="w-3.5 h-3.5 text-slate-400" />
+                                                            Default Destination City / Hub
+                                                        </Label>
+                                                        <Input
+                                                            id="defaultDestinationHub"
+                                                            value={orderDefaults.defaultDestinationHub}
+                                                            onChange={(e) => setOrderDefaults(prev => ({ ...prev, defaultDestinationHub: e.target.value }))}
+                                                            placeholder="e.g. Kumasi Central Cargo Depot / Takoradi Hub"
+                                                            className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-11 text-xs sm:text-sm"
+                                                        />
+                                                        <p className="text-[10px] text-slate-400">Target transit warehouse or receiving hub.</p>
+                                                    </div>
+                                                </div>
+
+                                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                                    <div className="space-y-1.5">
+                                                        <Label htmlFor="defaultFreightRatePerKg" className="text-xs font-semibold text-slate-700">
+                                                            Rate per Kg (GH₵ / kg)
+                                                        </Label>
+                                                        <Input
+                                                            id="defaultFreightRatePerKg"
+                                                            type="number"
+                                                            step="0.01"
+                                                            value={orderDefaults.defaultFreightRatePerKg}
+                                                            onChange={(e) => setOrderDefaults(prev => ({ ...prev, defaultFreightRatePerKg: e.target.value }))}
+                                                            placeholder="15.00"
+                                                            className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-11 text-xs sm:text-sm font-bold"
+                                                        />
+                                                        <p className="text-[10px] text-slate-400">Charge per kilogram for freight calculations.</p>
+                                                    </div>
+
+                                                    <div className="space-y-1.5">
+                                                        <Label htmlFor="defaultHandlingFee" className="text-xs font-semibold text-slate-700">
+                                                            Customs / Handling Fee (GH₵)
+                                                        </Label>
+                                                        <Input
+                                                            id="defaultHandlingFee"
+                                                            type="number"
+                                                            step="0.01"
+                                                            value={orderDefaults.defaultHandlingFee}
+                                                            onChange={(e) => setOrderDefaults(prev => ({ ...prev, defaultHandlingFee: e.target.value }))}
+                                                            placeholder="50.00"
+                                                            className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-11 text-xs sm:text-sm font-bold"
+                                                        />
+                                                        <p className="text-[10px] text-slate-400">Base port clearance or documentation fee.</p>
+                                                    </div>
+
+                                                    <div className="space-y-1.5">
+                                                        <Label htmlFor="defaultWaybillPrefix" className="text-xs font-semibold text-slate-700">
+                                                            Waybill / Tracking Prefix
+                                                        </Label>
+                                                        <Input
+                                                            id="defaultWaybillPrefix"
+                                                            value={orderDefaults.defaultWaybillPrefix}
+                                                            onChange={(e) => setOrderDefaults(prev => ({ ...prev, defaultWaybillPrefix: e.target.value }))}
+                                                            placeholder="SHP"
+                                                            className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-11 text-xs sm:text-sm uppercase font-bold"
+                                                        />
+                                                        <p className="text-[10px] text-slate-400">Prefix attached to generated tracking barcodes.</p>
+                                                    </div>
+                                                </div>
+
+                                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                                    <div className="space-y-1.5">
+                                                        <Label htmlFor="defaultOriginContact" className="text-xs font-semibold text-slate-700">
+                                                            Origin Port Contact Phone
+                                                        </Label>
+                                                        <Input
+                                                            id="defaultOriginContact"
+                                                            value={orderDefaults.defaultOriginContact}
+                                                            onChange={(e) => setOrderDefaults(prev => ({ ...prev, defaultOriginContact: e.target.value }))}
+                                                            placeholder="e.g. 0548706430"
+                                                            className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-11 text-xs sm:text-sm"
+                                                        />
+                                                        <p className="text-[10px] text-slate-400">Origin port clearing agent or dispatcher phone.</p>
+                                                    </div>
+
+                                                    <div className="space-y-1.5">
+                                                        <Label htmlFor="defaultShippingMoMoNumber" className="text-xs font-semibold text-slate-700">
+                                                            Shipping MoMo Account
+                                                        </Label>
+                                                        <Input
+                                                            id="defaultShippingMoMoNumber"
+                                                            value={orderDefaults.defaultShippingMoMoNumber}
+                                                            onChange={(e) => setOrderDefaults(prev => ({ ...prev, defaultShippingMoMoNumber: e.target.value }))}
+                                                            placeholder="e.g. 0548706430"
+                                                            className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-11 text-xs sm:text-sm"
+                                                        />
+                                                        <p className="text-[10px] text-slate-400">Merchant MoMo line for cargo payments.</p>
+                                                    </div>
+
+                                                    <div className="space-y-1.5">
+                                                        <Label htmlFor="defaultShippingPaymentProvider" className="text-xs font-semibold text-slate-700">
+                                                            MoMo Network Provider
+                                                        </Label>
+                                                        <select
+                                                            id="defaultShippingPaymentProvider"
+                                                            value={orderDefaults.defaultShippingPaymentProvider}
+                                                            onChange={(e) => setOrderDefaults(prev => ({ ...prev, defaultShippingPaymentProvider: e.target.value }))}
+                                                            className="w-full bg-slate-50/50 border border-slate-200 focus:bg-white rounded-xl h-11 px-3 transition-colors text-slate-800 focus:outline-none text-xs sm:text-sm"
+                                                        >
+                                                            <option value="MTN">MTN Mobile Money</option>
+                                                            <option value="TELECEL">Telecel Cash (Vodafone)</option>
+                                                            <option value="AIRTELTIGO">AirtelTigo Money</option>
+                                                        </select>
+                                                        <p className="text-[10px] text-slate-400">Telco channel for cargo prompt billing.</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {/* Save Defaults Button */}
                                         <div className="flex justify-end pt-4 border-t border-slate-100">
                                             <Button
                                                 type="submit"
                                                 disabled={orderDefaultsSaving}
-                                                className="w-full sm:w-auto min-w-[180px] h-11 px-6 rounded-xl sm:rounded-full bg-[#111827] hover:bg-[#1f2937] text-white font-bold text-xs sm:text-sm shadow-sm transition-all hover:-translate-y-0.5 active:scale-[0.98] cursor-pointer"
+                                                className="w-full sm:w-auto min-w-[200px] h-11 px-6 rounded-xl sm:rounded-full bg-[#111827] hover:bg-[#1f2937] text-white font-bold text-xs sm:text-sm shadow-sm transition-all hover:-translate-y-0.5 active:scale-[0.98] cursor-pointer"
                                             >
                                                 {orderDefaultsSaving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Check className="w-4 h-4 mr-2 text-emerald-400" />}
-                                                Save Order Defaults
+                                                Save Administrative Defaults
                                             </Button>
                                         </div>
                                     </form>

@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { generateTrackingId, type Order } from "@/lib/storage"
 import { createOrder, getOrderWithHistory, updateOrder } from "@/app/actions/orders"
 import { getInventory, getClientOrganizations } from "@/app/actions/operations"
+import { type LogisticsSubType } from "@/app/actions/org-metadata"
 import { initiateMomoCharge } from "@/app/actions/paystack"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -17,7 +18,7 @@ import { detectGhanaNetworkProvider, cn } from "@/lib/utils"
 import Link from "next/link"
 import { OrganizationSwitcher, useOrganization } from "@clerk/nextjs"
 import { BackofficeHeader } from "@/components/backoffice-header"
-import { Package, ArrowLeft, Loader2, AlertCircle, Plus, Trash2, Search, Boxes, ShoppingBag, Tag, ChevronRight, MapPin, Navigation, UtensilsCrossed, Sparkles } from "lucide-react"
+import { Package, ArrowLeft, Loader2, AlertCircle, Plus, Trash2, Search, Boxes, ShoppingBag, Tag, ChevronRight, MapPin, Navigation, UtensilsCrossed, Sparkles, Truck, Ship, Box, Layers, Globe, Scale, Store } from "lucide-react"
 import { RenewalBanner } from "@/components/renewal-banner"
 import { toast } from "sonner"
 import { useSearchParams, useRouter } from "next/navigation"
@@ -114,6 +115,14 @@ function CreateOrderContent() {
     const [deliveryFee, setDeliveryFee] = useState(0)
     const [discount, setDiscount] = useState(0)
 
+    // Logistics Operation Mode (Determined by Administrative Defaults)
+    const [logisticsMode, setLogisticsMode] = useState<LogisticsSubType>("restaurant")
+    const [cargoWeight, setCargoWeight] = useState("")
+    const [cargoDimensions, setCargoDimensions] = useState("")
+    const [waybillNumber, setWaybillNumber] = useState("")
+    const [freightRatePerKg, setFreightRatePerKg] = useState(15)
+    const [handlingFee, setHandlingFee] = useState(50)
+
     // Administrative Menu Items state
     const [orderMenuItems, setOrderMenuItems] = useState<{ id: string; name: string; price: number; quantity: number }[]>([])
 
@@ -127,10 +136,80 @@ function CreateOrderContent() {
     })
     const config = getBusinessConfig(businessType)
 
-    // Menu Presets from organization public metadata
+    // Menu Presets & Package Categories from organization public metadata
     const menuPresets: any[] = Array.isArray(organization?.publicMetadata?.menuPresets)
         ? (organization?.publicMetadata?.menuPresets as any[])
         : []
+
+    const packageCategories: string[] = Array.isArray(organization?.publicMetadata?.packageCategories)
+        ? (organization?.publicMetadata?.packageCategories as string[])
+        : ["Documents", "Small Parcel", "Food/Cake Box", "Electronics", "Fragile"]
+
+    // Helper to switch logistics mode and load the corresponding administrative defaults
+    const handleSwitchLogisticsMode = (mode: LogisticsSubType) => {
+        setLogisticsMode(mode)
+        if (!organization) return
+        const meta = organization.publicMetadata as any || {}
+
+        if (mode === 'restaurant') {
+            if (meta.defaultPickupLocation) setPickupLocation(meta.defaultPickupLocation as string)
+            if (meta.defaultPickupContact) {
+                const parsed = parsePhoneInput(meta.defaultPickupContact as string, "+233")
+                setPickupCountryCode(parsed.countryCode)
+                setPickupPhoneLocal(parsed.phoneLocal)
+                setCustomerPhone(formatFullPhone(parsed.countryCode, parsed.phoneLocal))
+            }
+            const fee = parseFloat(meta.defaultDeliveryFee || "0")
+            setDeliveryFee(fee)
+            if (meta.defaultPaymentNumber) setMomoPhone(meta.defaultPaymentNumber as string)
+            if (meta.defaultPaymentProvider) {
+                const p = (meta.defaultPaymentProvider as string).toLowerCase()
+                if (p === "mtn") setMomoProvider("mtn")
+                else if (p === "telecel" || p === "vodafone" || p === "vod") setMomoProvider("vod")
+                else if (p === "airteltigo" || p === "atl") setMomoProvider("atl")
+            }
+        } else if (mode === 'delivery') {
+            if (meta.defaultDispatchHub) setPickupLocation(meta.defaultDispatchHub as string)
+            if (meta.defaultSenderContact) {
+                const parsed = parsePhoneInput(meta.defaultSenderContact as string, "+233")
+                setPickupCountryCode(parsed.countryCode)
+                setPickupPhoneLocal(parsed.phoneLocal)
+                setCustomerPhone(formatFullPhone(parsed.countryCode, parsed.phoneLocal))
+            }
+            const fee = parseFloat(meta.defaultCourierFee || "0")
+            setDeliveryFee(fee)
+            if (meta.defaultCourierMoMoNumber) setMomoPhone(meta.defaultCourierMoMoNumber as string)
+            if (meta.defaultCourierPaymentProvider) {
+                const p = (meta.defaultCourierPaymentProvider as string).toLowerCase()
+                if (p === "mtn") setMomoProvider("mtn")
+                else if (p === "telecel" || p === "vodafone" || p === "vod") setMomoProvider("vod")
+                else if (p === "airteltigo" || p === "atl") setMomoProvider("atl")
+            }
+        } else if (mode === 'shipping') {
+            if (meta.defaultOriginPort) setPickupLocation(meta.defaultOriginPort as string)
+            if (meta.defaultDestinationHub) setDeliveryLocation(meta.defaultDestinationHub as string)
+            if (meta.defaultOriginContact) {
+                const parsed = parsePhoneInput(meta.defaultOriginContact as string, "+233")
+                setPickupCountryCode(parsed.countryCode)
+                setPickupPhoneLocal(parsed.phoneLocal)
+                setCustomerPhone(formatFullPhone(parsed.countryCode, parsed.phoneLocal))
+            }
+            const rate = parseFloat(meta.defaultFreightRatePerKg || "15")
+            const handling = parseFloat(meta.defaultHandlingFee || "50")
+            setFreightRatePerKg(rate)
+            setHandlingFee(handling)
+            setDeliveryFee(handling)
+            const prefix = meta.defaultWaybillPrefix || "SHP"
+            setWaybillNumber(`${prefix}-${generateTrackingId()}`)
+            if (meta.defaultShippingMoMoNumber) setMomoPhone(meta.defaultShippingMoMoNumber as string)
+            if (meta.defaultShippingPaymentProvider) {
+                const p = (meta.defaultShippingPaymentProvider as string).toLowerCase()
+                if (p === "mtn") setMomoProvider("mtn")
+                else if (p === "telecel" || p === "vodafone" || p === "vod") setMomoProvider("vod")
+                else if (p === "airteltigo" || p === "atl") setMomoProvider("atl")
+            }
+        }
+    }
 
     // Helper functions for Menu Presets
     const handleAddMenuItem = (preset: { id?: string; name: string; price: number }) => {
@@ -177,10 +256,36 @@ function CreateOrderContent() {
         })
     }
 
+    const handleTogglePackageCategory = (cat: string) => {
+        if (!cat) return
+        const currentItems = itemType.split(", ").map(s => s.trim()).filter(Boolean)
+        let updatedItems: string[]
+        if (currentItems.includes(cat)) {
+            updatedItems = currentItems.filter(c => c !== cat)
+        } else {
+            updatedItems = [...currentItems, cat]
+        }
+        setItemType(updatedItems.join(", "))
+    }
+
+    const handleCargoWeightChange = (newWeight: string) => {
+        setCargoWeight(newWeight)
+        const weightNum = parseFloat(newWeight) || 0
+        if (weightNum > 0) {
+            const calculated = (weightNum * freightRatePerKg) + handlingFee
+            setDeliveryFee(Number(calculated.toFixed(2)))
+        } else {
+            setDeliveryFee(handlingFee)
+        }
+    }
+
     // Initialize defaults from organization settings
     useEffect(() => {
         if (!organization) return
         const metadata = organization.publicMetadata as any || {}
+        const configuredLogisticsType: LogisticsSubType = metadata.logisticsType || "restaurant"
+        setLogisticsMode(configuredLogisticsType)
+
         const defaultDelivery = parseFloat(metadata.defaultDeliveryFee || "0")
         const defaultDisc = parseFloat(metadata.defaultDiscount || "0")
         
@@ -197,24 +302,7 @@ function CreateOrderContent() {
         // Auto-populate administrative defaults if not editing an existing order
         const isEditing = Boolean(searchParams.get("edit"))
         if (!isEditing) {
-            if (metadata.defaultPickupLocation && !pickupLocation) {
-                setPickupLocation(metadata.defaultPickupLocation as string)
-            }
-            if (metadata.defaultPickupContact && !pickupPhoneLocal) {
-                const parsed = parsePhoneInput(metadata.defaultPickupContact as string, "+233")
-                setPickupCountryCode(parsed.countryCode)
-                setPickupPhoneLocal(parsed.phoneLocal)
-                setCustomerPhone(formatFullPhone(parsed.countryCode, parsed.phoneLocal))
-            }
-            if (metadata.defaultPaymentNumber && !momoPhone) {
-                setMomoPhone(metadata.defaultPaymentNumber as string)
-            }
-            if (metadata.defaultPaymentProvider) {
-                const provider = (metadata.defaultPaymentProvider as string).toLowerCase()
-                if (provider === "mtn") setMomoProvider("mtn")
-                else if (provider === "telecel" || provider === "vodafone" || provider === "vod") setMomoProvider("vod")
-                else if (provider === "airteltigo" || provider === "atl") setMomoProvider("atl")
-            }
+            handleSwitchLogisticsMode(configuredLogisticsType)
         }
     }, [organization, searchParams])
 
@@ -429,7 +517,20 @@ function CreateOrderContent() {
                     itemType: finalItemType,
                     pickupDate: pickupDate ? format(pickupDate, "yyyy-MM-dd") : "",
                     measurements: businessType === "logistics" && deliveryLocation ? deliveryLocation : measurements,
-                    metadata: { ...metadata, quantity: totalQty, ...(businessType === "logistics" ? { pickupLocation, deliveryLocation, recipientName, recipientPhone } : {}) },
+                    metadata: { 
+                        ...metadata, 
+                        quantity: totalQty, 
+                        ...(businessType === "logistics" ? { 
+                            pickupLocation, 
+                            deliveryLocation, 
+                            recipientName, 
+                            recipientPhone,
+                            logisticsMode,
+                            cargoWeight: cargoWeight || undefined,
+                            cargoDimensions: cargoDimensions || undefined,
+                            waybillNumber: waybillNumber || undefined,
+                        } : {}) 
+                    },
                     inventoryItems: selectedInventory.map(item => ({ id: item.id, quantity: item.quantity })),
                 })
                 if (res?.error) {
@@ -473,7 +574,20 @@ function CreateOrderContent() {
                     itemType: finalItemType,
                     pickupDate: pickupDate ? format(pickupDate, "yyyy-MM-dd") : "",
                     measurements: businessType === "logistics" && deliveryLocation ? deliveryLocation : measurements,
-                    metadata: { ...metadata, quantity: totalQty, ...(businessType === "logistics" ? { pickupLocation, deliveryLocation, recipientName, recipientPhone } : {}) },
+                    metadata: { 
+                        ...metadata, 
+                        quantity: totalQty, 
+                        ...(businessType === "logistics" ? { 
+                            pickupLocation, 
+                            deliveryLocation, 
+                            recipientName, 
+                            recipientPhone,
+                            logisticsMode,
+                            cargoWeight: cargoWeight || undefined,
+                            cargoDimensions: cargoDimensions || undefined,
+                            waybillNumber: waybillNumber || undefined,
+                        } : {}) 
+                    },
                     businessType: localStorage.getItem("businessType") || "tailoring",
                     currentStatus: config.defaultStatus,
                     inventoryItems: selectedInventory.map(item => ({ id: item.id, quantity: item.quantity })),
@@ -843,198 +957,647 @@ function CreateOrderContent() {
                                 )}
                             </div>
 
-                            {/* Logistics Route & Locations — Only for logistics businesses */}
+                            {/* Logistics Operational System — Dynamic Administrative Defaults Integration */}
                             {businessType === "logistics" && (
-                                <div className="bg-sky-50/40 p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl border border-sky-200/60 space-y-3.5 sm:space-y-4">
-                                    <h3 className="text-xs sm:text-sm font-bold text-slate-900 tracking-tight flex items-center gap-2">
-                                        <MapPin className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-sky-600" />
-                                        Route &amp; Locations
-                                    </h3>
-
-                                    <div className="grid sm:grid-cols-2 gap-3 sm:gap-6">
-                                        {/* Pickup Location */}
-                                        <div className="space-y-1 sm:space-y-2">
-                                            <Label htmlFor="pickupLocation" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">Pick Up Location</Label>
-                                            <Input
-                                                id="pickupLocation"
-                                                value={pickupLocation}
-                                                onChange={(e) => setPickupLocation(e.target.value)}
-                                                placeholder="e.g. Madina Market, Accra"
-                                                disabled={!canCreateOrder}
-                                                className="h-10 sm:h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-sky-300 focus-visible:ring-[4px] focus-visible:ring-sky-100/80 text-xs sm:text-sm"
-                                            />
+                                <div className="space-y-4">
+                                    {/* Top Operational Subtype Switcher */}
+                                    <div className="bg-slate-900 text-white p-3 sm:p-4 rounded-2xl sm:rounded-3xl shadow-sm space-y-2.5">
+                                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5">
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                                                <span className="text-xs sm:text-sm font-bold tracking-tight">Administrative Default Entry Mode</span>
+                                            </div>
+                                            <Link
+                                                href="/backoffice/profile?tab=defaults"
+                                                className="text-[11px] font-semibold text-slate-400 hover:text-white transition-colors flex items-center gap-1 self-start sm:self-auto"
+                                            >
+                                                Configure in Settings
+                                                <ChevronRight className="w-3 h-3" />
+                                            </Link>
                                         </div>
 
-                                        {/* Drop Off Location */}
-                                        <div className="space-y-1 sm:space-y-2">
-                                            <Label htmlFor="deliveryLocation" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">Drop Off Location <span className="text-red-500">*</span></Label>
-                                            <Input
-                                                id="deliveryLocation"
-                                                value={deliveryLocation}
-                                                onChange={(e) => setDeliveryLocation(e.target.value)}
-                                                placeholder="e.g. East Legon, near Shell"
-                                                required
-                                                disabled={!canCreateOrder}
-                                                className="h-10 sm:h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-sky-300 focus-visible:ring-[4px] focus-visible:ring-sky-100/80 text-xs sm:text-sm"
-                                            />
+                                        <div className="grid grid-cols-3 gap-1.5 sm:gap-2 bg-slate-800/80 p-1.5 rounded-xl sm:rounded-2xl border border-slate-700/50">
+                                            <button
+                                                type="button"
+                                                onClick={() => handleSwitchLogisticsMode("restaurant")}
+                                                className={cn(
+                                                    "flex items-center justify-center gap-1.5 py-2 px-2 sm:px-3 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-bold transition-all cursor-pointer",
+                                                    logisticsMode === "restaurant"
+                                                        ? "bg-amber-500 text-white shadow-md"
+                                                        : "text-slate-300 hover:text-white hover:bg-slate-700/60"
+                                                )}
+                                            >
+                                                <UtensilsCrossed className="w-3.5 h-3.5 shrink-0" />
+                                                <span className="truncate">Restaurant Delivery</span>
+                                                {organization?.publicMetadata?.logisticsType === "restaurant" && (
+                                                    <span className="hidden md:inline-block w-1.5 h-1.5 rounded-full bg-white" />
+                                                )}
+                                            </button>
+
+                                            <button
+                                                type="button"
+                                                onClick={() => handleSwitchLogisticsMode("delivery")}
+                                                className={cn(
+                                                    "flex items-center justify-center gap-1.5 py-2 px-2 sm:px-3 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-bold transition-all cursor-pointer",
+                                                    logisticsMode === "delivery"
+                                                        ? "bg-sky-500 text-white shadow-md"
+                                                        : "text-slate-300 hover:text-white hover:bg-slate-700/60"
+                                                )}
+                                            >
+                                                <Truck className="w-3.5 h-3.5 shrink-0" />
+                                                <span className="truncate">Courier Service</span>
+                                                {organization?.publicMetadata?.logisticsType === "delivery" && (
+                                                    <span className="hidden md:inline-block w-1.5 h-1.5 rounded-full bg-white" />
+                                                )}
+                                            </button>
+
+                                            <button
+                                                type="button"
+                                                onClick={() => handleSwitchLogisticsMode("shipping")}
+                                                className={cn(
+                                                    "flex items-center justify-center gap-1.5 py-2 px-2 sm:px-3 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-bold transition-all cursor-pointer",
+                                                    logisticsMode === "shipping"
+                                                        ? "bg-indigo-500 text-white shadow-md"
+                                                        : "text-slate-300 hover:text-white hover:bg-slate-700/60"
+                                                )}
+                                            >
+                                                <Ship className="w-3.5 h-3.5 shrink-0" />
+                                                <span className="truncate">Cargo / Shipping</span>
+                                                {organization?.publicMetadata?.logisticsType === "shipping" && (
+                                                    <span className="hidden md:inline-block w-1.5 h-1.5 rounded-full bg-white" />
+                                                )}
+                                            </button>
                                         </div>
                                     </div>
 
-                                    {/* Live Google Maps Preview */}
-                                    {(pickupLocation || deliveryLocation) && (
-                                        <div className="grid sm:grid-cols-2 gap-3 sm:gap-4">
-                                            {pickupLocation && (
-                                                <div className="space-y-1.5">
-                                                    <div className="flex items-center gap-1.5">
-                                                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                                                        <span className="text-[9px] font-bold text-slate-500 uppercase tracking-wider">Pick Up</span>
-                                                    </div>
-                                                    <div className="w-full h-40 sm:h-48 rounded-xl sm:rounded-2xl overflow-hidden border border-slate-200 bg-slate-100 shadow-inner">
-                                                        <iframe
-                                                            title="Pick Up Location Map"
-                                                            width="100%"
-                                                            height="100%"
-                                                            loading="lazy"
-                                                            src={`https://maps.google.com/maps?q=${encodeURIComponent(pickupLocation)}&t=&z=14&ie=UTF8&iwloc=&output=embed`}
-                                                            className="w-full h-full border-0"
-                                                        />
-                                                    </div>
-                                                    <a
-                                                        href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(pickupLocation)}`}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        className="inline-flex items-center gap-1 text-[10px] font-bold text-sky-600 hover:text-sky-700 transition-colors"
-                                                    >
-                                                        <Navigation className="w-3 h-3" />
-                                                        Open in Google Maps
-                                                    </a>
+                                    {/* 1. RESTAURANT DELIVERY VIEW */}
+                                    {logisticsMode === "restaurant" && (
+                                        <div className="space-y-4">
+                                            {/* Restaurant Route Card */}
+                                            <div className="bg-amber-50/50 p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl border border-amber-200/70 space-y-3.5 sm:space-y-4">
+                                                <div className="flex items-center justify-between">
+                                                    <h3 className="text-xs sm:text-sm font-bold text-amber-950 tracking-tight flex items-center gap-2">
+                                                        <Store className="w-4 h-4 text-amber-600" />
+                                                        Restaurant Pickup &amp; Customer Dropoff Route
+                                                    </h3>
+                                                    <span className="text-[9px] sm:text-[10px] font-bold text-amber-800 bg-amber-100 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                                                        Food Logistics
+                                                    </span>
                                                 </div>
-                                            )}
 
-                                            {deliveryLocation && (
-                                                <div className={cn("space-y-1.5", !pickupLocation && "sm:col-start-2")}>
-                                                    <div className="flex items-center gap-1.5">
-                                                        <div className="w-1.5 h-1.5 rounded-full bg-sky-500 animate-pulse" />
-                                                        <span className="text-[9px] font-bold text-slate-500 uppercase tracking-wider">Drop Off</span>
-                                                    </div>
-                                                    <div className="w-full h-40 sm:h-48 rounded-xl sm:rounded-2xl overflow-hidden border border-slate-200 bg-slate-100 shadow-inner">
-                                                        <iframe
-                                                            title="Drop Off Location Map"
-                                                            width="100%"
-                                                            height="100%"
-                                                            loading="lazy"
-                                                            src={`https://maps.google.com/maps?q=${encodeURIComponent(deliveryLocation)}&t=&z=14&ie=UTF8&iwloc=&output=embed`}
-                                                            className="w-full h-full border-0"
+                                                <div className="grid sm:grid-cols-2 gap-3 sm:gap-6">
+                                                    {/* Pickup Location */}
+                                                    <div className="space-y-1 sm:space-y-2">
+                                                        <Label htmlFor="pickupLocation" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">
+                                                            Restaurant / Branch Pick Up <span className="text-amber-600">(e.g. Marwako)</span>
+                                                        </Label>
+                                                        <Input
+                                                            id="pickupLocation"
+                                                            value={pickupLocation}
+                                                            onChange={(e) => setPickupLocation(e.target.value)}
+                                                            placeholder="e.g. Marwako Fast Food, Spintex Branch"
+                                                            disabled={!canCreateOrder}
+                                                            className="h-10 sm:h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-amber-400 focus-visible:ring-[4px] focus-visible:ring-amber-100/80 text-xs sm:text-sm"
                                                         />
                                                     </div>
-                                                    <a
-                                                        href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(deliveryLocation)}`}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        className="inline-flex items-center gap-1 text-[10px] font-bold text-sky-600 hover:text-sky-700 transition-colors"
-                                                    >
-                                                        <Navigation className="w-3 h-3" />
-                                                        Open in Google Maps
-                                                    </a>
+
+                                                    {/* Drop Off Location */}
+                                                    <div className="space-y-1 sm:space-y-2">
+                                                        <Label htmlFor="deliveryLocation" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">
+                                                            Customer Delivery Drop Off Location <span className="text-red-500">*</span>
+                                                        </Label>
+                                                        <Input
+                                                            id="deliveryLocation"
+                                                            value={deliveryLocation}
+                                                            onChange={(e) => setDeliveryLocation(e.target.value)}
+                                                            placeholder="e.g. East Legon, near Shell / Accra Mall"
+                                                            required
+                                                            disabled={!canCreateOrder}
+                                                            className="h-10 sm:h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-amber-400 focus-visible:ring-[4px] focus-visible:ring-amber-100/80 text-xs sm:text-sm"
+                                                        />
+                                                    </div>
                                                 </div>
-                                            )}
+
+                                                {/* Live Google Maps Preview */}
+                                                {(pickupLocation || deliveryLocation) && (
+                                                    <div className="grid sm:grid-cols-2 gap-3 sm:gap-4">
+                                                        {pickupLocation && (
+                                                            <div className="space-y-1.5">
+                                                                <div className="flex items-center gap-1.5">
+                                                                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                                                                    <span className="text-[9px] font-bold text-slate-500 uppercase tracking-wider">Restaurant Branch</span>
+                                                                </div>
+                                                                <div className="w-full h-36 sm:h-44 rounded-xl sm:rounded-2xl overflow-hidden border border-slate-200 bg-slate-100 shadow-inner">
+                                                                    <iframe
+                                                                        title="Restaurant Branch Map"
+                                                                        width="100%"
+                                                                        height="100%"
+                                                                        loading="lazy"
+                                                                        src={`https://maps.google.com/maps?q=${encodeURIComponent(pickupLocation)}&t=&z=14&ie=UTF8&iwloc=&output=embed`}
+                                                                        className="w-full h-full border-0"
+                                                                    />
+                                                                </div>
+                                                                <a
+                                                                    href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(pickupLocation)}`}
+                                                                    target="_blank"
+                                                                    rel="noopener noreferrer"
+                                                                    className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-700 hover:text-amber-800 transition-colors"
+                                                                >
+                                                                    <Navigation className="w-3 h-3" />
+                                                                    Open in Google Maps
+                                                                </a>
+                                                            </div>
+                                                        )}
+
+                                                        {deliveryLocation && (
+                                                            <div className={cn("space-y-1.5", !pickupLocation && "sm:col-start-2")}>
+                                                                <div className="flex items-center gap-1.5">
+                                                                    <div className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+                                                                    <span className="text-[9px] font-bold text-slate-500 uppercase tracking-wider">Customer Drop Off</span>
+                                                                </div>
+                                                                <div className="w-full h-36 sm:h-44 rounded-xl sm:rounded-2xl overflow-hidden border border-slate-200 bg-slate-100 shadow-inner">
+                                                                    <iframe
+                                                                        title="Customer Drop Off Map"
+                                                                        width="100%"
+                                                                        height="100%"
+                                                                        loading="lazy"
+                                                                        src={`https://maps.google.com/maps?q=${encodeURIComponent(deliveryLocation)}&t=&z=14&ie=UTF8&iwloc=&output=embed`}
+                                                                        className="w-full h-full border-0"
+                                                                    />
+                                                                </div>
+                                                                <a
+                                                                    href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(deliveryLocation)}`}
+                                                                    target="_blank"
+                                                                    rel="noopener noreferrer"
+                                                                    className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-700 hover:text-amber-800 transition-colors"
+                                                                >
+                                                                    <Navigation className="w-3 h-3" />
+                                                                    Open in Google Maps
+                                                                </a>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                )}
+                                            </div>
+
+                                            {/* Quick Menu & Item Presets (Administrative Defaults) */}
+                                            <div className="bg-amber-50/40 p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl border border-amber-200/70 space-y-3.5 sm:space-y-4 shadow-xs">
+                                                <div className="flex items-center justify-between">
+                                                    <div className="flex items-center gap-2">
+                                                        <UtensilsCrossed className="w-4 h-4 text-amber-600" />
+                                                        <Label className="text-xs sm:text-sm font-bold text-slate-900 tracking-tight">
+                                                            Quick Menu Presets (1-Click Add)
+                                                        </Label>
+                                                    </div>
+                                                    <span className="text-[9px] sm:text-[10px] font-bold text-amber-800 bg-amber-100 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                                                        Administrative Defaults
+                                                    </span>
+                                                </div>
+                                                
+                                                {/* Preset Chips */}
+                                                {menuPresets.length > 0 ? (
+                                                    <div className="flex flex-wrap gap-2">
+                                                        {menuPresets.map((preset: any) => {
+                                                            const isAdded = orderMenuItems.some(m => m.name.toLowerCase() === preset.name.toLowerCase())
+                                                            const currentCount = orderMenuItems.find(m => m.name.toLowerCase() === preset.name.toLowerCase())?.quantity || 0
+                                                            return (
+                                                                <button
+                                                                    key={preset.id || preset.name}
+                                                                    type="button"
+                                                                    onClick={() => handleAddMenuItem(preset)}
+                                                                    className={cn(
+                                                                        "px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 border shadow-2xs cursor-pointer",
+                                                                        isAdded
+                                                                            ? "bg-amber-500 text-white border-amber-600 hover:bg-amber-600"
+                                                                            : "bg-white text-slate-800 border-amber-200/80 hover:bg-amber-50 hover:border-amber-300"
+                                                                    )}
+                                                                >
+                                                                    <Plus className="w-3 h-3" />
+                                                                    <span>{preset.name}</span>
+                                                                    <span className={cn(
+                                                                        "text-[10px] px-1.5 py-0.2 rounded-md font-extrabold",
+                                                                        isAdded ? "bg-white/20 text-white" : "bg-amber-100 text-amber-800"
+                                                                    )}>
+                                                                        GH₵ {Number(preset.price).toFixed(2)}
+                                                                    </span>
+                                                                    {currentCount > 0 && (
+                                                                        <span className="w-4 h-4 rounded-full bg-white text-amber-700 text-[10px] font-black flex items-center justify-center ml-0.5">
+                                                                            {currentCount}
+                                                                        </span>
+                                                                    )}
+                                                                </button>
+                                                            )
+                                                        })}
+                                                    </div>
+                                                ) : (
+                                                    <div className="bg-white p-3 rounded-xl border border-amber-200/60 text-xs text-slate-600 flex items-center justify-between">
+                                                        <span>No menu presets configured yet.</span>
+                                                        <Link href="/backoffice/profile?tab=defaults" className="text-amber-700 font-bold hover:underline">
+                                                            Add menu items in Settings &rarr;
+                                                        </Link>
+                                                    </div>
+                                                )}
+
+                                                {/* Selected Menu Items Table */}
+                                                {orderMenuItems.length > 0 && (
+                                                    <div className="space-y-2 pt-2 border-t border-amber-200/50">
+                                                        <p className="text-[11px] font-bold text-amber-900 uppercase tracking-wider">Selected Order Items</p>
+                                                        <div className="space-y-1.5">
+                                                            {orderMenuItems.map((item, idx) => (
+                                                                <div key={item.id || idx} className="flex items-center justify-between gap-3 p-2.5 sm:p-3 bg-white rounded-xl border border-amber-200/60 shadow-xs">
+                                                                    <div className="min-w-0 flex-1">
+                                                                        <p className="text-xs font-bold text-slate-800 truncate">{item.name}</p>
+                                                                        <p className="text-[10px] text-slate-400">GH₵ {item.price.toFixed(2)} / each</p>
+                                                                    </div>
+                                                                    <div className="flex items-center gap-2">
+                                                                        <div className="flex items-center border border-slate-200 rounded-lg overflow-hidden bg-slate-50">
+                                                                            <button
+                                                                                type="button"
+                                                                                onClick={() => handleUpdateMenuItemQty(idx, item.quantity - 1)}
+                                                                                className="w-7 h-7 flex items-center justify-center text-slate-600 hover:bg-slate-200 text-xs font-bold cursor-pointer"
+                                                                            >
+                                                                                -
+                                                                            </button>
+                                                                            <span className="w-8 text-center text-xs font-bold text-slate-800">{item.quantity}</span>
+                                                                            <button
+                                                                                type="button"
+                                                                                onClick={() => handleUpdateMenuItemQty(idx, item.quantity + 1)}
+                                                                                className="w-7 h-7 flex items-center justify-center text-slate-600 hover:bg-slate-200 text-xs font-bold cursor-pointer"
+                                                                            >
+                                                                                +
+                                                                            </button>
+                                                                        </div>
+                                                                        <div className="text-right min-w-[70px]">
+                                                                            <span className="text-xs font-black text-slate-900">GH₵ {(item.quantity * item.price).toFixed(2)}</span>
+                                                                        </div>
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={() => handleRemoveMenuItem(idx)}
+                                                                            className="p-1 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded cursor-pointer"
+                                                                        >
+                                                                            <Trash2 className="w-3.5 h-3.5" />
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </div>
                                         </div>
                                     )}
-                                </div>
-                            )}
 
-                            {/* Quick Menu & Item Presets (Administrative Defaults) */}
-                            {menuPresets.length > 0 && (
-                                <div className="bg-amber-50/40 p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl border border-amber-200/70 space-y-3.5 sm:space-y-4 shadow-xs">
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-2">
-                                            <UtensilsCrossed className="w-4 h-4 text-amber-600" />
-                                            <Label className="text-xs sm:text-sm font-bold text-slate-900 tracking-tight">
-                                                Quick Menu Presets (1-Click Add)
-                                            </Label>
-                                        </div>
-                                        <span className="text-[9px] sm:text-[10px] font-bold text-amber-800 bg-amber-100 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
-                                            Administrative Defaults
-                                        </span>
-                                    </div>
-                                    
-                                    {/* Preset Chips */}
-                                    <div className="flex flex-wrap gap-2">
-                                        {menuPresets.map((preset: any) => {
-                                            const isAdded = orderMenuItems.some(m => m.name.toLowerCase() === preset.name.toLowerCase())
-                                            const currentCount = orderMenuItems.find(m => m.name.toLowerCase() === preset.name.toLowerCase())?.quantity || 0
-                                            return (
-                                                <button
-                                                    key={preset.id || preset.name}
-                                                    type="button"
-                                                    onClick={() => handleAddMenuItem(preset)}
-                                                    className={cn(
-                                                        "px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 border shadow-2xs cursor-pointer",
-                                                        isAdded
-                                                            ? "bg-amber-500 text-white border-amber-600 hover:bg-amber-600"
-                                                            : "bg-white text-slate-800 border-amber-200/80 hover:bg-amber-50 hover:border-amber-300"
-                                                    )}
-                                                >
-                                                    <Plus className="w-3 h-3" />
-                                                    <span>{preset.name}</span>
-                                                    <span className={cn(
-                                                        "text-[10px] px-1.5 py-0.2 rounded-md font-extrabold",
-                                                        isAdded ? "bg-white/20 text-white" : "bg-amber-100 text-amber-800"
-                                                    )}>
-                                                        GH₵ {Number(preset.price).toFixed(2)}
+                                    {/* 2. COURIER / PARCEL DELIVERY VIEW */}
+                                    {logisticsMode === "delivery" && (
+                                        <div className="space-y-4">
+                                            {/* Courier Route Card */}
+                                            <div className="bg-sky-50/50 p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl border border-sky-200/70 space-y-3.5 sm:space-y-4">
+                                                <div className="flex items-center justify-between">
+                                                    <h3 className="text-xs sm:text-sm font-bold text-sky-950 tracking-tight flex items-center gap-2">
+                                                        <Truck className="w-4 h-4 text-sky-600" />
+                                                        Dispatch Hub &amp; Package Delivery Route
+                                                    </h3>
+                                                    <span className="text-[9px] sm:text-[10px] font-bold text-sky-800 bg-sky-100 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                                                        Courier Service
                                                     </span>
-                                                    {currentCount > 0 && (
-                                                        <span className="w-4 h-4 rounded-full bg-white text-amber-700 text-[10px] font-black flex items-center justify-center ml-0.5">
-                                                            {currentCount}
-                                                        </span>
-                                                    )}
-                                                </button>
-                                            )
-                                        })}
-                                    </div>
+                                                </div>
 
-                                    {/* Selected Menu Items Table */}
-                                    {orderMenuItems.length > 0 && (
-                                        <div className="space-y-2 pt-2 border-t border-amber-200/50">
-                                            <p className="text-[11px] font-bold text-amber-900 uppercase tracking-wider">Selected Order Items</p>
-                                            <div className="space-y-1.5">
-                                                {orderMenuItems.map((item, idx) => (
-                                                    <div key={item.id || idx} className="flex items-center justify-between gap-3 p-2.5 sm:p-3 bg-white rounded-xl border border-amber-200/60 shadow-xs">
-                                                        <div className="min-w-0 flex-1">
-                                                            <p className="text-xs font-bold text-slate-800 truncate">{item.name}</p>
-                                                            <p className="text-[10px] text-slate-400">GH₵ {item.price.toFixed(2)} / each</p>
-                                                        </div>
-                                                        <div className="flex items-center gap-2">
-                                                            <div className="flex items-center border border-slate-200 rounded-lg overflow-hidden bg-slate-50">
-                                                                <button
-                                                                    type="button"
-                                                                    onClick={() => handleUpdateMenuItemQty(idx, item.quantity - 1)}
-                                                                    className="w-7 h-7 flex items-center justify-center text-slate-600 hover:bg-slate-200 text-xs font-bold cursor-pointer"
-                                                                >
-                                                                    -
-                                                                </button>
-                                                                <span className="w-8 text-center text-xs font-bold text-slate-800">{item.quantity}</span>
-                                                                <button
-                                                                    type="button"
-                                                                    onClick={() => handleUpdateMenuItemQty(idx, item.quantity + 1)}
-                                                                    className="w-7 h-7 flex items-center justify-center text-slate-600 hover:bg-slate-200 text-xs font-bold cursor-pointer"
-                                                                >
-                                                                    +
-                                                                </button>
-                                                            </div>
-                                                            <div className="text-right min-w-[70px]">
-                                                                <span className="text-xs font-black text-slate-900">GH₵ {(item.quantity * item.price).toFixed(2)}</span>
-                                                            </div>
-                                                            <button
-                                                                type="button"
-                                                                onClick={() => handleRemoveMenuItem(idx)}
-                                                                className="p-1 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded cursor-pointer"
-                                                            >
-                                                                <Trash2 className="w-3.5 h-3.5" />
-                                                            </button>
-                                                        </div>
+                                                <div className="grid sm:grid-cols-2 gap-3 sm:gap-6">
+                                                    {/* Pickup / Hub Location */}
+                                                    <div className="space-y-1 sm:space-y-2">
+                                                        <Label htmlFor="pickupLocation" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">
+                                                            Dispatch Hub / Sender Pick Up Address
+                                                        </Label>
+                                                        <Input
+                                                            id="pickupLocation"
+                                                            value={pickupLocation}
+                                                            onChange={(e) => setPickupLocation(e.target.value)}
+                                                            placeholder="e.g. Central Dispatch Hub, Kwame Nkrumah Circle"
+                                                            disabled={!canCreateOrder}
+                                                            className="h-10 sm:h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-sky-400 focus-visible:ring-[4px] focus-visible:ring-sky-100/80 text-xs sm:text-sm"
+                                                        />
                                                     </div>
-                                                ))}
+
+                                                    {/* Drop Off Location */}
+                                                    <div className="space-y-1 sm:space-y-2">
+                                                        <Label htmlFor="deliveryLocation" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">
+                                                            Recipient Delivery Drop Off Address <span className="text-red-500">*</span>
+                                                        </Label>
+                                                        <Input
+                                                            id="deliveryLocation"
+                                                            value={deliveryLocation}
+                                                            onChange={(e) => setDeliveryLocation(e.target.value)}
+                                                            placeholder="e.g. Airport Residential, 5th Avenue"
+                                                            required
+                                                            disabled={!canCreateOrder}
+                                                            className="h-10 sm:h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-sky-400 focus-visible:ring-[4px] focus-visible:ring-sky-100/80 text-xs sm:text-sm"
+                                                        />
+                                                    </div>
+                                                </div>
+
+                                                {/* Live Google Maps Preview */}
+                                                {(pickupLocation || deliveryLocation) && (
+                                                    <div className="grid sm:grid-cols-2 gap-3 sm:gap-4">
+                                                        {pickupLocation && (
+                                                            <div className="space-y-1.5">
+                                                                <div className="flex items-center gap-1.5">
+                                                                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                                                                    <span className="text-[9px] font-bold text-slate-500 uppercase tracking-wider">Dispatch Hub</span>
+                                                                </div>
+                                                                <div className="w-full h-36 sm:h-44 rounded-xl sm:rounded-2xl overflow-hidden border border-slate-200 bg-slate-100 shadow-inner">
+                                                                    <iframe
+                                                                        title="Hub Location Map"
+                                                                        width="100%"
+                                                                        height="100%"
+                                                                        loading="lazy"
+                                                                        src={`https://maps.google.com/maps?q=${encodeURIComponent(pickupLocation)}&t=&z=14&ie=UTF8&iwloc=&output=embed`}
+                                                                        className="w-full h-full border-0"
+                                                                    />
+                                                                </div>
+                                                                <a
+                                                                    href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(pickupLocation)}`}
+                                                                    target="_blank"
+                                                                    rel="noopener noreferrer"
+                                                                    className="inline-flex items-center gap-1 text-[10px] font-bold text-sky-700 hover:text-sky-800 transition-colors"
+                                                                >
+                                                                    <Navigation className="w-3 h-3" />
+                                                                    Open in Google Maps
+                                                                </a>
+                                                            </div>
+                                                        )}
+
+                                                        {deliveryLocation && (
+                                                            <div className={cn("space-y-1.5", !pickupLocation && "sm:col-start-2")}>
+                                                                <div className="flex items-center gap-1.5">
+                                                                    <div className="w-1.5 h-1.5 rounded-full bg-sky-500 animate-pulse" />
+                                                                    <span className="text-[9px] font-bold text-slate-500 uppercase tracking-wider">Drop Off Location</span>
+                                                                </div>
+                                                                <div className="w-full h-36 sm:h-44 rounded-xl sm:rounded-2xl overflow-hidden border border-slate-200 bg-slate-100 shadow-inner">
+                                                                    <iframe
+                                                                        title="Drop Off Location Map"
+                                                                        width="100%"
+                                                                        height="100%"
+                                                                        loading="lazy"
+                                                                        src={`https://maps.google.com/maps?q=${encodeURIComponent(deliveryLocation)}&t=&z=14&ie=UTF8&iwloc=&output=embed`}
+                                                                        className="w-full h-full border-0"
+                                                                    />
+                                                                </div>
+                                                                <a
+                                                                    href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(deliveryLocation)}`}
+                                                                    target="_blank"
+                                                                    rel="noopener noreferrer"
+                                                                    className="inline-flex items-center gap-1 text-[10px] font-bold text-sky-700 hover:text-sky-800 transition-colors"
+                                                                >
+                                                                    <Navigation className="w-3 h-3" />
+                                                                    Open in Google Maps
+                                                                </a>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                )}
+                                            </div>
+
+                                            {/* Package Categories & Parcel Specs */}
+                                            <div className="bg-sky-50/40 p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl border border-sky-200/70 space-y-3.5 sm:space-y-4 shadow-xs">
+                                                <div className="flex items-center justify-between">
+                                                    <div className="flex items-center gap-2">
+                                                        <Box className="w-4 h-4 text-sky-600" />
+                                                        <Label className="text-xs sm:text-sm font-bold text-slate-900 tracking-tight">
+                                                            Package Category Presets (1-Click Tag)
+                                                        </Label>
+                                                    </div>
+                                                    <span className="text-[9px] sm:text-[10px] font-bold text-sky-800 bg-sky-100 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                                                        Administrative Defaults
+                                                    </span>
+                                                </div>
+
+                                                {/* Category Chips */}
+                                                <div className="flex flex-wrap gap-2">
+                                                    {packageCategories.map((cat: string) => {
+                                                        const isSelected = itemType.includes(cat)
+                                                        return (
+                                                            <button
+                                                                key={cat}
+                                                                type="button"
+                                                                onClick={() => handleTogglePackageCategory(cat)}
+                                                                className={cn(
+                                                                    "px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 border shadow-2xs cursor-pointer",
+                                                                    isSelected
+                                                                        ? "bg-sky-600 text-white border-sky-700 shadow-xs"
+                                                                        : "bg-white text-slate-800 border-sky-200/80 hover:bg-sky-50 hover:border-sky-300"
+                                                                )}
+                                                            >
+                                                                <Tag className="w-3 h-3" />
+                                                                <span>{cat}</span>
+                                                            </button>
+                                                        )
+                                                    })}
+                                                </div>
+
+                                                {/* Parcel Weight & Notes */}
+                                                <div className="grid sm:grid-cols-2 gap-3 sm:gap-4 pt-2 border-t border-sky-200/50">
+                                                    <div className="space-y-1.5">
+                                                        <Label htmlFor="courierWeight" className="text-xs font-semibold text-slate-700 flex items-center gap-1">
+                                                            <Scale className="w-3.5 h-3.5 text-sky-600" />
+                                                            Parcel Weight (kg)
+                                                        </Label>
+                                                        <Input
+                                                            id="courierWeight"
+                                                            type="number"
+                                                            step="0.1"
+                                                            placeholder="e.g. 2.5"
+                                                            value={cargoWeight}
+                                                            onChange={(e) => setCargoWeight(e.target.value)}
+                                                            className="h-10 rounded-xl bg-white border-zinc-200 text-xs sm:text-sm"
+                                                        />
+                                                    </div>
+
+                                                    <div className="space-y-1.5">
+                                                        <Label htmlFor="courierDimensions" className="text-xs font-semibold text-slate-700 flex items-center gap-1">
+                                                            <Layers className="w-3.5 h-3.5 text-sky-600" />
+                                                            Dimensions / Handling Instructions
+                                                        </Label>
+                                                        <Input
+                                                            id="courierDimensions"
+                                                            placeholder="e.g. 30x20x15 cm, Fragile / Keep Upright"
+                                                            value={cargoDimensions}
+                                                            onChange={(e) => setCargoDimensions(e.target.value)}
+                                                            className="h-10 rounded-xl bg-white border-zinc-200 text-xs sm:text-sm"
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* 3. SHIPPING / FREIGHT & CARGO VIEW */}
+                                    {logisticsMode === "shipping" && (
+                                        <div className="space-y-4">
+                                            {/* Shipping Terminal Route */}
+                                            <div className="bg-indigo-50/50 p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl border border-indigo-200/70 space-y-3.5 sm:space-y-4">
+                                                <div className="flex items-center justify-between">
+                                                    <h3 className="text-xs sm:text-sm font-bold text-indigo-950 tracking-tight flex items-center gap-2">
+                                                        <Ship className="w-4 h-4 text-indigo-600" />
+                                                        Origin Port / Terminal &amp; Regional Destination
+                                                    </h3>
+                                                    <span className="text-[9px] sm:text-[10px] font-bold text-indigo-800 bg-indigo-100 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                                                        Cargo Shipping
+                                                    </span>
+                                                </div>
+
+                                                <div className="grid sm:grid-cols-2 gap-3 sm:gap-6">
+                                                    {/* Origin Port */}
+                                                    <div className="space-y-1 sm:space-y-2">
+                                                        <Label htmlFor="pickupLocation" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">
+                                                            Origin Port / Air Cargo Terminal
+                                                        </Label>
+                                                        <Input
+                                                            id="pickupLocation"
+                                                            value={pickupLocation}
+                                                            onChange={(e) => setPickupLocation(e.target.value)}
+                                                            placeholder="e.g. Tema Port Terminal 3 / Kotoka Cargo Village"
+                                                            disabled={!canCreateOrder}
+                                                            className="h-10 sm:h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-indigo-400 focus-visible:ring-[4px] focus-visible:ring-indigo-100/80 text-xs sm:text-sm"
+                                                        />
+                                                    </div>
+
+                                                    {/* Destination Hub */}
+                                                    <div className="space-y-1 sm:space-y-2">
+                                                        <Label htmlFor="deliveryLocation" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">
+                                                            Destination Port / Inland Terminal <span className="text-red-500">*</span>
+                                                        </Label>
+                                                        <Input
+                                                            id="deliveryLocation"
+                                                            value={deliveryLocation}
+                                                            onChange={(e) => setDeliveryLocation(e.target.value)}
+                                                            placeholder="e.g. Kumasi Inland Freight Hub"
+                                                            required
+                                                            disabled={!canCreateOrder}
+                                                            className="h-10 sm:h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-indigo-400 focus-visible:ring-[4px] focus-visible:ring-indigo-100/80 text-xs sm:text-sm"
+                                                        />
+                                                    </div>
+                                                </div>
+
+                                                {/* Live Google Maps Preview */}
+                                                {(pickupLocation || deliveryLocation) && (
+                                                    <div className="grid sm:grid-cols-2 gap-3 sm:gap-4">
+                                                        {pickupLocation && (
+                                                            <div className="space-y-1.5">
+                                                                <div className="flex items-center gap-1.5">
+                                                                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                                                                    <span className="text-[9px] font-bold text-slate-500 uppercase tracking-wider">Origin Port</span>
+                                                                </div>
+                                                                <div className="w-full h-36 sm:h-44 rounded-xl sm:rounded-2xl overflow-hidden border border-slate-200 bg-slate-100 shadow-inner">
+                                                                    <iframe
+                                                                        title="Origin Port Map"
+                                                                        width="100%"
+                                                                        height="100%"
+                                                                        loading="lazy"
+                                                                        src={`https://maps.google.com/maps?q=${encodeURIComponent(pickupLocation)}&t=&z=14&ie=UTF8&iwloc=&output=embed`}
+                                                                        className="w-full h-full border-0"
+                                                                    />
+                                                                </div>
+                                                            </div>
+                                                        )}
+
+                                                        {deliveryLocation && (
+                                                            <div className={cn("space-y-1.5", !pickupLocation && "sm:col-start-2")}>
+                                                                <div className="flex items-center gap-1.5">
+                                                                    <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse" />
+                                                                    <span className="text-[9px] font-bold text-slate-500 uppercase tracking-wider">Destination Hub</span>
+                                                                </div>
+                                                                <div className="w-full h-36 sm:h-44 rounded-xl sm:rounded-2xl overflow-hidden border border-slate-200 bg-slate-100 shadow-inner">
+                                                                    <iframe
+                                                                        title="Destination Hub Map"
+                                                                        width="100%"
+                                                                        height="100%"
+                                                                        loading="lazy"
+                                                                        src={`https://maps.google.com/maps?q=${encodeURIComponent(deliveryLocation)}&t=&z=14&ie=UTF8&iwloc=&output=embed`}
+                                                                        className="w-full h-full border-0"
+                                                                    />
+                                                                </div>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                )}
+                                            </div>
+
+                                            {/* Cargo Specifications & Dynamic Freight Calculator */}
+                                            <div className="bg-indigo-50/40 p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl border border-indigo-200/70 space-y-3.5 sm:space-y-4 shadow-xs">
+                                                <div className="flex items-center justify-between">
+                                                    <div className="flex items-center gap-2">
+                                                        <Globe className="w-4 h-4 text-indigo-600" />
+                                                        <Label className="text-xs sm:text-sm font-bold text-slate-900 tracking-tight">
+                                                            Cargo Specifications &amp; Live Freight Calculation
+                                                        </Label>
+                                                    </div>
+                                                    <span className="text-[9px] sm:text-[10px] font-bold text-indigo-800 bg-indigo-100 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                                                        Administrative Defaults
+                                                    </span>
+                                                </div>
+
+                                                <div className="grid sm:grid-cols-3 gap-3 sm:gap-4">
+                                                    <div className="space-y-1.5">
+                                                        <Label htmlFor="waybillRef" className="text-xs font-semibold text-slate-700">
+                                                            Waybill Reference / Bill of Lading
+                                                        </Label>
+                                                        <Input
+                                                            id="waybillRef"
+                                                            placeholder="SHP-ABC123XYZ"
+                                                            value={waybillNumber}
+                                                            onChange={(e) => setWaybillNumber(e.target.value)}
+                                                            className="h-10 rounded-xl bg-white border-zinc-200 text-xs sm:text-sm font-mono font-bold"
+                                                        />
+                                                    </div>
+
+                                                    <div className="space-y-1.5">
+                                                        <Label htmlFor="shippingWeight" className="text-xs font-semibold text-slate-700 flex items-center gap-1">
+                                                            <Scale className="w-3.5 h-3.5 text-indigo-600" />
+                                                            Gross Cargo Weight (kg)
+                                                        </Label>
+                                                        <Input
+                                                            id="shippingWeight"
+                                                            type="number"
+                                                            step="0.1"
+                                                            placeholder="e.g. 50"
+                                                            value={cargoWeight}
+                                                            onChange={(e) => handleCargoWeightChange(e.target.value)}
+                                                            className="h-10 rounded-xl bg-white border-zinc-200 text-xs sm:text-sm font-bold"
+                                                        />
+                                                    </div>
+
+                                                    <div className="space-y-1.5">
+                                                        <Label htmlFor="shippingVolume" className="text-xs font-semibold text-slate-700 flex items-center gap-1">
+                                                            <Layers className="w-3.5 h-3.5 text-indigo-600" />
+                                                            Volume / CBM (Optional)
+                                                        </Label>
+                                                        <Input
+                                                            id="shippingVolume"
+                                                            placeholder="e.g. 1.2 CBM / Pallet"
+                                                            value={cargoDimensions}
+                                                            onChange={(e) => setCargoDimensions(e.target.value)}
+                                                            className="h-10 rounded-xl bg-white border-zinc-200 text-xs sm:text-sm"
+                                                        />
+                                                    </div>
+                                                </div>
+
+                                                {/* Live Freight Rate Breakdown Card */}
+                                                <div className="p-3 bg-white rounded-xl border border-indigo-200/60 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+                                                    <div className="space-y-0.5">
+                                                        <div className="flex items-center gap-2">
+                                                            <span className="font-bold text-slate-800">Automated Freight Cost:</span>
+                                                            <span className="text-[11px] text-slate-500 font-mono">
+                                                                ({parseFloat(cargoWeight) || 0} kg × GH₵ {freightRatePerKg}/kg) + GH₵ {handlingFee} handling
+                                                            </span>
+                                                        </div>
+                                                        <p className="text-[10px] text-indigo-600 font-medium">Applied automatically to the order delivery &amp; freight fee.</p>
+                                                    </div>
+                                                    <div className="text-right">
+                                                        <span className="text-sm sm:text-base font-black text-indigo-950 font-mono">
+                                                            GH₵ {(((parseFloat(cargoWeight) || 0) * freightRatePerKg) + handlingFee).toFixed(2)}
+                                                        </span>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     )}

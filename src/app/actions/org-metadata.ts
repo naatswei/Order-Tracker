@@ -116,13 +116,33 @@ export interface MenuPresetItem {
     description?: string
 }
 
+export type LogisticsSubType = 'restaurant' | 'delivery' | 'shipping'
+
 export interface OrgOrderDefaults {
+    logisticsType?: LogisticsSubType
+    // Restaurant Defaults
     defaultPickupLocation?: string
     defaultPickupContact?: string
     defaultDeliveryFee?: string
     defaultPaymentNumber?: string
     defaultPaymentProvider?: string
     menuPresets?: MenuPresetItem[]
+    // Courier Delivery Defaults
+    defaultDispatchHub?: string
+    defaultSenderContact?: string
+    defaultCourierFee?: string
+    packageCategories?: string[]
+    defaultCourierMoMoNumber?: string
+    defaultCourierPaymentProvider?: string
+    // Shipping / Freight Defaults
+    defaultOriginPort?: string
+    defaultOriginContact?: string
+    defaultDestinationHub?: string
+    defaultFreightRatePerKg?: string
+    defaultHandlingFee?: string
+    defaultWaybillPrefix?: string
+    defaultShippingMoMoNumber?: string
+    defaultShippingPaymentProvider?: string
 }
 
 export async function updateOrgOrderDefaults(orgId: string, defaults: OrgOrderDefaults) {
@@ -135,14 +155,33 @@ export async function updateOrgOrderDefaults(orgId: string, defaults: OrgOrderDe
     await client.organizations.updateOrganizationMetadata(orgId, {
         publicMetadata: {
             ...(org.publicMetadata || {}),
+            logisticsType: defaults.logisticsType ?? "restaurant",
+            // Restaurant
             defaultPickupLocation: defaults.defaultPickupLocation ?? "",
             defaultPickupContact: defaults.defaultPickupContact ?? "",
             defaultDeliveryFee: defaults.defaultDeliveryFee ?? "0",
             defaultPaymentNumber: defaults.defaultPaymentNumber ?? "",
             defaultPaymentProvider: defaults.defaultPaymentProvider ?? "MTN",
-            menuPresets: defaults.menuPresets ?? []
+            menuPresets: defaults.menuPresets ?? [],
+            // Courier
+            defaultDispatchHub: defaults.defaultDispatchHub ?? "",
+            defaultSenderContact: defaults.defaultSenderContact ?? "",
+            defaultCourierFee: defaults.defaultCourierFee ?? "0",
+            packageCategories: defaults.packageCategories ?? [],
+            defaultCourierMoMoNumber: defaults.defaultCourierMoMoNumber ?? "",
+            defaultCourierPaymentProvider: defaults.defaultCourierPaymentProvider ?? "MTN",
+            // Shipping
+            defaultOriginPort: defaults.defaultOriginPort ?? "",
+            defaultOriginContact: defaults.defaultOriginContact ?? "",
+            defaultDestinationHub: defaults.defaultDestinationHub ?? "",
+            defaultFreightRatePerKg: defaults.defaultFreightRatePerKg ?? "0",
+            defaultHandlingFee: defaults.defaultHandlingFee ?? "0",
+            defaultWaybillPrefix: defaults.defaultWaybillPrefix ?? "SHP",
+            defaultShippingMoMoNumber: defaults.defaultShippingMoMoNumber ?? "",
+            defaultShippingPaymentProvider: defaults.defaultShippingPaymentProvider ?? "MTN"
         }
     })
 
     return { success: true }
 }
+
