@@ -106,6 +106,43 @@ export async function updateOrgInvoiceSettings(orgId: string, settings: { defaul
             defaultDiscount: settings.defaultDiscount || "0"
         }
     })
+    return { success: true }
+}
+
+export interface MenuPresetItem {
+    id: string
+    name: string
+    price: number
+    description?: string
+}
+
+export interface OrgOrderDefaults {
+    defaultPickupLocation?: string
+    defaultPickupContact?: string
+    defaultDeliveryFee?: string
+    defaultPaymentNumber?: string
+    defaultPaymentProvider?: string
+    menuPresets?: MenuPresetItem[]
+}
+
+export async function updateOrgOrderDefaults(orgId: string, defaults: OrgOrderDefaults) {
+    const { userId } = await auth()
+    if (!userId) throw new Error('Unauthorized')
+
+    const client = await clerkClient()
+    const org = await client.organizations.getOrganization({ organizationId: orgId })
+
+    await client.organizations.updateOrganizationMetadata(orgId, {
+        publicMetadata: {
+            ...(org.publicMetadata || {}),
+            defaultPickupLocation: defaults.defaultPickupLocation ?? "",
+            defaultPickupContact: defaults.defaultPickupContact ?? "",
+            defaultDeliveryFee: defaults.defaultDeliveryFee ?? "0",
+            defaultPaymentNumber: defaults.defaultPaymentNumber ?? "",
+            defaultPaymentProvider: defaults.defaultPaymentProvider ?? "MTN",
+            menuPresets: defaults.menuPresets ?? []
+        }
+    })
 
     return { success: true }
 }

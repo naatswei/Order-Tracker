@@ -196,7 +196,6 @@ export default function BusinessProfilePage() {
             title="Set up your profile"
             subtitle="Add your business details. You can change these anytime in your backoffice."
             backUrl="/onboarding/business-type"
-            backLabel="Back to Business Type"
         >
             <form className="space-y-6 sm:space-y-8" onSubmit={handleSubmit}>
 

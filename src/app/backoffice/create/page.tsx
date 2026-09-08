@@ -17,7 +17,7 @@ import { detectGhanaNetworkProvider, cn } from "@/lib/utils"
 import Link from "next/link"
 import { OrganizationSwitcher, useOrganization } from "@clerk/nextjs"
 import { BackofficeHeader } from "@/components/backoffice-header"
-import { Package, ArrowLeft, Loader2, AlertCircle, Plus, Trash2, Search, Boxes, ShoppingBag, Tag, ChevronRight, MapPin, Navigation } from "lucide-react"
+import { Package, ArrowLeft, Loader2, AlertCircle, Plus, Trash2, Search, Boxes, ShoppingBag, Tag, ChevronRight, MapPin, Navigation, UtensilsCrossed, Sparkles } from "lucide-react"
 import { RenewalBanner } from "@/components/renewal-banner"
 import { toast } from "sonner"
 import { useSearchParams, useRouter } from "next/navigation"
@@ -114,6 +114,9 @@ function CreateOrderContent() {
     const [deliveryFee, setDeliveryFee] = useState(0)
     const [discount, setDiscount] = useState(0)
 
+    // Administrative Menu Items state
+    const [orderMenuItems, setOrderMenuItems] = useState<{ id: string; name: string; price: number; quantity: number }[]>([])
+
     // Business Config
     const { organization } = useOrganization()
     const [businessType, setBusinessType] = useState<string | null>(() => {
@@ -123,6 +126,56 @@ function CreateOrderContent() {
         return null
     })
     const config = getBusinessConfig(businessType)
+
+    // Menu Presets from organization public metadata
+    const menuPresets: any[] = Array.isArray(organization?.publicMetadata?.menuPresets)
+        ? (organization?.publicMetadata?.menuPresets as any[])
+        : []
+
+    // Helper functions for Menu Presets
+    const handleAddMenuItem = (preset: { id?: string; name: string; price: number }) => {
+        setOrderMenuItems(prev => {
+            const existingIndex = prev.findIndex(p => p.name.toLowerCase() === preset.name.toLowerCase())
+            let next
+            if (existingIndex >= 0) {
+                next = [...prev]
+                next[existingIndex] = {
+                    ...next[existingIndex],
+                    quantity: next[existingIndex].quantity + 1
+                }
+            } else {
+                next = [...prev, { id: preset.id || `menu_${Date.now()}_${Math.random()}`, name: preset.name, price: Number(preset.price), quantity: 1 }]
+            }
+            const itemSummaries = next.map(m => `${m.quantity}x ${m.name}`).join(", ")
+            setItemType(itemSummaries)
+            return next
+        })
+        toast.success(`Added "${preset.name}" (GH₵ ${Number(preset.price).toFixed(2)})`)
+    }
+
+    const handleUpdateMenuItemQty = (index: number, newQty: number) => {
+        setOrderMenuItems(prev => {
+            let next: typeof prev
+            if (newQty <= 0) {
+                next = prev.filter((_, i) => i !== index)
+            } else {
+                next = [...prev]
+                next[index] = { ...next[index], quantity: newQty }
+            }
+            const itemSummaries = next.map(m => `${m.quantity}x ${m.name}`).join(", ")
+            setItemType(itemSummaries)
+            return next
+        })
+    }
+
+    const handleRemoveMenuItem = (index: number) => {
+        setOrderMenuItems(prev => {
+            const next = prev.filter((_, i) => i !== index)
+            const itemSummaries = next.map(m => `${m.quantity}x ${m.name}`).join(", ")
+            setItemType(itemSummaries)
+            return next
+        })
+    }
 
     // Initialize defaults from organization settings
     useEffect(() => {
@@ -140,16 +193,45 @@ function CreateOrderContent() {
             setPickupCountryCode(parsedOrgContact.countryCode)
             setDropoffCountryCode(parsedOrgContact.countryCode)
         }
-    }, [organization])
 
-    // Calculate subtotal from selected inventory
-    const subtotal = selectedInventory.reduce((sum, item) => {
+        // Auto-populate administrative defaults if not editing an existing order
+        const isEditing = Boolean(searchParams.get("edit"))
+        if (!isEditing) {
+            if (metadata.defaultPickupLocation && !pickupLocation) {
+                setPickupLocation(metadata.defaultPickupLocation as string)
+            }
+            if (metadata.defaultPickupContact && !pickupPhoneLocal) {
+                const parsed = parsePhoneInput(metadata.defaultPickupContact as string, "+233")
+                setPickupCountryCode(parsed.countryCode)
+                setPickupPhoneLocal(parsed.phoneLocal)
+                setCustomerPhone(formatFullPhone(parsed.countryCode, parsed.phoneLocal))
+            }
+            if (metadata.defaultPaymentNumber && !momoPhone) {
+                setMomoPhone(metadata.defaultPaymentNumber as string)
+            }
+            if (metadata.defaultPaymentProvider) {
+                const provider = (metadata.defaultPaymentProvider as string).toLowerCase()
+                if (provider === "mtn") setMomoProvider("mtn")
+                else if (provider === "telecel" || provider === "vodafone" || provider === "vod") setMomoProvider("vod")
+                else if (provider === "airteltigo" || provider === "atl") setMomoProvider("atl")
+            }
+        }
+    }, [organization, searchParams])
+
+    // Calculate subtotal from selected inventory AND quick menu items
+    const inventorySubtotal = selectedInventory.reduce((sum, item) => {
         const invItem = allInventory.find(inv => inv.id === item.id);
         const qty = parseFloat(item.quantity) || 1;
         const clientId = selectedClientId === "none" ? "" : selectedClientId;
         const unitPrice = resolveUnitPrice(qty, invItem, clientId);
         return sum + (qty * unitPrice);
     }, 0);
+
+    const menuSubtotal = orderMenuItems.reduce((sum, item) => {
+        return sum + (item.quantity * item.price);
+    }, 0);
+
+    const subtotal = inventorySubtotal + menuSubtotal;
 
     // Auto-calculate tax based on defaultTaxRate percent and subtotal
     useEffect(() => {
@@ -322,15 +404,19 @@ function CreateOrderContent() {
 
         setIsSaving(true)
 
-        const finalItemType = (selectedInventory.length > 1)
+        const finalItemType = (orderMenuItems.length > 0)
+            ? orderMenuItems.map(m => `${m.quantity}x ${m.name}`).join(", ")
+            : ((selectedInventory.length > 1)
             ? selectedInventory.map(s => s.name).join(", ")
             : (itemType.trim() !== "" 
             ? itemType 
-            : selectedInventory.map(s => s.name).join(", "));
+            : selectedInventory.map(s => s.name).join(", ")));
 
-        const totalQty = selectedInventory.length > 0
+        const totalQty = (orderMenuItems.length > 0)
+            ? orderMenuItems.reduce((sum, item) => sum + item.quantity, 0)
+            : (selectedInventory.length > 0
             ? selectedInventory.reduce((sum, item) => sum + (parseInt(item.quantity) || 0), 0)
-            : (parseInt(quantity) || 1);
+            : (parseInt(quantity) || 1));
 
         try {
             let res;
@@ -353,7 +439,7 @@ function CreateOrderContent() {
                 }
                 toast.success("Order details updated")
             } else {
-                const invoiceItems = selectedInventory.map(item => {
+                const invInvoiceItems = selectedInventory.map(item => {
                     const inv = allInventory.find(i => i.id === item.id)
                     const qty = parseInt(item.quantity) || 1
                     const price = inv ? resolveUnitPrice(qty, inv, selectedClientId !== "none" ? selectedClientId : undefined) : 0
@@ -370,6 +456,14 @@ function CreateOrderContent() {
                     
                     return { name: displayName, quantity: qty, price }
                 })
+
+                const menuInvoiceItems = orderMenuItems.map(item => ({
+                    name: item.name,
+                    quantity: item.quantity,
+                    price: item.price
+                }))
+
+                const invoiceItems = [...invInvoiceItems, ...menuInvoiceItems]
 
                 res = await createOrder({
                     orderNumber,
@@ -434,8 +528,8 @@ function CreateOrderContent() {
 
     const hasRequiredFields =
         customerName.trim() !== "" &&
-        (selectedInventory.length > 0 || (!isRetailBusiness && itemType.trim() !== "")) &&
-        (selectedInventory.length > 0 || (!isRetailBusiness && quantity.trim() !== "" && parseInt(quantity) > 0))
+        (selectedInventory.length > 0 || orderMenuItems.length > 0 || (!isRetailBusiness && itemType.trim() !== "")) &&
+        (selectedInventory.length > 0 || orderMenuItems.length > 0 || (!isRetailBusiness && quantity.trim() !== "" && parseInt(quantity) > 0))
 
     return (
         <div className="min-h-screen bg-background font-sans selection:bg-primary/20">
@@ -849,6 +943,104 @@ function CreateOrderContent() {
                                 </div>
                             )}
 
+                            {/* Quick Menu & Item Presets (Administrative Defaults) */}
+                            {menuPresets.length > 0 && (
+                                <div className="bg-amber-50/40 p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl border border-amber-200/70 space-y-3.5 sm:space-y-4 shadow-xs">
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-2">
+                                            <UtensilsCrossed className="w-4 h-4 text-amber-600" />
+                                            <Label className="text-xs sm:text-sm font-bold text-slate-900 tracking-tight">
+                                                Quick Menu Presets (1-Click Add)
+                                            </Label>
+                                        </div>
+                                        <span className="text-[9px] sm:text-[10px] font-bold text-amber-800 bg-amber-100 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                                            Administrative Defaults
+                                        </span>
+                                    </div>
+                                    
+                                    {/* Preset Chips */}
+                                    <div className="flex flex-wrap gap-2">
+                                        {menuPresets.map((preset: any) => {
+                                            const isAdded = orderMenuItems.some(m => m.name.toLowerCase() === preset.name.toLowerCase())
+                                            const currentCount = orderMenuItems.find(m => m.name.toLowerCase() === preset.name.toLowerCase())?.quantity || 0
+                                            return (
+                                                <button
+                                                    key={preset.id || preset.name}
+                                                    type="button"
+                                                    onClick={() => handleAddMenuItem(preset)}
+                                                    className={cn(
+                                                        "px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 border shadow-2xs cursor-pointer",
+                                                        isAdded
+                                                            ? "bg-amber-500 text-white border-amber-600 hover:bg-amber-600"
+                                                            : "bg-white text-slate-800 border-amber-200/80 hover:bg-amber-50 hover:border-amber-300"
+                                                    )}
+                                                >
+                                                    <Plus className="w-3 h-3" />
+                                                    <span>{preset.name}</span>
+                                                    <span className={cn(
+                                                        "text-[10px] px-1.5 py-0.2 rounded-md font-extrabold",
+                                                        isAdded ? "bg-white/20 text-white" : "bg-amber-100 text-amber-800"
+                                                    )}>
+                                                        GH₵ {Number(preset.price).toFixed(2)}
+                                                    </span>
+                                                    {currentCount > 0 && (
+                                                        <span className="w-4 h-4 rounded-full bg-white text-amber-700 text-[10px] font-black flex items-center justify-center ml-0.5">
+                                                            {currentCount}
+                                                        </span>
+                                                    )}
+                                                </button>
+                                            )
+                                        })}
+                                    </div>
+
+                                    {/* Selected Menu Items Table */}
+                                    {orderMenuItems.length > 0 && (
+                                        <div className="space-y-2 pt-2 border-t border-amber-200/50">
+                                            <p className="text-[11px] font-bold text-amber-900 uppercase tracking-wider">Selected Order Items</p>
+                                            <div className="space-y-1.5">
+                                                {orderMenuItems.map((item, idx) => (
+                                                    <div key={item.id || idx} className="flex items-center justify-between gap-3 p-2.5 sm:p-3 bg-white rounded-xl border border-amber-200/60 shadow-xs">
+                                                        <div className="min-w-0 flex-1">
+                                                            <p className="text-xs font-bold text-slate-800 truncate">{item.name}</p>
+                                                            <p className="text-[10px] text-slate-400">GH₵ {item.price.toFixed(2)} / each</p>
+                                                        </div>
+                                                        <div className="flex items-center gap-2">
+                                                            <div className="flex items-center border border-slate-200 rounded-lg overflow-hidden bg-slate-50">
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => handleUpdateMenuItemQty(idx, item.quantity - 1)}
+                                                                    className="w-7 h-7 flex items-center justify-center text-slate-600 hover:bg-slate-200 text-xs font-bold cursor-pointer"
+                                                                >
+                                                                    -
+                                                                </button>
+                                                                <span className="w-8 text-center text-xs font-bold text-slate-800">{item.quantity}</span>
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => handleUpdateMenuItemQty(idx, item.quantity + 1)}
+                                                                    className="w-7 h-7 flex items-center justify-center text-slate-600 hover:bg-slate-200 text-xs font-bold cursor-pointer"
+                                                                >
+                                                                    +
+                                                                </button>
+                                                            </div>
+                                                            <div className="text-right min-w-[70px]">
+                                                                <span className="text-xs font-black text-slate-900">GH₵ {(item.quantity * item.price).toFixed(2)}</span>
+                                                            </div>
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => handleRemoveMenuItem(idx)}
+                                                                className="p-1 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded cursor-pointer"
+                                                            >
+                                                                <Trash2 className="w-3.5 h-3.5" />
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+
                             {/* Stock Usage & Product Selection */}
                             {businessType !== "logistics" && (
                             <div className="bg-slate-50/50 p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-200/70 space-y-3.5 sm:space-y-4">
@@ -1027,7 +1219,7 @@ function CreateOrderContent() {
                                 )}
 
                                 {/* Order Total Summary */}
-                                {selectedInventory.length > 0 && (
+                                {(selectedInventory.length > 0 || orderMenuItems.length > 0) && (
                                     <div className="mt-3 sm:mt-4 bg-white rounded-xl sm:rounded-2xl border border-slate-200/80 overflow-hidden shadow-xs">
                                         <div className="px-4 sm:px-5 py-2.5 sm:py-3 bg-slate-50/80 border-b border-slate-100">
                                             <h4 className="text-[10px] font-bold text-[#191A43] uppercase tracking-wider">Order Summary</h4>
@@ -1043,6 +1235,19 @@ function CreateOrderContent() {
                                                     <div key={item.id} className="flex items-center justify-between text-xs">
                                                         <span className="text-slate-600 font-medium truncate mr-3 sm:mr-4">
                                                             {item.name} <span className="text-slate-400">× {qty}</span>
+                                                        </span>
+                                                        <span className="font-bold text-slate-700 whitespace-nowrap">
+                                                            GH₵ {lineTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                                        </span>
+                                                    </div>
+                                                );
+                                            })}
+                                            {orderMenuItems.map((item) => {
+                                                const lineTotal = item.quantity * item.price;
+                                                return (
+                                                    <div key={item.id} className="flex items-center justify-between text-xs">
+                                                        <span className="text-slate-600 font-medium truncate mr-3 sm:mr-4">
+                                                            {item.name} <span className="text-slate-400">× {item.quantity}</span>
                                                         </span>
                                                         <span className="font-bold text-slate-700 whitespace-nowrap">
                                                             GH₵ {lineTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}

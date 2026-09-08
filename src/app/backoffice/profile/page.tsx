@@ -3,13 +3,13 @@
 import { useState, useEffect, useRef } from "react"
 import { useOrganization, useUser, OrganizationProfile } from "@clerk/nextjs"
 import { useRouter } from "next/navigation"
-import { updateOrgProfile, updateOrgSubscriptionStatus, updateOrgInvoiceSettings } from "@/app/actions/org-metadata"
+import { updateOrgProfile, updateOrgSubscriptionStatus, updateOrgInvoiceSettings, updateOrgOrderDefaults, type MenuPresetItem } from "@/app/actions/org-metadata"
 import { Card, CardContent, CardHeader, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Loader2, ArrowLeft, Camera, Settings, Building2, CreditCard, Check, Clock, Users, Sparkles } from "lucide-react"
+import { Loader2, ArrowLeft, Camera, Settings, Building2, CreditCard, Check, Clock, Users, Sparkles, UtensilsCrossed, Plus, Trash2, MapPin, Phone, Wallet, DollarSign, Store, Tag } from "lucide-react"
 import { getBusinessConfig } from "@/lib/business-configs"
 import { validateLocation } from "@/lib/location-validator"
 import Link from "next/link"
@@ -144,6 +144,29 @@ export default function ProfilePage() {
     const [resolvingBulkclixAccount, setResolvingBulkclixAccount] = useState(false)
     const [bulkclixSaving, setBulkclixSaving] = useState(false)
 
+    // Administrative Order & Menu Defaults State
+    const [orderDefaults, setOrderDefaults] = useState<{
+        defaultPickupLocation: string
+        defaultPickupContact: string
+        defaultDeliveryFee: string
+        defaultPaymentNumber: string
+        defaultPaymentProvider: string
+        menuPresets: MenuPresetItem[]
+    }>({
+        defaultPickupLocation: "",
+        defaultPickupContact: "",
+        defaultDeliveryFee: "0",
+        defaultPaymentNumber: "",
+        defaultPaymentProvider: "MTN",
+        menuPresets: []
+    })
+    const [newPreset, setNewPreset] = useState<{ name: string; price: string; description: string }>({
+        name: "",
+        price: "",
+        description: ""
+    })
+    const [orderDefaultsSaving, setOrderDefaultsSaving] = useState(false)
+
     useEffect(() => {
         const fetchBanks = async () => {
             setBanksLoading(true)
@@ -276,6 +299,16 @@ export default function ProfilePage() {
                 defaultDeliveryFee: (metadata?.defaultDeliveryFee as string) || "0",
                 defaultDiscount: (metadata?.defaultDiscount as string) || "0"
             })
+
+            // Initialize administrative order defaults settings
+            setOrderDefaults({
+                defaultPickupLocation: (metadata?.defaultPickupLocation as string) || (metadata?.location as string) || "",
+                defaultPickupContact: (metadata?.defaultPickupContact as string) || (metadata?.contact as string) || "",
+                defaultDeliveryFee: (metadata?.defaultDeliveryFee as string) || "0",
+                defaultPaymentNumber: (metadata?.defaultPaymentNumber as string) || (metadata?.bulkclixAccountNumber as string) || "",
+                defaultPaymentProvider: (metadata?.defaultPaymentProvider as string) || (metadata?.bulkclixChannelOrBankId as string) || "MTN",
+                menuPresets: Array.isArray(metadata?.menuPresets) ? metadata.menuPresets : []
+            })
         }
     }, [isLoaded, organization])
 
@@ -406,6 +439,10 @@ export default function ProfilePage() {
                             <TabsTrigger value="profile" className="rounded-xl px-4 sm:px-6 data-[state=active]:bg-slate-100 data-[state=active]:text-slate-900 data-[state=active]:shadow-none text-slate-500 font-medium transition-all gap-1.5 sm:gap-2 flex-1 sm:flex-none text-xs sm:text-sm">
                                 <Building2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                                 Business Profile
+                            </TabsTrigger>
+                            <TabsTrigger value="defaults" className="rounded-xl px-4 sm:px-6 data-[state=active]:bg-slate-100 data-[state=active]:text-slate-900 data-[state=active]:shadow-none text-slate-500 font-medium transition-all gap-1.5 sm:gap-2 flex-1 sm:flex-none text-xs sm:text-sm">
+                                <UtensilsCrossed className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-600" />
+                                Order & Menu Defaults
                             </TabsTrigger>
                             <TabsTrigger value="team" className="rounded-xl px-4 sm:px-6 data-[state=active]:bg-slate-100 data-[state=active]:text-slate-900 data-[state=active]:shadow-none text-slate-500 font-medium transition-all gap-1.5 sm:gap-2 flex-1 sm:flex-none text-xs sm:text-sm">
                                 <Users className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
@@ -877,6 +914,303 @@ export default function ProfilePage() {
                                 </Card>
                             </div>
 
+                        </motion.div>
+                    </TabsContent>
+
+                    <TabsContent value="defaults">
+                        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
+                            <Card className="border-slate-200 shadow-sm overflow-hidden bg-white rounded-3xl">
+                                <CardHeader className="p-5 sm:p-8 pb-4 border-b border-slate-100 bg-gradient-to-r from-amber-50/40 via-white to-slate-50/30">
+                                    <div className="flex items-center gap-2.5">
+                                        <div className="p-2 rounded-xl bg-amber-500/10 text-amber-600">
+                                            <UtensilsCrossed className="w-5 h-5" />
+                                        </div>
+                                        <div>
+                                            <h2 className="text-base sm:text-lg font-bold text-slate-900 tracking-tight">Administrative Order &amp; Menu Defaults</h2>
+                                            <p className="text-xs text-slate-500 font-medium">Configure standard branch pickups, menu item presets, delivery fees, and payment channels for order entry.</p>
+                                        </div>
+                                    </div>
+                                </CardHeader>
+                                <CardContent className="p-5 sm:p-8 space-y-8">
+                                    <form onSubmit={async (e) => {
+                                        e.preventDefault()
+                                        if (!organization) return
+                                        setOrderDefaultsSaving(true)
+                                        try {
+                                            await updateOrgOrderDefaults(organization.id, orderDefaults)
+                                            // Also sync defaultDeliveryFee to invoice settings for consistency
+                                            await updateOrgInvoiceSettings(organization.id, {
+                                                defaultDeliveryFee: orderDefaults.defaultDeliveryFee
+                                            })
+                                            toast.success("Order & Menu Defaults saved successfully!")
+                                        } catch (err) {
+                                            console.error(err)
+                                            toast.error("Failed to save order defaults")
+                                        } finally {
+                                            setOrderDefaultsSaving(false)
+                                        }
+                                    }} className="space-y-8">
+                                        {/* 1. Branch Pickup Location & Contact */}
+                                        <div className="space-y-4">
+                                            <div className="flex items-center gap-2 pb-1 border-b border-slate-100">
+                                                <Store className="w-4 h-4 text-emerald-600" />
+                                                <h3 className="text-xs sm:text-sm font-bold text-slate-900">Branch Pickup Location &amp; Contact</h3>
+                                            </div>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                <div className="space-y-1.5">
+                                                    <Label htmlFor="defaultPickupLocation" className="text-xs font-semibold text-slate-700 flex items-center gap-1.5">
+                                                        <MapPin className="w-3.5 h-3.5 text-slate-400" />
+                                                        Default Pickup Location / Branch
+                                                    </Label>
+                                                    <Input
+                                                        id="defaultPickupLocation"
+                                                        value={orderDefaults.defaultPickupLocation}
+                                                        onChange={(e) => setOrderDefaults(prev => ({ ...prev, defaultPickupLocation: e.target.value }))}
+                                                        placeholder="e.g. Marwako Fast Food - East Legon Branch"
+                                                        className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-11 text-xs sm:text-sm"
+                                                    />
+                                                    <p className="text-[10px] text-slate-400">Pre-populates the pickup branch for new delivery and customer orders.</p>
+                                                </div>
+
+                                                <div className="space-y-1.5">
+                                                    <Label htmlFor="defaultPickupContact" className="text-xs font-semibold text-slate-700 flex items-center gap-1.5">
+                                                        <Phone className="w-3.5 h-3.5 text-slate-400" />
+                                                        Default Branch / Pickup Phone
+                                                    </Label>
+                                                    <Input
+                                                        id="defaultPickupContact"
+                                                        value={orderDefaults.defaultPickupContact}
+                                                        onChange={(e) => setOrderDefaults(prev => ({ ...prev, defaultPickupContact: e.target.value }))}
+                                                        placeholder="e.g. 0244123456"
+                                                        className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-11 text-xs sm:text-sm"
+                                                    />
+                                                    <p className="text-[10px] text-slate-400">Default contact number displayed for riders and dispatchers.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* 2. Standard Delivery Fee & Payment Number */}
+                                        <div className="space-y-4 pt-2">
+                                            <div className="flex items-center gap-2 pb-1 border-b border-slate-100">
+                                                <Wallet className="w-4 h-4 text-blue-600" />
+                                                <h3 className="text-xs sm:text-sm font-bold text-slate-900">Standard Delivery Fee &amp; Payment Number</h3>
+                                            </div>
+                                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                                <div className="space-y-1.5">
+                                                    <Label htmlFor="defaultDeliveryFeeSetting" className="text-xs font-semibold text-slate-700">
+                                                        Default Delivery Fee (GH₵)
+                                                    </Label>
+                                                    <Input
+                                                        id="defaultDeliveryFeeSetting"
+                                                        type="number"
+                                                        step="0.01"
+                                                        value={orderDefaults.defaultDeliveryFee}
+                                                        onChange={(e) => setOrderDefaults(prev => ({ ...prev, defaultDeliveryFee: e.target.value }))}
+                                                        placeholder="25.00"
+                                                        className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-11 text-xs sm:text-sm"
+                                                    />
+                                                    <p className="text-[10px] text-slate-400">Automatically added to new orders as the baseline dispatch charge.</p>
+                                                </div>
+
+                                                <div className="space-y-1.5">
+                                                    <Label htmlFor="defaultPaymentNumber" className="text-xs font-semibold text-slate-700">
+                                                        Receiving MoMo Number
+                                                    </Label>
+                                                    <Input
+                                                        id="defaultPaymentNumber"
+                                                        value={orderDefaults.defaultPaymentNumber}
+                                                        onChange={(e) => setOrderDefaults(prev => ({ ...prev, defaultPaymentNumber: e.target.value }))}
+                                                        placeholder="e.g. 0548706430"
+                                                        className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-11 text-xs sm:text-sm"
+                                                    />
+                                                    <p className="text-[10px] text-slate-400">Default merchant MoMo line for payments and automated prompts.</p>
+                                                </div>
+
+                                                <div className="space-y-1.5">
+                                                    <Label htmlFor="defaultPaymentProvider" className="text-xs font-semibold text-slate-700">
+                                                        MoMo Network Provider
+                                                    </Label>
+                                                    <select
+                                                        id="defaultPaymentProvider"
+                                                        value={orderDefaults.defaultPaymentProvider}
+                                                        onChange={(e) => setOrderDefaults(prev => ({ ...prev, defaultPaymentProvider: e.target.value }))}
+                                                        className="w-full bg-slate-50/50 border border-slate-200 focus:bg-white rounded-xl h-11 px-3 transition-colors text-slate-800 focus:outline-none text-xs sm:text-sm"
+                                                    >
+                                                        <option value="MTN">MTN Mobile Money</option>
+                                                        <option value="TELECEL">Telecel Cash (Vodafone)</option>
+                                                        <option value="AIRTELTIGO">AirtelTigo Money</option>
+                                                    </select>
+                                                    <p className="text-[10px] text-slate-400">Primary telco gateway for instant prompt processing.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* 3. Menu Presets Catalog */}
+                                        <div className="space-y-4 pt-2">
+                                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-1 border-b border-slate-100">
+                                                <div className="flex items-center gap-2">
+                                                    <Tag className="w-4 h-4 text-amber-600" />
+                                                    <h3 className="text-xs sm:text-sm font-bold text-slate-900">Menu Entries &amp; Cost Presets</h3>
+                                                </div>
+                                                <Button
+                                                    type="button"
+                                                    variant="outline"
+                                                    size="sm"
+                                                    onClick={() => {
+                                                        const sampleItems: MenuPresetItem[] = [
+                                                            { id: `preset_${Date.now()}_1`, name: "Assorted Fried Rice", price: 75, description: "Main Meal" },
+                                                            { id: `preset_${Date.now()}_2`, name: "Grilled Chicken with Jollof", price: 70, description: "Main Meal" },
+                                                            { id: `preset_${Date.now()}_3`, name: "Marwako Beef Shawarma", price: 45, description: "Shawarma" },
+                                                            { id: `preset_${Date.now()}_4`, name: "Marwako Chicken Shawarma", price: 45, description: "Shawarma" },
+                                                            { id: `preset_${Date.now()}_5`, name: "Grilled Whole Chicken (Only)", price: 120, description: "Grill" },
+                                                            { id: `preset_${Date.now()}_6`, name: "Fresh Juice / Drink", price: 20, description: "Beverage" }
+                                                        ]
+                                                        setOrderDefaults(prev => ({
+                                                            ...prev,
+                                                            menuPresets: [...prev.menuPresets, ...sampleItems]
+                                                        }))
+                                                        toast.success("Loaded sample restaurant menu presets!")
+                                                    }}
+                                                    className="h-8 rounded-lg text-xs font-semibold text-amber-700 border-amber-200 bg-amber-50 hover:bg-amber-100"
+                                                >
+                                                    <Sparkles className="w-3.5 h-3.5 mr-1" />
+                                                    Load Sample Restaurant Menu
+                                                </Button>
+                                            </div>
+
+                                            {/* Add Preset Item Form */}
+                                            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-3">
+                                                <p className="text-[11px] font-bold text-slate-700 uppercase tracking-wider">Add New Menu Preset Item</p>
+                                                <div className="grid grid-cols-1 sm:grid-cols-12 gap-2.5 sm:gap-3">
+                                                    <div className="sm:col-span-5 space-y-1">
+                                                        <Label className="text-[11px] text-slate-600 font-medium">Menu Item Name</Label>
+                                                        <Input
+                                                            value={newPreset.name}
+                                                            onChange={(e) => setNewPreset(prev => ({ ...prev, name: e.target.value }))}
+                                                            placeholder="e.g. Assorted Fried Rice & Chicken"
+                                                            className="h-9 rounded-xl bg-white border-slate-200 text-xs"
+                                                        />
+                                                    </div>
+                                                    <div className="sm:col-span-3 space-y-1">
+                                                        <Label className="text-[11px] text-slate-600 font-medium">Price / Cost (GH₵)</Label>
+                                                        <Input
+                                                            type="number"
+                                                            step="0.01"
+                                                            value={newPreset.price}
+                                                            onChange={(e) => setNewPreset(prev => ({ ...prev, price: e.target.value }))}
+                                                            placeholder="75.00"
+                                                            className="h-9 rounded-xl bg-white border-slate-200 text-xs font-bold"
+                                                        />
+                                                    </div>
+                                                    <div className="sm:col-span-2 space-y-1">
+                                                        <Label className="text-[11px] text-slate-600 font-medium">Category / Note</Label>
+                                                        <Input
+                                                            value={newPreset.description}
+                                                            onChange={(e) => setNewPreset(prev => ({ ...prev, description: e.target.value }))}
+                                                            placeholder="e.g. Main Dish"
+                                                            className="h-9 rounded-xl bg-white border-slate-200 text-xs"
+                                                        />
+                                                    </div>
+                                                    <div className="sm:col-span-2 flex items-end">
+                                                        <Button
+                                                            type="button"
+                                                            onClick={() => {
+                                                                if (!newPreset.name.trim()) {
+                                                                    toast.error("Please enter a menu item name")
+                                                                    return
+                                                                }
+                                                                const priceNum = parseFloat(newPreset.price) || 0
+                                                                if (priceNum <= 0) {
+                                                                    toast.error("Please enter a valid price")
+                                                                    return
+                                                                }
+                                                                const item: MenuPresetItem = {
+                                                                    id: `preset_${Date.now()}`,
+                                                                    name: newPreset.name.trim(),
+                                                                    price: priceNum,
+                                                                    description: newPreset.description.trim() || undefined
+                                                                }
+                                                                setOrderDefaults(prev => ({
+                                                                    ...prev,
+                                                                    menuPresets: [...prev.menuPresets, item]
+                                                                }))
+                                                                setNewPreset({ name: "", price: "", description: "" })
+                                                                toast.success(`Added "${item.name}" (GH₵ ${item.price})`)
+                                                            }}
+                                                            className="w-full h-9 rounded-xl bg-slate-900 text-white hover:bg-slate-800 text-xs font-bold shadow-xs cursor-pointer"
+                                                        >
+                                                            <Plus className="w-3.5 h-3.5 mr-1" />
+                                                            Add Item
+                                                        </Button>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {/* Existing Menu Items List */}
+                                            {orderDefaults.menuPresets.length > 0 ? (
+                                                <div className="space-y-2">
+                                                    <p className="text-[11px] text-slate-500 font-medium">
+                                                        {orderDefaults.menuPresets.length} Menu item(s) configured. These will display as 1-click buttons when creating new orders.
+                                                    </p>
+                                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                                        {orderDefaults.menuPresets.map((item, idx) => (
+                                                            <div
+                                                                key={item.id || idx}
+                                                                className="flex items-center justify-between p-3 bg-white rounded-xl border border-slate-200/80 shadow-xs hover:border-slate-300 transition-all"
+                                                            >
+                                                                <div className="min-w-0 flex-1 pr-3">
+                                                                    <div className="flex items-center gap-1.5">
+                                                                        <span className="text-xs font-bold text-slate-900 truncate">{item.name}</span>
+                                                                        {item.description && (
+                                                                            <span className="text-[9px] font-semibold text-slate-500 bg-slate-100 px-1.5 py-0.2 rounded">
+                                                                                {item.description}
+                                                                            </span>
+                                                                        )}
+                                                                    </div>
+                                                                    <p className="text-xs font-black text-emerald-700 mt-0.5">
+                                                                        GH₵ {Number(item.price).toFixed(2)}
+                                                                    </p>
+                                                                </div>
+                                                                <Button
+                                                                    type="button"
+                                                                    variant="ghost"
+                                                                    size="icon"
+                                                                    onClick={() => {
+                                                                        setOrderDefaults(prev => ({
+                                                                            ...prev,
+                                                                            menuPresets: prev.menuPresets.filter((_, i) => i !== idx)
+                                                                        }))
+                                                                    }}
+                                                                    className="w-7 h-7 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50"
+                                                                >
+                                                                    <Trash2 className="w-3.5 h-3.5" />
+                                                                </Button>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                <div className="p-6 text-center border-2 border-dashed border-slate-200 rounded-2xl bg-slate-50/50">
+                                                    <UtensilsCrossed className="w-8 h-8 text-slate-300 mx-auto mb-2" />
+                                                    <p className="text-xs font-semibold text-slate-700">No menu presets added yet</p>
+                                                    <p className="text-[11px] text-slate-400 mt-0.5">Add your common food items and prices above to quickly select them on the order creation page.</p>
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        <div className="flex justify-end pt-4 border-t border-slate-100">
+                                            <Button
+                                                type="submit"
+                                                disabled={orderDefaultsSaving}
+                                                className="w-full sm:w-auto min-w-[180px] h-11 px-6 rounded-xl sm:rounded-full bg-[#111827] hover:bg-[#1f2937] text-white font-bold text-xs sm:text-sm shadow-sm transition-all hover:-translate-y-0.5 active:scale-[0.98] cursor-pointer"
+                                            >
+                                                {orderDefaultsSaving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Check className="w-4 h-4 mr-2 text-emerald-400" />}
+                                                Save Order Defaults
+                                            </Button>
+                                        </div>
+                                    </form>
+                                </CardContent>
+                            </Card>
                         </motion.div>
                     </TabsContent>
 
