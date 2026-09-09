@@ -24,3 +24,22 @@ export function detectGhanaNetworkProvider(phone: string): 'mtn' | 'vod' | 'atl'
   }
   return null;
 }
+
+export function isLogisticsFulfillmentStatus(status: string): boolean {
+  const s = (status || "").toLowerCase().trim();
+  // Intake, initial prep, and cancellation statuses do not require a rider
+  const nonFulfillment = [
+    "order received",
+    "shipment booked",
+    "pending",
+    "order placed",
+    "confirmed",
+    "kitchen prep",
+    "preparing",
+    "processing",
+    "cancelled",
+    "order cancelled",
+    "voided"
+  ];
+  return !nonFulfillment.includes(s);
+}

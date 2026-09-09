@@ -10,6 +10,7 @@ import { linkOrderToInventory, consumeReservedStock, releaseReservedStock, syncO
 import { triggerOrderStatusNotification } from "@/lib/web-push";
 import { sendOrderTrackingSMS, sendOrderStatusSMS } from "@/lib/bulkclix";
 import { getOrderDeliveryPin } from "@/lib/delivery-pin";
+import { isLogisticsFulfillmentStatus } from "@/lib/utils";
 
 interface OrderInput {
     id?: string;
@@ -235,9 +236,14 @@ export async function updateOrderStatus(orderId: string, status: string, locatio
         const orderData = await tx.query.orders.findFirst({
             where: eq(orders.id, orderId)
         });
-        if (orderData) {
-            orderNumber = orderData.orderNumber;
-            previousStatus = orderData.currentStatus;
+        if (!orderData) throw new Error("Order not found");
+
+        orderNumber = orderData.orderNumber;
+        previousStatus = orderData.currentStatus;
+
+        // Block moving through fulfillment without an assigned rider
+        if (orderData.businessType === "logistics" && isLogisticsFulfillmentStatus(status) && !orderData.assignedStaffId) {
+            throw new Error(`Order #${orderData.orderNumber} cannot move through fulfillment without being assigned to a rider. Please assign a rider in Operations first.`);
         }
 
         const existingMeta = (orderData?.metadata as Record<string, any>) || {};
@@ -455,6 +461,13 @@ export async function bulkUpdateOrderStatus(orderIds: string[], status: string, 
             const orderData = await tx.query.orders.findFirst({
                 where: eq(orders.id, orderId)
             });
+            if (!orderData) continue;
+
+            // Block moving through fulfillment without an assigned rider
+            if (orderData.businessType === "logistics" && isLogisticsFulfillmentStatus(status) && !orderData.assignedStaffId) {
+                throw new Error(`Order #${orderData.orderNumber} cannot move through fulfillment without being assigned to a rider. Please assign a rider in Operations first.`);
+            }
+
             const existingMeta = (orderData?.metadata as Record<string, any>) || {};
             const updatedMeta = {
                 ...existingMeta,
@@ -527,6 +540,11 @@ export async function riderUpdateStatus(
         // Only allow updates for logistics orders
         if (order.businessType !== "logistics") {
             return { success: false, error: "Rider updates are only available for logistics orders" };
+        }
+
+        // Ensure order is assigned to a rider before updating
+        if (!order.assignedStaffId) {
+            return { success: false, error: "Order must be assigned to a rider before updating status." };
         }
 
         // Prevent duplicate updates if order is already at this status (prevents duplicate customer notifications)

@@ -2241,53 +2241,40 @@ function CreateOrderContent() {
                                 </div>
                             ) : (
                                 <div className="bg-slate-50/50 p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-200/70 space-y-3.5 sm:space-y-4">
-                                    <h3 className="text-xs sm:text-sm font-bold text-slate-900 tracking-tight">
-                                        Schedule &amp; Delivery Fee
-                                    </h3>
-                                    <div className="grid sm:grid-cols-2 gap-3.5 sm:gap-6">
-                                        <div className="space-y-1 sm:space-y-2">
-                                            <Label htmlFor="logistics-pickupDate" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">Dispatch / Delivery Date</Label>
-                                            <DatePicker
-                                                date={pickupDate}
-                                                setDate={setPickupDate}
-                                                placeholder="Select dispatch date"
-                                                disabled={!canCreateOrder}
-                                                fromDate={new Date(new Date().setHours(0, 0, 0, 0))}
-                                            />
-                                        </div>
-                                        <div className="space-y-1 sm:space-y-2">
-                                            <Label htmlFor="deliveryFee" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">
-                                                {logisticsMode === "shipping" ? "Freight &amp; Handling Fee (GH₵)" : "Delivery Fee (GH₵)"}
-                                            </Label>
-                                            <Input 
-                                                type="number" 
-                                                id="deliveryFee" 
-                                                step="0.01"
-                                                value={deliveryFee || ""}
-                                                onChange={(e) => setDeliveryFee(Number(e.target.value) || 0)}
-                                                placeholder="0.00"
-                                                disabled={!canCreateOrder}
-                                                className="h-10 sm:h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80 text-xs sm:text-sm"
-                                            />
-                                        </div>
+                                    <div className="space-y-1 sm:space-y-2">
+                                        <Label htmlFor="deliveryFee" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">
+                                            {logisticsMode === "shipping" ? "Freight &amp; Handling Fee (GH₵)" : "Delivery Fee (GH₵)"}
+                                        </Label>
+                                        <Input 
+                                            type="number" 
+                                            id="deliveryFee" 
+                                            step="0.01"
+                                            value={deliveryFee || ""}
+                                            onChange={(e) => setDeliveryFee(Number(e.target.value) || 0)}
+                                            placeholder="0.00"
+                                            disabled={!canCreateOrder}
+                                            className="h-10 sm:h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80 text-xs sm:text-sm"
+                                        />
                                     </div>
                                 </div>
                             )}
 
-                            <div className="space-y-2">
-                                <Label htmlFor="measurements" className="ml-1 text-xs font-semibold text-muted-foreground tracking-wider">
-                                    {config.id === "tailoring" ? "Notes / Measurements" : businessType === "logistics" ? "Special Delivery Instructions" : "Notes"}
-                                </Label>
-                                <Textarea
-                                    id="measurements"
-                                    value={measurements}
-                                    onChange={(e) => setMeasurements(e.target.value)}
-                                    placeholder={config.id === "tailoring" ? "Details, measurements or special instructions..." : businessType === "logistics" ? "e.g. Ring the bell, leave at gate, fragile package..." : "Additional notes or special instructions..."}
-                                    rows={3}
-                                    disabled={!canCreateOrder}
-                                    className="rounded-xl bg-white border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80 resize-none p-4 text-xs sm:text-sm"
-                                />
-                            </div>
+                            {businessType !== "logistics" && (
+                                <div className="space-y-2">
+                                    <Label htmlFor="measurements" className="ml-1 text-xs font-semibold text-muted-foreground tracking-wider">
+                                        {config.id === "tailoring" ? "Notes / Measurements" : "Notes"}
+                                    </Label>
+                                    <Textarea
+                                        id="measurements"
+                                        value={measurements}
+                                        onChange={(e) => setMeasurements(e.target.value)}
+                                        placeholder={config.id === "tailoring" ? "Details, measurements or special instructions..." : "Additional notes or special instructions..."}
+                                        rows={3}
+                                        disabled={!canCreateOrder}
+                                        className="rounded-xl bg-white border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80 resize-none p-4 text-xs sm:text-sm"
+                                    />
+                                </div>
+                            )}
 
                             <div className="pt-2 flex flex-col items-end gap-3">
                                 <Button

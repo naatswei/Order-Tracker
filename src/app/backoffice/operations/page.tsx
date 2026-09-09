@@ -279,32 +279,29 @@ export default function OperationsPage() {
             <header className="bg-white border-b border-slate-200/80 sticky top-0 z-30 shadow-2xs">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-4 pb-4 sm:pt-5 sm:pb-5 space-y-6 sm:space-y-8">
                     {/* Top Row: Navigation + Neutral Stages Button */}
-                    <div className="flex items-center justify-between gap-3">
-                        <div className="flex items-center gap-2.5">
-                            <Link href="/backoffice">
-                                <Button 
-                                    variant="ghost" 
-                                    size="icon" 
-                                    className="h-9 w-9 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 transition-colors shadow-2xs"
-                                    title="Back to Dashboard"
-                                >
-                                    <ArrowLeft className="w-4 h-4" />
-                                </Button>
+                    <div className="flex items-center justify-between gap-4">
+                        <div className="flex items-center gap-4 sm:gap-5">
+                            <Link 
+                                href="/backoffice"
+                                className="text-[#191A43] hover:text-black transition-transform hover:-translate-x-1 cursor-pointer select-none py-1 flex items-center"
+                                title="Back to Dashboard"
+                            >
+                                <ArrowLeft className="w-6 h-6 sm:w-8 sm:h-8 stroke-[3]" />
                             </Link>
-                            <h1 className="text-base sm:text-lg font-bold tracking-tight text-[#191A43]">
+                            <h1 className="text-xl sm:text-2xl font-black tracking-tight text-[#191A43]">
                                 {isLogistics ? "Operations" : config.dashboardTitle}
                             </h1>
                         </div>
 
-                        {/* Neutral Stages Button (No Color) */}
+                        {/* Neutral Stages Button (Enlarged) */}
                         <Dialog open={isConfigOpen} onOpenChange={setIsConfigOpen}>
                             <DialogTrigger asChild>
                                 <Button 
                                     variant="outline" 
-                                    className="h-9 px-3 rounded-xl border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-semibold text-xs shadow-2xs transition-colors flex items-center gap-1.5"
+                                    className="h-11 px-4 sm:px-5 rounded-2xl border-slate-200 bg-white hover:bg-slate-50 text-slate-800 font-bold text-xs sm:text-sm shadow-2xs transition-colors flex items-center gap-2 cursor-pointer"
                                     title="Configure Pipeline Stages"
                                 >
-                                    <Settings2 className="w-3.5 h-3.5 text-slate-500" />
+                                    <Settings2 className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-slate-600" />
                                     <span>Stages</span>
                                 </Button>
                             </DialogTrigger>

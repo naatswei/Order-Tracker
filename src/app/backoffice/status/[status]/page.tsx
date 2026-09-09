@@ -108,7 +108,7 @@ export default function StatusFilterPage() {
                 loadOrders();
             }
         } catch (err: any) {
-            toast.error("Update failed", { id: `status-update-${orderId}` });
+            toast.error(err?.message || "Update failed", { id: `status-update-${orderId}` });
             loadOrders();
         }
     };

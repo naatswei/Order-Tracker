@@ -15,7 +15,7 @@ import { initiateMomoCharge } from "@/app/actions/paystack"
 import { resendRiderSMS, getWorkflowStages } from "@/app/actions/operations"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
-import { detectGhanaNetworkProvider } from "@/lib/utils"
+import { detectGhanaNetworkProvider, isLogisticsFulfillmentStatus } from "@/lib/utils"
 import Link from "next/link"
 import { toast } from "sonner"
 import { 
@@ -350,6 +350,11 @@ export default function OrderUpdatePage() {
 
         if (!status) {
             toast.error("Please enter or select a status")
+            return
+        }
+
+        if (isLogistics && isLogisticsFulfillmentStatus(status) && !order?.assignedStaffId) {
+            toast.error(`Order #${order?.orderNumber} cannot move through fulfillment without being assigned to a rider. Please assign a rider in Operations first.`)
             return
         }
 
@@ -704,6 +709,19 @@ export default function OrderUpdatePage() {
                     </CardHeader>
 
                     <CardContent className="p-4 sm:p-6 space-y-5">
+                        {/* Rider Assignment Warning for Logistics Fulfillment */}
+                        {isLogistics && !order?.assignedStaffId && (
+                            <div className="flex items-start gap-3 p-3.5 sm:p-4 rounded-2xl bg-amber-50/80 border border-amber-200 text-amber-900 text-xs sm:text-sm">
+                                <AlertCircle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                                <div className="space-y-1">
+                                    <p className="font-bold text-amber-950">No Rider Assigned</p>
+                                    <p className="text-amber-800 text-xs">
+                                        This order cannot be advanced through fulfillment (e.g. Picked Up, In Transit, Delivered) until a rider is assigned in <Link href="/backoffice/operations" className="font-bold underline text-amber-950 hover:text-black">Operations</Link>.
+                                    </p>
+                                </div>
+                            </div>
+                        )}
+
                         {/* Quick Status Selection Pills */}
                         <div className="space-y-2">
                             <Label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
