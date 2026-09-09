@@ -124,8 +124,7 @@ export function OrderCard({
                                     <Link href={`/backoffice/order/${order.id}`} className="w-full">
                                         <Button
                                             variant="outline"
-                                            className="w-full rounded-full h-11 font-bold border transition-all duration-300 hover:-translate-y-0.5 active:scale-[0.98] bg-transparent hover:bg-transparent"
-                                            style={{ borderColor: config.theme.secondary, color: '#191A43' }}
+                                            className="w-full bg-slate-50/50 border-slate-200 text-slate-600 hover:bg-white hover:border-slate-300 hover:text-slate-900 hover:shadow-[0_2px_10px_rgb(0,0,0,0.04)] hover:-translate-y-px active:scale-[0.98] transition-all duration-300 rounded-full h-11 font-bold"
                                         >
                                             Update Status
                                         </Button>

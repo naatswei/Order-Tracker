@@ -458,8 +458,8 @@ function BulkUpdateContent() {
                                                     ) : (
                                                         <Button
                                                             asChild
-                                                            className="w-full text-white text-xs h-8 rounded-xl border-0"
-                                                            style={{ backgroundColor: config.theme.secondary }}
+                                                            variant="outline"
+                                                            className="w-full text-xs h-8 rounded-lg bg-slate-50/50 border-slate-200 text-slate-700 hover:bg-white hover:border-slate-300 font-semibold"
                                                         >
                                                             <Link href={`/backoffice/order/${order.id}`}>
                                                                 Update Status
