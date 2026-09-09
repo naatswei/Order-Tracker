@@ -5,7 +5,6 @@ import type React from "react"
 import { useState, useEffect, useMemo } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
 import { type Order } from "@/lib/storage"
 import { getOrders } from "@/app/actions/orders"
 import { getWorkflowStages } from "@/app/actions/operations"
@@ -272,13 +271,13 @@ export default function BackofficePage() {
                         className={cn(
                             "flex-1 min-w-[170px] sm:min-w-[190px] max-w-[250px] shrink-0 p-4 sm:p-5 rounded-2xl sm:rounded-3xl text-left transition-all duration-200 cursor-pointer active:scale-[0.98]",
                             statusFilter === "All"
-                                ? "bg-gradient-to-br from-[#2b2c32] via-[#1c1d22] to-[#121316] text-white border border-white/10 shadow-xl shadow-black/25 ring-1 ring-white/10"
-                                : "bg-white text-slate-900 border border-slate-200/90 shadow-2xs hover:border-slate-300 hover:shadow-sm"
+                                ? "bg-black text-white border border-black"
+                                : "bg-white text-slate-900 border border-slate-200 hover:border-slate-300"
                         )}
                     >
                         <div className={cn(
                             "text-xs sm:text-sm font-medium truncate",
-                            statusFilter === "All" ? "text-slate-300/80" : "text-slate-500"
+                            statusFilter === "All" ? "text-neutral-400" : "text-slate-500"
                         )}>
                             Total Orders
                         </div>
@@ -292,7 +291,7 @@ export default function BackofficePage() {
 
                         <div className={cn(
                             "text-[11px] font-medium",
-                            statusFilter === "All" ? "text-slate-400/80" : "text-slate-400"
+                            statusFilter === "All" ? "text-neutral-500" : "text-slate-400"
                         )}>
                             All pipeline stages
                         </div>
@@ -311,13 +310,13 @@ export default function BackofficePage() {
                                 className={cn(
                                     "flex-1 min-w-[170px] sm:min-w-[190px] max-w-[250px] shrink-0 p-4 sm:p-5 rounded-2xl sm:rounded-3xl text-left transition-all duration-200 cursor-pointer active:scale-[0.98]",
                                     isSelected
-                                        ? "bg-gradient-to-br from-[#2b2c32] via-[#1c1d22] to-[#121316] text-white border border-white/10 shadow-xl shadow-black/25 ring-1 ring-white/10"
-                                        : "bg-white text-slate-900 border border-slate-200/90 shadow-2xs hover:border-slate-300 hover:shadow-sm"
+                                        ? "bg-black text-white border border-black"
+                                        : "bg-white text-slate-900 border border-slate-200 hover:border-slate-300"
                                 )}
                             >
                                 <div className={cn(
                                     "text-xs sm:text-sm font-medium truncate",
-                                    isSelected ? "text-slate-300/80" : "text-slate-500"
+                                    isSelected ? "text-neutral-400" : "text-slate-500"
                                 )}>
                                     {stageName}
                                 </div>
@@ -331,7 +330,7 @@ export default function BackofficePage() {
 
                                 <div className={cn(
                                     "text-[11px] font-medium",
-                                    isSelected ? "text-slate-400/80" : "text-slate-400"
+                                    isSelected ? "text-neutral-500" : "text-slate-400"
                                 )}>
                                     Stage {idx + 1}
                                 </div>
@@ -342,7 +341,7 @@ export default function BackofficePage() {
 
                 {/* Active Filter Indicator */}
                 {statusFilter !== "All" && (
-                    <div className="flex items-center justify-between bg-slate-100/90 border border-slate-200/80 rounded-2xl px-4 py-2.5 text-xs text-slate-700 shadow-2xs">
+                    <div className="flex items-center justify-between bg-slate-100/90 border border-slate-200/80 rounded-2xl px-4 py-2.5 text-xs text-slate-700">
                         <div className="flex items-center gap-2">
                             <span>
                                 Filtered by <strong className="text-slate-900">{statusFilter}</strong> ({filteredOrders.length} {filteredOrders.length === 1 ? (isLogistics && !isRestaurant ? 'shipment' : 'order') : (isLogistics && !isRestaurant ? 'shipments' : 'orders')})
@@ -360,10 +359,6 @@ export default function BackofficePage() {
                 )}
 
                 <div className="space-y-4">
-                    <div className="flex items-center justify-between px-2 mb-2">
-                        <h2 className="text-xs font-bold tracking-widest uppercase text-slate-400">{config.dashboardTitle}</h2>
-                        <Badge variant="outline" className="rounded-full px-3 py-1 bg-white border-slate-200 text-slate-600 shadow-sm">{filteredOrders.length}</Badge>
-                    </div>
 
                     <AnimatePresence mode="popLayout">
                         {isLoading ? (

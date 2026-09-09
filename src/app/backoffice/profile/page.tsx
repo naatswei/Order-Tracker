@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Loader2, ArrowLeft, Camera, Settings, Building2, CreditCard, Check, Clock, Users, Sparkles, UtensilsCrossed, Plus, Trash2, MapPin, Phone, Wallet, DollarSign, Store, Tag, Truck, Ship, Package, Box, Layers, Navigation, Globe } from "lucide-react"
+import { Loader2, ArrowLeft, Camera, Settings, Building2, CreditCard, Check, Clock, Users, Sparkles, UtensilsCrossed, Plus, Trash2, MapPin, Phone, Wallet, DollarSign, Store, Tag, Truck, Ship, Package, Box, Layers, Navigation, Globe, ExternalLink } from "lucide-react"
 import { getBusinessConfig } from "@/lib/business-configs"
 import { validateLocation } from "@/lib/location-validator"
 import Link from "next/link"
@@ -1686,7 +1686,25 @@ export default function ProfilePage() {
                     </TabsContent>
 
                     <TabsContent value="team">
-                        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+                        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
+                            <div className="bg-white border border-slate-200/90 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-700 shrink-0">
+                                        <Users className="w-5 h-5" />
+                                    </div>
+                                    <div>
+                                        <h3 className="text-sm font-bold text-slate-900">Staff & Operational Team Directory</h3>
+                                        <p className="text-xs text-slate-500">Manage internal staff members, assign operational roles, and view reporting lines.</p>
+                                    </div>
+                                </div>
+                                <Button asChild size="sm" className="bg-[#191A43] hover:bg-slate-800 text-white rounded-xl text-xs font-semibold shrink-0">
+                                    <Link href="/backoffice/staff" className="flex items-center gap-1.5">
+                                        <span>Open Staff Hub</span>
+                                        <ExternalLink className="w-3.5 h-3.5" />
+                                    </Link>
+                                </Button>
+                            </div>
+
                             <Card className="border-slate-200 shadow-sm overflow-hidden bg-white rounded-3xl">
                                 <CardContent className="p-0 sm:p-2">
                                     <div className="w-full">

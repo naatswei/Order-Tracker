@@ -75,7 +75,6 @@ export function BackofficeHeader({ config }: BackofficeHeaderProps) {
     const navLinks = [
         { href: "/backoffice/operations", label: "Operations", icon: ClipboardList },
         ...(!isLogistics ? [{ href: "/backoffice/inventory", label: "Inventory", icon: Package }] : []),
-        { href: "/backoffice/staff", label: "Team", icon: Users },
     ]
 
     return (
@@ -92,7 +91,7 @@ export function BackofficeHeader({ config }: BackofficeHeaderProps) {
 
                 {/* Desktop Navigation */}
                 <div className="hidden lg:flex items-center gap-6">
-                    <nav className="flex items-center gap-1 bg-slate-50/50 p-1 rounded-xl border border-slate-100/50">
+                    <nav className="flex items-center gap-1.5 bg-slate-100/80 p-1.5 rounded-2xl border border-slate-200/80">
                         {navLinks.map((link) => {
                             const isActive = pathname === link.href || pathname.startsWith(link.href + "/");
                             const Icon = link.icon;
@@ -101,14 +100,14 @@ export function BackofficeHeader({ config }: BackofficeHeaderProps) {
                                     key={link.href}
                                     href={link.href} 
                                     className={`
-                                        text-sm font-bold px-4 py-2 rounded-lg transition-all flex items-center gap-2
+                                        text-base font-extrabold px-5 py-2.5 rounded-xl transition-all flex items-center gap-2.5 tracking-tight
                                         ${isActive 
-                                            ? "bg-white text-[#191A43] shadow-sm border border-slate-100" 
-                                            : "text-slate-500 hover:text-slate-900 hover:bg-white/50"
+                                            ? "bg-white text-[#191A43] shadow-sm border border-slate-200/90" 
+                                            : "text-slate-600 hover:text-slate-900 hover:bg-white/70"
                                         }
                                     `}
                                 >
-                                    <Icon className={`w-4 h-4 ${isActive ? "text-[#CE0003]" : "text-slate-400"}`} />
+                                    <Icon className={`w-5 h-5 ${isActive ? "text-[#CE0003]" : "text-slate-500"}`} />
                                     {link.label}
                                 </Link>
                             )
@@ -266,9 +265,7 @@ export function BackofficeHeader({ config }: BackofficeHeaderProps) {
                                                     isActive ? "text-[#191A43]" : "text-slate-800"
                                                 )}>{link.label}</p>
                                                 <p className="text-[11px] text-slate-400">
-                                                    {link.label === "Operations" ? "Production line & staging" : 
-                                                     link.label === "Inventory" ? "Stock & pipeline" : 
-                                                     "Staff & assignments"}
+                                                    {link.label === "Operations" ? "Production line & staging" : "Stock & pipeline"}
                                                 </p>
                                             </div>
                                             <ChevronRight className={cn("w-4 h-4 transition-colors", isActive ? "text-[#191A43]" : "text-slate-300")} />
@@ -337,6 +334,21 @@ export function BackofficeHeader({ config }: BackofficeHeaderProps) {
                                         <p className="text-[11px] text-slate-400">Settings & preferences</p>
                                     </div>
                                     <ChevronRight className={cn("w-4 h-4 transition-colors", pathname === "/backoffice/profile" ? "text-[#191A43]" : "text-slate-300")} />
+                                </Link>
+
+                                <Link
+                                    href="/backoffice/profile?tab=team"
+                                    onClick={() => setIsMenuOpen(false)}
+                                    className="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-slate-50 transition-colors group"
+                                >
+                                    <div className="w-9 h-9 rounded-lg bg-slate-100 group-hover:bg-[#191A43]/10 text-slate-500 group-hover:text-[#191A43] flex items-center justify-center transition-colors">
+                                        <Users className="w-4 h-4" />
+                                    </div>
+                                    <div className="flex-1">
+                                        <p className="text-sm font-semibold text-slate-800">Team Management</p>
+                                        <p className="text-[11px] text-slate-400">Staff roles & permissions</p>
+                                    </div>
+                                    <ChevronRight className="w-4 h-4 text-slate-300" />
                                 </Link>
                             </nav>
 

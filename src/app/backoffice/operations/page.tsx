@@ -325,14 +325,14 @@ export default function OperationsPage() {
                             className={cn(
                                 "flex-1 min-w-[170px] sm:min-w-[190px] max-w-[250px] shrink-0 p-4 sm:p-5 rounded-2xl sm:rounded-3xl text-left transition-all duration-200 cursor-pointer active:scale-[0.98]",
                                 activeStage === "All"
-                                    ? "bg-gradient-to-br from-[#2b2c32] via-[#1c1d22] to-[#121316] text-white border border-white/10 shadow-xl shadow-black/25 ring-1 ring-white/10"
-                                    : "bg-white text-slate-900 border border-slate-200/90 shadow-2xs hover:border-slate-300 hover:shadow-sm"
+                                    ? "bg-black text-white border border-black"
+                                    : "bg-white text-slate-900 border border-slate-200 hover:border-slate-300"
                             )}
                             title="Scroll to beginning"
                         >
                             <div className={cn(
                                 "text-xs sm:text-sm font-medium truncate",
-                                activeStage === "All" ? "text-slate-300/80" : "text-slate-500"
+                                activeStage === "All" ? "text-neutral-400" : "text-slate-500"
                             )}>
                                 Total Orders
                             </div>
@@ -346,7 +346,7 @@ export default function OperationsPage() {
 
                             <div className={cn(
                                 "text-[11px] font-medium",
-                                activeStage === "All" ? "text-slate-400/80" : "text-slate-400"
+                                activeStage === "All" ? "text-neutral-500" : "text-slate-400"
                             )}>
                                 All pipeline stages
                             </div>
@@ -373,14 +373,14 @@ export default function OperationsPage() {
                                         className={cn(
                                             "flex-1 min-w-[170px] sm:min-w-[190px] max-w-[250px] shrink-0 p-4 sm:p-5 rounded-2xl sm:rounded-3xl text-left transition-all duration-200 cursor-pointer active:scale-[0.98]",
                                             isSelected
-                                                ? "bg-gradient-to-br from-[#2b2c32] via-[#1c1d22] to-[#121316] text-white border border-white/10 shadow-xl shadow-black/25 ring-1 ring-white/10"
-                                                : "bg-white text-slate-900 border border-slate-200/90 shadow-2xs hover:border-slate-300 hover:shadow-sm"
+                                                ? "bg-black text-white border border-black"
+                                                : "bg-white text-slate-900 border border-slate-200 hover:border-slate-300"
                                         )}
                                         title={`Jump to ${stage.name}`}
                                     >
                                         <div className={cn(
                                             "text-xs sm:text-sm font-medium truncate",
-                                            isSelected ? "text-slate-300/80" : "text-slate-500"
+                                            isSelected ? "text-neutral-400" : "text-slate-500"
                                         )}>
                                             {stage.name}
                                         </div>
@@ -394,7 +394,7 @@ export default function OperationsPage() {
 
                                         <div className={cn(
                                             "text-[11px] font-medium",
-                                            isSelected ? "text-slate-400/80" : "text-slate-400"
+                                            isSelected ? "text-neutral-500" : "text-slate-400"
                                         )}>
                                             Stage {idx + 1}
                                         </div>
