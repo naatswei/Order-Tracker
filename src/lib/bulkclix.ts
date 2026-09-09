@@ -84,9 +84,11 @@ export async function sendOrderTrackingSMS(orderId: string): Promise<{ success: 
             const recipientTrackingLink = `${APP_URL}/track/${orderId}?for=dropoff`.replace(/^https?:\/\//, "")
             const deliveryPin = getOrderDeliveryPin(order)
             const pinInfo = isLogistics ? `\nHandover PIN: ${deliveryPin}` : ""
+            const greeting = (recipientName && recipientName.trim().toLowerCase() !== 'customer') ? `Hello ${recipientName}` : "Hello"
+            const fromSender = (order.customerName && order.customerName.trim().toLowerCase() !== 'customer') ? ` from ${order.customerName}` : ""
             const recipientMessage = isLogistics
-                ? `Hello ${recipientName || 'Customer'}, a delivery (#${order.orderNumber}) is on its way to you from ${order.customerName}!\n\nPackage:${itemsList}${paymentInfo}${pinInfo}\n\nTrack incoming delivery & live alerts:\n${recipientTrackingLink}`
-                : `Hello ${recipientName || 'Customer'}, an order (#${order.orderNumber}) has been dispatched for delivery to you!\n\nItems:${itemsList}${paymentInfo}\n\nTrack progress here:\n${recipientTrackingLink}`
+                ? `${greeting}, a delivery (#${order.orderNumber}) is on its way to you${fromSender}!\n\nPackage:${itemsList}${paymentInfo}${pinInfo}\n\nTrack incoming delivery & live alerts:\n${recipientTrackingLink}`
+                : `${greeting}, an order (#${order.orderNumber}) has been dispatched for delivery to you!\n\nItems:${itemsList}${paymentInfo}\n\nTrack progress here:\n${recipientTrackingLink}`
 
             smsPromises.push(
                 fetch("https://api.bulkclix.com/api/v1/sms-api/send", {
@@ -114,9 +116,11 @@ export async function sendOrderTrackingSMS(orderId: string): Promise<{ success: 
         // 2. Notify Sender / Booking Customer (if customer phone is valid and distinct from recipient phone)
         if (formattedCustomerPhone && formattedCustomerPhone !== formattedRecipientPhone) {
             const customerTrackingLink = `${APP_URL}/track/${orderId}?for=pickup`.replace(/^https?:\/\//, "")
+            const greeting = (order.customerName && order.customerName.trim().toLowerCase() !== 'customer') ? `Hello ${order.customerName}` : "Hello"
+            const toRecipient = (recipientName && recipientName.trim().toLowerCase() !== 'customer') ? ` to ${recipientName}` : ""
             const customerMessage = isLogistics
-                ? `Hello ${order.customerName}, your delivery #${order.orderNumber} to ${recipientName || 'recipient'} has been booked!\n\nPackage:${itemsList}${paymentInfo}\n\nTrack shipment progress here:\n${customerTrackingLink}`
-                : `Hello ${order.customerName}, your order #${order.orderNumber} has been received!\n\nItems:${itemsList}${paymentInfo}\n\nTrack progress and view invoice details here:\n${customerTrackingLink}`
+                ? `${greeting}, your delivery #${order.orderNumber}${toRecipient} has been booked!\n\nPackage:${itemsList}${paymentInfo}\n\nTrack shipment progress here:\n${customerTrackingLink}`
+                : `${greeting}, your order #${order.orderNumber} has been received!\n\nItems:${itemsList}${paymentInfo}\n\nTrack progress and view invoice details here:\n${customerTrackingLink}`
 
             smsPromises.push(
                 fetch("https://api.bulkclix.com/api/v1/sms-api/send", {
@@ -183,9 +187,10 @@ export async function sendOrderStatusSMS(orderId: string, status: string): Promi
             const recipientTrackingLink = `${APP_URL}/track/${orderId}?for=dropoff`.replace(/^https?:\/\//, "")
             const deliveryPin = getOrderDeliveryPin(order)
             const pinInfo = isLogistics ? `\nHandover PIN: ${deliveryPin}` : ""
+            const greeting = (recipientName && recipientName.trim().toLowerCase() !== 'customer') ? `Hello ${recipientName}` : "Hello"
             const recipientMessage = isLogistics
-                ? `Hello ${recipientName || 'Customer'}, your delivery #${order.orderNumber} status is now: ${status}.${pinInfo}\n\nTrack incoming shipment & live alerts:\n${recipientTrackingLink}`
-                : `Hello ${recipientName || 'Customer'}, order #${order.orderNumber} status is now: ${status}.\n\nTrack progress here:\n${recipientTrackingLink}`
+                ? `${greeting}, your delivery #${order.orderNumber} status is now: ${status}.${pinInfo}\n\nTrack incoming shipment & live alerts:\n${recipientTrackingLink}`
+                : `${greeting}, order #${order.orderNumber} status is now: ${status}.\n\nTrack progress here:\n${recipientTrackingLink}`
 
             smsPromises.push(
                 fetch("https://api.bulkclix.com/api/v1/sms-api/send", {
@@ -213,9 +218,10 @@ export async function sendOrderStatusSMS(orderId: string, status: string): Promi
         // 2. Notify Sender / Customer
         if (formattedCustomerPhone && formattedCustomerPhone !== formattedRecipientPhone) {
             const customerTrackingLink = `${APP_URL}/track/${orderId}?for=pickup`.replace(/^https?:\/\//, "")
+            const greeting = (order.customerName && order.customerName.trim().toLowerCase() !== 'customer') ? `Hello ${order.customerName}` : "Hello"
             const customerMessage = isLogistics
-                ? `Hello ${order.customerName}, your delivery #${order.orderNumber} status is now: ${status}.\n\nTrack shipment here:\n${customerTrackingLink}`
-                : `Hello ${order.customerName}, your order #${order.orderNumber} status is now: ${status}.\n\nTrack progress and view available store items here:\n${customerTrackingLink}`
+                ? `${greeting}, your delivery #${order.orderNumber} status is now: ${status}.\n\nTrack shipment here:\n${customerTrackingLink}`
+                : `${greeting}, your order #${order.orderNumber} status is now: ${status}.\n\nTrack progress and view available store items here:\n${customerTrackingLink}`
 
             smsPromises.push(
                 fetch("https://api.bulkclix.com/api/v1/sms-api/send", {
@@ -300,9 +306,11 @@ export async function sendRiderAssignmentSMS(
             : ""
 
         // Contact info: show both pickup and dropoff contacts if recipient is specified
-        let contactSection = `\nCustomer: ${order.customerName} (${order.customerPhone})`
+        const hasCustomerName = order.customerName && order.customerName.trim().toLowerCase() !== "customer"
+        const hasRecipientName = recipientName && recipientName.trim().toLowerCase() !== "customer"
+        let contactSection = `\nCustomer: ${hasCustomerName ? order.customerName + ' ' : ''}(${order.customerPhone})`
         if (recipientName || recipientPhone) {
-            contactSection = `\nPickup Contact: ${order.customerName} (${order.customerPhone})\nDropoff Contact: ${recipientName || "Recipient"} (${recipientPhone || "None"})`
+            contactSection = `\nPickup Contact: ${hasCustomerName ? order.customerName + ' ' : ''}(${order.customerPhone})\nDropoff Contact: ${hasRecipientName ? recipientName + ' ' : ''}(${recipientPhone || "None"})`
         }
 
         // Concise SMS for rider

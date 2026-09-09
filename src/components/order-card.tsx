@@ -62,10 +62,12 @@ export function OrderCard({
                                 </div>
 
                                 <div className="space-y-2 text-[15px]">
-                                    <div className="flex gap-2 items-center">
-                                        <span className="text-slate-400 text-sm font-medium w-32 shrink-0 whitespace-nowrap">Customer:</span>
-                                        <span className="font-semibold text-slate-800">{order.customerName}</span>
-                                    </div>
+                                    {(businessType !== "logistics" || (order.customerName && order.customerName.toLowerCase() !== "customer")) && (
+                                        <div className="flex gap-2 items-center">
+                                            <span className="text-slate-400 text-sm font-medium w-32 shrink-0 whitespace-nowrap">Customer:</span>
+                                            <span className="font-semibold text-slate-800">{order.customerName}</span>
+                                        </div>
+                                    )}
                                     <div className="flex gap-2 items-center">
                                         <span className="text-slate-400 text-sm font-medium w-32 shrink-0 whitespace-nowrap">Contact:</span>
                                         <span className="font-semibold text-slate-800">{order.customerPhone}</span>

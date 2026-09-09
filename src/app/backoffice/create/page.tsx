@@ -1,7 +1,6 @@
 "use client"
 
-import type React from "react"
-import { useState, useEffect, Suspense } from "react"
+import { useState, useEffect, useRef, Suspense } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -128,6 +127,18 @@ function CreateOrderContent() {
     const [menuSearchQuery, setMenuSearchQuery] = useState("")
     const [customItemPrice, setCustomItemPrice] = useState("")
     const [isMenuDropdownOpen, setIsMenuDropdownOpen] = useState(false)
+    const menuContainerRef = useRef<HTMLDivElement>(null)
+
+    // Close menu dropdown when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (e: MouseEvent) => {
+            if (menuContainerRef.current && !menuContainerRef.current.contains(e.target as Node)) {
+                setIsMenuDropdownOpen(false)
+            }
+        }
+        document.addEventListener("mousedown", handleClickOutside)
+        return () => document.removeEventListener("mousedown", handleClickOutside)
+    }, [])
 
     // Business Config
     const { organization } = useOrganization()
@@ -602,7 +613,7 @@ function CreateOrderContent() {
                         ...(businessType === "logistics" ? { 
                             pickupLocation, 
                             deliveryLocation, 
-                            recipientName: recipientName.trim() || customerName.trim(), 
+                            recipientName: recipientName.trim() || customerName.trim() || "Customer", 
                             recipientPhone: recipientPhone.trim() || customerPhone.trim(),
                             senderName: customerName.trim() || undefined,
                             senderPhone: customerPhone.trim() || undefined,
@@ -612,6 +623,7 @@ function CreateOrderContent() {
                             waybillNumber: waybillNumber || undefined,
                         } : {}) 
                     },
+                    customerName: customerName.trim() || recipientName.trim() || "Customer",
                     businessType: localStorage.getItem("businessType") || "tailoring",
                     currentStatus: config.defaultStatus,
                     inventoryItems: selectedInventory.map(item => ({ id: item.id, quantity: item.quantity })),
@@ -667,10 +679,9 @@ function CreateOrderContent() {
     const hasRequiredFields = businessType === "logistics"
         ? (
             deliveryLocation.trim() !== "" &&
-            (recipientName.trim() !== "" || customerName.trim() !== "") &&
             (logisticsMode === "restaurant" 
-                ? (orderMenuItems.length > 0 || itemType.trim() !== "") 
-                : true
+                ? ((dropoffPhoneLocal.trim() !== "" || recipientPhone.trim() !== "") && (orderMenuItems.length > 0 || itemType.trim() !== ""))
+                : ((recipientName.trim() !== "" || customerName.trim() !== "") && (orderMenuItems.length > 0 || itemType.trim() !== ""))
             )
         )
         : (
@@ -788,52 +799,33 @@ function CreateOrderContent() {
                                                     <div className="flex items-center justify-between pb-1.5 border-b border-slate-100">
                                                         <span className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
                                                             <span className="w-1.5 h-1.5 rounded-full bg-slate-700" />
-                                                            2. Customer Dropoff Details
+                                                            Customer Dropoff Details
                                                         </span>
                                                         <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 border border-slate-200">Recipient</span>
                                                     </div>
                                                     <div className="space-y-2.5">
-                                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                                            <div className="space-y-1">
-                                                                <Label htmlFor="restaurantCustomerName" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">
-                                                                    Customer Name <span className="text-red-500">*</span>
-                                                                </Label>
-                                                                <Input
-                                                                    id="restaurantCustomerName"
-                                                                    value={recipientName}
-                                                                    onChange={(e) => {
-                                                                        setRecipientName(e.target.value)
-                                                                        if (!customerName) setCustomerName(e.target.value)
-                                                                    }}
-                                                                    placeholder="e.g. Kofi Boateng"
-                                                                    required
-                                                                    disabled={!canCreateOrder}
-                                                                    className="h-10 sm:h-11 rounded-xl bg-white border-zinc-200 focus-visible:border-[#6B1028] text-xs sm:text-sm font-medium"
-                                                                />
-                                                            </div>
-                                                            <div className="space-y-1">
-                                                                <Label htmlFor="restaurantCustomerPhone" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">
-                                                                    Customer Contact <span className="text-red-500">*</span>
-                                                                </Label>
-                                                                <PhoneInputWithCountry
-                                                                    id="restaurantCustomerPhone"
-                                                                    countryCode={dropoffCountryCode}
-                                                                    phoneLocal={dropoffPhoneLocal}
-                                                                    onCountryCodeChange={(code) => {
-                                                                        setDropoffCountryCode(code)
-                                                                        const formatted = formatFullPhone(code, dropoffPhoneLocal)
-                                                                        setRecipientPhone(formatted)
-                                                                    }}
-                                                                    onPhoneLocalChange={(local) => {
-                                                                        setDropoffPhoneLocal(local)
-                                                                        const formatted = formatFullPhone(dropoffCountryCode, local)
-                                                                        setRecipientPhone(formatted)
-                                                                    }}
-                                                                    placeholder="24 400 0000"
-                                                                    required
-                                                                    disabled={!canCreateOrder}
-                                                                />
-                                                            </div>
+                                                        <div className="space-y-1">
+                                                            <Label htmlFor="restaurantCustomerPhone" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">
+                                                                Customer Contact <span className="text-red-500">*</span>
+                                                            </Label>
+                                                            <PhoneInputWithCountry
+                                                                id="restaurantCustomerPhone"
+                                                                countryCode={dropoffCountryCode}
+                                                                phoneLocal={dropoffPhoneLocal}
+                                                                onCountryCodeChange={(code) => {
+                                                                    setDropoffCountryCode(code)
+                                                                    const formatted = formatFullPhone(code, dropoffPhoneLocal)
+                                                                    setRecipientPhone(formatted)
+                                                                }}
+                                                                onPhoneLocalChange={(local) => {
+                                                                    setDropoffPhoneLocal(local)
+                                                                    const formatted = formatFullPhone(dropoffCountryCode, local)
+                                                                    setRecipientPhone(formatted)
+                                                                }}
+                                                                placeholder="24 400 0000"
+                                                                required
+                                                                disabled={!canCreateOrder}
+                                                            />
                                                         </div>
                                                         <div className="space-y-1">
                                                             <Label htmlFor="restaurantDeliveryLocation" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">
@@ -929,7 +921,7 @@ function CreateOrderContent() {
                                                 </div>
 
                                                 {/* Search Form Input & Dynamic Results */}
-                                                <div className="space-y-2 relative">
+                                                <div ref={menuContainerRef} className="space-y-2 relative">
                                                     <div className="relative">
                                                         <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                                                         <Input
@@ -940,6 +932,16 @@ function CreateOrderContent() {
                                                                 setIsMenuDropdownOpen(true)
                                                             }}
                                                             onFocus={() => setIsMenuDropdownOpen(true)}
+                                                            onKeyDown={(e) => {
+                                                                if (e.key === "Tab" || e.key === "Escape") {
+                                                                    setIsMenuDropdownOpen(false)
+                                                                }
+                                                            }}
+                                                            onBlur={(e) => {
+                                                                if (!menuContainerRef.current?.contains(e.relatedTarget as Node)) {
+                                                                    setIsMenuDropdownOpen(false)
+                                                                }
+                                                            }}
                                                             placeholder="Search menu items (e.g. Assorted Fried Rice, Chicken Shawarma, Jollof, Drinks)..."
                                                             disabled={!canCreateOrder}
                                                             className="h-11 sm:h-12 pl-10 pr-9 rounded-xl bg-white border-zinc-200 focus-visible:border-[#6B1028] focus-visible:ring-[4px] focus-visible:ring-[#6B1028]/10 text-xs sm:text-sm font-medium"
@@ -1000,21 +1002,21 @@ function CreateOrderContent() {
                                                                                                 </p>
                                                                                             </div>
                                                                                         </div>
-                                                                                        <div className="flex items-center gap-2 shrink-0">
+                                                                                        <div className="flex items-center gap-2.5 shrink-0">
                                                                                             <span className="text-xs sm:text-sm font-black text-slate-900 bg-slate-100 px-2 py-0.5 rounded-md border border-slate-200">
                                                                                                 GH₵ {Number(preset.price).toFixed(2)}
                                                                                             </span>
                                                                                             {currentCount > 0 && (
-                                                                                                <span className="w-5 h-5 rounded-full bg-[#6B1028] text-white text-[10px] font-black flex items-center justify-center">
+                                                                                                <span className="w-6 h-6 rounded-full bg-[#6B1028] text-white text-[11px] font-black flex items-center justify-center">
                                                                                                     {currentCount}
                                                                                                 </span>
                                                                                             )}
                                                                                             <button
                                                                                                 type="button"
-                                                                                                className="px-2.5 py-1 rounded-lg bg-[#6B1028] hover:bg-[#540d20] text-white text-xs font-bold flex items-center gap-1 shadow-xs"
+                                                                                                title="Add to order"
+                                                                                                className="w-10 h-10 rounded-xl bg-[#6B1028] hover:bg-[#540d20] text-white flex items-center justify-center shadow-xs transition-colors shrink-0 cursor-pointer"
                                                                                             >
-                                                                                                <Plus className="w-3 h-3" />
-                                                                                                Add
+                                                                                                <Plus className="w-5 h-5 stroke-[2.5]" />
                                                                                             </button>
                                                                                         </div>
                                                                                     </div>
@@ -1046,7 +1048,7 @@ function CreateOrderContent() {
                                                                                             placeholder="0.00"
                                                                                             value={customItemPrice}
                                                                                             onChange={(e) => setCustomItemPrice(e.target.value)}
-                                                                                            className="h-8 pl-7 text-xs rounded-lg bg-white border-zinc-200"
+                                                                                            className="h-9 pl-7 text-xs rounded-lg bg-white border-zinc-200"
                                                                                         />
                                                                                     </div>
                                                                                     <button
@@ -1055,10 +1057,10 @@ function CreateOrderContent() {
                                                                                             const p = parseFloat(customItemPrice) || 0
                                                                                             handleAddCustomMenuItem(menuSearchQuery, p)
                                                                                         }}
-                                                                                        className="px-3 py-1.5 rounded-lg bg-[#6B1028] hover:bg-[#540d20] text-white text-xs font-bold shrink-0 shadow-xs flex items-center gap-1 cursor-pointer"
+                                                                                        title="Add custom item"
+                                                                                        className="w-10 h-10 rounded-xl bg-[#6B1028] hover:bg-[#540d20] text-white flex items-center justify-center shrink-0 shadow-xs cursor-pointer transition-colors"
                                                                                     >
-                                                                                        <Plus className="w-3 h-3" />
-                                                                                        Add to Order
+                                                                                        <Plus className="w-5 h-5 stroke-[2.5]" />
                                                                                     </button>
                                                                                 </div>
                                                                             </div>
