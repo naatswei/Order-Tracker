@@ -187,11 +187,62 @@ export const BUSINESS_CONFIGS: Record<string, BusinessConfig> = {
 
 export const DEFAULT_BUSINESS_TYPE = "tailoring"
 
-export function getBusinessConfig(id: string | null): BusinessConfig {
+export function getBusinessConfig(id: string | null, logisticsSubType?: string | null): BusinessConfig {
     if (!id || !BUSINESS_CONFIGS[id]) {
         return BUSINESS_CONFIGS[DEFAULT_BUSINESS_TYPE]
     }
-    return BUSINESS_CONFIGS[id]
+    const base = { ...BUSINESS_CONFIGS[id] }
+
+    const subType = logisticsSubType || (typeof window !== "undefined" ? localStorage.getItem("logisticsType") : null)
+    if (id === "logistics") {
+        if (subType === "restaurant" || !subType) {
+            return {
+                ...base,
+                title: "Restaurant Delivery Service",
+                dashboardTitle: "Active Orders",
+                itemLabel: "Meal / Food Item",
+                itemPlaceholder: "e.g. Jollof Rice, Grilled Chicken, Burger",
+                orderLabel: "Order Number",
+                orderPrefix: "ORD",
+                orderPlaceholder: "e.g. ORD-101",
+                searchPlaceholder: "Search by order number, customer, meal or phone",
+                operationsLabel: "New Food Order",
+                operationsDescription: "Customize your kitchen and food delivery pipeline stages.",
+            }
+        }
+        if (subType === "delivery") {
+            return {
+                ...base,
+                title: "Courier & Delivery Service",
+                dashboardTitle: "Active Deliveries",
+                itemLabel: "Package / Parcel",
+                itemPlaceholder: "e.g. Box, Documents, Electronics",
+                orderLabel: "Waybill Number",
+                orderPrefix: "DL",
+                orderPlaceholder: "e.g. DL-101",
+                searchPlaceholder: "Search by waybill, customer, recipient or phone",
+                operationsLabel: "Book Delivery",
+                operationsDescription: "Customize your courier and dispatch pipeline stages.",
+            }
+        }
+        if (subType === "shipping") {
+            return {
+                ...base,
+                title: "Cargo & Freight Shipping",
+                dashboardTitle: "Active Shipments",
+                itemLabel: "Freight Cargo",
+                itemPlaceholder: "e.g. Pallet, Container, Heavy Goods",
+                orderLabel: "Tracking Number",
+                orderPrefix: "SH",
+                orderPlaceholder: "e.g. SH-101",
+                searchPlaceholder: "Search by tracking number, customer or container",
+                operationsLabel: "Book Cargo Shipment",
+                operationsDescription: "Customize your freight and customs pipeline stages.",
+            }
+        }
+    }
+
+    return base
 }
 
 export interface StatusTheme {

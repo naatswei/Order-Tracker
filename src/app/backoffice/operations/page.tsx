@@ -104,8 +104,10 @@ export default function OperationsPage() {
     const { organization } = useOrganization();
 
     const businessType = (organization?.publicMetadata?.businessType as string) || "tailoring";
-    const config = getBusinessConfig(businessType);
+    const logisticsType = ((organization?.publicMetadata as any)?.logisticsType as string) || (typeof window !== "undefined" ? localStorage.getItem("logisticsType") : null) || "restaurant";
+    const config = getBusinessConfig(businessType, logisticsType);
     const isLogistics = businessType === "logistics";
+    const isRestaurant = isLogistics && logisticsType === "restaurant";
 
     useEffect(() => {
         loadData();
@@ -397,7 +399,7 @@ export default function OperationsPage() {
                                         {stageOrders.length === 0 ? (
                                              <div className="py-16 text-center border-2 border-dashed border-slate-200/80 rounded-2xl p-5">
                                                 <Package className="w-6 h-6 text-slate-300 mx-auto mb-2" />
-                                                <p className="text-xs sm:text-sm font-medium text-slate-400">No active shipments</p>
+                                                <p className="text-xs sm:text-sm font-medium text-slate-400">No active {isLogistics && !isRestaurant ? 'shipments' : 'orders'}</p>
                                             </div>
                                         ) : (
                                             stageOrders.map((order) => {

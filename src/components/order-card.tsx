@@ -7,14 +7,7 @@ import Link from "next/link"
 import { motion } from "framer-motion"
 import type { Order } from "@/lib/storage"
 import { getBusinessConfig, getStatusTheme } from "@/lib/business-configs"
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select"
-import { Check, Layers, ChevronRight } from "lucide-react"
+import { ChevronRight, Copy, ExternalLink, Mail, Check } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 interface OrderCardProps {
@@ -32,9 +25,7 @@ export function OrderCard({
     copiedId, 
     onCopy, 
     businessType, 
-    needsRenewal, 
-    pipelineStages = [],
-    onQuickStatusUpdate 
+    needsRenewal
 }: OrderCardProps) {
     const config = getBusinessConfig(businessType)
     const statusTheme = getStatusTheme(order.currentStatus)
@@ -68,42 +59,6 @@ export function OrderCard({
                                     <Badge variant="outline" className={`rounded-full px-3 py-0.5 font-normal text-sm border ${getStatusColor(order.currentStatus)} bg-opacity-50`}>
                                         {order.currentStatus}
                                     </Badge>
-
-                                    {/* 1-Click Quick Status Pipeline Switcher */}
-                                    {pipelineStages.length > 0 && onQuickStatusUpdate && !needsRenewal && (
-                                        <div className="flex items-center">
-                                            <Select
-                                                value={order.currentStatus}
-                                                onValueChange={(newStatus) => onQuickStatusUpdate(order.id, newStatus)}
-                                            >
-                                                <SelectTrigger className="h-7 px-2.5 rounded-full border border-slate-200 bg-slate-50 hover:bg-slate-100 text-xs font-bold text-slate-700 gap-1.5 shadow-2xs cursor-pointer transition-all">
-                                                    <Layers className="w-3 h-3 text-slate-500" />
-                                                    <span className="text-[11px]">Quick Stage</span>
-                                                </SelectTrigger>
-                                                <SelectContent className="rounded-2xl border-slate-200 shadow-xl bg-white p-1.5 min-w-[200px]">
-                                                    <div className="px-2 py-1 text-[10px] font-black uppercase tracking-wider text-slate-400">
-                                                        Pipeline Stages
-                                                    </div>
-                                                    {pipelineStages.map((st, idx) => {
-                                                        const isCurrent = order.currentStatus === st
-                                                        return (
-                                                            <SelectItem key={st} value={st} className="font-bold text-xs cursor-pointer">
-                                                                <div className="flex items-center gap-2">
-                                                                    <span className={cn(
-                                                                        "w-4 h-4 rounded-md flex items-center justify-center text-[10px] font-mono font-black",
-                                                                        isCurrent ? "bg-[#191A43] text-white" : "bg-slate-100 text-slate-600"
-                                                                    )}>
-                                                                        {idx + 1}
-                                                                    </span>
-                                                                    <span className={cn(isCurrent && "text-[#191A43]")}>{st}</span>
-                                                                </div>
-                                                            </SelectItem>
-                                                        )
-                                                    })}
-                                                </SelectContent>
-                                            </Select>
-                                        </div>
-                                    )}
                                 </div>
 
                                 <div className="space-y-2 text-[15px]">
