@@ -305,13 +305,13 @@ export default function BackofficePage() {
                         {/* Action Buttons */}
                         <div className="flex items-center gap-3 w-full lg:w-auto">
                             <Button
+                                variant="outline"
                                 asChild={!needsRenewal}
                                 disabled={needsRenewal}
                                 className={cn(
-                                    "flex-1 lg:flex-none h-11 rounded-full text-white gap-2 px-6 shadow-[0_4px_20px_rgb(0,0,0,0.08)] text-sm font-bold border-0 transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.15)] hover:-translate-y-0.5 active:scale-[0.98]",
+                                    "flex-1 lg:flex-none h-14 rounded-full gap-2.5 px-8 text-base font-bold border bg-slate-50/50 border-slate-200 text-slate-600 hover:bg-white hover:border-slate-300 hover:text-slate-900 hover:shadow-[0_2px_10px_rgb(0,0,0,0.04)] hover:-translate-y-px active:scale-[0.98] transition-all duration-300",
                                     needsRenewal && "opacity-50 cursor-not-allowed"
                                 )}
-                                style={{ backgroundColor: !needsRenewal ? config.theme.primary : "#94a3b8" }}
                             >
                                 {needsRenewal ? (
                                     <span>Bulk Update</span>
