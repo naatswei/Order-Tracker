@@ -100,6 +100,7 @@ export default function OperationsPage() {
     const [isLoading, setIsLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState("");
     const [isConfigOpen, setIsConfigOpen] = useState(false);
+    const [activeStage, setActiveStage] = useState<string>("All");
 
     const { organization } = useOrganization();
 
@@ -312,38 +313,91 @@ export default function OperationsPage() {
                         )}
                     </div>
 
-                    {/* Total Sum & 1-Tap Stage Jump Strip (Mobile-First) */}
-                    <div className="flex items-center gap-2 w-full overflow-x-auto pt-1 pb-1 no-scrollbar">
+                    {/* Pipeline Stages Metric Filter Cards */}
+                    <div className="flex items-stretch gap-3 sm:gap-4 overflow-x-auto pb-1 pt-1 no-scrollbar">
+                        {/* Total Orders Card */}
                         <button
-                            onClick={scrollToStart}
-                            className="w-auto shrink-0 px-3.5 py-2 rounded-xl bg-[#191A43] text-white text-xs font-bold shadow-2xs hover:bg-slate-800 transition-all flex items-center justify-center gap-2 active:scale-95"
+                            type="button"
+                            onClick={() => {
+                                setActiveStage("All");
+                                scrollToStart();
+                            }}
+                            className={cn(
+                                "flex-1 min-w-[170px] sm:min-w-[190px] max-w-[250px] shrink-0 p-4 sm:p-5 rounded-2xl sm:rounded-3xl text-left transition-all duration-200 cursor-pointer active:scale-[0.98]",
+                                activeStage === "All"
+                                    ? "bg-gradient-to-br from-[#2b2c32] via-[#1c1d22] to-[#121316] text-white border border-white/10 shadow-xl shadow-black/25 ring-1 ring-white/10"
+                                    : "bg-white text-slate-900 border border-slate-200/90 shadow-2xs hover:border-slate-300 hover:shadow-sm"
+                            )}
                             title="Scroll to beginning"
                         >
-                            <span>Total Orders</span>
-                            <span className="px-1.5 py-0.5 rounded-full bg-white/20 text-white text-[10px] font-mono font-bold leading-none">
+                            <div className={cn(
+                                "text-xs sm:text-sm font-medium truncate",
+                                activeStage === "All" ? "text-slate-300/80" : "text-slate-500"
+                            )}>
+                                Total Orders
+                            </div>
+
+                            <div className={cn(
+                                "text-2xl sm:text-3xl font-extrabold tracking-tight my-1.5 sm:my-2",
+                                activeStage === "All" ? "text-white" : "text-slate-900"
+                            )}>
                                 {filteredOrders.length}
-                            </span>
+                            </div>
+
+                            <div className={cn(
+                                "text-[11px] font-medium",
+                                activeStage === "All" ? "text-slate-400/80" : "text-slate-400"
+                            )}>
+                                All pipeline stages
+                            </div>
                         </button>
 
+                        {/* Pipeline Stage Cards */}
                         {isLoading ? (
                             Array.from({ length: 4 }).map((_, i) => (
-                                <div key={i} className="h-8 rounded-xl bg-slate-200/70 animate-pulse flex-1 min-w-[120px]" />
+                                <div key={i} className="flex-1 min-w-[170px] sm:min-w-[190px] max-w-[250px] h-[104px] rounded-2xl sm:rounded-3xl bg-slate-200/70 animate-pulse shrink-0" />
                             ))
                         ) : (
-                            stages.map((stage) => {
+                            stages.map((stage, idx) => {
                                 const count = filteredOrders.filter(o => getOrderStageName(o) === stage.name).length;
+                                const isSelected = activeStage === stage.name;
 
                                 return (
                                     <button
                                         key={stage.name}
-                                        onClick={() => scrollToStage(stage.name)}
-                                        className="px-3.5 py-2 rounded-xl bg-slate-100/90 hover:bg-slate-200/90 text-slate-700 text-xs font-semibold transition-all flex items-center justify-center gap-2 border border-slate-200/70 active:scale-95 flex-1 min-w-max"
+                                        type="button"
+                                        onClick={() => {
+                                            setActiveStage(isSelected ? "All" : stage.name);
+                                            scrollToStage(stage.name);
+                                        }}
+                                        className={cn(
+                                            "flex-1 min-w-[170px] sm:min-w-[190px] max-w-[250px] shrink-0 p-4 sm:p-5 rounded-2xl sm:rounded-3xl text-left transition-all duration-200 cursor-pointer active:scale-[0.98]",
+                                            isSelected
+                                                ? "bg-gradient-to-br from-[#2b2c32] via-[#1c1d22] to-[#121316] text-white border border-white/10 shadow-xl shadow-black/25 ring-1 ring-white/10"
+                                                : "bg-white text-slate-900 border border-slate-200/90 shadow-2xs hover:border-slate-300 hover:shadow-sm"
+                                        )}
                                         title={`Jump to ${stage.name}`}
                                     >
-                                        <span className="truncate">{stage.name}</span>
-                                        <span className="px-1.5 py-0.5 rounded-full bg-white text-slate-600 text-[10px] font-mono font-bold border border-slate-200/60 shadow-2xs leading-none">
+                                        <div className={cn(
+                                            "text-xs sm:text-sm font-medium truncate",
+                                            isSelected ? "text-slate-300/80" : "text-slate-500"
+                                        )}>
+                                            {stage.name}
+                                        </div>
+
+                                        <div className={cn(
+                                            "text-2xl sm:text-3xl font-extrabold tracking-tight my-1.5 sm:my-2",
+                                            isSelected ? "text-white" : "text-slate-900"
+                                        )}>
                                             {count}
-                                        </span>
+                                        </div>
+
+                                        <div className={cn(
+                                            "text-[11px] font-medium",
+                                            isSelected ? "text-slate-400/80" : "text-slate-400"
+                                        )}>
+                                            Stage {idx + 1}
+                                        </div>
                                     </button>
                                 );
                             })

@@ -23,44 +23,6 @@ import { RenewalBanner } from "@/components/renewal-banner"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
 
-interface StageColorTheme {
-    hex: string;
-    bgLight: string;
-    textLight: string;
-    borderLight: string;
-    dotBg: string;
-}
-
-const STAGE_COLOR_PALETTE: StageColorTheme[] = [
-    { hex: "#F59E0B", bgLight: "bg-amber-50", textLight: "text-amber-700", borderLight: "border-amber-200", dotBg: "bg-amber-500" }, // Amber (Order Placed / Received)
-    { hex: "#0284C7", bgLight: "bg-sky-50", textLight: "text-sky-700", borderLight: "border-sky-200", dotBg: "bg-sky-500" }, // Sky (Kitchen / Cooking / Processing)
-    { hex: "#8B5CF6", bgLight: "bg-purple-50", textLight: "text-purple-700", borderLight: "border-purple-200", dotBg: "bg-purple-500" }, // Purple (Ready for Pickup / Packed)
-    { hex: "#6366F1", bgLight: "bg-indigo-50", textLight: "text-indigo-700", borderLight: "border-indigo-200", dotBg: "bg-indigo-500" }, // Indigo (Out for Delivery / Rider)
-    { hex: "#10B981", bgLight: "bg-emerald-50", textLight: "text-emerald-700", borderLight: "border-emerald-200", dotBg: "bg-emerald-500" }, // Emerald (Delivered / Completed)
-    { hex: "#F43F5E", bgLight: "bg-rose-50", textLight: "text-rose-700", borderLight: "border-rose-200", dotBg: "bg-rose-500" }, // Rose (Cancelled / Delayed)
-    { hex: "#06B6D4", bgLight: "bg-cyan-50", textLight: "text-cyan-700", borderLight: "border-cyan-200", dotBg: "bg-cyan-500" }, // Cyan
-];
-
-function getStageTheme(stageName: string, index: number): StageColorTheme {
-    const s = (stageName || "").toLowerCase();
-    if (s.includes("deliver") || s.includes("complet") || s.includes("done")) {
-        return STAGE_COLOR_PALETTE[4]; // Emerald
-    }
-    if (s.includes("cancel") || s.includes("delay") || s.includes("return") || s.includes("fail") || s.includes("hold")) {
-        return STAGE_COLOR_PALETTE[5]; // Rose
-    }
-    if (s.includes("transit") || s.includes("delivery") || s.includes("dispatch") || s.includes("rider") || s.includes("route")) {
-        return STAGE_COLOR_PALETTE[3]; // Indigo
-    }
-    if (s.includes("ready") || s.includes("pack") || s.includes("prep") || s.includes("cook") || s.includes("kitchen")) {
-        return STAGE_COLOR_PALETTE[2]; // Purple
-    }
-    if (s.includes("receiv") || s.includes("placed") || s.includes("pending") || s.includes("new") || s.includes("book")) {
-        return STAGE_COLOR_PALETTE[0]; // Amber
-    }
-    return STAGE_COLOR_PALETTE[index % STAGE_COLOR_PALETTE.length];
-}
-
 interface BusinessProfile {
     companyName: string
     contact: string
@@ -308,115 +270,70 @@ export default function BackofficePage() {
                         type="button"
                         onClick={() => setStatusFilter("All")}
                         className={cn(
-                            "flex-1 min-w-[170px] sm:min-w-[200px] max-w-[260px] shrink-0 p-4 sm:p-5 rounded-2xl sm:rounded-3xl text-left transition-all duration-200 cursor-pointer active:scale-[0.98] border-2",
+                            "flex-1 min-w-[170px] sm:min-w-[190px] max-w-[250px] shrink-0 p-4 sm:p-5 rounded-2xl sm:rounded-3xl text-left transition-all duration-200 cursor-pointer active:scale-[0.98]",
                             statusFilter === "All"
-                                ? "bg-[#181920] text-white border-slate-600 shadow-lg shadow-black/10 ring-2 ring-slate-700/50"
-                                : "bg-white text-slate-800 border-slate-200/90 shadow-2xs hover:border-slate-300 hover:shadow-sm"
+                                ? "bg-gradient-to-br from-[#2b2c32] via-[#1c1d22] to-[#121316] text-white border border-white/10 shadow-xl shadow-black/25 ring-1 ring-white/10"
+                                : "bg-white text-slate-900 border border-slate-200/90 shadow-2xs hover:border-slate-300 hover:shadow-sm"
                         )}
                     >
-                        <div className="flex items-center justify-between gap-2">
-                            <span className={cn(
-                                "text-xs sm:text-sm font-semibold truncate",
-                                statusFilter === "All" ? "text-slate-300" : "text-slate-600"
-                            )}>
-                                All Orders
-                            </span>
-                            <span className={cn(
-                                "px-2 py-0.5 rounded-full text-[10px] font-bold border shrink-0",
-                                statusFilter === "All" 
-                                    ? "bg-white/10 text-white border-white/20" 
-                                    : "bg-slate-100 text-slate-600 border-slate-200"
-                            )}>
-                                All
-                            </span>
+                        <div className={cn(
+                            "text-xs sm:text-sm font-medium truncate",
+                            statusFilter === "All" ? "text-slate-300/80" : "text-slate-500"
+                        )}>
+                            Total Orders
                         </div>
 
                         <div className={cn(
-                            "text-2xl sm:text-3xl font-extrabold tracking-tight my-2",
+                            "text-2xl sm:text-3xl font-extrabold tracking-tight my-1.5 sm:my-2",
                             statusFilter === "All" ? "text-white" : "text-slate-900"
                         )}>
                             {orders.length}
                         </div>
 
-                        <div className="space-y-1.5 pt-1">
-                            <div className="flex items-center justify-between text-[11px] font-semibold">
-                                <span className={cn("flex items-center gap-1.5", statusFilter === "All" ? "text-slate-300" : "text-slate-500")}>
-                                    <span className="w-2 h-2 rounded-full bg-slate-400 shrink-0" />
-                                    <span>Total Pipeline</span>
-                                </span>
-                                <span className={cn("font-bold", statusFilter === "All" ? "text-slate-300" : "text-slate-600")}>100%</span>
-                            </div>
-                            <div className={cn("h-1.5 w-full rounded-full overflow-hidden", statusFilter === "All" ? "bg-white/10" : "bg-slate-100")}>
-                                <div className="h-full rounded-full transition-all duration-300 bg-slate-400 w-full" />
-                            </div>
+                        <div className={cn(
+                            "text-[11px] font-medium",
+                            statusFilter === "All" ? "text-slate-400/80" : "text-slate-400"
+                        )}>
+                            All pipeline stages
                         </div>
                     </button>
 
-                    {/* Pipeline Stage Cards (Color-Coded) */}
+                    {/* Pipeline Stage Cards */}
                     {pipelineStageList.map((stageName, idx) => {
                         const count = statusCounts[stageName] || 0;
                         const isSelected = statusFilter === stageName;
-                        const pct = orders.length > 0 ? Math.round((count / orders.length) * 100) : 0;
-                        const theme = getStageTheme(stageName, idx);
 
                         return (
                             <button
                                 key={stageName}
                                 type="button"
                                 onClick={() => setStatusFilter(isSelected ? "All" : stageName)}
-                                style={{
-                                    borderColor: isSelected ? theme.hex : count > 0 ? `${theme.hex}55` : undefined
-                                }}
                                 className={cn(
-                                    "flex-1 min-w-[170px] sm:min-w-[200px] max-w-[260px] shrink-0 p-4 sm:p-5 rounded-2xl sm:rounded-3xl text-left transition-all duration-200 cursor-pointer active:scale-[0.98] border-2",
+                                    "flex-1 min-w-[170px] sm:min-w-[190px] max-w-[250px] shrink-0 p-4 sm:p-5 rounded-2xl sm:rounded-3xl text-left transition-all duration-200 cursor-pointer active:scale-[0.98]",
                                     isSelected
-                                        ? "bg-[#181920] text-white shadow-xl shadow-black/10 ring-2"
-                                        : "bg-white text-slate-800 border-slate-200/90 shadow-2xs hover:shadow-sm"
+                                        ? "bg-gradient-to-br from-[#2b2c32] via-[#1c1d22] to-[#121316] text-white border border-white/10 shadow-xl shadow-black/25 ring-1 ring-white/10"
+                                        : "bg-white text-slate-900 border border-slate-200/90 shadow-2xs hover:border-slate-300 hover:shadow-sm"
                                 )}
                             >
-                                <div className="flex items-center justify-between gap-2">
-                                    <span className={cn(
-                                        "text-xs sm:text-sm font-semibold truncate",
-                                        isSelected ? "text-slate-200" : "text-slate-700"
-                                    )}>
-                                        {stageName}
-                                    </span>
-                                    <span 
-                                        className="px-2 py-0.5 rounded-full text-[10px] font-bold border shrink-0"
-                                        style={{
-                                            backgroundColor: isSelected ? `${theme.hex}25` : `${theme.hex}15`,
-                                            color: theme.hex,
-                                            borderColor: isSelected ? `${theme.hex}50` : `${theme.hex}30`
-                                        }}
-                                    >
-                                        Stage {idx + 1}
-                                    </span>
+                                <div className={cn(
+                                    "text-xs sm:text-sm font-medium truncate",
+                                    isSelected ? "text-slate-300/80" : "text-slate-500"
+                                )}>
+                                    {stageName}
                                 </div>
 
                                 <div className={cn(
-                                    "text-2xl sm:text-3xl font-extrabold tracking-tight my-2",
+                                    "text-2xl sm:text-3xl font-extrabold tracking-tight my-1.5 sm:my-2",
                                     isSelected ? "text-white" : "text-slate-900"
                                 )}>
                                     {count}
                                 </div>
 
-                                <div className="space-y-1.5 pt-1">
-                                    <div className="flex items-center justify-between text-[11px] font-semibold">
-                                        <span className={cn("flex items-center gap-1.5 truncate max-w-[110px]", isSelected ? "text-slate-300" : "text-slate-500")}>
-                                            <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: theme.hex }} />
-                                            <span className="truncate">{stageName}</span>
-                                        </span>
-                                        <span className="font-bold shrink-0" style={{ color: theme.hex }}>{pct}%</span>
-                                    </div>
-                                    <div className={cn("h-1.5 w-full rounded-full overflow-hidden", isSelected ? "bg-white/10" : "bg-slate-100")}>
-                                        <div 
-                                            className="h-full rounded-full transition-all duration-300" 
-                                            style={{ 
-                                                width: `${Math.max(pct, count > 0 ? 8 : 0)}%`, 
-                                                backgroundColor: theme.hex 
-                                            }} 
-                                        />
-                                    </div>
+                                <div className={cn(
+                                    "text-[11px] font-medium",
+                                    isSelected ? "text-slate-400/80" : "text-slate-400"
+                                )}>
+                                    Stage {idx + 1}
                                 </div>
                             </button>
                         );
