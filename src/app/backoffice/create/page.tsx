@@ -137,7 +137,8 @@ function CreateOrderContent() {
         }
         return null
     })
-    const config = getBusinessConfig(businessType)
+    const activeSubType = (organization?.publicMetadata?.logisticsSubType as LogisticsSubType) || logisticsMode || "restaurant"
+    const config = getBusinessConfig(businessType, activeSubType)
 
     // Menu Presets & Package Categories from organization public metadata
     const menuPresets: any[] = Array.isArray(organization?.publicMetadata?.menuPresets)

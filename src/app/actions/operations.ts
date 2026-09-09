@@ -224,17 +224,25 @@ async function initializeDefaultWorkflowStagesIfNeeded(orgId: string) {
 
         // Fetch organization businessType from Clerk
         let businessType = "tailoring";
+        let logisticsSubType = "restaurant";
         try {
             const client = await clerkClient();
             const org = await client.organizations.getOrganization({ organizationId: orgId });
             businessType = (org.publicMetadata?.businessType as string) || "tailoring";
+            logisticsSubType = (org.publicMetadata?.logisticsSubType as string) || "restaurant";
         } catch (e) {
             console.warn("Could not fetch org businessType from Clerk:", e);
         }
 
         let defaultStages: string[] = [];
         if (businessType === "logistics") {
-            defaultStages = ["Shipment Booked", "Picked Up", "In Transit", "Out for Delivery", "Delivered"];
+            if (logisticsSubType === "restaurant") {
+                defaultStages = ["Order Received", "Kitchen Cooking", "Food Ready", "Assigned to Rider", "Out for Delivery", "Delivered"];
+            } else if (logisticsSubType === "delivery") {
+                defaultStages = ["Order Received", "Package Picked Up", "Sorting", "Out for Delivery", "Delivered"];
+            } else {
+                defaultStages = ["Shipment Booked", "Picked Up", "In Transit", "Out for Delivery", "Delivered"];
+            }
         } else if (businessType === "tailoring") {
             defaultStages = ["Order Received", "Measurement Taken", "Production", "Quality Checks", "First Fitting", "Ready for Pickup", "Completed"];
         } else if (businessType === "hair-retail") {

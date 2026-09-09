@@ -208,6 +208,11 @@ export function getBusinessConfig(id: string | null, logisticsSubType?: string |
                 searchPlaceholder: "Search by order number, customer, meal or phone",
                 operationsLabel: "New Food Order",
                 operationsDescription: "Customize your kitchen and food delivery pipeline stages.",
+                defaultStatus: "Order Received",
+                defaultMessage: "Your food order has been received and sent to the kitchen.",
+                statuses: [
+                    "Order Received", "Kitchen Cooking", "Food Ready", "Assigned to Rider", "Out for Delivery", "Delivered", "Cancelled"
+                ]
             }
         }
         if (subType === "delivery") {
@@ -223,6 +228,11 @@ export function getBusinessConfig(id: string | null, logisticsSubType?: string |
                 searchPlaceholder: "Search by waybill, customer, recipient or phone",
                 operationsLabel: "Book Delivery",
                 operationsDescription: "Customize your courier and dispatch pipeline stages.",
+                defaultStatus: "Order Received",
+                defaultMessage: "Your delivery package has been booked and is being processed.",
+                statuses: [
+                    "Order Received", "Package Picked Up", "Sorting", "Out for Delivery", "Delivered", "Cancelled"
+                ]
             }
         }
         if (subType === "shipping") {
@@ -238,6 +248,11 @@ export function getBusinessConfig(id: string | null, logisticsSubType?: string |
                 searchPlaceholder: "Search by tracking number, customer or container",
                 operationsLabel: "Book Cargo Shipment",
                 operationsDescription: "Customize your freight and customs pipeline stages.",
+                defaultStatus: "Shipment Booked",
+                defaultMessage: "Your cargo shipment has been booked and is awaiting pickup.",
+                statuses: [
+                    "Shipment Booked", "Picked Up", "In Transit", "Customs Clearance", "Out for Delivery", "Delivered", "Cancelled"
+                ]
             }
         }
     }

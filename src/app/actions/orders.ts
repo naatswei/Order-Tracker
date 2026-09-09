@@ -109,23 +109,36 @@ export async function createOrder(data: OrderInput): Promise<{ success: boolean;
 
         // Determine initial status from organization's first pipeline stage if available
         let initialStatus = data.currentStatus?.trim();
-        if (!initialStatus && orgId) {
+
+        if (orgId) {
             try {
                 const stages = await db.select()
                     .from(workflows)
                     .where(eq(workflows.clerkOrgId, orgId))
-                    .orderBy(asc(workflows.position))
-                    .limit(1);
-                if (stages.length > 0 && stages[0].name) {
-                    initialStatus = stages[0].name;
+                    .orderBy(asc(workflows.position));
+
+                if (stages.length > 0) {
+                    const hasMatchingStage = stages.some(s => s.name.toLowerCase() === initialStatus?.toLowerCase());
+                    // If no status given, or status doesn't match any stage, or status is generic "Shipment Booked" for non-shipping
+                    if (!initialStatus || !hasMatchingStage || initialStatus === "Shipment Booked") {
+                        initialStatus = stages[0].name;
+                    }
                 }
             } catch (e) {
-                console.warn("Could not determine 1st workflow stage for initial status:", e);
+                console.warn("Could not determine workflow stages for initial status:", e);
             }
         }
-        if (!initialStatus) {
-            initialStatus = data.businessType === "logistics" ? "Shipment Booked" : "Order Received";
+
+        if (!initialStatus || initialStatus === "Shipment Booked") {
+            const mode = (orderMetadata.logisticsMode as string) || (data.metadata as any)?.logisticsMode;
+            if (data.businessType === "logistics" && mode === "shipping") {
+                initialStatus = "Shipment Booked";
+            } else {
+                initialStatus = "Order Received";
+            }
         }
+
+        orderMetadata.internalStage = initialStatus;
 
         await db.insert(orders).values({
             id: orderId,

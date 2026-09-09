@@ -202,7 +202,12 @@ export default function OperationsPage() {
     }
 
     const getOrderStageName = (order: any) => {
-        return (order.metadata as any)?.internalStage || order.currentStatus || (stages[0]?.name || "Shipment Booked");
+        const candidate = ((order.metadata as any)?.internalStage || order.currentStatus || "").trim();
+        if (candidate && stages.length > 0) {
+            const matched = stages.find(s => s.name.toLowerCase() === candidate.toLowerCase());
+            if (matched) return matched.name;
+        }
+        return stages[0]?.name || "Order Received";
     };
 
     // Stage-aware search: Matches customer name, order #, phone, locations, AND stage name

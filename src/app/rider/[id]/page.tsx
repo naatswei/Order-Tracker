@@ -290,7 +290,7 @@ export default function RiderActionPage() {
         )
     }
 
-    const currentStatus = order.currentStatus || "Shipment Booked"
+    const currentStatus = order.currentStatus || "Order Received"
     const isDelivered = ["delivered", "completed"].includes(currentStatus.toLowerCase())
     const meta = (order.metadata as Record<string, unknown>) || {}
     const pickupLoc = (meta.pickupLocation as string) || null
