@@ -12,7 +12,7 @@ import { getWorkflowStages } from "@/app/actions/operations"
 import Link from "next/link"
 import { OrganizationSwitcher, useOrganization } from "@clerk/nextjs"
 import { useRouter } from "next/navigation"
-import { Search, Plus, Filter, Package, Mail, ChevronRight, Copy, ExternalLink, Menu, X, Check, Layers } from "lucide-react"
+import { Search, Plus, Package, Mail, ChevronRight, Copy, ExternalLink, Menu, X, Check } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Card, CardContent } from "@/components/ui/card"
 import { OrderCard } from "@/components/order-card"
@@ -22,13 +22,6 @@ import { SignatureLoader } from "@/components/signature-loader"
 import { RenewalBanner } from "@/components/renewal-banner"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select"
 
 interface BusinessProfile {
     companyName: string
@@ -162,20 +155,6 @@ export default function BackofficePage() {
         return bConfig.statuses;
     }, [customStages, businessType]);
 
-    // Dynamic status options directly from pipeline stages (+ any extra historical statuses on orders)
-    const statusOptions = useMemo(() => {
-        const list: string[] = [...pipelineStageList];
-
-        // Also append any historical order status that isn't already in the list
-        orders.forEach(o => {
-            if (o.currentStatus && o.currentStatus.trim() && !list.includes(o.currentStatus)) {
-                list.push(o.currentStatus);
-            }
-        });
-
-        return list;
-    }, [pipelineStageList, orders]);
-
     // Live counts per status
     const statusCounts = useMemo(() => {
         const counts: Record<string, number> = {};
@@ -260,78 +239,7 @@ export default function BackofficePage() {
                         </div>
 
                         {/* Action Buttons */}
-                        <div className="flex flex-wrap items-center gap-3 w-full lg:w-auto">
-                            <Select value={statusFilter} onValueChange={setStatusFilter}>
-                                <SelectTrigger 
-                                    className={cn(
-                                        "w-auto flex-none h-11 rounded-full border gap-2 px-4 sm:px-5 transition-all duration-300 text-sm font-semibold active:scale-95 shadow-sm cursor-pointer",
-                                        statusFilter !== "All"
-                                            ? "bg-[#191A43] text-white border-[#191A43] hover:bg-slate-800 shadow-md shadow-[#191A43]/15 [&>span]:text-white [&_svg]:text-white"
-                                            : "bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 hover:text-slate-900"
-                                    )}
-                                >
-                                    <div className="flex items-center gap-2">
-                                        <Filter className={cn("w-4 h-4 shrink-0", statusFilter !== "All" ? "text-white" : "text-slate-500")} />
-                                        {statusFilter === "All" ? (
-                                            <span>Filter Pipeline</span>
-                                        ) : (
-                                            <div className="flex items-center gap-1.5 max-w-[130px] sm:max-w-none truncate">
-                                                <span className="truncate">{statusFilter}</span>
-                                                <span className="ml-1 px-1.5 py-0.2 rounded-full bg-white/20 text-[11px] font-mono">
-                                                    {statusCounts[statusFilter] || 0}
-                                                </span>
-                                            </div>
-                                        )}
-                                    </div>
-                                </SelectTrigger>
-                                <SelectContent className="rounded-2xl border-slate-200 shadow-xl bg-white p-1.5 min-w-[240px] max-h-[380px]">
-                                    <SelectItem value="All" className="cursor-pointer">
-                                        <span className="font-bold">All {isLogistics ? "Shipments" : "Orders"}</span>
-                                        <span className="text-[11px] opacity-75 font-mono ml-2">({orders.length})</span>
-                                    </SelectItem>
-                                    
-                                    <div className="px-2 py-1 text-[10px] font-black uppercase tracking-wider text-slate-400 mt-1">
-                                        Pipeline Stages
-                                    </div>
-                                    {pipelineStageList.map((status, idx) => {
-                                        const count = statusCounts[status] || 0;
-                                        return (
-                                            <SelectItem key={status} value={status} className="cursor-pointer font-bold text-xs">
-                                                <div className="flex items-center justify-between w-full gap-2">
-                                                    <div className="flex items-center gap-2">
-                                                        <span className="w-4 h-4 rounded-md bg-slate-100 flex items-center justify-center text-[10px] text-slate-600 font-mono font-black">
-                                                            {idx + 1}
-                                                        </span>
-                                                        <span>{status}</span>
-                                                    </div>
-                                                    <span className="text-[11px] opacity-75 font-mono">({count})</span>
-                                                </div>
-                                            </SelectItem>
-                                        );
-                                    })}
-
-                                    {/* Legacy / Extra order statuses if any exist outside current pipeline */}
-                                    {statusOptions.filter(s => !pipelineStageList.includes(s)).length > 0 && (
-                                        <>
-                                            <div className="px-2 py-1 text-[10px] font-black uppercase tracking-wider text-slate-400 mt-2 border-t border-slate-100 pt-1.5">
-                                                Other Statuses
-                                            </div>
-                                            {statusOptions.filter(s => !pipelineStageList.includes(s)).map((status) => {
-                                                const count = statusCounts[status] || 0;
-                                                return (
-                                                    <SelectItem key={status} value={status} className="cursor-pointer font-medium text-xs">
-                                                        <div className="flex items-center justify-between w-full gap-2">
-                                                            <span>{status}</span>
-                                                            <span className="text-[11px] opacity-75 font-mono">({count})</span>
-                                                        </div>
-                                                    </SelectItem>
-                                                );
-                                            })}
-                                        </>
-                                    )}
-                                </SelectContent>
-                            </Select>
-
+                        <div className="flex items-center gap-3 w-full lg:w-auto">
                             <Button
                                 asChild={!needsRenewal}
                                 disabled={needsRenewal}
@@ -372,70 +280,56 @@ export default function BackofficePage() {
                     </div>
                 </div>
 
-                {/* Interactive Pipeline Stages Filter Strip */}
-                <div className="space-y-2">
-                    <div className="flex items-center justify-between px-1">
-                        <span className="text-[11px] font-black uppercase tracking-widest text-slate-400 flex items-center gap-1.5">
-                            <Layers className="w-3.5 h-3.5 text-slate-400" />
-                            <span>Pipeline Stages Filter</span>
+                {/* Pipeline Stages Filter Strip */}
+                <div className="flex items-center gap-2 overflow-x-auto pb-1 pt-0.5 no-scrollbar">
+                    <button
+                        type="button"
+                        onClick={() => setStatusFilter("All")}
+                        className={cn(
+                            "px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 shrink-0 border cursor-pointer active:scale-95 shadow-2xs",
+                            statusFilter === "All"
+                                ? "bg-[#191A43] text-white border-[#191A43] shadow-sm shadow-[#191A43]/15"
+                                : "bg-white text-slate-700 border-slate-200/90 hover:bg-slate-50 hover:border-slate-300"
+                        )}
+                    >
+                        <span>All</span>
+                        <span className={cn(
+                            "px-1.5 py-0.2 rounded-full text-[10px] font-mono font-bold leading-none",
+                            statusFilter === "All" ? "bg-white/20 text-white" : "bg-slate-100 text-slate-600 border border-slate-200/60"
+                        )}>
+                            {orders.length}
                         </span>
-                        <Link 
-                            href="/backoffice/operations" 
-                            className="text-[11px] font-bold text-slate-500 hover:text-slate-800 transition-colors"
-                        >
-                            Configure Stages →
-                        </Link>
-                    </div>
-                    <div className="flex items-center gap-2 overflow-x-auto pb-1 pt-0.5 no-scrollbar">
-                        <button
-                            type="button"
-                            onClick={() => setStatusFilter("All")}
-                            className={cn(
-                                "px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 shrink-0 border cursor-pointer active:scale-95 shadow-2xs",
-                                statusFilter === "All"
-                                    ? "bg-[#191A43] text-white border-[#191A43] shadow-sm shadow-[#191A43]/15"
-                                    : "bg-white text-slate-700 border-slate-200/90 hover:bg-slate-50 hover:border-slate-300"
-                            )}
-                        >
-                            <span>All</span>
-                            <span className={cn(
-                                "px-1.5 py-0.2 rounded-full text-[10px] font-mono font-bold leading-none",
-                                statusFilter === "All" ? "bg-white/20 text-white" : "bg-slate-100 text-slate-600 border border-slate-200/60"
-                            )}>
-                                {orders.length}
-                            </span>
-                        </button>
+                    </button>
 
-                        {pipelineStageList.map((stageName, idx) => {
-                            const count = statusCounts[stageName] || 0;
-                            const isSelected = statusFilter === stageName;
+                    {pipelineStageList.map((stageName, idx) => {
+                        const count = statusCounts[stageName] || 0;
+                        const isSelected = statusFilter === stageName;
 
-                            return (
-                                <button
-                                    key={stageName}
-                                    type="button"
-                                    onClick={() => setStatusFilter(isSelected ? "All" : stageName)}
-                                    className={cn(
-                                        "px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 shrink-0 border cursor-pointer active:scale-95 shadow-2xs",
-                                        isSelected
-                                            ? "bg-[#191A43] text-white border-[#191A43] shadow-sm shadow-[#191A43]/15"
-                                            : "bg-white text-slate-700 border-slate-200/90 hover:bg-slate-50 hover:border-slate-300"
-                                    )}
-                                >
-                                    <span className={cn("text-[10px] font-mono", isSelected ? "text-white/60" : "text-slate-400")}>
-                                        {idx + 1}.
-                                    </span>
-                                    <span className="truncate">{stageName}</span>
-                                    <span className={cn(
-                                        "px-1.5 py-0.2 rounded-full text-[10px] font-mono font-bold leading-none",
-                                        isSelected ? "bg-white/20 text-white" : "bg-slate-100 text-slate-600 border border-slate-200/60"
-                                    )}>
-                                        {count}
-                                    </span>
-                                </button>
-                            );
-                        })}
-                    </div>
+                        return (
+                            <button
+                                key={stageName}
+                                type="button"
+                                onClick={() => setStatusFilter(isSelected ? "All" : stageName)}
+                                className={cn(
+                                    "px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 shrink-0 border cursor-pointer active:scale-95 shadow-2xs",
+                                    isSelected
+                                        ? "bg-[#191A43] text-white border-[#191A43] shadow-sm shadow-[#191A43]/15"
+                                        : "bg-white text-slate-700 border-slate-200/90 hover:bg-slate-50 hover:border-slate-300"
+                                )}
+                            >
+                                <span className={cn("text-[10px] font-mono", isSelected ? "text-white/60" : "text-slate-400")}>
+                                    {idx + 1}.
+                                </span>
+                                <span className="truncate">{stageName}</span>
+                                <span className={cn(
+                                    "px-1.5 py-0.2 rounded-full text-[10px] font-mono font-bold leading-none",
+                                    isSelected ? "bg-white/20 text-white" : "bg-slate-100 text-slate-600 border border-slate-200/60"
+                                )}>
+                                    {count}
+                                </span>
+                            </button>
+                        );
+                    })}
                 </div>
 
                 {/* Active Filter Indicator */}
