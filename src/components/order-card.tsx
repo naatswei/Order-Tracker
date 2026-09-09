@@ -149,9 +149,8 @@ export function OrderCard({
                                 ) : (
                                     <Link href={`/backoffice/create?edit=${order.id}`} className="w-full">
                                         <Button
-                                            variant="outline"
-                                            className="w-full rounded-full h-11 font-bold mt-1 border transition-all duration-300 hover:-translate-y-0.5 active:scale-[0.98] bg-transparent hover:bg-transparent"
-                                            style={{ borderColor: config.theme.primary, color: '#191A43' }}
+                                            className="w-full text-white rounded-full h-11 shadow-[0_4px_20px_rgb(0,0,0,0.08)] font-bold mt-1 border-0 transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.15)] hover:-translate-y-0.5 active:scale-[0.98]"
+                                            style={{ backgroundColor: config.theme.primary }}
                                         >
                                             Edit Order
                                         </Button>
