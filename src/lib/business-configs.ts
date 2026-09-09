@@ -131,8 +131,8 @@ export const BUSINESS_CONFIGS: Record<string, BusinessConfig> = {
         operationsDescription: "Customize your logistics stages to match your delivery pipeline.",
         theme: {
             primary: "#0F172A",   // Slate 900
-            secondary: "#0284C7", // Sky Blue (Trustworthy & Fast)
-            accent: "#0EA5E9",    // Sky 500
+            secondary: "#6B1028", // Deep Wine / Burgundy (#6B1028)
+            accent: "#8B1E3F",    // Rose/Burgundy Accent
             text: "#0F172A"
         },
         extraFields: [

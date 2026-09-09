@@ -707,7 +707,7 @@ function CreateOrderContent() {
 
                 <Card className="border-white/50 bg-white/60 backdrop-blur-md shadow-lg sm:shadow-xl rounded-2xl sm:rounded-3xl overflow-hidden mb-4">
                     <CardHeader className="bg-primary/5 pb-5 sm:pb-8 pt-5 sm:pt-6 px-4 sm:px-8">
-                        <CardTitle className="text-lg sm:text-xl font-bold text-slate-900">{editingId ? "Edit Order Details" : "New Order Entry"}</CardTitle>
+                        <CardTitle className="text-lg sm:text-xl font-bold text-slate-900">{editingId ? "Edit Order Details" : "Restaurant Pickup and Customer Dropoff Route"}</CardTitle>
                         <CardDescription className="text-xs sm:text-sm">Enter order details to verify and generate a tracking link.</CardDescription>
                     </CardHeader>
                     <CardContent className="p-3.5 sm:p-8 pt-4 sm:pt-8">
@@ -779,208 +779,195 @@ function CreateOrderContent() {
                                     {/* 1. RESTAURANT DELIVERY VIEW */}
                                     {logisticsMode === "restaurant" && (
                                         <div className="space-y-4">
-                                            {/* Restaurant Route & Contact Card */}
-                                            <div className="bg-amber-50/50 p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl border border-amber-200/70 space-y-3.5 sm:space-y-4">
-                                                <div className="flex items-center justify-between">
-                                                    <h3 className="text-xs sm:text-sm font-bold text-amber-950 tracking-tight flex items-center gap-2">
-                                                        <Store className="w-4 h-4 text-amber-600" />
-                                                        Restaurant Pickup &amp; Customer Dropoff Route
-                                                    </h3>
-                                                    <span className="text-[9px] sm:text-[10px] font-bold text-amber-800 bg-amber-100 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
-                                                        Food Logistics
-                                                    </span>
-                                                </div>
-
-                                                {/* Restaurant Branch (Pickup) & Customer Dropoff Contact Details */}
-                                                <div className="grid sm:grid-cols-2 gap-3.5 sm:gap-6">
-                                                    {/* 1. Restaurant Branch Details */}
-                                                    <div className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-white border border-amber-200/60 shadow-2xs space-y-3">
-                                                        <div className="flex items-center justify-between pb-1.5 border-b border-amber-100">
-                                                            <span className="text-xs font-bold text-amber-900 flex items-center gap-1.5">
-                                                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                                                                1. Restaurant / Branch Details
-                                                            </span>
-                                                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200/60">Pickup</span>
+                                            {/* Restaurant Branch (Pickup) & Customer Dropoff Contact Details */}
+                                            <div className="grid sm:grid-cols-2 gap-3.5 sm:gap-6">
+                                                {/* 1. Restaurant Branch Details */}
+                                                <div className="p-3.5 sm:p-5 rounded-xl sm:rounded-2xl bg-slate-50/60 border border-slate-200/80 shadow-2xs space-y-3">
+                                                    <div className="flex items-center justify-between pb-1.5 border-b border-slate-100">
+                                                        <span className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                                                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                                                            1. Restaurant / Branch Details
+                                                        </span>
+                                                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200/60">Pickup</span>
+                                                    </div>
+                                                    <div className="space-y-2.5">
+                                                        <div className="space-y-1">
+                                                            <Label htmlFor="restaurantPickupLocation" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">
+                                                                Branch Name / Pick Up Location <span className="text-slate-400 font-normal">(e.g. Marwako Spintex)</span>
+                                                            </Label>
+                                                            <Input
+                                                                id="restaurantPickupLocation"
+                                                                value={pickupLocation}
+                                                                onChange={(e) => setPickupLocation(e.target.value)}
+                                                                placeholder="e.g. Marwako Fast Food, Spintex Branch"
+                                                                disabled={!canCreateOrder}
+                                                                className="h-10 sm:h-11 rounded-xl bg-white border-zinc-200 focus-visible:border-[#6B1028] text-xs sm:text-sm font-medium"
+                                                            />
                                                         </div>
-                                                        <div className="space-y-2.5">
-                                                            <div className="space-y-1">
-                                                                <Label htmlFor="restaurantPickupLocation" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">
-                                                                    Branch Name / Pick Up Location <span className="text-amber-600 font-normal">(e.g. Marwako Spintex)</span>
-                                                                </Label>
-                                                                <Input
-                                                                    id="restaurantPickupLocation"
-                                                                    value={pickupLocation}
-                                                                    onChange={(e) => setPickupLocation(e.target.value)}
-                                                                    placeholder="e.g. Marwako Fast Food, Spintex Branch"
-                                                                    disabled={!canCreateOrder}
-                                                                    className="h-10 sm:h-11 rounded-xl bg-slate-50/50 border-zinc-200 focus-visible:border-amber-400 text-xs sm:text-sm font-medium"
-                                                                />
-                                                            </div>
-                                                            <div className="space-y-1">
-                                                                <Label htmlFor="branchContactPhone" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">Branch Contact Phone</Label>
-                                                                <PhoneInputWithCountry
-                                                                    id="branchContactPhone"
-                                                                    countryCode={pickupCountryCode}
-                                                                    phoneLocal={pickupPhoneLocal}
-                                                                    onCountryCodeChange={(code) => {
-                                                                        setPickupCountryCode(code)
-                                                                        const formatted = formatFullPhone(code, pickupPhoneLocal)
-                                                                        setCustomerPhone(formatted)
-                                                                    }}
-                                                                    onPhoneLocalChange={(local) => {
-                                                                        setPickupPhoneLocal(local)
-                                                                        const formatted = formatFullPhone(pickupCountryCode, local)
-                                                                        setCustomerPhone(formatted)
-                                                                    }}
-                                                                    placeholder="54 870 6430"
-                                                                    disabled={!canCreateOrder}
-                                                                />
-                                                            </div>
+                                                        <div className="space-y-1">
+                                                            <Label htmlFor="branchContactPhone" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">Branch Contact Phone</Label>
+                                                            <PhoneInputWithCountry
+                                                                id="branchContactPhone"
+                                                                countryCode={pickupCountryCode}
+                                                                phoneLocal={pickupPhoneLocal}
+                                                                onCountryCodeChange={(code) => {
+                                                                    setPickupCountryCode(code)
+                                                                    const formatted = formatFullPhone(code, pickupPhoneLocal)
+                                                                    setCustomerPhone(formatted)
+                                                                }}
+                                                                onPhoneLocalChange={(local) => {
+                                                                    setPickupPhoneLocal(local)
+                                                                    const formatted = formatFullPhone(pickupCountryCode, local)
+                                                                    setCustomerPhone(formatted)
+                                                                }}
+                                                                placeholder="54 870 6430"
+                                                                disabled={!canCreateOrder}
+                                                            />
                                                         </div>
                                                     </div>
+                                                </div>
 
-                                                    {/* 2. Customer Drop Off Details */}
-                                                    <div className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-white border border-amber-200/60 shadow-2xs space-y-3">
-                                                        <div className="flex items-center justify-between pb-1.5 border-b border-amber-100">
-                                                            <span className="text-xs font-bold text-amber-900 flex items-center gap-1.5">
-                                                                <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
-                                                                2. Customer Dropoff Details
-                                                            </span>
-                                                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-amber-50 text-amber-700 border border-amber-200/60">Recipient</span>
-                                                        </div>
-                                                        <div className="space-y-2.5">
-                                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                                                <div className="space-y-1">
-                                                                    <Label htmlFor="restaurantCustomerName" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">
-                                                                        Customer Name <span className="text-red-500">*</span>
-                                                                    </Label>
-                                                                    <Input
-                                                                        id="restaurantCustomerName"
-                                                                        value={recipientName}
-                                                                        onChange={(e) => {
-                                                                            setRecipientName(e.target.value)
-                                                                            if (!customerName) setCustomerName(e.target.value)
-                                                                        }}
-                                                                        placeholder="e.g. Kofi Boateng"
-                                                                        required
-                                                                        disabled={!canCreateOrder}
-                                                                        className="h-10 sm:h-11 rounded-xl bg-slate-50/50 border-zinc-200 focus-visible:border-amber-400 text-xs sm:text-sm font-medium"
-                                                                    />
-                                                                </div>
-                                                                <div className="space-y-1">
-                                                                    <Label htmlFor="restaurantCustomerPhone" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">
-                                                                        Customer Contact <span className="text-red-500">*</span>
-                                                                    </Label>
-                                                                    <PhoneInputWithCountry
-                                                                        id="restaurantCustomerPhone"
-                                                                        countryCode={dropoffCountryCode}
-                                                                        phoneLocal={dropoffPhoneLocal}
-                                                                        onCountryCodeChange={(code) => {
-                                                                            setDropoffCountryCode(code)
-                                                                            const formatted = formatFullPhone(code, dropoffPhoneLocal)
-                                                                            setRecipientPhone(formatted)
-                                                                        }}
-                                                                        onPhoneLocalChange={(local) => {
-                                                                            setDropoffPhoneLocal(local)
-                                                                            const formatted = formatFullPhone(dropoffCountryCode, local)
-                                                                            setRecipientPhone(formatted)
-                                                                        }}
-                                                                        placeholder="24 400 0000"
-                                                                        required
-                                                                        disabled={!canCreateOrder}
-                                                                    />
-                                                                </div>
-                                                            </div>
+                                                {/* 2. Customer Drop Off Details */}
+                                                <div className="p-3.5 sm:p-5 rounded-xl sm:rounded-2xl bg-slate-50/60 border border-slate-200/80 shadow-2xs space-y-3">
+                                                    <div className="flex items-center justify-between pb-1.5 border-b border-slate-100">
+                                                        <span className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                                                            <span className="w-1.5 h-1.5 rounded-full bg-slate-700" />
+                                                            2. Customer Dropoff Details
+                                                        </span>
+                                                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 border border-slate-200">Recipient</span>
+                                                    </div>
+                                                    <div className="space-y-2.5">
+                                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                                             <div className="space-y-1">
-                                                                <Label htmlFor="restaurantDeliveryLocation" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">
-                                                                    Customer Drop Off Address / Location <span className="text-red-500">*</span>
+                                                                <Label htmlFor="restaurantCustomerName" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">
+                                                                    Customer Name <span className="text-red-500">*</span>
                                                                 </Label>
                                                                 <Input
-                                                                    id="restaurantDeliveryLocation"
-                                                                    value={deliveryLocation}
-                                                                    onChange={(e) => setDeliveryLocation(e.target.value)}
-                                                                    placeholder="e.g. East Legon, near Shell / Accra Mall"
+                                                                    id="restaurantCustomerName"
+                                                                    value={recipientName}
+                                                                    onChange={(e) => {
+                                                                        setRecipientName(e.target.value)
+                                                                        if (!customerName) setCustomerName(e.target.value)
+                                                                    }}
+                                                                    placeholder="e.g. Kofi Boateng"
                                                                     required
                                                                     disabled={!canCreateOrder}
-                                                                    className="h-10 sm:h-11 rounded-xl bg-slate-50/50 border-zinc-200 focus-visible:border-amber-400 text-xs sm:text-sm font-medium"
+                                                                    className="h-10 sm:h-11 rounded-xl bg-white border-zinc-200 focus-visible:border-[#6B1028] text-xs sm:text-sm font-medium"
+                                                                />
+                                                            </div>
+                                                            <div className="space-y-1">
+                                                                <Label htmlFor="restaurantCustomerPhone" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">
+                                                                    Customer Contact <span className="text-red-500">*</span>
+                                                                </Label>
+                                                                <PhoneInputWithCountry
+                                                                    id="restaurantCustomerPhone"
+                                                                    countryCode={dropoffCountryCode}
+                                                                    phoneLocal={dropoffPhoneLocal}
+                                                                    onCountryCodeChange={(code) => {
+                                                                        setDropoffCountryCode(code)
+                                                                        const formatted = formatFullPhone(code, dropoffPhoneLocal)
+                                                                        setRecipientPhone(formatted)
+                                                                    }}
+                                                                    onPhoneLocalChange={(local) => {
+                                                                        setDropoffPhoneLocal(local)
+                                                                        const formatted = formatFullPhone(dropoffCountryCode, local)
+                                                                        setRecipientPhone(formatted)
+                                                                    }}
+                                                                    placeholder="24 400 0000"
+                                                                    required
+                                                                    disabled={!canCreateOrder}
                                                                 />
                                                             </div>
                                                         </div>
+                                                        <div className="space-y-1">
+                                                            <Label htmlFor="restaurantDeliveryLocation" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">
+                                                                Customer Drop Off Address / Location <span className="text-red-500">*</span>
+                                                            </Label>
+                                                            <Input
+                                                                id="restaurantDeliveryLocation"
+                                                                value={deliveryLocation}
+                                                                onChange={(e) => setDeliveryLocation(e.target.value)}
+                                                                placeholder="e.g. East Legon, near Shell / Accra Mall"
+                                                                required
+                                                                disabled={!canCreateOrder}
+                                                                className="h-10 sm:h-11 rounded-xl bg-white border-zinc-200 focus-visible:border-[#6B1028] text-xs sm:text-sm font-medium"
+                                                            />
+                                                        </div>
                                                     </div>
                                                 </div>
-
-                                                {/* Live Google Maps Preview */}
-                                                {(pickupLocation || deliveryLocation) && (
-                                                    <div className="grid sm:grid-cols-2 gap-3 sm:gap-4 pt-1">
-                                                        {pickupLocation && (
-                                                            <div className="space-y-1.5">
-                                                                <div className="flex items-center gap-1.5">
-                                                                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                                                                    <span className="text-[9px] font-bold text-slate-500 uppercase tracking-wider">Restaurant Branch</span>
-                                                                </div>
-                                                                <div className="w-full h-36 sm:h-44 rounded-xl sm:rounded-2xl overflow-hidden border border-slate-200 bg-slate-100 shadow-inner">
-                                                                    <iframe
-                                                                        title="Restaurant Branch Map"
-                                                                        width="100%"
-                                                                        height="100%"
-                                                                        loading="lazy"
-                                                                        src={`https://maps.google.com/maps?q=${encodeURIComponent(pickupLocation)}&t=&z=14&ie=UTF8&iwloc=&output=embed`}
-                                                                        className="w-full h-full border-0"
-                                                                    />
-                                                                </div>
-                                                                <a
-                                                                    href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(pickupLocation)}`}
-                                                                    target="_blank"
-                                                                    rel="noopener noreferrer"
-                                                                    className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-700 hover:text-amber-800 transition-colors"
-                                                                >
-                                                                    <Navigation className="w-3 h-3" />
-                                                                    Open in Google Maps
-                                                                </a>
-                                                            </div>
-                                                        )}
-
-                                                        {deliveryLocation && (
-                                                            <div className={cn("space-y-1.5", !pickupLocation && "sm:col-start-2")}>
-                                                                <div className="flex items-center gap-1.5">
-                                                                    <div className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
-                                                                    <span className="text-[9px] font-bold text-slate-500 uppercase tracking-wider">Customer Drop Off</span>
-                                                                </div>
-                                                                <div className="w-full h-36 sm:h-44 rounded-xl sm:rounded-2xl overflow-hidden border border-slate-200 bg-slate-100 shadow-inner">
-                                                                    <iframe
-                                                                        title="Customer Drop Off Map"
-                                                                        width="100%"
-                                                                        height="100%"
-                                                                        loading="lazy"
-                                                                        src={`https://maps.google.com/maps?q=${encodeURIComponent(deliveryLocation)}&t=&z=14&ie=UTF8&iwloc=&output=embed`}
-                                                                        className="w-full h-full border-0"
-                                                                    />
-                                                                </div>
-                                                                <a
-                                                                    href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(deliveryLocation)}`}
-                                                                    target="_blank"
-                                                                    rel="noopener noreferrer"
-                                                                    className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-700 hover:text-amber-800 transition-colors"
-                                                                >
-                                                                    <Navigation className="w-3 h-3" />
-                                                                    Open in Google Maps
-                                                                </a>
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                )}
                                             </div>
 
-                                            {/* Quick Menu & Item Presets (Administrative Defaults) */}
-                                            <div className="bg-amber-50/40 p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl border border-amber-200/70 space-y-3.5 sm:space-y-4 shadow-xs">
+                                            {/* Live Google Maps Preview */}
+                                            {(pickupLocation || deliveryLocation) && (
+                                                <div className="grid sm:grid-cols-2 gap-3 sm:gap-4 pt-1">
+                                                    {pickupLocation && (
+                                                        <div className="space-y-1.5">
+                                                            <div className="flex items-center gap-1.5">
+                                                                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                                                                <span className="text-[9px] font-bold text-slate-500 uppercase tracking-wider">Restaurant Branch</span>
+                                                            </div>
+                                                            <div className="w-full h-36 sm:h-44 rounded-xl sm:rounded-2xl overflow-hidden border border-slate-200 bg-slate-100 shadow-inner">
+                                                                <iframe
+                                                                    title="Restaurant Branch Map"
+                                                                    width="100%"
+                                                                    height="100%"
+                                                                    loading="lazy"
+                                                                    src={`https://maps.google.com/maps?q=${encodeURIComponent(pickupLocation)}&t=&z=14&ie=UTF8&iwloc=&output=embed`}
+                                                                    className="w-full h-full border-0"
+                                                                />
+                                                            </div>
+                                                            <a
+                                                                href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(pickupLocation)}`}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                                className="inline-flex items-center gap-1 text-[10px] font-bold text-[#6B1028] hover:underline transition-colors"
+                                                            >
+                                                                <Navigation className="w-3 h-3" />
+                                                                Open in Google Maps
+                                                            </a>
+                                                        </div>
+                                                    )}
+
+                                                    {deliveryLocation && (
+                                                        <div className={cn("space-y-1.5", !pickupLocation && "sm:col-start-2")}>
+                                                            <div className="flex items-center gap-1.5">
+                                                                <div className="w-1.5 h-1.5 rounded-full bg-slate-700 animate-pulse" />
+                                                                <span className="text-[9px] font-bold text-slate-500 uppercase tracking-wider">Customer Drop Off</span>
+                                                            </div>
+                                                            <div className="w-full h-36 sm:h-44 rounded-xl sm:rounded-2xl overflow-hidden border border-slate-200 bg-slate-100 shadow-inner">
+                                                                <iframe
+                                                                    title="Customer Drop Off Map"
+                                                                    width="100%"
+                                                                    height="100%"
+                                                                    loading="lazy"
+                                                                    src={`https://maps.google.com/maps?q=${encodeURIComponent(deliveryLocation)}&t=&z=14&ie=UTF8&iwloc=&output=embed`}
+                                                                    className="w-full h-full border-0"
+                                                                />
+                                                            </div>
+                                                            <a
+                                                                href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(deliveryLocation)}`}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                                className="inline-flex items-center gap-1 text-[10px] font-bold text-[#6B1028] hover:underline transition-colors"
+                                                            >
+                                                                <Navigation className="w-3 h-3" />
+                                                                Open in Google Maps
+                                                            </a>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            )}
+
+                                            {/* Quick Menu & Item Presets (Clean, Neutral Modern Container) */}
+                                            <div className="bg-slate-50/60 p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-200/80 space-y-3.5 sm:space-y-4 shadow-2xs">
                                                 <div className="flex items-center justify-between">
                                                     <div className="flex items-center gap-2">
-                                                        <UtensilsCrossed className="w-4 h-4 text-amber-600" />
+                                                        <UtensilsCrossed className="w-4 h-4 text-[#6B1028]" />
                                                         <Label className="text-xs sm:text-sm font-bold text-slate-900 tracking-tight">
                                                             MENU
                                                         </Label>
                                                     </div>
-                                                    <span className="text-[9px] sm:text-[10px] font-bold text-amber-800 bg-amber-100 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                                                    <span className="text-[9px] sm:text-[10px] font-bold text-slate-600 bg-slate-100 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
                                                         Administrative Defaults
                                                     </span>
                                                 </div>
@@ -999,7 +986,7 @@ function CreateOrderContent() {
                                                             onFocus={() => setIsMenuDropdownOpen(true)}
                                                             placeholder="Search menu items (e.g. Assorted Fried Rice, Chicken Shawarma, Jollof, Drinks)..."
                                                             disabled={!canCreateOrder}
-                                                            className="h-11 sm:h-12 pl-10 pr-9 rounded-xl bg-white border-zinc-200 focus-visible:border-amber-400 focus-visible:ring-[4px] focus-visible:ring-amber-100 text-xs sm:text-sm font-medium"
+                                                            className="h-11 sm:h-12 pl-10 pr-9 rounded-xl bg-white border-zinc-200 focus-visible:border-[#6B1028] focus-visible:ring-[4px] focus-visible:ring-[#6B1028]/10 text-xs sm:text-sm font-medium"
                                                         />
                                                         {menuSearchQuery && (
                                                             <button
@@ -1017,7 +1004,7 @@ function CreateOrderContent() {
 
                                                     {/* Dropdown / Search Results */}
                                                     {isMenuDropdownOpen && (
-                                                        <div className="bg-white rounded-2xl border border-amber-200 shadow-xl overflow-hidden max-h-72 overflow-y-auto divide-y divide-slate-100 z-20">
+                                                        <div className="bg-white rounded-2xl border border-slate-200 shadow-xl overflow-hidden max-h-72 overflow-y-auto divide-y divide-slate-100 z-20">
                                                             {(() => {
                                                                 const query = menuSearchQuery.toLowerCase().trim()
                                                                 const filteredPresets = menuPresets.filter((preset: any) =>
@@ -1037,7 +1024,7 @@ function CreateOrderContent() {
                                                                                 return (
                                                                                     <div
                                                                                         key={preset.id || preset.name}
-                                                                                        className="p-3 hover:bg-amber-50/60 flex items-center justify-between gap-3 transition-colors cursor-pointer"
+                                                                                        className="p-3 hover:bg-slate-50 flex items-center justify-between gap-3 transition-colors cursor-pointer"
                                                                                         onClick={() => {
                                                                                             handleAddMenuItem(preset)
                                                                                             setMenuSearchQuery("")
@@ -1045,7 +1032,7 @@ function CreateOrderContent() {
                                                                                         }}
                                                                                     >
                                                                                         <div className="flex items-center gap-2.5 min-w-0">
-                                                                                            <div className="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center text-amber-700 shrink-0 font-bold text-xs">
+                                                                                            <div className="w-8 h-8 rounded-lg bg-[#6B1028]/10 flex items-center justify-center text-[#6B1028] shrink-0 font-bold text-xs">
                                                                                                 <UtensilsCrossed className="w-3.5 h-3.5" />
                                                                                             </div>
                                                                                             <div className="min-w-0">
@@ -1058,17 +1045,17 @@ function CreateOrderContent() {
                                                                                             </div>
                                                                                         </div>
                                                                                         <div className="flex items-center gap-2 shrink-0">
-                                                                                            <span className="text-xs sm:text-sm font-black text-amber-900 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200">
+                                                                                            <span className="text-xs sm:text-sm font-black text-slate-900 bg-slate-100 px-2 py-0.5 rounded-md border border-slate-200">
                                                                                                 GH₵ {Number(preset.price).toFixed(2)}
                                                                                             </span>
                                                                                             {currentCount > 0 && (
-                                                                                                <span className="w-5 h-5 rounded-full bg-amber-500 text-white text-[10px] font-black flex items-center justify-center">
+                                                                                                <span className="w-5 h-5 rounded-full bg-[#6B1028] text-white text-[10px] font-black flex items-center justify-center">
                                                                                                     {currentCount}
                                                                                                 </span>
                                                                                             )}
                                                                                             <button
                                                                                                 type="button"
-                                                                                                className="px-2.5 py-1 rounded-lg bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold flex items-center gap-1 shadow-xs"
+                                                                                                className="px-2.5 py-1 rounded-lg bg-[#6B1028] hover:bg-[#540d20] text-white text-xs font-bold flex items-center gap-1 shadow-xs"
                                                                                             >
                                                                                                 <Plus className="w-3 h-3" />
                                                                                                 Add
@@ -1089,10 +1076,10 @@ function CreateOrderContent() {
 
                                                                         {/* Add custom / unlisted dish if query is typed */}
                                                                         {query && !exactMatch && (
-                                                                            <div className="p-3 bg-amber-50/80 border-t border-amber-200/80 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
+                                                                            <div className="p-3 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
                                                                                 <div className="text-xs">
                                                                                     <span className="font-bold text-slate-800">Add custom item: </span>
-                                                                                    <span className="text-amber-800 font-black">&ldquo;{menuSearchQuery}&rdquo;</span>
+                                                                                    <span className="text-slate-900 font-black">&ldquo;{menuSearchQuery}&rdquo;</span>
                                                                                 </div>
                                                                                 <div className="flex items-center gap-2">
                                                                                     <div className="relative w-28">
@@ -1112,7 +1099,7 @@ function CreateOrderContent() {
                                                                                             const p = parseFloat(customItemPrice) || 0
                                                                                             handleAddCustomMenuItem(menuSearchQuery, p)
                                                                                         }}
-                                                                                        className="px-3 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold shrink-0 shadow-xs flex items-center gap-1 cursor-pointer"
+                                                                                        className="px-3 py-1.5 rounded-lg bg-[#6B1028] hover:bg-[#540d20] text-white text-xs font-bold shrink-0 shadow-xs flex items-center gap-1 cursor-pointer"
                                                                                     >
                                                                                         <Plus className="w-3 h-3" />
                                                                                         Add to Order
@@ -1129,9 +1116,9 @@ function CreateOrderContent() {
 
                                                 {/* Selected Menu Items Table */}
                                                 {orderMenuItems.length > 0 ? (
-                                                    <div className="space-y-2 pt-2 border-t border-amber-200/50">
+                                                    <div className="space-y-2 pt-2 border-t border-slate-200">
                                                         <div className="flex items-center justify-between">
-                                                            <p className="text-[11px] font-bold text-amber-900 uppercase tracking-wider">
+                                                            <p className="text-[11px] font-bold text-slate-700 uppercase tracking-wider">
                                                                 Selected Order Items ({orderMenuItems.reduce((s, i) => s + i.quantity, 0)})
                                                             </p>
                                                             <button
@@ -1147,7 +1134,7 @@ function CreateOrderContent() {
                                                         </div>
                                                         <div className="space-y-1.5">
                                                             {orderMenuItems.map((item, idx) => (
-                                                                <div key={item.id || idx} className="flex items-center justify-between gap-3 p-2.5 sm:p-3 bg-white rounded-xl border border-amber-200/60 shadow-xs">
+                                                                <div key={item.id || idx} className="flex items-center justify-between gap-3 p-2.5 sm:p-3 bg-white rounded-xl border border-slate-200/80 shadow-xs">
                                                                     <div className="min-w-0 flex-1">
                                                                         <p className="text-xs font-bold text-slate-800 truncate">{item.name}</p>
                                                                         <p className="text-[10px] text-slate-400">GH₵ {item.price.toFixed(2)} / each</p>
@@ -1184,15 +1171,15 @@ function CreateOrderContent() {
                                                                 </div>
                                                             ))}
                                                         </div>
-                                                        <div className="p-3 bg-amber-100/60 rounded-xl flex items-center justify-between text-xs font-bold text-amber-950">
+                                                        <div className="p-3 bg-slate-100 rounded-xl flex items-center justify-between text-xs font-bold text-slate-900">
                                                             <span>Menu Subtotal:</span>
-                                                            <span className="text-sm font-black text-amber-900">
+                                                            <span className="text-sm font-black text-slate-900">
                                                                 GH₵ {orderMenuItems.reduce((s, i) => s + (i.quantity * i.price), 0).toFixed(2)}
                                                             </span>
                                                         </div>
                                                     </div>
                                                 ) : (
-                                                    <div className="bg-amber-50/50 p-3 rounded-xl border border-dashed border-amber-200 text-center text-xs text-amber-800">
+                                                    <div className="bg-white p-3 rounded-xl border border-dashed border-slate-200 text-center text-xs text-slate-500">
                                                         Use the search bar above to search dishes and add them to this order.
                                                     </div>
                                                 )}
@@ -1200,7 +1187,6 @@ function CreateOrderContent() {
                                         </div>
                                     )}
 
-                                    {/* 2. COURIER / PARCEL DELIVERY VIEW */}
                                     {logisticsMode === "delivery" && (
                                         <div className="space-y-4">
                                             {/* Courier Route & Contact Card */}
@@ -1816,9 +1802,9 @@ function CreateOrderContent() {
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-4">
                                     <div 
                                         onClick={() => setPaymentMethod("online")}
-                                        className={`border rounded-xl sm:rounded-2xl p-3 sm:p-4 cursor-pointer flex flex-col gap-1 transition-all ${paymentMethod === "online" ? "bg-blue-50 border-blue-200 ring-2 ring-blue-500/20" : "bg-white border-slate-200 hover:bg-slate-50"}`}
+                                        className={`border rounded-xl sm:rounded-2xl p-3 sm:p-4 cursor-pointer flex flex-col gap-1 transition-all ${paymentMethod === "online" ? "bg-[#6B1028]/5 border-[#6B1028]/30 ring-2 ring-[#6B1028]/20" : "bg-white border-slate-200 hover:bg-slate-50"}`}
                                     >
-                                        <span className={`text-xs sm:text-sm font-bold ${paymentMethod === "online" ? "text-blue-700" : "text-slate-700"}`}>Online Payment</span>
+                                        <span className={`text-xs sm:text-sm font-bold ${paymentMethod === "online" ? "text-[#6B1028]" : "text-slate-700"}`}>Online Payment</span>
                                         <span className="text-[11px] sm:text-xs text-slate-500 leading-tight">Customer receives payment link via SMS</span>
                                     </div>
                                     <div 
@@ -1831,7 +1817,7 @@ function CreateOrderContent() {
                                 </div>
 
                                 {paymentMethod === "online" && (
-                                    <div className="mt-3 sm:mt-4 p-3.5 sm:p-5 bg-blue-50/40 rounded-xl sm:rounded-2xl border border-blue-100/60 space-y-3 sm:space-y-4">
+                                    <div className="mt-3 sm:mt-4 p-3.5 sm:p-5 bg-[#6B1028]/5 rounded-xl sm:rounded-2xl border border-[#6B1028]/20 space-y-3 sm:space-y-4">
                                         <div className="flex items-center gap-2.5 sm:gap-3">
                                             <Checkbox
                                                 id="triggerMomoPrompt"
@@ -1842,7 +1828,7 @@ function CreateOrderContent() {
                                                         setMomoPhone(recipientPhone || customerPhone)
                                                     }
                                                 }}
-                                                className="rounded-md border-slate-300 text-blue-600 focus:ring-blue-500/20"
+                                                className="rounded-md border-slate-300 text-[#6B1028] focus:ring-[#6B1028]/20 data-[state=checked]:bg-[#6B1028] data-[state=checked]:border-[#6B1028]"
                                             />
                                             <Label htmlFor="triggerMomoPrompt" className="text-xs font-bold text-slate-700 cursor-pointer">
                                                 Trigger instant Mobile Money PIN Prompt on customer's phone
@@ -1859,7 +1845,7 @@ function CreateOrderContent() {
                                                         placeholder="e.g. 0244000000"
                                                         value={momoPhone}
                                                         onChange={(e) => setMomoPhone(e.target.value)}
-                                                        className="h-10 sm:h-11 rounded-xl bg-white border-zinc-200 focus-visible:border-blue-400 text-xs sm:text-sm font-medium"
+                                                        className="h-10 sm:h-11 rounded-xl bg-white border-zinc-200 focus-visible:border-[#6B1028] text-xs sm:text-sm font-medium"
                                                     />
                                                 </div>
                                                 <div className="space-y-1 sm:space-y-2">
@@ -1869,7 +1855,7 @@ function CreateOrderContent() {
                                                         onValueChange={(val: 'mtn' | 'vod' | 'atl') => setMomoProvider(val)}
                                                         disabled={!!detectGhanaNetworkProvider(momoPhone)}
                                                     >
-                                                        <SelectTrigger id="momoProvider" className="h-10 sm:h-11 rounded-xl bg-white border-zinc-200 focus:border-blue-400 text-xs sm:text-sm font-medium">
+                                                        <SelectTrigger id="momoProvider" className="h-10 sm:h-11 rounded-xl bg-white border-zinc-200 focus:border-[#6B1028] text-xs sm:text-sm font-medium">
                                                             <SelectValue placeholder="Select provider" />
                                                         </SelectTrigger>
                                                         <SelectContent className="rounded-xl border-zinc-100 shadow-xl">
@@ -2029,10 +2015,10 @@ function CreateOrderContent() {
                                                                          {!isClientSpecific && isDiscounted && <span className="text-[8px] font-extrabold text-emerald-600 bg-emerald-50 px-1 py-0.2 rounded border border-emerald-100/50">Wholesale</span>}
                                                                          GH₵ {unitPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}/ea
                                                                      </p>
-                                                                 </>
-                                                             );
-                                                         })()}
-                                                     </div>
+                                                                </>
+                                                            );
+                                                        })()}
+                                                    </div>
                                                     <Button
                                                         type="button"
                                                         variant="ghost"
@@ -2124,7 +2110,7 @@ function CreateOrderContent() {
                                                 </div>
                                             )}
                                         </div>
-                                        <div className="px-4 sm:px-5 py-3 sm:py-3.5 bg-[#191A43] flex items-center justify-between">
+                                        <div className="px-4 sm:px-5 py-3 sm:py-3.5 bg-[#6B1028] flex items-center justify-between">
                                             <span className="text-xs font-bold text-white/70 uppercase tracking-wider">Order Total</span>
                                             <span className="text-base sm:text-lg font-bold text-white">
                                                 GH₵ {(subtotal + tax + deliveryFee - discount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}

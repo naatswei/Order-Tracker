@@ -423,7 +423,7 @@ export default function OrderUpdatePage() {
                     </div>
                     <h2 className="text-xl font-bold text-slate-900">Order Not Found</h2>
                     <p className="text-xs text-slate-500">The order you requested could not be found or has been removed.</p>
-                    <Button asChild className="w-full bg-[#191A43] hover:bg-slate-800 text-white rounded-xl h-11 font-bold text-xs">
+                    <Button asChild className="w-full bg-[#6B1028] hover:bg-[#540d20] text-white rounded-xl h-11 font-bold text-xs">
                         <Link href="/backoffice">Back to Dashboard</Link>
                     </Button>
                 </Card>
@@ -460,7 +460,7 @@ export default function OrderUpdatePage() {
                             </Link>
                             <div className="min-w-0">
                                 <div className="flex items-center gap-2">
-                                    <h1 className="text-base sm:text-lg font-black tracking-tight text-[#191A43] truncate">
+                                    <h1 className="text-base sm:text-lg font-black tracking-tight text-slate-900 truncate">
                                         {order.orderNumber}
                                     </h1>
                                     <span className={cn(
@@ -698,7 +698,7 @@ export default function OrderUpdatePage() {
                     <CardHeader className="p-4 sm:p-6 pb-2 sm:pb-3 border-b border-slate-100">
                         <div className="flex items-center justify-between gap-2">
                             <div>
-                                <CardTitle className="text-base sm:text-lg font-black text-[#191A43] flex items-center gap-2">
+                                <CardTitle className="text-base sm:text-lg font-black text-slate-900 flex items-center gap-2">
                                     <span>Update Order Status</span>
                                 </CardTitle>
                                 <CardDescription className="text-xs text-slate-500 font-medium">
@@ -739,7 +739,7 @@ export default function OrderUpdatePage() {
                                             className={cn(
                                                 "p-2.5 rounded-2xl text-xs font-bold border transition-all text-left flex items-center justify-between gap-2 active:scale-95 shadow-2xs cursor-pointer",
                                                 isSelected 
-                                                    ? "bg-[#191A43] text-white border-[#191A43] shadow-sm shadow-[#191A43]/10"
+                                                    ? "bg-[#6B1028] text-white border-[#6B1028] shadow-sm shadow-[#6B1028]/15"
                                                     : "bg-white hover:bg-slate-50 text-slate-700 border-slate-200/90"
                                             )}
                                         >
@@ -810,7 +810,7 @@ export default function OrderUpdatePage() {
                                 <Button
                                     type="submit"
                                     disabled={!status || isUpdating}
-                                    className="flex-1 h-11 sm:h-12 rounded-2xl bg-gradient-to-r from-[#191A43] to-slate-800 hover:from-slate-900 hover:to-[#191A43] text-white font-bold text-xs sm:text-sm shadow-md shadow-[#191A43]/15 transition-all flex items-center justify-center gap-2"
+                                    className="flex-1 h-11 sm:h-12 rounded-2xl bg-[#6B1028] hover:bg-[#540d20] text-white font-bold text-xs sm:text-sm shadow-md shadow-[#6B1028]/20 transition-all flex items-center justify-center gap-2"
                                 >
                                     {isUpdating ? (
                                         <>
@@ -942,7 +942,7 @@ export default function OrderUpdatePage() {
                                                 setMomoPhone(order.customerPhone || "")
                                                 setIsMomoModalOpen(true)
                                             }}
-                                            className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl h-10 px-4 text-xs font-bold flex items-center gap-1.5 shadow-xs"
+                                            className="bg-[#6B1028] hover:bg-[#540d20] text-white rounded-xl h-10 px-4 text-xs font-bold flex items-center gap-1.5 shadow-xs"
                                         >
                                             <Banknote className="w-3.5 h-3.5" />
                                             <span>Trigger Momo Prompt</span>
@@ -1151,7 +1151,7 @@ export default function OrderUpdatePage() {
                     <Card className="bg-white border border-slate-200/80 shadow-2xs rounded-3xl overflow-hidden">
                         <CardHeader className="p-4 sm:p-5 pb-2">
                             <CardTitle className="text-sm sm:text-base font-bold text-slate-900 flex items-center gap-2">
-                                <Clock className="w-4 h-4 text-blue-600" />
+                                <Clock className="w-4 h-4 text-[#6B1028]" />
                                 <span>Customer-Facing Timeline</span>
                             </CardTitle>
                             <CardDescription className="text-xs text-slate-500 font-medium">
@@ -1168,7 +1168,7 @@ export default function OrderUpdatePage() {
                                             <div
                                                 className={cn(
                                                     "w-3 h-3 mt-1 rounded-full border-2 bg-white shrink-0 z-10",
-                                                    index === 0 ? "ring-4 ring-blue-100 border-blue-600" : "border-slate-300"
+                                                    index === 0 ? "ring-4 ring-[#6B1028]/15 border-[#6B1028]" : "border-slate-300"
                                                 )}
                                             />
                                             <div className="space-y-0.5 min-w-0">
@@ -1253,7 +1253,7 @@ export default function OrderUpdatePage() {
                 <DialogContent className="sm:max-w-md border-0 bg-white shadow-2xl rounded-3xl p-5 sm:p-6 overflow-hidden">
                     <DialogHeader>
                         <div className="flex items-center gap-2.5 mb-1">
-                            <div className="p-2 bg-blue-50 text-blue-600 rounded-2xl">
+                            <div className="p-2 bg-[#6B1028]/10 text-[#6B1028] rounded-2xl">
                                 <Banknote className="w-5 h-5" />
                             </div>
                             <div>
@@ -1317,7 +1317,7 @@ export default function OrderUpdatePage() {
                                     setIsMomoCharging(false)
                                 }
                             }}
-                            className="w-full text-white rounded-2xl h-11 sm:h-12 font-bold text-xs sm:text-sm shadow-md bg-blue-600 hover:bg-blue-700 border-0"
+                            className="w-full text-white rounded-2xl h-11 sm:h-12 font-bold text-xs sm:text-sm shadow-md bg-[#6B1028] hover:bg-[#540d20] border-0"
                         >
                             {isMomoCharging ? "Sending Prompt to Phone..." : "Send Momo Prompt"}
                         </Button>
