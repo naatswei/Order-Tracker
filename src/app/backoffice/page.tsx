@@ -12,7 +12,7 @@ import { getWorkflowStages } from "@/app/actions/operations"
 import Link from "next/link"
 import { OrganizationSwitcher, useOrganization } from "@clerk/nextjs"
 import { useRouter } from "next/navigation"
-import { Search, Plus, Package, Mail, ChevronRight, Copy, ExternalLink, Menu, X, Check } from "lucide-react"
+import { Search, Plus, Package, Mail, ChevronRight, Copy, ExternalLink, Menu, X, Check, ArrowUpRight } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Card, CardContent } from "@/components/ui/card"
 import { OrderCard } from "@/components/order-card"
@@ -225,7 +225,6 @@ export default function BackofficePage() {
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-16 sm:pt-20 pb-8 sm:pb-12 max-w-[1400px] space-y-6 sm:space-y-8">
                 {/* Actions Bar */}
                 <div className="space-y-3">
-                    <h2 className="text-xs uppercase font-bold tracking-wider text-slate-500 ml-1">Track Order</h2>
                     <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
                         {/* Search Input */}
                         <div className="relative w-full lg:flex-1 lg:max-w-xl">
@@ -280,30 +279,45 @@ export default function BackofficePage() {
                     </div>
                 </div>
 
-                {/* Pipeline Stages Filter Strip */}
-                <div className="flex items-center gap-2 overflow-x-auto pb-1 pt-0.5 no-scrollbar">
+                {/* Pipeline Stages Metric Filter Cards */}
+                <div className="flex items-stretch gap-3 sm:gap-4 overflow-x-auto pb-2 pt-1 no-scrollbar">
+                    {/* All Orders Card */}
                     <button
                         type="button"
                         onClick={() => setStatusFilter("All")}
                         className={cn(
-                            "px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 shrink-0 border cursor-pointer active:scale-95 shadow-2xs",
+                            "flex-1 min-w-[170px] sm:min-w-[200px] max-w-[260px] shrink-0 p-4 sm:p-5 rounded-2xl sm:rounded-3xl text-left transition-all duration-200 cursor-pointer active:scale-[0.98] border",
                             statusFilter === "All"
-                                ? "bg-[#191A43] text-white border-[#191A43] shadow-sm shadow-[#191A43]/15"
-                                : "bg-white text-slate-700 border-slate-200/90 hover:bg-slate-50 hover:border-slate-300"
+                                ? "bg-[#181920] text-white border-[#181920] shadow-lg shadow-black/10"
+                                : "bg-white text-slate-800 border-slate-200/80 shadow-2xs hover:border-slate-300 hover:shadow-sm"
                         )}
                     >
-                        <span>All</span>
-                        <span className={cn(
-                            "px-1.5 py-0.2 rounded-full text-[10px] font-mono font-bold leading-none",
-                            statusFilter === "All" ? "bg-white/20 text-white" : "bg-slate-100 text-slate-600 border border-slate-200/60"
+                        <div className={cn(
+                            "text-xs sm:text-sm font-medium truncate",
+                            statusFilter === "All" ? "text-slate-400" : "text-slate-500"
+                        )}>
+                            All Orders
+                        </div>
+                        <div className={cn(
+                            "text-2xl sm:text-3xl font-bold tracking-tight my-1.5 sm:my-2",
+                            statusFilter === "All" ? "text-white" : "text-slate-900"
                         )}>
                             {orders.length}
-                        </span>
+                        </div>
+                        <div className={cn(
+                            "flex items-center gap-1.5 text-[11px] sm:text-xs font-medium",
+                            statusFilter === "All" ? "text-emerald-400" : "text-emerald-600"
+                        )}>
+                            <ArrowUpRight className="w-3.5 h-3.5 shrink-0" />
+                            <span>100% of pipeline</span>
+                        </div>
                     </button>
 
+                    {/* Pipeline Stage Cards */}
                     {pipelineStageList.map((stageName, idx) => {
                         const count = statusCounts[stageName] || 0;
                         const isSelected = statusFilter === stageName;
+                        const pct = orders.length > 0 ? Math.round((count / orders.length) * 100) : 0;
 
                         return (
                             <button
@@ -311,22 +325,35 @@ export default function BackofficePage() {
                                 type="button"
                                 onClick={() => setStatusFilter(isSelected ? "All" : stageName)}
                                 className={cn(
-                                    "px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 shrink-0 border cursor-pointer active:scale-95 shadow-2xs",
+                                    "flex-1 min-w-[170px] sm:min-w-[200px] max-w-[260px] shrink-0 p-4 sm:p-5 rounded-2xl sm:rounded-3xl text-left transition-all duration-200 cursor-pointer active:scale-[0.98] border",
                                     isSelected
-                                        ? "bg-[#191A43] text-white border-[#191A43] shadow-sm shadow-[#191A43]/15"
-                                        : "bg-white text-slate-700 border-slate-200/90 hover:bg-slate-50 hover:border-slate-300"
+                                        ? "bg-[#181920] text-white border-[#181920] shadow-lg shadow-black/10"
+                                        : "bg-white text-slate-800 border-slate-200/80 shadow-2xs hover:border-slate-300 hover:shadow-sm"
                                 )}
                             >
-                                <span className={cn("text-[10px] font-mono", isSelected ? "text-white/60" : "text-slate-400")}>
-                                    {idx + 1}.
-                                </span>
-                                <span className="truncate">{stageName}</span>
-                                <span className={cn(
-                                    "px-1.5 py-0.2 rounded-full text-[10px] font-mono font-bold leading-none",
-                                    isSelected ? "bg-white/20 text-white" : "bg-slate-100 text-slate-600 border border-slate-200/60"
+                                <div className={cn(
+                                    "text-xs sm:text-sm font-medium truncate",
+                                    isSelected ? "text-slate-400" : "text-slate-500"
+                                    )}>
+                                    {stageName}
+                                </div>
+                                <div className={cn(
+                                    "text-2xl sm:text-3xl font-bold tracking-tight my-1.5 sm:my-2",
+                                    isSelected ? "text-white" : "text-slate-900"
                                 )}>
                                     {count}
-                                </span>
+                                </div>
+                                <div className={cn(
+                                    "flex items-center gap-1.5 text-[11px] sm:text-xs font-medium",
+                                    isSelected
+                                        ? "text-emerald-400"
+                                        : pct > 0
+                                            ? "text-emerald-600"
+                                            : "text-slate-400"
+                                )}>
+                                    <ArrowUpRight className={cn("w-3.5 h-3.5 shrink-0", !isSelected && pct === 0 && "opacity-40")} />
+                                    <span>Stage {idx + 1} • {pct}% of total</span>
+                                </div>
                             </button>
                         );
                     })}
