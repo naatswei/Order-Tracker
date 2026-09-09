@@ -71,9 +71,9 @@ export async function sendOrderTrackingSMS(orderId: string): Promise<{ success: 
         if (invoice) {
             const amount = parseFloat(invoice.amountDue || "0").toFixed(2)
             if (invoice.invoiceStatus === "paid") {
-                paymentInfo = `\nTotal Paid: GH₵ ${amount} (Cash)`
+                paymentInfo = `\nTotal Paid: GHS ${amount} (Cash)`
             } else {
-                paymentInfo = `\nTotal Due: GH₵ ${amount} (Payment on Arrival)`
+                paymentInfo = `\nTotal Due: GHS ${amount} (Payment on Arrival)`
             }
         }
 

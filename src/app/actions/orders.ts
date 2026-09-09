@@ -210,8 +210,12 @@ export async function createOrder(data: OrderInput): Promise<{ success: boolean;
             }
         }
 
-        // Trigger Hubtel/BulkClix SMS notification to customer in the background
-        sendOrderTrackingSMS(orderId).catch(err => console.error("Error triggering tracking SMS:", err));
+        // Trigger Hubtel/BulkClix SMS notification to customer
+        try {
+            await sendOrderTrackingSMS(orderId);
+        } catch (err) {
+            console.error("Error triggering tracking SMS:", err);
+        }
 
         revalidatePath("/backoffice");
         return { success: true, orderId };
@@ -286,7 +290,11 @@ export async function updateOrderStatus(orderId: string, status: string, locatio
     // Deduplicate notification: only fire SMS/notification if status changed
     if (orderNumber && previousStatus?.toLowerCase() !== status.toLowerCase()) {
         triggerOrderStatusNotification(orderId, status, orderNumber).catch(console.error);
-        sendOrderStatusSMS(orderId, status).catch(err => console.error("Error triggering status SMS:", err));
+        try {
+            await sendOrderStatusSMS(orderId, status);
+        } catch (err) {
+            console.error("Error triggering status SMS:", err);
+        }
     }
 
     revalidatePath("/backoffice");
@@ -499,9 +507,11 @@ export async function bulkUpdateOrderStatus(orderIds: string[], status: string, 
             } else if (lowerStatus === "cancelled" || lowerStatus === "voided") {
                 await releaseReservedStock(orderId, tx);
             }
-            sendOrderStatusSMS(orderId, status).catch(err => console.error("Error triggering status SMS:", err));
         }
     });
+
+    // Dispatch and await SMS notifications for all updated orders
+    await Promise.allSettled(orderIds.map(orderId => sendOrderStatusSMS(orderId, status)));
 
     revalidatePath("/backoffice");
     revalidatePath("/backoffice/operations");
@@ -611,9 +621,13 @@ export async function riderUpdateStatus(
             }
         });
 
-        // Trigger notifications in background
+        // Trigger notifications
         triggerOrderStatusNotification(orderId, status, order.orderNumber).catch(console.error);
-        sendOrderStatusSMS(orderId, status).catch(err => console.error("Error triggering status SMS:", err));
+        try {
+            await sendOrderStatusSMS(orderId, status);
+        } catch (err) {
+            console.error("Error triggering status SMS:", err);
+        }
 
         revalidatePath("/backoffice");
         revalidatePath("/backoffice/operations");

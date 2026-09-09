@@ -134,7 +134,11 @@ export async function markInvoiceAsPaid(orderId: string, silent: boolean = false
     await consumeReservedStock(orderId);
 
     if (!silent) {
-        sendOrderStatusSMS(orderId, "Payment Confirmed").catch(err => console.error("Error triggering status SMS:", err));
+        try {
+            await sendOrderStatusSMS(orderId, "Payment Confirmed");
+        } catch (err) {
+            console.error("Error triggering status SMS:", err);
+        }
     }
 
     revalidatePath("/backoffice")
@@ -195,7 +199,11 @@ export async function confirmInvoicePayment(orderId: string, reference: string) 
     const { consumeReservedStock } = await import("./operations");
     await consumeReservedStock(orderId);
 
-    sendOrderStatusSMS(orderId, "Payment Confirmed").catch(err => console.error("Error triggering status SMS:", err));
+    try {
+        await sendOrderStatusSMS(orderId, "Payment Confirmed");
+    } catch (err) {
+        console.error("Error triggering status SMS:", err);
+    }
 
     await db.insert(statusHistory).values({
         id: Math.random().toString(36).substring(2, 9).toUpperCase(),
