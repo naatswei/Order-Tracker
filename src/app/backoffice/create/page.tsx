@@ -804,7 +804,7 @@ function CreateOrderContent() {
                                                         <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 border border-slate-200">Recipient</span>
                                                     </div>
                                                     <div className="space-y-2.5">
-                                                        <div className="space-y-1">
+                                                        <div className="space-y-1 max-w-sm">
                                                             <Label htmlFor="restaurantCustomerPhone" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">
                                                                 Customer Contact <span className="text-red-500">*</span>
                                                             </Label>
@@ -923,7 +923,7 @@ function CreateOrderContent() {
                                                 {/* Search Form Input & Dynamic Results */}
                                                 <div ref={menuContainerRef} className="space-y-2 relative">
                                                     <div className="relative">
-                                                        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                                                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                                                         <Input
                                                             type="text"
                                                             value={menuSearchQuery}
@@ -944,7 +944,7 @@ function CreateOrderContent() {
                                                             }}
                                                             placeholder="Search menu items (e.g. Assorted Fried Rice, Chicken Shawarma, Jollof, Drinks)..."
                                                             disabled={!canCreateOrder}
-                                                            className="h-11 sm:h-12 pl-10 pr-9 rounded-xl bg-white border-zinc-200 focus-visible:border-[#6B1028] focus-visible:ring-[4px] focus-visible:ring-[#6B1028]/10 text-xs sm:text-sm font-medium"
+                                                            className="h-14 sm:h-16 pl-12 pr-11 rounded-2xl bg-white border-zinc-200 focus-visible:border-[#6B1028] focus-visible:ring-[4px] focus-visible:ring-[#6B1028]/10 text-sm sm:text-base font-medium shadow-2xs"
                                                         />
                                                         {menuSearchQuery && (
                                                             <button
@@ -953,7 +953,7 @@ function CreateOrderContent() {
                                                                     setMenuSearchQuery("")
                                                                     setIsMenuDropdownOpen(false)
                                                                 }}
-                                                                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs font-bold"
+                                                                className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-sm font-bold"
                                                             >
                                                                 ✕
                                                             </button>
@@ -1073,7 +1073,7 @@ function CreateOrderContent() {
                                                 </div>
 
                                                 {/* Selected Menu Items Table */}
-                                                {orderMenuItems.length > 0 ? (
+                                                {orderMenuItems.length > 0 && (
                                                     <div className="space-y-2 pt-2 border-t border-slate-200">
                                                         <div className="flex items-center justify-between">
                                                             <p className="text-[11px] font-bold text-slate-700 uppercase tracking-wider">
@@ -1135,10 +1135,6 @@ function CreateOrderContent() {
                                                                 GH₵ {orderMenuItems.reduce((s, i) => s + (i.quantity * i.price), 0).toFixed(2)}
                                                             </span>
                                                         </div>
-                                                    </div>
-                                                ) : (
-                                                    <div className="bg-white p-3 rounded-xl border border-dashed border-slate-200 text-center text-xs text-slate-500">
-                                                        Use the search bar above to search dishes and add them to this order.
                                                     </div>
                                                 )}
                                             </div>
