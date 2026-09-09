@@ -6,7 +6,16 @@ import { Card, CardContent } from "@/components/ui/card"
 import Link from "next/link"
 import { motion } from "framer-motion"
 import type { Order } from "@/lib/storage"
-import { getBusinessConfig } from "@/lib/business-configs"
+import { getBusinessConfig, getStatusTheme } from "@/lib/business-configs"
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
+import { Check, Layers, ChevronRight } from "lucide-react"
+import { cn } from "@/lib/utils"
 
 interface OrderCardProps {
     order: Order
@@ -14,17 +23,28 @@ interface OrderCardProps {
     onCopy: (id: string) => void
     businessType: string | null
     needsRenewal?: boolean
+    pipelineStages?: string[]
+    onQuickStatusUpdate?: (orderId: string, newStatus: string) => Promise<void> | void
 }
 
-export function OrderCard({ order, copiedId, onCopy, businessType, needsRenewal }: OrderCardProps) {
+export function OrderCard({ 
+    order, 
+    copiedId, 
+    onCopy, 
+    businessType, 
+    needsRenewal, 
+    pipelineStages = [],
+    onQuickStatusUpdate 
+}: OrderCardProps) {
     const config = getBusinessConfig(businessType)
+    const statusTheme = getStatusTheme(order.currentStatus)
 
     const getStatusColor = (status: string | null | undefined) => {
         const s = (status || "").toLowerCase()
         if (s.includes("delivered") || s.includes("completed")) {
             return "bg-green-100 text-green-700 hover:bg-green-100/80 border-green-200"
         }
-        if (s.includes("ready") || s.includes("picked") || s.includes("dispatched")) {
+        if (s.includes("ready") || s.includes("picked") || s.includes("dispatched") || s.includes("transit")) {
             return "bg-blue-100 text-blue-700 hover:bg-blue-100/80 border-blue-200"
         }
         return "bg-zinc-100 text-zinc-700 hover:bg-zinc-100/80 border-zinc-200"
@@ -42,12 +62,48 @@ export function OrderCard({ order, copiedId, onCopy, businessType, needsRenewal 
                     <CardContent className="p-5">
                         <div className="flex flex-col md:flex-row justify-between items-center gap-6">
                             {/* Main Info */}
-                            <div className="flex-1 space-y-4">
-                                <div className="flex items-center gap-4">
+                            <div className="flex-1 space-y-4 w-full">
+                                <div className="flex flex-wrap items-center gap-3">
                                     <h3 className="text-xl font-bold tracking-tight text-slate-800">{order.orderNumber}</h3>
                                     <Badge variant="outline" className={`rounded-full px-3 py-0.5 font-normal text-sm border ${getStatusColor(order.currentStatus)} bg-opacity-50`}>
                                         {order.currentStatus}
                                     </Badge>
+
+                                    {/* 1-Click Quick Status Pipeline Switcher */}
+                                    {pipelineStages.length > 0 && onQuickStatusUpdate && !needsRenewal && (
+                                        <div className="flex items-center">
+                                            <Select
+                                                value={order.currentStatus}
+                                                onValueChange={(newStatus) => onQuickStatusUpdate(order.id, newStatus)}
+                                            >
+                                                <SelectTrigger className="h-7 px-2.5 rounded-full border border-slate-200 bg-slate-50 hover:bg-slate-100 text-xs font-bold text-slate-700 gap-1.5 shadow-2xs cursor-pointer transition-all">
+                                                    <Layers className="w-3 h-3 text-slate-500" />
+                                                    <span className="text-[11px]">Quick Stage</span>
+                                                </SelectTrigger>
+                                                <SelectContent className="rounded-2xl border-slate-200 shadow-xl bg-white p-1.5 min-w-[200px]">
+                                                    <div className="px-2 py-1 text-[10px] font-black uppercase tracking-wider text-slate-400">
+                                                        Pipeline Stages
+                                                    </div>
+                                                    {pipelineStages.map((st, idx) => {
+                                                        const isCurrent = order.currentStatus === st
+                                                        return (
+                                                            <SelectItem key={st} value={st} className="font-bold text-xs cursor-pointer">
+                                                                <div className="flex items-center gap-2">
+                                                                    <span className={cn(
+                                                                        "w-4 h-4 rounded-md flex items-center justify-center text-[10px] font-mono font-black",
+                                                                        isCurrent ? "bg-[#191A43] text-white" : "bg-slate-100 text-slate-600"
+                                                                    )}>
+                                                                        {idx + 1}
+                                                                    </span>
+                                                                    <span className={cn(isCurrent && "text-[#191A43]")}>{st}</span>
+                                                                </div>
+                                                            </SelectItem>
+                                                        )
+                                                    })}
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
+                                    )}
                                 </div>
 
                                 <div className="space-y-2 text-[15px]">
@@ -98,7 +154,7 @@ export function OrderCard({ order, copiedId, onCopy, businessType, needsRenewal 
                             {/* Actions */}
                             <div className="flex flex-col gap-3 w-full md:w-48 shrink-0">
                                 {needsRenewal ? (
-                                        <Button
+                                    <Button
                                         disabled
                                         className="w-full text-white rounded-full h-11 font-bold border-0 opacity-50 cursor-not-allowed"
                                         style={{ backgroundColor: "#94a3b8" }}
@@ -125,7 +181,7 @@ export function OrderCard({ order, copiedId, onCopy, businessType, needsRenewal 
                                 </Button>
 
                                 {needsRenewal ? (
-                                        <Button
+                                    <Button
                                         disabled
                                         className="w-full text-white rounded-full h-11 font-bold mt-1 border-0 opacity-50 cursor-not-allowed"
                                         style={{ backgroundColor: "#94a3b8" }}

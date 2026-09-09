@@ -1,9 +1,10 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { useParams } from "next/navigation"
 import { type Order } from "@/lib/storage"
-import { getOrders } from "@/app/actions/orders"
+import { getOrders, updateOrderStatus } from "@/app/actions/orders"
+import { getWorkflowStages } from "@/app/actions/operations"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
@@ -21,6 +22,7 @@ export default function StatusFilterPage() {
     const statusFilter = decodeURIComponent(params.status as string)
 
     const [orders, setOrders] = useState<Order[]>([])
+    const [customStages, setCustomStages] = useState<string[]>([])
     const [loading, setLoading] = useState(true)
     const [copiedId, setCopiedId] = useState<string | null>(null)
 
@@ -51,8 +53,17 @@ export default function StatusFilterPage() {
     const loadOrders = async () => {
         setLoading(true)
         try {
-            const allOrders = await getOrders()
+            const [allOrders, stagesData] = await Promise.all([
+                getOrders(),
+                getWorkflowStages()
+            ])
             
+            if (stagesData && stagesData.length > 0) {
+                setCustomStages(stagesData.map((s: any) => s.name))
+            } else {
+                setCustomStages([])
+            }
+
             const errorItem = allOrders.find(o => (o as any).__isError);
             if (errorItem) {
                 toast.error(`Failed to load orders: ${(errorItem as any).message}`);
@@ -82,6 +93,30 @@ export default function StatusFilterPage() {
             setLoading(false)
         }
     }
+
+    const handleQuickStatusUpdate = async (orderId: string, newStatus: string) => {
+        if (!newStatus) return;
+
+        setOrders(prev => prev.map(o => o.id === orderId ? { ...o, currentStatus: newStatus, updatedAt: new Date() } : o));
+        toast.loading(`Updating status to "${newStatus}"...`, { id: `status-update-${orderId}` });
+        try {
+            const res = await updateOrderStatus(orderId, newStatus, "Main Office", `Status updated to ${newStatus}`);
+            if (res?.success) {
+                toast.success(`Status updated to "${newStatus}"`, { id: `status-update-${orderId}` });
+            } else {
+                toast.error("Failed to update status", { id: `status-update-${orderId}` });
+                loadOrders();
+            }
+        } catch (err: any) {
+            toast.error("Update failed", { id: `status-update-${orderId}` });
+            loadOrders();
+        }
+    };
+
+    const pipelineStageList = useMemo(() => {
+        if (customStages && customStages.length > 0) return customStages;
+        return config.statuses;
+    }, [customStages, config.statuses]);
 
     const copyTrackingLink = (id: string) => {
         const link = `${window.location.origin}/track/${id}`
@@ -197,6 +232,8 @@ export default function StatusFilterPage() {
                                     copiedId={copiedId}
                                     onCopy={copyTrackingLink}
                                     businessType={businessType}
+                                    pipelineStages={pipelineStageList}
+                                    onQuickStatusUpdate={handleQuickStatusUpdate}
                                 />
                             ))}
                         </div>

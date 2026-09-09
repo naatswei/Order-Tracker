@@ -232,26 +232,38 @@ async function initializeDefaultWorkflowStagesIfNeeded(orgId: string) {
             console.warn("Could not fetch org businessType from Clerk:", e);
         }
 
-        const config = getBusinessConfig(businessType);
-        const activeStatuses = config.statuses.filter(status => 
-            status !== "Completed" && 
-            status !== "Delivered" && 
-            status !== "Pending" && 
-            status !== "Refunded" && 
-            status !== "Cancelled" && 
-            status !== "Order Cancelled" && 
-            status !== "Order Delayed" &&
-            status !== "Delayed" &&
-            status !== "Returned" &&
-            status !== "Returned to Sender" &&
-            status !== "On Hold"
-        );
+        let defaultStages: string[] = [];
+        if (businessType === "logistics") {
+            defaultStages = ["Shipment Booked", "Picked Up", "In Transit", "Out for Delivery", "Delivered"];
+        } else if (businessType === "tailoring") {
+            defaultStages = ["Order Received", "Measurement Taken", "Production", "Quality Checks", "First Fitting", "Ready for Pickup", "Completed"];
+        } else if (businessType === "hair-retail") {
+            defaultStages = ["Order Received", "Payment Verified", "Wigging / Styling", "Quality Check", "Ready for Pickup", "Delivered"];
+        } else if (businessType === "laundry") {
+            defaultStages = ["Order Received", "Sorting & Washing", "Drying & Ironing", "Quality Check", "Ready for Pickup", "Delivered"];
+        } else if (businessType === "online-business") {
+            defaultStages = ["Order Placed", "Payment Confirmed", "Packaging", "Dispatched", "Delivered"];
+        } else {
+            const config = getBusinessConfig(businessType);
+            const activeStatuses = config.statuses.filter(status => 
+                status !== "Pending" && 
+                status !== "Refunded" && 
+                status !== "Cancelled" && 
+                status !== "Order Cancelled" && 
+                status !== "Order Delayed" &&
+                status !== "Delayed" &&
+                status !== "Returned" &&
+                status !== "Returned to Sender" &&
+                status !== "On Hold"
+            );
+            defaultStages = activeStatuses.length > 0 ? activeStatuses : ["Order Received", "Processing", "In Transit / Delivery", "Completed"];
+        }
 
-        // Insert fallback stages
-        for (let i = 0; i < activeStatuses.length; i++) {
+        // Insert default pipeline stages
+        for (let i = 0; i < defaultStages.length; i++) {
             await db.insert(workflows).values({
                 id: `wf_${nanoid(10)}`,
-                name: activeStatuses[i],
+                name: defaultStages[i],
                 position: String(i + 1),
                 clerkOrgId: orgId,
             });
@@ -290,7 +302,9 @@ export async function addWorkflowStage(name: string, position: string) {
         clerkOrgId: orgId,
     });
 
+    revalidatePath("/backoffice");
     revalidatePath("/backoffice/operations");
+    revalidatePath("/backoffice/bulk");
     return { success: true };
 }
 
@@ -316,7 +330,9 @@ export async function removeWorkflowStage(id: string, name?: string) {
         await db.delete(workflows).where(and(eq(workflows.name, name), eq(workflows.clerkOrgId, orgId)));
     }
 
+    revalidatePath("/backoffice");
     revalidatePath("/backoffice/operations");
+    revalidatePath("/backoffice/bulk");
     return { success: true };
 }
 
@@ -332,7 +348,9 @@ export async function reorderWorkflowStages(stageIds: string[]) {
             .where(and(eq(workflows.id, stageIds[i]), eq(workflows.clerkOrgId, orgId)));
     }
 
+    revalidatePath("/backoffice");
     revalidatePath("/backoffice/operations");
+    revalidatePath("/backoffice/bulk");
     return { success: true };
 }
 

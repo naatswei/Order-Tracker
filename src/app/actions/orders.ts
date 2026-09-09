@@ -1,8 +1,8 @@
 "use server"
 
 import { db } from "@/db";
-import { orders, statusHistory, inventory } from "@/db/schema";
-import { eq, desc, and, or, count } from "drizzle-orm";
+import { orders, statusHistory, inventory, workflows } from "@/db/schema";
+import { eq, desc, asc, and, or, count } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { auth, clerkClient } from "@clerk/nextjs/server";
 import { getPlanLimits } from "@/lib/plan-config";
@@ -107,6 +107,26 @@ export async function createOrder(data: OrderInput): Promise<{ success: boolean;
             orderMetadata.deliveryPin = String(Math.floor(1000 + Math.random() * 9000));
         }
 
+        // Determine initial status from organization's first pipeline stage if available
+        let initialStatus = data.currentStatus?.trim();
+        if (!initialStatus && orgId) {
+            try {
+                const stages = await db.select()
+                    .from(workflows)
+                    .where(eq(workflows.clerkOrgId, orgId))
+                    .orderBy(asc(workflows.position))
+                    .limit(1);
+                if (stages.length > 0 && stages[0].name) {
+                    initialStatus = stages[0].name;
+                }
+            } catch (e) {
+                console.warn("Could not determine 1st workflow stage for initial status:", e);
+            }
+        }
+        if (!initialStatus) {
+            initialStatus = data.businessType === "logistics" ? "Shipment Booked" : "Order Received";
+        }
+
         await db.insert(orders).values({
             id: orderId,
             orderNumber: generatedOrderNumber,
@@ -118,7 +138,7 @@ export async function createOrder(data: OrderInput): Promise<{ success: boolean;
             measurements: data.measurements || null,
             metadata: orderMetadata,
             businessType: data.businessType,
-            currentStatus: data.currentStatus || "Order Received",
+            currentStatus: initialStatus,
             clerkOrgId: orgId || null,
             userId: userId || null,
         });
@@ -128,7 +148,7 @@ export async function createOrder(data: OrderInput): Promise<{ success: boolean;
         await db.insert(statusHistory).values({
             id: Math.random().toString(36).substring(2, 9).toUpperCase(),
             orderId: orderId,
-            status: data.currentStatus || "Order Received",
+            status: initialStatus,
             location: "Main Office",
             message: "Order created successfully",
             staffId: staffId,

@@ -53,21 +53,9 @@ function BulkUpdateContent() {
         if (pipelineStages && pipelineStages.length > 0) {
             return pipelineStages;
         }
-        const activeStatuses = config.statuses.filter(status => 
-            status !== "Completed" && 
-            status !== "Delivered" && 
-            status !== "Pending" && 
-            status !== "Refunded" && 
-            status !== "Cancelled" && 
-            status !== "Order Cancelled" && 
-            status !== "Order Delayed" &&
-            status !== "Delayed" &&
-            status !== "Returned" && 
-            status !== "Returned to Sender" &&
-            status !== "On Hold"
-        );
-        return activeStatuses;
-    }, [pipelineStages, config.statuses]);
+        const bConfig = getBusinessConfig(businessType);
+        return bConfig.statuses;
+    }, [pipelineStages, businessType]);
 
     const [orders, setOrders] = useState<Order[]>([])
     const [selectedIds, setSelectedIds] = useState<string[]>([])
@@ -557,7 +545,7 @@ function BulkUpdateContent() {
                             <div className="space-y-3">
                                 <h3 className="text-xs font-bold text-slate-700 uppercase tracking-wider">Quick Status Options</h3>
                                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
-                                    {QUICK_STATUSES.map((status) => {
+                                    {QUICK_STATUSES.map((status, idx) => {
                                         const isSelected = selectedStatus === status;
                                         return (
                                             <button
@@ -565,13 +553,21 @@ function BulkUpdateContent() {
                                                 type="button"
                                                 onClick={() => handleQuickStatusClick(status)}
                                                 className={cn(
-                                                    "p-3 rounded-2xl text-xs font-bold border transition-all text-left flex items-center justify-between gap-2 active:scale-95 shadow-2xs",
+                                                    "p-3 rounded-2xl text-xs font-bold border transition-all text-left flex items-center justify-between gap-2 active:scale-95 shadow-2xs cursor-pointer",
                                                     isSelected 
                                                         ? "bg-[#191A43] text-white border-[#191A43] shadow-sm shadow-[#191A43]/10"
                                                         : "bg-white hover:bg-slate-50 text-slate-700 border-slate-200/90"
                                                 )}
                                             >
-                                                <span className="truncate">{status}</span>
+                                                <div className="flex items-center gap-1.5 min-w-0">
+                                                    <span className={cn(
+                                                        "w-4 h-4 rounded-md flex items-center justify-center text-[10px] font-mono font-black shrink-0",
+                                                        isSelected ? "bg-white/20 text-white" : "bg-slate-100 text-slate-500"
+                                                    )}>
+                                                        {idx + 1}
+                                                    </span>
+                                                    <span className="truncate">{status}</span>
+                                                </div>
                                                 {isSelected && <Check className="w-3.5 h-3.5 text-white shrink-0" />}
                                             </button>
                                         );
