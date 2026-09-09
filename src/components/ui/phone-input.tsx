@@ -64,7 +64,7 @@ export function PhoneInputWithCountry({
                     variant="outline"
                     disabled={disabled}
                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                    className="h-10 sm:h-11 px-2.5 sm:px-3 rounded-xl border border-zinc-200 bg-white text-xs font-bold flex items-center gap-1 sm:gap-1.5 hover:bg-slate-50 transition-all cursor-pointer text-slate-800 shadow-xs"
+                    className="h-10 sm:h-11 px-3 sm:px-4 rounded-full border border-zinc-200 bg-white text-xs font-bold flex items-center gap-1 sm:gap-1.5 hover:bg-slate-50 transition-all cursor-pointer text-slate-800 shadow-xs"
                 >
                     <span className="text-sm sm:text-base leading-none">{selectedCountry.flag}</span>
                     <span className="text-xs font-bold">{selectedCountry.code}</span>
@@ -140,7 +140,7 @@ export function PhoneInputWithCountry({
                         onPhoneLocalChange(val);
                     }}
                     className={cn(
-                        "h-10 sm:h-11 border-zinc-200 bg-white text-xs sm:text-sm font-medium focus-visible:ring-primary transition-all pr-8 rounded-xl",
+                        "h-10 sm:h-11 border-zinc-200 bg-white text-xs sm:text-sm font-medium focus-visible:ring-primary transition-all px-4 pr-8 rounded-full",
                         phoneLocal && !isValid && "border-red-400 focus-visible:ring-red-400 focus-visible:border-red-400",
                         phoneLocal && isValid && "border-emerald-500 focus-visible:ring-emerald-500 focus-visible:border-emerald-500",
                         className

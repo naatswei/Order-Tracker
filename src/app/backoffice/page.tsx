@@ -213,7 +213,7 @@ export default function BackofficePage() {
                         type="button"
                         onClick={() => setStatusFilter("All")}
                         className={cn(
-                            "flex-1 min-w-[280px] sm:min-w-[340px] max-w-[420px] min-h-[140px] sm:min-h-[160px] shrink-0 p-6 sm:p-8 rounded-2xl sm:rounded-3xl text-left transition-all duration-200 cursor-pointer active:scale-[0.98] flex flex-col justify-between",
+                            "flex-1 min-w-[280px] sm:min-w-[340px] max-w-[420px] min-h-[140px] sm:min-h-[160px] shrink-0 p-6 sm:p-8 rounded-2xl sm:rounded-3xl text-left transition-all duration-300 cursor-pointer active:scale-[0.98] flex flex-col justify-between shadow-[0_4px_20px_rgb(0,0,0,0.08)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.15)] hover:-translate-y-0.5",
                             statusFilter === "All"
                                 ? "bg-black text-white border border-black"
                                 : "bg-white text-slate-900 border border-slate-200 hover:border-slate-300"
@@ -245,7 +245,7 @@ export default function BackofficePage() {
                                 type="button"
                                 onClick={() => setStatusFilter(isSelected ? "All" : stageName)}
                                 className={cn(
-                                    "flex-1 min-w-[280px] sm:min-w-[340px] max-w-[420px] min-h-[140px] sm:min-h-[160px] shrink-0 p-6 sm:p-8 rounded-2xl sm:rounded-3xl text-left transition-all duration-200 cursor-pointer active:scale-[0.98] flex flex-col justify-between",
+                                    "flex-1 min-w-[280px] sm:min-w-[340px] max-w-[420px] min-h-[140px] sm:min-h-[160px] shrink-0 p-6 sm:p-8 rounded-2xl sm:rounded-3xl text-left transition-all duration-300 cursor-pointer active:scale-[0.98] flex flex-col justify-between shadow-[0_4px_20px_rgb(0,0,0,0.08)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.15)] hover:-translate-y-0.5",
                                     isSelected
                                         ? "bg-black text-white border border-black"
                                         : "bg-white text-slate-900 border border-slate-200 hover:border-slate-300"

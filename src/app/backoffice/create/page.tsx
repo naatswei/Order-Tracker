@@ -707,7 +707,7 @@ function CreateOrderContent() {
                     <Button
                         asChild
                         variant="outline"
-                        className="gap-2 mb-4 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 hover:text-slate-900 transition-all duration-300 rounded-xl shadow-xs hover:shadow-sm hover:-translate-y-0.5 text-xs sm:text-sm h-9 sm:h-10"
+                        className="gap-2 mb-4 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 hover:text-slate-900 transition-all duration-300 rounded-full shadow-xs hover:shadow-sm hover:-translate-y-0.5 text-xs sm:text-sm h-10 px-5"
                     >
                         <Link href="/backoffice">
                             <ArrowLeft className="w-4 h-4" />
@@ -725,7 +725,7 @@ function CreateOrderContent() {
                         {/* sliding tab switcher */}
                         {businessType !== "logistics" && (
                         <div className="mb-5 sm:mb-6 flex justify-start">
-                            <div className="bg-slate-100/80 backdrop-blur-md p-1 rounded-2xl flex flex-wrap items-center gap-1 shadow-inner border border-slate-200/50">
+                            <div className="bg-slate-100/80 backdrop-blur-md p-1 rounded-full flex flex-wrap items-center gap-1 shadow-inner border border-slate-200/50">
                                 <button
                                     type="button"
                                     onClick={() => {
@@ -733,7 +733,7 @@ function CreateOrderContent() {
                                         setSelectedClientId("none");
                                         setSelectedInventory([]);
                                     }}
-                                    className={`px-3.5 sm:px-6 py-2 rounded-xl text-[10px] sm:text-xs font-bold uppercase tracking-wider transition-all duration-300 ${
+                                    className={`px-4 sm:px-6 py-2 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-wider transition-all duration-300 ${
                                         orderMode === "unit"
                                             ? "bg-white text-[#191A43] shadow-xs font-bold"
                                             : "text-slate-400 hover:text-slate-600 font-medium"
@@ -744,7 +744,7 @@ function CreateOrderContent() {
                                 <button
                                     type="button"
                                     onClick={() => setOrderMode("wholesale")}
-                                    className={`px-3.5 sm:px-6 py-2 rounded-xl text-[10px] sm:text-xs font-bold uppercase tracking-wider transition-all duration-300 ${
+                                    className={`px-4 sm:px-6 py-2 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-wider transition-all duration-300 ${
                                         orderMode === "wholesale"
                                             ? "bg-white text-[#191A43] shadow-xs font-bold"
                                             : "text-slate-400 hover:text-slate-600 font-medium"
@@ -838,7 +838,7 @@ function CreateOrderContent() {
                                                                 placeholder="e.g. East Legon, near Shell / Accra Mall"
                                                                 required
                                                                 disabled={!canCreateOrder}
-                                                                className="h-10 sm:h-11 rounded-xl bg-white border-zinc-200 focus-visible:border-[#6B1028] text-xs sm:text-sm font-medium"
+                                                                className="h-10 sm:h-11 rounded-full px-4 bg-white border-zinc-200 focus-visible:border-[#6B1028] text-xs sm:text-sm font-medium"
                                                             />
                                                         </div>
                                                     </div>
@@ -868,7 +868,7 @@ function CreateOrderContent() {
                                                                 href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(pickupLocation)}`}
                                                                 target="_blank"
                                                                 rel="noopener noreferrer"
-                                                                className="inline-flex items-center gap-1 text-[10px] font-bold text-[#6B1028] hover:underline transition-colors"
+                                                                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white border border-slate-200 text-[#6B1028] hover:bg-slate-50 text-[11px] font-bold shadow-xs transition-all"
                                                             >
                                                                 <Navigation className="w-3 h-3" />
                                                                 Open in Google Maps
@@ -896,7 +896,7 @@ function CreateOrderContent() {
                                                                 href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(deliveryLocation)}`}
                                                                 target="_blank"
                                                                 rel="noopener noreferrer"
-                                                                className="inline-flex items-center gap-1 text-[10px] font-bold text-[#6B1028] hover:underline transition-colors"
+                                                                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white border border-slate-200 text-[#6B1028] hover:bg-slate-50 text-[11px] font-bold shadow-xs transition-all"
                                                             >
                                                                 <Navigation className="w-3 h-3" />
                                                                 Open in Google Maps
@@ -937,14 +937,9 @@ function CreateOrderContent() {
                                                                     setIsMenuDropdownOpen(false)
                                                                 }
                                                             }}
-                                                            onBlur={(e) => {
-                                                                if (!menuContainerRef.current?.contains(e.relatedTarget as Node)) {
-                                                                    setIsMenuDropdownOpen(false)
-                                                                }
-                                                            }}
                                                             placeholder="Search menu items (e.g. Assorted Fried Rice, Chicken Shawarma, Jollof, Drinks)..."
                                                             disabled={!canCreateOrder}
-                                                            className="h-14 sm:h-16 pl-12 pr-11 rounded-2xl bg-white border-zinc-200 focus-visible:border-[#6B1028] focus-visible:ring-[4px] focus-visible:ring-[#6B1028]/10 text-sm sm:text-base font-medium shadow-2xs"
+                                                            className="h-14 sm:h-16 pl-12 pr-12 rounded-full bg-white border-zinc-200 focus-visible:border-[#6B1028] focus-visible:ring-[4px] focus-visible:ring-[#6B1028]/10 text-sm sm:text-base font-medium shadow-2xs"
                                                         />
                                                         {menuSearchQuery && (
                                                             <button
@@ -953,7 +948,7 @@ function CreateOrderContent() {
                                                                     setMenuSearchQuery("")
                                                                     setIsMenuDropdownOpen(false)
                                                                 }}
-                                                                className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-sm font-bold"
+                                                                className="absolute right-4 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 text-xs font-bold transition-colors cursor-pointer"
                                                             >
                                                                 ✕
                                                             </button>
@@ -962,7 +957,10 @@ function CreateOrderContent() {
 
                                                     {/* Dropdown / Search Results */}
                                                     {isMenuDropdownOpen && (
-                                                        <div className="bg-white rounded-2xl border border-slate-200 shadow-xl overflow-hidden max-h-72 overflow-y-auto divide-y divide-slate-100 z-20">
+                                                        <div 
+                                                            onMouseDown={(e) => e.preventDefault()}
+                                                            className="bg-white rounded-2xl border border-slate-200 shadow-xl overflow-hidden max-h-72 overflow-y-auto divide-y divide-slate-100 z-20"
+                                                        >
                                                             {(() => {
                                                                 const query = menuSearchQuery.toLowerCase().trim()
                                                                 const filteredPresets = menuPresets.filter((preset: any) =>
@@ -976,21 +974,25 @@ function CreateOrderContent() {
                                                                     <>
                                                                         {filteredPresets.length > 0 ? (
                                                                             filteredPresets.map((preset: any) => {
-                                                                                const isAdded = orderMenuItems.some(m => m.name.toLowerCase() === preset.name.toLowerCase())
                                                                                 const currentCount = orderMenuItems.find(m => m.name.toLowerCase() === preset.name.toLowerCase())?.quantity || 0
+
+                                                                                const handleSelect = (e: React.MouseEvent) => {
+                                                                                    e.preventDefault()
+                                                                                    e.stopPropagation()
+                                                                                    handleAddMenuItem(preset)
+                                                                                    setMenuSearchQuery("")
+                                                                                    setIsMenuDropdownOpen(false)
+                                                                                }
 
                                                                                 return (
                                                                                     <div
                                                                                         key={preset.id || preset.name}
                                                                                         className="p-3 hover:bg-slate-50 flex items-center justify-between gap-3 transition-colors cursor-pointer"
-                                                                                        onClick={() => {
-                                                                                            handleAddMenuItem(preset)
-                                                                                            setMenuSearchQuery("")
-                                                                                            setIsMenuDropdownOpen(false)
-                                                                                        }}
+                                                                                        onMouseDown={handleSelect}
+                                                                                        onClick={handleSelect}
                                                                                     >
                                                                                         <div className="flex items-center gap-2.5 min-w-0">
-                                                                                            <div className="w-8 h-8 rounded-lg bg-[#6B1028]/10 flex items-center justify-center text-[#6B1028] shrink-0 font-bold text-xs">
+                                                                                            <div className="w-8 h-8 rounded-full bg-[#6B1028]/10 flex items-center justify-center text-[#6B1028] shrink-0 font-bold text-xs">
                                                                                                 <UtensilsCrossed className="w-3.5 h-3.5" />
                                                                                             </div>
                                                                                             <div className="min-w-0">
@@ -1003,7 +1005,7 @@ function CreateOrderContent() {
                                                                                             </div>
                                                                                         </div>
                                                                                         <div className="flex items-center gap-2.5 shrink-0">
-                                                                                            <span className="text-xs sm:text-sm font-black text-slate-900 bg-slate-100 px-2 py-0.5 rounded-md border border-slate-200">
+                                                                                            <span className="text-xs sm:text-sm font-black text-slate-900 bg-slate-100 px-2.5 py-0.5 rounded-full border border-slate-200">
                                                                                                 GH₵ {Number(preset.price).toFixed(2)}
                                                                                             </span>
                                                                                             {currentCount > 0 && (
@@ -1014,7 +1016,9 @@ function CreateOrderContent() {
                                                                                             <button
                                                                                                 type="button"
                                                                                                 title="Add to order"
-                                                                                                className="w-10 h-10 rounded-xl bg-[#6B1028] hover:bg-[#540d20] text-white flex items-center justify-center shadow-xs transition-colors shrink-0 cursor-pointer"
+                                                                                                onMouseDown={handleSelect}
+                                                                                                onClick={handleSelect}
+                                                                                                className="w-10 h-10 rounded-full bg-[#6B1028] hover:bg-[#540d20] text-white flex items-center justify-center shadow-xs transition-colors shrink-0 cursor-pointer"
                                                                                             >
                                                                                                 <Plus className="w-5 h-5 stroke-[2.5]" />
                                                                                             </button>
@@ -1041,24 +1045,32 @@ function CreateOrderContent() {
                                                                                 </div>
                                                                                 <div className="flex items-center gap-2">
                                                                                     <div className="relative w-28">
-                                                                                        <span className="absolute left-2 top-1/2 -translate-y-1/2 text-[10px] font-bold text-slate-400">GH₵</span>
+                                                                                        <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[10px] font-bold text-slate-400">GH₵</span>
                                                                                         <Input
                                                                                             type="number"
                                                                                             step="0.01"
                                                                                             placeholder="0.00"
                                                                                             value={customItemPrice}
                                                                                             onChange={(e) => setCustomItemPrice(e.target.value)}
-                                                                                            className="h-9 pl-7 text-xs rounded-lg bg-white border-zinc-200"
+                                                                                            className="h-9 pl-7 pr-2.5 text-xs rounded-full bg-white border-zinc-200"
                                                                                         />
                                                                                     </div>
                                                                                     <button
                                                                                         type="button"
-                                                                                        onClick={() => {
+                                                                                        onMouseDown={(e) => {
+                                                                                            e.preventDefault()
+                                                                                            e.stopPropagation()
+                                                                                            const p = parseFloat(customItemPrice) || 0
+                                                                                            handleAddCustomMenuItem(menuSearchQuery, p)
+                                                                                        }}
+                                                                                        onClick={(e) => {
+                                                                                            e.preventDefault()
+                                                                                            e.stopPropagation()
                                                                                             const p = parseFloat(customItemPrice) || 0
                                                                                             handleAddCustomMenuItem(menuSearchQuery, p)
                                                                                         }}
                                                                                         title="Add custom item"
-                                                                                        className="w-10 h-10 rounded-xl bg-[#6B1028] hover:bg-[#540d20] text-white flex items-center justify-center shrink-0 shadow-xs cursor-pointer transition-colors"
+                                                                                        className="w-10 h-10 rounded-full bg-[#6B1028] hover:bg-[#540d20] text-white flex items-center justify-center shrink-0 shadow-xs cursor-pointer transition-colors"
                                                                                     >
                                                                                         <Plus className="w-5 h-5 stroke-[2.5]" />
                                                                                     </button>
@@ -1085,7 +1097,7 @@ function CreateOrderContent() {
                                                                     setOrderMenuItems([])
                                                                     setItemType("")
                                                                 }}
-                                                                className="text-[10px] font-bold text-red-500 hover:text-red-700 hover:underline cursor-pointer"
+                                                                className="px-3 py-1 rounded-full bg-red-50 hover:bg-red-100 text-red-600 border border-red-200/60 text-[10px] font-bold transition-colors cursor-pointer"
                                                             >
                                                                 Clear All
                                                             </button>
@@ -1098,11 +1110,11 @@ function CreateOrderContent() {
                                                                         <p className="text-[10px] text-slate-400">GH₵ {item.price.toFixed(2)} / each</p>
                                                                     </div>
                                                                     <div className="flex items-center gap-2">
-                                                                        <div className="flex items-center border border-slate-200 rounded-lg overflow-hidden bg-slate-50">
+                                                                        <div className="flex items-center border border-slate-200 rounded-full overflow-hidden bg-slate-50 p-0.5">
                                                                             <button
                                                                                 type="button"
                                                                                 onClick={() => handleUpdateMenuItemQty(idx, item.quantity - 1)}
-                                                                                className="w-7 h-7 flex items-center justify-center text-slate-600 hover:bg-slate-200 text-xs font-bold cursor-pointer"
+                                                                                className="w-7 h-7 rounded-full flex items-center justify-center text-slate-600 hover:bg-slate-200 text-xs font-bold cursor-pointer transition-colors"
                                                                             >
                                                                                 -
                                                                             </button>
@@ -1110,7 +1122,7 @@ function CreateOrderContent() {
                                                                             <button
                                                                                 type="button"
                                                                                 onClick={() => handleUpdateMenuItemQty(idx, item.quantity + 1)}
-                                                                                className="w-7 h-7 flex items-center justify-center text-slate-600 hover:bg-slate-200 text-xs font-bold cursor-pointer"
+                                                                                className="w-7 h-7 rounded-full flex items-center justify-center text-slate-600 hover:bg-slate-200 text-xs font-bold cursor-pointer transition-colors"
                                                                             >
                                                                                 +
                                                                             </button>
@@ -1121,7 +1133,7 @@ function CreateOrderContent() {
                                                                         <button
                                                                             type="button"
                                                                             onClick={() => handleRemoveMenuItem(idx)}
-                                                                            className="p-1 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded cursor-pointer"
+                                                                            className="w-7 h-7 rounded-full flex items-center justify-center text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
                                                                         >
                                                                             <Trash2 className="w-3.5 h-3.5" />
                                                                         </button>
@@ -1129,7 +1141,7 @@ function CreateOrderContent() {
                                                                 </div>
                                                             ))}
                                                         </div>
-                                                        <div className="p-3 bg-slate-100 rounded-xl flex items-center justify-between text-xs font-bold text-slate-900">
+                                                        <div className="p-3 bg-slate-100 rounded-2xl flex items-center justify-between text-xs font-bold text-slate-900">
                                                             <span>Menu Subtotal:</span>
                                                             <span className="text-sm font-black text-slate-900">
                                                                 GH₵ {orderMenuItems.reduce((s, i) => s + (i.quantity * i.price), 0).toFixed(2)}
@@ -2223,7 +2235,7 @@ function CreateOrderContent() {
                                     type="submit"
                                     size="lg"
                                     disabled={(!editingId && !hasRequiredFields) || isSaving || !canCreateOrder}
-                                    className={`w-full sm:w-auto min-w-[200px] h-12 rounded-xl text-base font-semibold transition-all duration-200 border-0 text-white hover:brightness-95 shadow-md`}
+                                    className={`w-full sm:w-auto min-w-[220px] h-14 rounded-full px-8 text-base font-bold transition-all duration-300 border-0 text-white hover:brightness-95 shadow-[0_4px_20px_rgb(0,0,0,0.08)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.15)] hover:-translate-y-0.5 active:scale-[0.98] cursor-pointer`}
                                     style={{
                                         backgroundColor: !canCreateOrder || isSaving
                                             ? '#94a3b8'
