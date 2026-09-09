@@ -40,8 +40,18 @@ export default function BackofficePage() {
 
     // Business Config
     const { organization, isLoaded } = useOrganization()
-    const [businessType, setBusinessType] = useState<string | null>(null)
-    const [logisticsType, setLogisticsType] = useState<string>("restaurant")
+    const [businessType, setBusinessType] = useState<string | null>(() => {
+        if (typeof window !== "undefined") {
+            return localStorage.getItem("businessType") || null
+        }
+        return null
+    })
+    const [logisticsType, setLogisticsType] = useState<string>(() => {
+        if (typeof window !== "undefined") {
+            return localStorage.getItem("logisticsType") || "restaurant"
+        }
+        return "restaurant"
+    })
     const config = useMemo(() => getBusinessConfig(businessType, logisticsType), [businessType, logisticsType])
     const isLogistics = businessType === "logistics"
     const isRestaurant = isLogistics ? logisticsType === "restaurant" : false
@@ -230,43 +240,59 @@ export default function BackofficePage() {
                             "text-4xl sm:text-5xl font-black tracking-tight mt-3 sm:mt-4",
                             statusFilter === "All" ? "text-white" : "text-slate-900"
                         )}>
-                            {orders.length}
+                            {isLoading ? (
+                                <div className={cn(
+                                    "h-10 sm:h-12 w-16 animate-pulse rounded-xl",
+                                    statusFilter === "All" ? "bg-neutral-800" : "bg-slate-200"
+                                )} />
+                            ) : (
+                                orders.length
+                            )}
                         </div>
                     </button>
 
                     {/* Pipeline Stage Cards */}
-                    {pipelineStageList.map((stageName) => {
-                        const count = statusCounts[stageName] || 0;
-                        const isSelected = statusFilter === stageName;
+                    {isLoading ? (
+                        Array.from({ length: 4 }).map((_, i) => (
+                            <div
+                                key={i}
+                                className="flex-1 min-w-[280px] sm:min-w-[340px] max-w-[420px] h-[140px] sm:h-[160px] rounded-2xl sm:rounded-3xl bg-slate-200/70 animate-pulse shrink-0"
+                            />
+                        ))
+                    ) : (
+                        pipelineStageList.map((stageName) => {
+                            const count = statusCounts[stageName] || 0;
+                            const isSelected = statusFilter === stageName;
 
-                        return (
-                            <button
-                                key={stageName}
-                                type="button"
-                                onClick={() => setStatusFilter(isSelected ? "All" : stageName)}
-                                className={cn(
-                                    "flex-1 min-w-[280px] sm:min-w-[340px] max-w-[420px] min-h-[140px] sm:min-h-[160px] shrink-0 p-6 sm:p-8 rounded-2xl sm:rounded-3xl text-left transition-all duration-300 cursor-pointer active:scale-[0.98] flex flex-col justify-between shadow-[0_4px_20px_rgb(0,0,0,0.08)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.15)] hover:-translate-y-0.5",
-                                    isSelected
-                                        ? "bg-black text-white border border-black"
-                                        : "bg-white text-slate-900 border border-slate-200 hover:border-slate-300"
-                                )}
-                            >
-                                <div className={cn(
-                                    "text-sm sm:text-base font-semibold tracking-wide truncate",
-                                    isSelected ? "text-neutral-400" : "text-slate-500"
-                                )}>
-                                    {stageName}
-                                </div>
+                            return (
+                                <button
+                                    key={stageName}
+                                    type="button"
+                                    onClick={() => setStatusFilter(isSelected ? "All" : stageName)}
+                                    className={cn(
+                                        "flex-1 min-w-[280px] sm:min-w-[340px] max-w-[420px] min-h-[140px] sm:min-h-[160px] shrink-0 p-6 sm:p-8 rounded-2xl sm:rounded-3xl text-left transition-all duration-300 cursor-pointer active:scale-[0.98] flex flex-col justify-between shadow-[0_4px_20px_rgb(0,0,0,0.08)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.15)] hover:-translate-y-0.5",
+                                        isSelected
+                                            ? "bg-black text-white border border-black"
+                                            : "bg-white text-slate-900 border border-slate-200 hover:border-slate-300"
+                                    )}
+                                >
+                                    <div className={cn(
+                                        "text-sm sm:text-base font-semibold tracking-wide truncate",
+                                        isSelected ? "text-neutral-400" : "text-slate-500"
+                                    )}>
+                                        {stageName}
+                                    </div>
 
-                                <div className={cn(
-                                    "text-4xl sm:text-5xl font-black tracking-tight mt-3 sm:mt-4",
-                                    isSelected ? "text-white" : "text-slate-900"
-                                )}>
-                                    {count}
-                                </div>
-                            </button>
-                        );
-                    })}
+                                    <div className={cn(
+                                        "text-4xl sm:text-5xl font-black tracking-tight mt-3 sm:mt-4",
+                                        isSelected ? "text-white" : "text-slate-900"
+                                    )}>
+                                        {count}
+                                    </div>
+                                </button>
+                            );
+                        })
+                    )}
                 </div>
 
                 {/* Active Filter Indicator */}
