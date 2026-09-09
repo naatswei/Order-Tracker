@@ -122,8 +122,8 @@ export function OrderCard({
                                     <Link href={`/backoffice/order/${order.id}`} className="w-full">
                                         <Button
                                             variant="outline"
-                                            className="w-full rounded-full h-11 font-bold border-2 transition-all duration-300 hover:-translate-y-0.5 active:scale-[0.98] bg-transparent hover:bg-transparent"
-                                            style={{ borderColor: config.theme.secondary, color: config.theme.secondary }}
+                                            className="w-full rounded-full h-11 font-bold border transition-all duration-300 hover:-translate-y-0.5 active:scale-[0.98] bg-transparent hover:bg-transparent"
+                                            style={{ borderColor: config.theme.secondary, color: '#191A43' }}
                                         >
                                             Update Status
                                         </Button>
@@ -150,8 +150,8 @@ export function OrderCard({
                                     <Link href={`/backoffice/create?edit=${order.id}`} className="w-full">
                                         <Button
                                             variant="outline"
-                                            className="w-full rounded-full h-11 font-bold mt-1 border-2 transition-all duration-300 hover:-translate-y-0.5 active:scale-[0.98] bg-transparent hover:bg-transparent"
-                                            style={{ borderColor: config.theme.primary, color: config.theme.primary }}
+                                            className="w-full rounded-full h-11 font-bold mt-1 border transition-all duration-300 hover:-translate-y-0.5 active:scale-[0.98] bg-transparent hover:bg-transparent"
+                                            style={{ borderColor: config.theme.primary, color: '#191A43' }}
                                         >
                                             Edit Order
                                         </Button>
