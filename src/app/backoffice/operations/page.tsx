@@ -319,7 +319,7 @@ export default function OperationsPage() {
                     </div>
 
                     {/* Pipeline Stages Metric Filter Cards */}
-                    <div className="flex items-stretch gap-3 sm:gap-4 overflow-x-auto pb-1 pt-1 no-scrollbar">
+                    <div className="flex items-stretch gap-3 sm:gap-4 overflow-x-auto pb-2 pt-1 no-scrollbar">
                         {/* Total Orders Card */}
                         <button
                             type="button"
@@ -328,7 +328,7 @@ export default function OperationsPage() {
                                 scrollToStart();
                             }}
                             className={cn(
-                                "flex-1 min-w-[170px] sm:min-w-[190px] max-w-[250px] shrink-0 p-4 sm:p-5 rounded-2xl sm:rounded-3xl text-left transition-all duration-200 cursor-pointer active:scale-[0.98]",
+                                "flex-1 min-w-[150px] sm:min-w-[180px] max-w-[240px] shrink-0 p-4 sm:p-4.5 rounded-2xl sm:rounded-3xl text-left transition-all duration-200 cursor-pointer active:scale-[0.98]",
                                 activeStage === "All"
                                     ? "bg-black text-white border border-black"
                                     : "bg-white text-slate-900 border border-slate-200 hover:border-slate-300"
@@ -343,27 +343,20 @@ export default function OperationsPage() {
                             </div>
 
                             <div className={cn(
-                                "text-2xl sm:text-3xl font-extrabold tracking-tight my-1.5 sm:my-2",
+                                "text-2xl sm:text-3xl font-extrabold tracking-tight mt-1.5 sm:mt-2",
                                 activeStage === "All" ? "text-white" : "text-slate-900"
                             )}>
                                 {filteredOrders.length}
-                            </div>
-
-                            <div className={cn(
-                                "text-[11px] font-medium",
-                                activeStage === "All" ? "text-neutral-500" : "text-slate-400"
-                            )}>
-                                All pipeline stages
                             </div>
                         </button>
 
                         {/* Pipeline Stage Cards */}
                         {isLoading ? (
                             Array.from({ length: 4 }).map((_, i) => (
-                                <div key={i} className="flex-1 min-w-[170px] sm:min-w-[190px] max-w-[250px] h-[104px] rounded-2xl sm:rounded-3xl bg-slate-200/70 animate-pulse shrink-0" />
+                                <div key={i} className="flex-1 min-w-[150px] sm:min-w-[180px] max-w-[240px] h-[86px] rounded-2xl sm:rounded-3xl bg-slate-200/70 animate-pulse shrink-0" />
                             ))
                         ) : (
-                            stages.map((stage, idx) => {
+                            stages.map((stage) => {
                                 const count = filteredOrders.filter(o => getOrderStageName(o) === stage.name).length;
                                 const isSelected = activeStage === stage.name;
 
@@ -376,7 +369,7 @@ export default function OperationsPage() {
                                             scrollToStage(stage.name);
                                         }}
                                         className={cn(
-                                            "flex-1 min-w-[170px] sm:min-w-[190px] max-w-[250px] shrink-0 p-4 sm:p-5 rounded-2xl sm:rounded-3xl text-left transition-all duration-200 cursor-pointer active:scale-[0.98]",
+                                            "flex-1 min-w-[150px] sm:min-w-[180px] max-w-[240px] shrink-0 p-4 sm:p-4.5 rounded-2xl sm:rounded-3xl text-left transition-all duration-200 cursor-pointer active:scale-[0.98]",
                                             isSelected
                                                 ? "bg-black text-white border border-black"
                                                 : "bg-white text-slate-900 border border-slate-200 hover:border-slate-300"
@@ -391,17 +384,10 @@ export default function OperationsPage() {
                                         </div>
 
                                         <div className={cn(
-                                            "text-2xl sm:text-3xl font-extrabold tracking-tight my-1.5 sm:my-2",
+                                            "text-2xl sm:text-3xl font-extrabold tracking-tight mt-1.5 sm:mt-2",
                                             isSelected ? "text-white" : "text-slate-900"
                                         )}>
                                             {count}
-                                        </div>
-
-                                        <div className={cn(
-                                            "text-[11px] font-medium",
-                                            isSelected ? "text-neutral-500" : "text-slate-400"
-                                        )}>
-                                            Stage {idx + 1}
                                         </div>
                                     </button>
                                 );
@@ -412,13 +398,13 @@ export default function OperationsPage() {
             </header>
 
             {/* Main Stage Columns Board with Mobile Scroll-Snap */}
-            <main className="flex-1 max-w-full px-4 sm:px-6 pt-4 sm:pt-6 overflow-hidden flex flex-col">
+            <main className="flex-1 max-w-full px-4 sm:px-8 pt-6 sm:pt-8 pb-14 overflow-hidden flex flex-col">
                 {isLoading ? (
-                    <div className="flex gap-4 sm:gap-6 overflow-x-auto pb-8 snap-x snap-mandatory no-scrollbar items-start">
+                    <div className="flex gap-6 sm:gap-8 overflow-x-auto pb-10 snap-x snap-mandatory no-scrollbar items-start">
                         {Array.from({ length: 4 }).map((_, i) => (
-                            <div key={i} className="w-[90vw] max-w-[380px] sm:w-[360px] md:w-[370px] shrink-0 flex flex-col space-y-3">
+                            <div key={i} className="w-[90vw] max-w-[380px] sm:w-[360px] md:w-[380px] shrink-0 flex flex-col space-y-4">
                                 <div className="h-12 bg-white border border-slate-200/80 rounded-2xl animate-pulse" />
-                                <div className="h-[420px] rounded-3xl bg-slate-100/60 border border-slate-200/60 p-3.5 space-y-3.5">
+                                <div className="h-[420px] rounded-3xl bg-slate-100/60 border border-slate-200/60 p-3.5 space-y-4">
                                     <div className="h-32 bg-white rounded-2xl border border-slate-200/70 animate-pulse" />
                                     <div className="h-32 bg-white rounded-2xl border border-slate-200/70 animate-pulse" />
                                 </div>
@@ -429,7 +415,7 @@ export default function OperationsPage() {
                     /* Horizontal Scrollable Stages Container */
                     <div 
                         id="kanban-container"
-                        className="flex gap-4 sm:gap-6 overflow-x-auto pb-8 snap-x snap-mandatory scroll-smooth no-scrollbar items-start"
+                        className="flex gap-6 sm:gap-8 overflow-x-auto pb-10 snap-x snap-mandatory scroll-smooth no-scrollbar items-start"
                     >
                         {stages.map((stage) => {
                             const stageTheme = getStageTheme(stage.name);
@@ -439,10 +425,10 @@ export default function OperationsPage() {
                                 <div 
                                     key={stage.name} 
                                     id={`stage-col-${stage.name}`}
-                                    className="w-[90vw] max-w-[380px] sm:w-[360px] md:w-[370px] shrink-0 snap-center flex flex-col space-y-3"
+                                    className="w-[90vw] max-w-[380px] sm:w-[360px] md:w-[380px] shrink-0 snap-center flex flex-col space-y-4"
                                 >
                                     {/* Stage Header */}
-                                    <div className="flex items-center justify-between px-4 py-3 bg-white border border-slate-200/80 rounded-2xl shadow-2xs">
+                                    <div className="flex items-center justify-between px-4.5 py-3.5 bg-white border border-slate-200/80 rounded-2xl shadow-2xs">
                                         <div className="flex items-center gap-2 min-w-0">
                                             <h2 className="text-xs sm:text-sm font-black text-slate-800 uppercase tracking-wider truncate">
                                                 {stage.name}
@@ -454,7 +440,7 @@ export default function OperationsPage() {
                                     </div>
 
                                     {/* Stage Orders Column Body */}
-                                    <div className="space-y-3.5 p-3 sm:p-3.5 rounded-3xl bg-slate-100/60 border border-slate-200/60 min-h-[380px]">
+                                    <div className="space-y-4 p-3.5 sm:p-4 rounded-3xl bg-slate-100/70 border border-slate-200/70 min-h-[400px]">
                                         {stageOrders.length === 0 ? (
                                              <div className="py-16 text-center border-2 border-dashed border-slate-200/80 rounded-2xl p-5">
                                                 <Package className="w-6 h-6 text-slate-300 mx-auto mb-2" />

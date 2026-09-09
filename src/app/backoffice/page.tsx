@@ -206,6 +206,88 @@ export default function BackofficePage() {
             {needsRenewal && <RenewalBanner status={renewalStatus} />}
 
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-16 sm:pt-20 pb-8 sm:pb-12 max-w-[1400px] space-y-6 sm:space-y-8">
+                {/* Pipeline Stages Metric Filter Cards (Moved Up) */}
+                <div className="flex items-stretch gap-3 sm:gap-4 overflow-x-auto pb-2 pt-1 no-scrollbar">
+                    {/* All Orders Card */}
+                    <button
+                        type="button"
+                        onClick={() => setStatusFilter("All")}
+                        className={cn(
+                            "flex-1 min-w-[150px] sm:min-w-[180px] max-w-[240px] shrink-0 p-4 sm:p-5 rounded-2xl sm:rounded-3xl text-left transition-all duration-200 cursor-pointer active:scale-[0.98]",
+                            statusFilter === "All"
+                                ? "bg-black text-white border border-black"
+                                : "bg-white text-slate-900 border border-slate-200 hover:border-slate-300"
+                        )}
+                    >
+                        <div className={cn(
+                            "text-xs sm:text-sm font-medium truncate",
+                            statusFilter === "All" ? "text-neutral-400" : "text-slate-500"
+                        )}>
+                            Total Orders
+                        </div>
+
+                        <div className={cn(
+                            "text-2xl sm:text-3xl font-extrabold tracking-tight mt-1.5 sm:mt-2",
+                            statusFilter === "All" ? "text-white" : "text-slate-900"
+                        )}>
+                            {orders.length}
+                        </div>
+                    </button>
+
+                    {/* Pipeline Stage Cards */}
+                    {pipelineStageList.map((stageName) => {
+                        const count = statusCounts[stageName] || 0;
+                        const isSelected = statusFilter === stageName;
+
+                        return (
+                            <button
+                                key={stageName}
+                                type="button"
+                                onClick={() => setStatusFilter(isSelected ? "All" : stageName)}
+                                className={cn(
+                                    "flex-1 min-w-[150px] sm:min-w-[180px] max-w-[240px] shrink-0 p-4 sm:p-5 rounded-2xl sm:rounded-3xl text-left transition-all duration-200 cursor-pointer active:scale-[0.98]",
+                                    isSelected
+                                        ? "bg-black text-white border border-black"
+                                        : "bg-white text-slate-900 border border-slate-200 hover:border-slate-300"
+                                )}
+                            >
+                                <div className={cn(
+                                    "text-xs sm:text-sm font-medium truncate",
+                                    isSelected ? "text-neutral-400" : "text-slate-500"
+                                )}>
+                                    {stageName}
+                                </div>
+
+                                <div className={cn(
+                                    "text-2xl sm:text-3xl font-extrabold tracking-tight mt-1.5 sm:mt-2",
+                                    isSelected ? "text-white" : "text-slate-900"
+                                )}>
+                                    {count}
+                                </div>
+                            </button>
+                        );
+                    })}
+                </div>
+
+                {/* Active Filter Indicator */}
+                {statusFilter !== "All" && (
+                    <div className="flex items-center justify-between bg-slate-100/90 border border-slate-200/80 rounded-2xl px-4 py-2.5 text-xs text-slate-700">
+                        <div className="flex items-center gap-2">
+                            <span>
+                                Filtered by <strong className="text-slate-900">{statusFilter}</strong> ({filteredOrders.length} {filteredOrders.length === 1 ? (isLogistics && !isRestaurant ? 'shipment' : 'order') : (isLogistics && !isRestaurant ? 'shipments' : 'orders')})
+                            </span>
+                        </div>
+                        <button
+                            type="button"
+                            onClick={() => setStatusFilter("All")}
+                            className="flex items-center gap-1 text-slate-600 hover:text-slate-900 font-bold hover:underline ml-2 cursor-pointer"
+                        >
+                            <X className="w-3.5 h-3.5" />
+                            <span>Clear Filter</span>
+                        </button>
+                    </div>
+                )}
+
                 {/* Actions Bar */}
                 <div className="space-y-3">
                     <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
@@ -261,102 +343,6 @@ export default function BackofficePage() {
                         </div>
                     </div>
                 </div>
-
-                {/* Pipeline Stages Metric Filter Cards */}
-                <div className="flex items-stretch gap-3 sm:gap-4 overflow-x-auto pb-2 pt-1 no-scrollbar">
-                    {/* All Orders Card */}
-                    <button
-                        type="button"
-                        onClick={() => setStatusFilter("All")}
-                        className={cn(
-                            "flex-1 min-w-[170px] sm:min-w-[190px] max-w-[250px] shrink-0 p-4 sm:p-5 rounded-2xl sm:rounded-3xl text-left transition-all duration-200 cursor-pointer active:scale-[0.98]",
-                            statusFilter === "All"
-                                ? "bg-black text-white border border-black"
-                                : "bg-white text-slate-900 border border-slate-200 hover:border-slate-300"
-                        )}
-                    >
-                        <div className={cn(
-                            "text-xs sm:text-sm font-medium truncate",
-                            statusFilter === "All" ? "text-neutral-400" : "text-slate-500"
-                        )}>
-                            Total Orders
-                        </div>
-
-                        <div className={cn(
-                            "text-2xl sm:text-3xl font-extrabold tracking-tight my-1.5 sm:my-2",
-                            statusFilter === "All" ? "text-white" : "text-slate-900"
-                        )}>
-                            {orders.length}
-                        </div>
-
-                        <div className={cn(
-                            "text-[11px] font-medium",
-                            statusFilter === "All" ? "text-neutral-500" : "text-slate-400"
-                        )}>
-                            All pipeline stages
-                        </div>
-                    </button>
-
-                    {/* Pipeline Stage Cards */}
-                    {pipelineStageList.map((stageName, idx) => {
-                        const count = statusCounts[stageName] || 0;
-                        const isSelected = statusFilter === stageName;
-
-                        return (
-                            <button
-                                key={stageName}
-                                type="button"
-                                onClick={() => setStatusFilter(isSelected ? "All" : stageName)}
-                                className={cn(
-                                    "flex-1 min-w-[170px] sm:min-w-[190px] max-w-[250px] shrink-0 p-4 sm:p-5 rounded-2xl sm:rounded-3xl text-left transition-all duration-200 cursor-pointer active:scale-[0.98]",
-                                    isSelected
-                                        ? "bg-black text-white border border-black"
-                                        : "bg-white text-slate-900 border border-slate-200 hover:border-slate-300"
-                                )}
-                            >
-                                <div className={cn(
-                                    "text-xs sm:text-sm font-medium truncate",
-                                    isSelected ? "text-neutral-400" : "text-slate-500"
-                                )}>
-                                    {stageName}
-                                </div>
-
-                                <div className={cn(
-                                    "text-2xl sm:text-3xl font-extrabold tracking-tight my-1.5 sm:my-2",
-                                    isSelected ? "text-white" : "text-slate-900"
-                                )}>
-                                    {count}
-                                </div>
-
-                                <div className={cn(
-                                    "text-[11px] font-medium",
-                                    isSelected ? "text-neutral-500" : "text-slate-400"
-                                )}>
-                                    Stage {idx + 1}
-                                </div>
-                            </button>
-                        );
-                    })}
-                </div>
-
-                {/* Active Filter Indicator */}
-                {statusFilter !== "All" && (
-                    <div className="flex items-center justify-between bg-slate-100/90 border border-slate-200/80 rounded-2xl px-4 py-2.5 text-xs text-slate-700">
-                        <div className="flex items-center gap-2">
-                            <span>
-                                Filtered by <strong className="text-slate-900">{statusFilter}</strong> ({filteredOrders.length} {filteredOrders.length === 1 ? (isLogistics && !isRestaurant ? 'shipment' : 'order') : (isLogistics && !isRestaurant ? 'shipments' : 'orders')})
-                            </span>
-                        </div>
-                        <button
-                            type="button"
-                            onClick={() => setStatusFilter("All")}
-                            className="flex items-center gap-1 text-slate-600 hover:text-slate-900 font-bold hover:underline ml-2 cursor-pointer"
-                        >
-                            <X className="w-3.5 h-3.5" />
-                            <span>Clear Filter</span>
-                        </button>
-                    </div>
-                )}
 
                 <div className="space-y-4">
 

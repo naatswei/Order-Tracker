@@ -91,7 +91,7 @@ export function BackofficeHeader({ config }: BackofficeHeaderProps) {
 
                 {/* Desktop Navigation */}
                 <div className="hidden lg:flex items-center gap-6">
-                    <nav className="flex items-center gap-1.5 bg-slate-100/80 p-1.5 rounded-2xl border border-slate-200/80">
+                    <nav className="flex items-center gap-1.5 bg-slate-100/70 p-1 rounded-full border border-slate-200/70">
                         {navLinks.map((link) => {
                             const isActive = pathname === link.href || pathname.startsWith(link.href + "/");
                             const Icon = link.icon;
@@ -100,14 +100,14 @@ export function BackofficeHeader({ config }: BackofficeHeaderProps) {
                                     key={link.href}
                                     href={link.href} 
                                     className={`
-                                        text-base font-extrabold px-5 py-2.5 rounded-xl transition-all flex items-center gap-2.5 tracking-tight
+                                        text-sm sm:text-base font-extrabold px-6 py-2 rounded-full transition-all flex items-center gap-2.5 tracking-tight
                                         ${isActive 
-                                            ? "bg-white text-[#191A43] shadow-sm border border-slate-200/90" 
-                                            : "text-slate-600 hover:text-slate-900 hover:bg-white/70"
+                                            ? "bg-white/85 text-[#191A43] shadow-xs border border-slate-200/80 backdrop-blur-xs opacity-90 hover:opacity-100" 
+                                            : "text-slate-600/80 hover:text-slate-900 hover:bg-white/60 opacity-80 hover:opacity-100"
                                         }
                                     `}
                                 >
-                                    <Icon className={`w-5 h-5 ${isActive ? "text-[#CE0003]" : "text-slate-500"}`} />
+                                    <Icon className={`w-4 h-4 sm:w-5 sm:h-5 ${isActive ? "text-[#CE0003]" : "text-slate-500"}`} />
                                     {link.label}
                                 </Link>
                             )
