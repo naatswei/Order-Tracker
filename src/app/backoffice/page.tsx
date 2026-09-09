@@ -325,18 +325,18 @@ export default function BackofficePage() {
                                 asChild={!needsRenewal}
                                 disabled={needsRenewal}
                                 className={cn(
-                                    "flex-1 md:flex-none h-11 rounded-full shadow-[0_4px_20px_rgb(0,0,0,0.08)] gap-2 px-6 text-sm font-bold text-white border-0 transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.15)] hover:-translate-y-0.5 active:scale-[0.98]",
+                                    "flex-1 md:flex-none h-14 rounded-full shadow-[0_4px_20px_rgb(0,0,0,0.08)] gap-2.5 px-8 text-base font-bold text-white border-0 transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.15)] hover:-translate-y-0.5 active:scale-[0.98]",
                                     needsRenewal && "opacity-50 cursor-not-allowed"
                                 )}
                                 style={{ backgroundColor: !needsRenewal ? config.theme.secondary : "#94a3b8" }}
                             >
                                 {needsRenewal ? (
                                     <>
-                                        <Plus className="w-4 h-4" /> Create New Order
+                                        <Plus className="w-5 h-5" /> Create New Order
                                     </>
                                 ) : (
                                     <Link href="/backoffice/create">
-                                        <Plus className="w-4 h-4" /> Create New Order
+                                        <Plus className="w-5 h-5" /> Create New Order
                                     </Link>
                                 )}
                             </Button>
