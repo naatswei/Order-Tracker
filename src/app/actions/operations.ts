@@ -217,6 +217,12 @@ export async function lockTerminal() {
 
 async function initializeDefaultWorkflowStagesIfNeeded(orgId: string) {
     try {
+        try {
+            await db.execute(sql`ALTER TABLE workflows ADD COLUMN IF NOT EXISTS time_limit_minutes INTEGER;`);
+        } catch (e) {
+            console.warn("Table alter check warning:", e);
+        }
+
         const existingStages = await db.select().from(workflows).where(eq(workflows.clerkOrgId, orgId));
         if (existingStages.length > 0) {
             return;
@@ -281,7 +287,7 @@ async function initializeDefaultWorkflowStagesIfNeeded(orgId: string) {
     }
 }
 
-export async function addWorkflowStage(name: string, position: string) {
+export async function addWorkflowStage(name: string, position: string, timeLimitMinutes?: number | null) {
     const { orgId } = await auth();
     if (!orgId) throw new Error("Unauthorized");
 
@@ -303,12 +309,39 @@ export async function addWorkflowStage(name: string, position: string) {
         return { error: `The stage "${standardizedName}" already exists in your workflow.` };
     }
 
+    try {
+        await db.execute(sql`ALTER TABLE workflows ADD COLUMN IF NOT EXISTS time_limit_minutes INTEGER;`);
+    } catch (e) {
+        console.warn("Table alter check warning:", e);
+    }
+
     await db.insert(workflows).values({
         id: `wf_${nanoid(10)}`,
         name: standardizedName,
         position,
+        timeLimitMinutes: timeLimitMinutes || null,
         clerkOrgId: orgId,
     });
+
+    revalidatePath("/backoffice");
+    revalidatePath("/backoffice/operations");
+    revalidatePath("/backoffice/bulk");
+    return { success: true };
+}
+
+export async function updateWorkflowStageTimeLimit(stageId: string, timeLimitMinutes: number | null) {
+    const { orgId } = await auth();
+    if (!orgId) throw new Error("Unauthorized");
+
+    try {
+        await db.execute(sql`ALTER TABLE workflows ADD COLUMN IF NOT EXISTS time_limit_minutes INTEGER;`);
+    } catch (e) {
+        console.warn("Table alter check warning:", e);
+    }
+
+    await db.update(workflows)
+        .set({ timeLimitMinutes: timeLimitMinutes && timeLimitMinutes > 0 ? timeLimitMinutes : null })
+        .where(and(eq(workflows.id, stageId), eq(workflows.clerkOrgId, orgId)));
 
     revalidatePath("/backoffice");
     revalidatePath("/backoffice/operations");

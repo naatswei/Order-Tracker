@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { useOrganization } from "@clerk/nextjs";
-import { getOrders } from "@/app/actions/orders";
+import { getOrders, bulkUpdateOrderStatus } from "@/app/actions/orders";
 import { getStaff, assignOrder, resendRiderSMS, getWorkflowStages } from "@/app/actions/operations";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -21,7 +21,9 @@ import {
     Layers,
     MapPin,
     Navigation,
-    Truck
+    Truck,
+    Clock,
+    AlertTriangle
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -101,6 +103,44 @@ export default function OperationsPage() {
     const [searchQuery, setSearchQuery] = useState("");
     const [isConfigOpen, setIsConfigOpen] = useState(false);
     const [activeStage, setActiveStage] = useState<string>("All");
+    const [, setTick] = useState(0);
+
+    // Auto-refresh elapsed times every 30 seconds
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setTick((t) => t + 1);
+        }, 30000);
+        return () => clearInterval(timer);
+    }, []);
+
+    function getOrderStageDurationMinutes(order: any): number {
+        const meta = (order.metadata as Record<string, any>) || {};
+        const stageEnteredAt = meta.stageEnteredAt
+            ? new Date(meta.stageEnteredAt).getTime()
+            : new Date(order.updatedAt || order.createdAt).getTime();
+        const now = Date.now();
+        return Math.max(0, Math.floor((now - stageEnteredAt) / (1000 * 60)));
+    }
+
+    function isOrderOverdueInStage(order: any, stage: any): boolean {
+        if (!stage?.timeLimitMinutes || stage.timeLimitMinutes <= 0) return false;
+        const duration = getOrderStageDurationMinutes(order);
+        return duration >= stage.timeLimitMinutes;
+    }
+
+    async function handleAdvanceStage(orderId: string, nextStageName: string) {
+        try {
+            const res = await bulkUpdateOrderStatus([orderId], nextStageName, "Operations", `Moved to ${nextStageName}`);
+            if (res?.success) {
+                toast.success(`Order moved to ${nextStageName}`);
+                await loadData();
+            } else {
+                toast.error("Failed to update stage");
+            }
+        } catch (error: any) {
+            toast.error(error?.message || "Failed to update stage");
+        }
+    }
 
     const { organization } = useOrganization();
 
@@ -377,8 +417,11 @@ export default function OperationsPage() {
                             ))
                         ) : (
                             stages.map((stage) => {
-                                const count = filteredOrders.filter(o => getOrderStageName(o) === stage.name).length;
+                                const stageOrders = filteredOrders.filter(o => getOrderStageName(o) === stage.name);
+                                const count = stageOrders.length;
                                 const isSelected = activeStage === stage.name;
+                                const overdueOrders = stageOrders.filter(o => isOrderOverdueInStage(o, stage));
+                                const isStageOverdue = overdueOrders.length > 0;
 
                                 return (
                                     <button
@@ -389,23 +432,46 @@ export default function OperationsPage() {
                                             scrollToStage(stage.name);
                                         }}
                                         className={cn(
-                                            "flex-1 min-w-[280px] sm:min-w-[340px] max-w-[420px] min-h-[140px] sm:min-h-[160px] shrink-0 p-6 sm:p-8 rounded-2xl sm:rounded-3xl text-left transition-all duration-300 cursor-pointer active:scale-[0.98] flex flex-col justify-between shadow-[0_4px_20px_rgb(0,0,0,0.08)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.15)] hover:-translate-y-0.5",
-                                            isSelected
-                                                ? "bg-black text-white border border-black"
-                                                : "bg-white text-slate-900 border border-slate-200 hover:border-slate-300"
+                                            "flex-1 min-w-[280px] sm:min-w-[340px] max-w-[420px] min-h-[140px] sm:min-h-[160px] shrink-0 p-6 sm:p-8 rounded-2xl sm:rounded-3xl text-left transition-all duration-300 cursor-pointer active:scale-[0.98] flex flex-col justify-between hover:-translate-y-0.5",
+                                            isStageOverdue
+                                                ? isSelected
+                                                    ? "bg-red-950 text-white border-2 border-red-500 shadow-[0_4px_25px_rgba(239,68,68,0.35)] ring-2 ring-red-500/60"
+                                                    : "bg-red-500 text-white border-2 border-red-600 shadow-[0_4px_25px_rgba(239,68,68,0.3)] hover:bg-red-600"
+                                                : isSelected
+                                                    ? "bg-black text-white border border-black shadow-[0_4px_20px_rgb(0,0,0,0.08)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.15)]"
+                                                    : "bg-white text-slate-900 border border-slate-200 hover:border-slate-300 shadow-[0_4px_20px_rgb(0,0,0,0.08)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.15)]"
                                         )}
                                         title={`Jump to ${stage.name}`}
                                     >
-                                        <div className={cn(
-                                            "text-sm sm:text-base font-semibold tracking-wide truncate",
-                                            isSelected ? "text-neutral-400" : "text-slate-500"
-                                        )}>
-                                            {stage.name}
+                                        <div className="flex items-center justify-between gap-2">
+                                            <div className={cn(
+                                                "text-sm sm:text-base font-semibold tracking-wide truncate",
+                                                isStageOverdue ? "text-white font-bold" : isSelected ? "text-neutral-400" : "text-slate-500"
+                                            )}>
+                                                {stage.name}
+                                            </div>
+
+                                            {isStageOverdue && (
+                                                <span className="px-2.5 py-1 rounded-full bg-white text-red-700 text-[11px] font-black tracking-wider uppercase animate-pulse flex items-center gap-1 shadow-sm shrink-0">
+                                                    <AlertTriangle className="w-3.5 h-3.5 text-red-600 shrink-0" />
+                                                    {overdueOrders.length} OVERDUE
+                                                </span>
+                                            )}
+
+                                            {!isStageOverdue && stage.timeLimitMinutes && (
+                                                <span className={cn(
+                                                    "text-[10px] font-semibold flex items-center gap-1 shrink-0",
+                                                    isSelected ? "text-neutral-400" : "text-slate-400"
+                                                )}>
+                                                    <Clock className="w-2.5 h-2.5" />
+                                                    {stage.timeLimitMinutes}m
+                                                </span>
+                                            )}
                                         </div>
 
                                         <div className={cn(
                                             "text-4xl sm:text-5xl font-black tracking-tight mt-3 sm:mt-4",
-                                            isSelected ? "text-white" : "text-slate-900"
+                                            isStageOverdue ? "text-white" : isSelected ? "text-white" : "text-slate-900"
                                         )}>
                                             {count}
                                         </div>
@@ -437,9 +503,12 @@ export default function OperationsPage() {
                         id="kanban-container"
                         className="flex gap-6 sm:gap-8 overflow-x-auto pb-10 snap-x snap-mandatory scroll-smooth no-scrollbar items-start"
                     >
-                        {stages.map((stage) => {
+                        {stages.map((stage, stageIndex) => {
                             const stageTheme = getStageTheme(stage.name);
                             const stageOrders = filteredOrders.filter(o => getOrderStageName(o) === stage.name);
+                            const overdueOrders = stageOrders.filter(o => isOrderOverdueInStage(o, stage));
+                            const isStageOverdue = overdueOrders.length > 0;
+                            const nextStage = stages[stageIndex + 1];
 
                             return (
                                 <div 
@@ -448,19 +517,52 @@ export default function OperationsPage() {
                                     className="w-[90vw] max-w-[380px] sm:w-[360px] md:w-[380px] shrink-0 snap-center flex flex-col space-y-4"
                                 >
                                     {/* Stage Header */}
-                                    <div className="flex items-center justify-between px-4.5 py-3.5 bg-white border border-slate-200/80 rounded-2xl shadow-2xs">
+                                    <div className={cn(
+                                        "flex items-center justify-between px-4.5 py-3.5 bg-white border rounded-2xl shadow-2xs transition-all",
+                                        isStageOverdue
+                                            ? "border-red-400 bg-red-50/70 shadow-sm shadow-red-200/50 ring-1 ring-red-300"
+                                            : "border-slate-200/80"
+                                    )}>
                                         <div className="flex items-center gap-2 min-w-0">
-                                            <h2 className="text-xs sm:text-sm font-black text-slate-800 uppercase tracking-wider truncate">
+                                            <h2 className={cn(
+                                                "text-xs sm:text-sm font-black uppercase tracking-wider truncate",
+                                                isStageOverdue ? "text-red-900" : "text-slate-800"
+                                            )}>
                                                 {stage.name}
                                             </h2>
+                                            {stage.timeLimitMinutes && (
+                                                <span className={cn(
+                                                    "text-[10px] font-bold px-1.5 py-0.5 rounded-md flex items-center gap-1 shrink-0",
+                                                    isStageOverdue ? "bg-red-200/80 text-red-800" : "bg-slate-100 text-slate-500"
+                                                )}>
+                                                    <Clock className="w-2.5 h-2.5" />
+                                                    {stage.timeLimitMinutes}m
+                                                </span>
+                                            )}
                                         </div>
-                                        <span className="px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 text-xs font-black shrink-0">
-                                            {stageOrders.length}
-                                        </span>
+                                        <div className="flex items-center gap-1.5">
+                                            {isStageOverdue && (
+                                                <span className="px-2 py-0.5 rounded-full bg-red-600 text-white text-[10px] font-black animate-pulse flex items-center gap-1 shrink-0">
+                                                    <AlertTriangle className="w-2.5 h-2.5" />
+                                                    {overdueOrders.length} Late
+                                                </span>
+                                            )}
+                                            <span className={cn(
+                                                "px-2.5 py-0.5 rounded-full text-xs font-black shrink-0",
+                                                isStageOverdue ? "bg-red-100 text-red-800" : "bg-slate-100 text-slate-700"
+                                            )}>
+                                                {stageOrders.length}
+                                            </span>
+                                        </div>
                                     </div>
 
                                     {/* Stage Orders Column Body */}
-                                    <div className="space-y-4 p-3.5 sm:p-4 rounded-3xl bg-slate-100/70 border border-slate-200/70 min-h-[400px]">
+                                    <div className={cn(
+                                        "space-y-4 p-3.5 sm:p-4 rounded-3xl border min-h-[400px] transition-colors",
+                                        isStageOverdue
+                                            ? "bg-red-50/30 border-red-200/70"
+                                            : "bg-slate-100/70 border-slate-200/70"
+                                    )}>
                                         {stageOrders.length === 0 ? (
                                              <div className="py-16 text-center border-2 border-dashed border-slate-200/80 rounded-2xl p-5">
                                                 <Package className="w-6 h-6 text-slate-300 mx-auto mb-2" />
@@ -474,16 +576,35 @@ export default function OperationsPage() {
                                                 const recipientName = (meta.recipientName as string) || null;
                                                 const recipientPhone = (meta.recipientPhone as string) || null;
 
+                                                const durationMinutes = getOrderStageDurationMinutes(order);
+                                                const isOverdue = isOrderOverdueInStage(order, stage);
+                                                const overdueMinutes = isOverdue && stage.timeLimitMinutes ? durationMinutes - stage.timeLimitMinutes : 0;
+
                                                 return (
                                                     <Card 
                                                         key={order.id}
                                                         className={cn(
-                                                            "border border-slate-200/90 bg-white rounded-2xl shadow-xs hover:shadow-md hover:border-slate-300 transition-all overflow-hidden border-l-[5px]",
-                                                            stageTheme.leftBorder
+                                                            "border bg-white rounded-2xl shadow-xs hover:shadow-md transition-all overflow-hidden border-l-[5px]",
+                                                            isOverdue
+                                                                ? "border-red-500 border-l-red-600 bg-red-50/20 shadow-md shadow-red-500/10 ring-2 ring-red-400/50"
+                                                                : cn("border-slate-200/90 hover:border-slate-300", stageTheme.leftBorder)
                                                         )}
                                                     >
                                                         <CardContent className="p-4 sm:p-5 space-y-3">
-                                                            {/* Line 1: Tracking # + Customer */}
+                                                            {/* Overdue Alert Banner */}
+                                                            {isOverdue && (
+                                                                <div className="bg-red-600 text-white text-xs font-black px-3 py-1.5 rounded-xl flex items-center justify-between shadow-xs animate-pulse">
+                                                                    <span className="flex items-center gap-1.5">
+                                                                        <AlertTriangle className="w-3.5 h-3.5 shrink-0 text-white" />
+                                                                        <span>OVERDUE ({durationMinutes}m)</span>
+                                                                    </span>
+                                                                    <span className="bg-white/20 px-2 py-0.5 rounded-md font-extrabold text-[11px]">
+                                                                        +{overdueMinutes}m late
+                                                                    </span>
+                                                                </div>
+                                                            )}
+
+                                                            {/* Line 1: Tracking # + Customer + Time Badge */}
                                                             <div className="flex items-center justify-between gap-2">
                                                                 <div className="flex items-center gap-2 min-w-0">
                                                                     <Link 
@@ -497,6 +618,13 @@ export default function OperationsPage() {
                                                                         {order.customerName}
                                                                     </span>
                                                                 </div>
+
+                                                                {!isOverdue && stage.timeLimitMinutes && (
+                                                                    <span className="text-[11px] font-semibold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-lg flex items-center gap-1 shrink-0">
+                                                                        <Clock className="w-2.5 h-2.5 text-slate-400" />
+                                                                        {durationMinutes}m / {stage.timeLimitMinutes}m
+                                                                    </span>
+                                                                )}
                                                             </div>
 
                                                             {/* Line 2: Route & Item Info */}
@@ -536,8 +664,26 @@ export default function OperationsPage() {
                                                                 )}
                                                             </div>
 
+                                                            {/* Quick Advance Stage Button */}
+                                                            {nextStage && (
+                                                                <Button
+                                                                    type="button"
+                                                                    size="sm"
+                                                                    onClick={() => handleAdvanceStage(order.id, nextStage.name)}
+                                                                    className={cn(
+                                                                        "w-full h-9 rounded-full font-bold text-xs flex items-center justify-center gap-1.5 transition-all active:scale-[0.98] shadow-xs cursor-pointer",
+                                                                        isOverdue
+                                                                            ? "bg-red-600 hover:bg-red-700 text-white shadow-red-500/25"
+                                                                            : "bg-slate-900 hover:bg-black text-white"
+                                                                    )}
+                                                                >
+                                                                    <span>Move to {nextStage.name}</span>
+                                                                    <ArrowRight className="w-3.5 h-3.5" />
+                                                                </Button>
+                                                            )}
+
                                                             {/* Line 3: Rider Assignment & Dispatch SMS */}
-                                                            <div className="pt-1.5 flex items-center gap-2">
+                                                            <div className="pt-1 flex items-center gap-2">
                                                                 <div className="flex-1 min-w-0 rounded-2xl px-3 py-2 sm:py-2.5 flex items-center gap-2 border border-slate-200/90 bg-white hover:bg-slate-50 transition-all shadow-2xs">
                                                                     <User className="w-4 h-4 shrink-0 text-slate-500" />
                                                                     <Select

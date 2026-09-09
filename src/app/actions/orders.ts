@@ -140,6 +140,7 @@ export async function createOrder(data: OrderInput): Promise<{ success: boolean;
         }
 
         orderMetadata.internalStage = initialStatus;
+        orderMetadata.stageEnteredAt = new Date().toISOString();
 
         await db.insert(orders).values({
             id: orderId,
@@ -225,82 +226,88 @@ export async function createOrder(data: OrderInput): Promise<{ success: boolean;
     }
 }
 
-export async function updateOrderStatus(orderId: string, status: string, location: string, message: string) {
-    const { userId, orgId } = await auth();
-    if (!userId) throw new Error("Unauthorized");
+export async function updateOrderStatus(orderId: string, status: string, location: string, message: string): Promise<{ success: boolean; error?: string }> {
+    try {
+        const { userId, orgId } = await auth();
+        if (!userId) return { success: false, error: "Unauthorized" };
 
-    if (orgId) {
-        await validateSubscription(orgId);
-    }
+        if (orgId) {
+            await validateSubscription(orgId);
+        }
 
-    let orderNumber = "";
-    let previousStatus = "";
+        let orderNumber = "";
+        let previousStatus = "";
 
-    await db.transaction(async (tx) => {
-        const orderData = await tx.query.orders.findFirst({
-            where: eq(orders.id, orderId)
+        await db.transaction(async (tx) => {
+            const orderData = await tx.query.orders.findFirst({
+                where: eq(orders.id, orderId)
+            });
+            if (!orderData) throw new Error("Order not found");
+
+            orderNumber = orderData.orderNumber;
+            previousStatus = orderData.currentStatus;
+
+            // Block moving through fulfillment without an assigned rider
+            if (orderData.businessType === "logistics" && isLogisticsFulfillmentStatus(status) && !orderData.assignedStaffId) {
+                throw new Error(`Order #${orderData.orderNumber} cannot move through fulfillment without being assigned to a rider. Please assign a rider in Operations first.`);
+            }
+
+            const existingMeta = (orderData?.metadata as Record<string, any>) || {};
+            const updatedMeta = {
+                ...existingMeta,
+                internalStage: status,
+                stageEnteredAt: new Date().toISOString()
+            };
+
+            // Update order current status and internalStage
+            await tx
+                .update(orders)
+                .set({
+                    currentStatus: status,
+                    metadata: updatedMeta,
+                    updatedAt: new Date()
+                })
+                .where(eq(orders.id, orderId));
+
+            const staffId = orgId ? await getCurrentStaffId(orgId, userId) : null;
+
+            // Add to history
+            await tx.insert(statusHistory).values({
+                id: Math.random().toString(36).substring(2, 9).toUpperCase(),
+                orderId: orderId,
+                status: status,
+                location: location,
+                message: message,
+                staffId: staffId,
+            });
+
+            // Trigger inventory logic based on status
+            const lowerStatus = status.toLowerCase();
+            if (lowerStatus === "delivered" || lowerStatus === "completed" || lowerStatus === "collected" || lowerStatus === "payment confirmed" || lowerStatus === "paid") {
+                await consumeReservedStock(orderId, tx);
+            } else if (lowerStatus === "cancelled" || lowerStatus === "voided") {
+                await releaseReservedStock(orderId, tx);
+            }
         });
-        if (!orderData) throw new Error("Order not found");
 
-        orderNumber = orderData.orderNumber;
-        previousStatus = orderData.currentStatus;
-
-        // Block moving through fulfillment without an assigned rider
-        if (orderData.businessType === "logistics" && isLogisticsFulfillmentStatus(status) && !orderData.assignedStaffId) {
-            throw new Error(`Order #${orderData.orderNumber} cannot move through fulfillment without being assigned to a rider. Please assign a rider in Operations first.`);
+        // Deduplicate notification: only fire SMS/notification if status changed
+        if (orderNumber && previousStatus?.toLowerCase() !== status.toLowerCase()) {
+            triggerOrderStatusNotification(orderId, status, orderNumber).catch(console.error);
+            try {
+                await sendOrderStatusSMS(orderId, status);
+            } catch (err) {
+                console.error("Error triggering status SMS:", err);
+            }
         }
 
-        const existingMeta = (orderData?.metadata as Record<string, any>) || {};
-        const updatedMeta = {
-            ...existingMeta,
-            internalStage: status
-        };
-
-        // Update order current status and internalStage
-        await tx
-            .update(orders)
-            .set({
-                currentStatus: status,
-                metadata: updatedMeta,
-                updatedAt: new Date()
-            })
-            .where(eq(orders.id, orderId));
-
-        const staffId = orgId ? await getCurrentStaffId(orgId, userId) : null;
-
-        // Add to history
-        await tx.insert(statusHistory).values({
-            id: Math.random().toString(36).substring(2, 9).toUpperCase(),
-            orderId: orderId,
-            status: status,
-            location: location,
-            message: message,
-            staffId: staffId,
-        });
-
-        // Trigger inventory logic based on status
-        const lowerStatus = status.toLowerCase();
-        if (lowerStatus === "delivered" || lowerStatus === "completed" || lowerStatus === "collected" || lowerStatus === "payment confirmed" || lowerStatus === "paid") {
-            await consumeReservedStock(orderId, tx);
-        } else if (lowerStatus === "cancelled" || lowerStatus === "voided") {
-            await releaseReservedStock(orderId, tx);
-        }
-    });
-
-    // Deduplicate notification: only fire SMS/notification if status changed
-    if (orderNumber && previousStatus?.toLowerCase() !== status.toLowerCase()) {
-        triggerOrderStatusNotification(orderId, status, orderNumber).catch(console.error);
-        try {
-            await sendOrderStatusSMS(orderId, status);
-        } catch (err) {
-            console.error("Error triggering status SMS:", err);
-        }
+        revalidatePath("/backoffice");
+        revalidatePath("/backoffice/operations");
+        revalidatePath(`/track/${orderId}`);
+        return { success: true };
+    } catch (error: any) {
+        console.error("Server Action Error (updateOrderStatus):", error);
+        return { success: false, error: error?.message || "Failed to update status" };
     }
-
-    revalidatePath("/backoffice");
-    revalidatePath("/backoffice/operations");
-    revalidatePath(`/track/${orderId}`);
-    return { success: true };
 }
 
 export async function getOrders() {
@@ -456,66 +463,72 @@ export async function getOrderWithHistory(id: string) {
     };
 }
 
-export async function bulkUpdateOrderStatus(orderIds: string[], status: string, location: string, message: string) {
-    const { userId, orgId } = await auth();
-    if (!userId) throw new Error("Unauthorized");
+export async function bulkUpdateOrderStatus(orderIds: string[], status: string, location: string, message: string): Promise<{ success: boolean; error?: string }> {
+    try {
+        const { userId, orgId } = await auth();
+        if (!userId) return { success: false, error: "Unauthorized" };
 
-    if (orgId) {
-        await validateSubscription(orgId);
-    }
-
-    await db.transaction(async (tx) => {
-        for (const orderId of orderIds) {
-            const orderData = await tx.query.orders.findFirst({
-                where: eq(orders.id, orderId)
-            });
-            if (!orderData) continue;
-
-            // Block moving through fulfillment without an assigned rider
-            if (orderData.businessType === "logistics" && isLogisticsFulfillmentStatus(status) && !orderData.assignedStaffId) {
-                throw new Error(`Order #${orderData.orderNumber} cannot move through fulfillment without being assigned to a rider. Please assign a rider in Operations first.`);
-            }
-
-            const existingMeta = (orderData?.metadata as Record<string, any>) || {};
-            const updatedMeta = {
-                ...existingMeta,
-                internalStage: status
-            };
-
-            // Update order current status and metadata
-            await tx
-                .update(orders)
-                .set({
-                    currentStatus: status,
-                    metadata: updatedMeta,
-                    updatedAt: new Date()
-                })
-                .where(eq(orders.id, orderId));
-
-            // Add to history
-            await tx.insert(statusHistory).values({
-                id: Math.random().toString(36).substring(2, 9).toUpperCase(),
-                orderId: orderId,
-                status: status,
-                location: location,
-                message: message,
-            });
-            // Trigger inventory logic based on status
-            const lowerStatus = status.toLowerCase();
-            if (lowerStatus === "delivered" || lowerStatus === "completed" || lowerStatus === "collected") {
-                await consumeReservedStock(orderId, tx);
-            } else if (lowerStatus === "cancelled" || lowerStatus === "voided") {
-                await releaseReservedStock(orderId, tx);
-            }
+        if (orgId) {
+            await validateSubscription(orgId);
         }
-    });
 
-    // Dispatch and await SMS notifications for all updated orders
-    await Promise.allSettled(orderIds.map(orderId => sendOrderStatusSMS(orderId, status)));
+        await db.transaction(async (tx) => {
+            for (const orderId of orderIds) {
+                const orderData = await tx.query.orders.findFirst({
+                    where: eq(orders.id, orderId)
+                });
+                if (!orderData) continue;
 
-    revalidatePath("/backoffice");
-    revalidatePath("/backoffice/operations");
-    return { success: true };
+                // Block moving through fulfillment without an assigned rider
+                if (orderData.businessType === "logistics" && isLogisticsFulfillmentStatus(status) && !orderData.assignedStaffId) {
+                    throw new Error(`Order #${orderData.orderNumber} cannot move through fulfillment without being assigned to a rider. Please assign a rider in Operations first.`);
+                }
+
+                const existingMeta = (orderData?.metadata as Record<string, any>) || {};
+                const updatedMeta = {
+                    ...existingMeta,
+                    internalStage: status,
+                    stageEnteredAt: new Date().toISOString()
+                };
+
+                // Update order current status and metadata
+                await tx
+                    .update(orders)
+                    .set({
+                        currentStatus: status,
+                        metadata: updatedMeta,
+                        updatedAt: new Date()
+                    })
+                    .where(eq(orders.id, orderId));
+
+                // Add to history
+                await tx.insert(statusHistory).values({
+                    id: Math.random().toString(36).substring(2, 9).toUpperCase(),
+                    orderId: orderId,
+                    status: status,
+                    location: location,
+                    message: message,
+                });
+                // Trigger inventory logic based on status
+                const lowerStatus = status.toLowerCase();
+                if (lowerStatus === "delivered" || lowerStatus === "completed" || lowerStatus === "collected") {
+                    await consumeReservedStock(orderId, tx);
+                } else if (lowerStatus === "cancelled" || lowerStatus === "voided") {
+                    await releaseReservedStock(orderId, tx);
+                }
+            }
+        });
+
+        // Dispatch and await SMS notifications for all updated orders
+        await Promise.allSettled(orderIds.map(orderId => sendOrderStatusSMS(orderId, status)));
+
+        revalidatePath("/backoffice");
+        revalidatePath("/backoffice/operations");
+        return { success: true };
+    } catch (error: any) {
+        console.error("Server Action Error (bulkUpdateOrderStatus):", error);
+        return { success: false, error: error?.message || "Failed to update orders" };
+    }
 }
 
 // --- Public Rider Status Update (No auth required — for rider SMS action links) ---
@@ -591,7 +604,8 @@ export async function riderUpdateStatus(
         const existingMeta = (order.metadata as Record<string, any>) || {};
         const updatedMeta = {
             ...existingMeta,
-            internalStage: status
+            internalStage: status,
+            stageEnteredAt: new Date().toISOString()
         };
 
         await db.transaction(async (tx) => {

@@ -268,11 +268,12 @@ export default function OrderUpdatePage() {
                         garmentType: foundOrder.itemType,
                         measurements: foundOrder.measurements || "",
                         currentStatus: foundOrder.currentStatus,
+                        assignedStaffId: foundOrder.assignedStaffId || null,
                         createdAt: foundOrder.createdAt,
                         updatedAt: foundOrder.updatedAt,
                         businessType: foundOrder.businessType,
                         metadata: foundOrder.metadata as any,
-                        statusHistory: (foundOrder.statusHistory as Record<string, any>[]).map((h) => ({
+                        statusHistory: ((foundOrder.statusHistory as Record<string, any>[]) || []).map((h) => ({
                             id: h.id as string,
                             status: h.status as string,
                             location: h.location as string | null,
@@ -360,15 +361,19 @@ export default function OrderUpdatePage() {
 
         setIsUpdating(true)
         try {
-            await updateOrderStatus(
+            const res = await updateOrderStatus(
                 orderId, 
                 status, 
                 location || (isLogistics ? "Dispatch Hub" : "Main Office"), 
                 message || `Status updated to ${status}`
             )
+            if (res && !res.success) {
+                toast.error(res.error || "Failed to update status")
+                return
+            }
             toast.success(`Status updated to "${status}" & customer notified!`)
             router.push("/backoffice")
-        } catch (error) {
+        } catch (error: any) {
             const errorMessage = error instanceof Error ? error.message : "Failed to update status"
             toast.error(errorMessage)
         } finally {

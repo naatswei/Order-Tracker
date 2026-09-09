@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, uuid, jsonb } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, uuid, jsonb, integer } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
 export const orders = pgTable("orders", {
@@ -57,6 +57,7 @@ export const workflows = pgTable("workflows", {
     id: text("id").primaryKey(),
     name: text("name").notNull(),
     position: text("position").notNull(), // Order of the stage
+    timeLimitMinutes: integer("time_limit_minutes"),
     clerkOrgId: text("clerk_org_id").notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
 });

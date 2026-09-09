@@ -3,14 +3,15 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Plus, Trash2, ArrowUp, ArrowDown, Sparkles, Layers } from "lucide-react"
-import { addWorkflowStage, removeWorkflowStage, reorderWorkflowStages } from "@/app/actions/operations"
+import { Plus, Trash2, ArrowUp, ArrowDown, Sparkles, Layers, Clock } from "lucide-react"
+import { addWorkflowStage, removeWorkflowStage, reorderWorkflowStages, updateWorkflowStageTimeLimit } from "@/app/actions/operations"
 import { toast } from "sonner"
 
 interface Stage {
     id: string
     name: string
     position: string
+    timeLimitMinutes?: number | null
 }
 
 interface StageConfigProps {
@@ -20,6 +21,7 @@ interface StageConfigProps {
 
 export function StageConfig({ initialStages, onUpdate }: StageConfigProps) {
     const [newStageName, setNewStageName] = useState("")
+    const [newStageTimeLimit, setNewStageTimeLimit] = useState("")
     const [isAdding, setIsAdding] = useState(false)
     const [isReordering, setIsReordering] = useState(false)
 
@@ -28,7 +30,8 @@ export function StageConfig({ initialStages, onUpdate }: StageConfigProps) {
         setIsAdding(true)
         try {
             const nextPos = (initialStages.length + 1).toString()
-            const result = await addWorkflowStage(newStageName, nextPos)
+            const mins = newStageTimeLimit.trim() ? parseInt(newStageTimeLimit.trim(), 10) : null
+            const result = await addWorkflowStage(newStageName, nextPos, isNaN(mins as number) ? null : mins)
             
             if (result.error) {
                 toast.error(result.error)
@@ -36,12 +39,25 @@ export function StageConfig({ initialStages, onUpdate }: StageConfigProps) {
             }
 
             setNewStageName("")
+            setNewStageTimeLimit("")
             toast.success(`Stage "${newStageName.trim()}" added to pipeline!`)
             onUpdate()
         } catch (error) {
             toast.error("Failed to add stage")
         } finally {
             setIsAdding(false)
+        }
+    }
+
+    async function handleUpdateTimeLimit(id: string, value: string) {
+        const parsed = value.trim() ? parseInt(value.trim(), 10) : null
+        const mins = isNaN(parsed as number) ? null : parsed
+        try {
+            await updateWorkflowStageTimeLimit(id, mins)
+            toast.success("Stage time limit updated")
+            onUpdate()
+        } catch (error) {
+            toast.error("Failed to update time limit")
         }
     }
 
@@ -85,10 +101,10 @@ export function StageConfig({ initialStages, onUpdate }: StageConfigProps) {
                         <Layers className="w-3.5 h-3.5 text-slate-400" />
                         <span>Active Pipeline Stages ({initialStages.length})</span>
                     </p>
-                    <span className="text-[11px] text-slate-400 font-medium">Use arrows to reorder</span>
+                    <span className="text-[11px] text-slate-400 font-medium">Set limits & reorder</span>
                 </div>
 
-                <div className="space-y-2 max-h-[300px] overflow-y-auto pr-1">
+                <div className="space-y-2 max-h-[340px] overflow-y-auto pr-1">
                     {initialStages.map((stage, index) => {
                         const isFirst = index === 0
                         const isLast = index === initialStages.length - 1
@@ -96,7 +112,7 @@ export function StageConfig({ initialStages, onUpdate }: StageConfigProps) {
                         return (
                             <div 
                                 key={stage.id || stage.name}
-                                className="flex items-center gap-2.5 p-2.5 sm:p-3 bg-slate-50/80 border border-slate-200/80 rounded-2xl group transition-all hover:border-slate-300 hover:bg-white hover:shadow-sm"
+                                className="flex items-center gap-2 p-2.5 sm:p-3 bg-slate-50/80 border border-slate-200/80 rounded-2xl group transition-all hover:border-slate-300 hover:bg-white hover:shadow-sm"
                             >
                                 <div className="w-6 h-6 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-[11px] font-black text-[#191A43] shadow-xs shrink-0">
                                     {index + 1}
@@ -106,7 +122,31 @@ export function StageConfig({ initialStages, onUpdate }: StageConfigProps) {
                                     <p className="font-bold text-xs sm:text-sm text-slate-800 truncate">{stage.name}</p>
                                 </div>
 
-                                <div className="flex items-center gap-1 shrink-0">
+                                {/* Time limit setting input */}
+                                <div 
+                                    className="flex items-center gap-1 bg-slate-100 hover:bg-slate-200/80 px-2 py-1 rounded-xl transition-colors shrink-0" 
+                                    title="Time limit in minutes (e.g. 30)"
+                                >
+                                    <Clock className="w-3 h-3 text-slate-500 shrink-0" />
+                                    <input
+                                        type="number"
+                                        min="1"
+                                        max="999"
+                                        key={`${stage.id}-${stage.timeLimitMinutes || 0}`}
+                                        defaultValue={stage.timeLimitMinutes || ""}
+                                        placeholder="No limit"
+                                        onBlur={(e) => handleUpdateTimeLimit(stage.id, e.target.value)}
+                                        onKeyDown={(e) => {
+                                            if (e.key === "Enter") {
+                                                (e.target as HTMLInputElement).blur()
+                                            }
+                                        }}
+                                        className="w-12 bg-transparent text-xs font-bold text-slate-800 placeholder:text-slate-400 focus:outline-none text-right [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                    />
+                                    <span className="text-[10px] text-slate-400 font-bold">m</span>
+                                </div>
+
+                                <div className="flex items-center gap-0.5 shrink-0">
                                     <Button
                                         type="button"
                                         variant="ghost"
@@ -153,10 +193,10 @@ export function StageConfig({ initialStages, onUpdate }: StageConfigProps) {
                 </div>
             </div>
 
-            <div className="pt-3 border-t border-slate-100">
+            <div className="pt-3 border-t border-slate-100 space-y-2">
                 <div className="flex gap-2">
                     <Input 
-                        placeholder="e.g. Quality Check, Out for Delivery" 
+                        placeholder="Stage name (e.g. Kitchen Cooking)" 
                         value={newStageName}
                         onChange={(e) => setNewStageName(e.target.value)}
                         onKeyDown={(e) => {
@@ -165,20 +205,38 @@ export function StageConfig({ initialStages, onUpdate }: StageConfigProps) {
                                 handleAdd()
                             }
                         }}
-                        className="h-10 sm:h-11 rounded-xl border-slate-200 bg-slate-50/50 focus:bg-white text-xs sm:text-sm font-medium transition-all"
+                        className="h-10 sm:h-11 rounded-xl border-slate-200 bg-slate-50/50 focus:bg-white text-xs sm:text-sm font-medium transition-all flex-1"
                     />
+                    <div className="w-24 shrink-0 relative flex items-center">
+                        <Input 
+                            type="number"
+                            min="1"
+                            placeholder="Limit" 
+                            value={newStageTimeLimit}
+                            onChange={(e) => setNewStageTimeLimit(e.target.value)}
+                            onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                    e.preventDefault()
+                                    handleAdd()
+                                }
+                            }}
+                            className="h-10 sm:h-11 rounded-xl border-slate-200 bg-slate-50/50 focus:bg-white text-xs font-bold transition-all pr-6"
+                            title="Time limit in minutes (e.g. 30)"
+                        />
+                        <span className="absolute right-2.5 text-[10px] text-slate-400 font-bold pointer-events-none">m</span>
+                    </div>
                     <Button 
                         type="button"
                         disabled={isAdding || !newStageName.trim()}
                         onClick={handleAdd}
-                        className="h-10 sm:h-11 px-4 sm:px-5 rounded-xl bg-[#191A43] hover:bg-[#191A43]/90 text-white font-bold transition-all shadow-md shadow-[#191A43]/10 text-xs shrink-0"
+                        className="h-10 sm:h-11 px-4 sm:px-5 rounded-xl bg-[#191A43] hover:bg-[#191A43]/90 text-white font-bold transition-all shadow-md shadow-[#191A43]/10 text-xs shrink-0 cursor-pointer"
                     >
                         <Plus className="w-4 h-4 mr-1.5" />
                         Add
                     </Button>
                 </div>
-                <p className="text-[10px] text-slate-400 mt-2 px-1">
-                    * Stages define the columns on your board and the progress tracker visible to customers.
+                <p className="text-[10px] text-slate-400 px-1">
+                    * Set a time limit (e.g. 30m) to automatically trigger red alerts in Operations when an order is delayed.
                 </p>
             </div>
         </div>

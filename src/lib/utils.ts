@@ -27,19 +27,12 @@ export function detectGhanaNetworkProvider(phone: string): 'mtn' | 'vod' | 'atl'
 
 export function isLogisticsFulfillmentStatus(status: string): boolean {
   const s = (status || "").toLowerCase().trim();
-  // Intake, initial prep, and cancellation statuses do not require a rider
-  const nonFulfillment = [
-    "order received",
-    "shipment booked",
-    "pending",
-    "order placed",
-    "confirmed",
-    "kitchen prep",
-    "preparing",
-    "processing",
-    "cancelled",
-    "order cancelled",
-    "voided"
+  // Only active transit and final delivery statuses require a rider assigned
+  const transitDeliveryStatuses = [
+    "out for delivery",
+    "in transit",
+    "delivering",
+    "delivered"
   ];
-  return !nonFulfillment.includes(s);
+  return transitDeliveryStatuses.includes(s);
 }
