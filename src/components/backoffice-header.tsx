@@ -82,16 +82,16 @@ export function BackofficeHeader({ config }: BackofficeHeaderProps) {
             <div className="w-full px-4 sm:px-8 py-5 flex items-center justify-between">
                 {/* Logo */}
                 <Link href="/backoffice" className="flex flex-col group select-none">
-                    <h1 className="text-xl sm:text-2xl font-black tracking-tight flex items-center">
+                    <h1 className="text-base sm:text-lg font-bold tracking-tight flex items-center">
                         <span className="text-[#CE0003] transition-transform group-hover:scale-105">O</span>
                         <span className="text-[#191A43]">Tracker</span>
                     </h1>
-                    <p className="text-[11px] text-slate-500 font-medium mt-[1px]">Backoffice Dashboard</p>
+                    <p className="text-[10px] text-slate-400 font-medium mt-[0.5px]">Backoffice Dashboard</p>
                 </Link>
 
                 {/* Desktop Navigation */}
                 <div className="hidden lg:flex items-center gap-6">
-                    <nav className="flex items-center gap-1.5 bg-slate-100/70 p-1 rounded-full border border-slate-200/70">
+                    <nav className="flex items-center gap-1.5 bg-slate-100/80 p-1 rounded-full border border-slate-200/70">
                         {navLinks.map((link) => {
                             const isActive = pathname === link.href || pathname.startsWith(link.href + "/");
                             const Icon = link.icon;
@@ -100,10 +100,10 @@ export function BackofficeHeader({ config }: BackofficeHeaderProps) {
                                     key={link.href}
                                     href={link.href} 
                                     className={`
-                                        text-sm sm:text-base font-extrabold px-6 py-2 rounded-full transition-all flex items-center gap-2.5 tracking-tight
+                                        text-sm sm:text-base font-extrabold px-6 py-2 rounded-full transition-all flex items-center gap-2.5 tracking-tight opacity-100
                                         ${isActive 
-                                            ? "bg-white/85 text-[#191A43] shadow-xs border border-slate-200/80 backdrop-blur-xs opacity-90 hover:opacity-100" 
-                                            : "text-slate-600/80 hover:text-slate-900 hover:bg-white/60 opacity-80 hover:opacity-100"
+                                            ? "bg-white text-[#191A43] shadow-xs border border-slate-200/90" 
+                                            : "text-slate-700 hover:text-slate-950 hover:bg-white/80"
                                         }
                                     `}
                                 >

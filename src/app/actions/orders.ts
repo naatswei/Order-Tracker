@@ -229,6 +229,7 @@ export async function updateOrderStatus(orderId: string, status: string, locatio
     }
 
     let orderNumber = "";
+    let previousStatus = "";
 
     await db.transaction(async (tx) => {
         const orderData = await tx.query.orders.findFirst({
@@ -236,13 +237,21 @@ export async function updateOrderStatus(orderId: string, status: string, locatio
         });
         if (orderData) {
             orderNumber = orderData.orderNumber;
+            previousStatus = orderData.currentStatus;
         }
 
-        // Update order current status
+        const existingMeta = (orderData?.metadata as Record<string, any>) || {};
+        const updatedMeta = {
+            ...existingMeta,
+            internalStage: status
+        };
+
+        // Update order current status and internalStage
         await tx
             .update(orders)
             .set({
                 currentStatus: status,
+                metadata: updatedMeta,
                 updatedAt: new Date()
             })
             .where(eq(orders.id, orderId));
@@ -268,12 +277,14 @@ export async function updateOrderStatus(orderId: string, status: string, locatio
         }
     });
 
-    if (orderNumber) {
+    // Deduplicate notification: only fire SMS/notification if status changed
+    if (orderNumber && previousStatus?.toLowerCase() !== status.toLowerCase()) {
         triggerOrderStatusNotification(orderId, status, orderNumber).catch(console.error);
         sendOrderStatusSMS(orderId, status).catch(err => console.error("Error triggering status SMS:", err));
     }
 
     revalidatePath("/backoffice");
+    revalidatePath("/backoffice/operations");
     revalidatePath(`/track/${orderId}`);
     return { success: true };
 }
@@ -441,11 +452,21 @@ export async function bulkUpdateOrderStatus(orderIds: string[], status: string, 
 
     await db.transaction(async (tx) => {
         for (const orderId of orderIds) {
-            // Update order current status
+            const orderData = await tx.query.orders.findFirst({
+                where: eq(orders.id, orderId)
+            });
+            const existingMeta = (orderData?.metadata as Record<string, any>) || {};
+            const updatedMeta = {
+                ...existingMeta,
+                internalStage: status
+            };
+
+            // Update order current status and metadata
             await tx
                 .update(orders)
                 .set({
                     currentStatus: status,
+                    metadata: updatedMeta,
                     updatedAt: new Date()
                 })
                 .where(eq(orders.id, orderId));
@@ -470,6 +491,7 @@ export async function bulkUpdateOrderStatus(orderIds: string[], status: string, 
     });
 
     revalidatePath("/backoffice");
+    revalidatePath("/backoffice/operations");
     return { success: true };
 }
 
@@ -507,6 +529,11 @@ export async function riderUpdateStatus(
             return { success: false, error: "Rider updates are only available for logistics orders" };
         }
 
+        // Prevent duplicate updates if order is already at this status (prevents duplicate customer notifications)
+        if (order.currentStatus.toLowerCase() === status.toLowerCase()) {
+            return { success: true };
+        }
+
         // Prevent updating already delivered or cancelled orders
         const currentLower = order.currentStatus.toLowerCase();
         if (currentLower === "delivered" || currentLower === "cancelled" || currentLower === "returned to sender") {
@@ -533,12 +560,19 @@ export async function riderUpdateStatus(
             }
         }
 
+        const existingMeta = (order.metadata as Record<string, any>) || {};
+        const updatedMeta = {
+            ...existingMeta,
+            internalStage: status
+        };
+
         await db.transaction(async (tx) => {
-            // Update order status
+            // Update order status and internalStage
             await tx
                 .update(orders)
                 .set({
                     currentStatus: status,
+                    metadata: updatedMeta,
                     updatedAt: new Date(),
                 })
                 .where(eq(orders.id, orderId));
@@ -564,6 +598,7 @@ export async function riderUpdateStatus(
         sendOrderStatusSMS(orderId, status).catch(err => console.error("Error triggering status SMS:", err));
 
         revalidatePath("/backoffice");
+        revalidatePath("/backoffice/operations");
         revalidatePath(`/track/${orderId}`);
         revalidatePath(`/rider/${orderId}`);
 

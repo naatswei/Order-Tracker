@@ -207,27 +207,27 @@ export default function BackofficePage() {
 
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-16 sm:pt-20 pb-8 sm:pb-12 max-w-[1400px] space-y-6 sm:space-y-8">
                 {/* Pipeline Stages Metric Filter Cards (Moved Up) */}
-                <div className="flex items-stretch gap-3 sm:gap-4 overflow-x-auto pb-2 pt-1 no-scrollbar">
+                <div className="flex items-stretch gap-4 sm:gap-6 overflow-x-auto pb-3 pt-1 no-scrollbar">
                     {/* All Orders Card */}
                     <button
                         type="button"
                         onClick={() => setStatusFilter("All")}
                         className={cn(
-                            "flex-1 min-w-[150px] sm:min-w-[180px] max-w-[240px] shrink-0 p-4 sm:p-5 rounded-2xl sm:rounded-3xl text-left transition-all duration-200 cursor-pointer active:scale-[0.98]",
+                            "flex-1 min-w-[280px] sm:min-w-[340px] max-w-[420px] min-h-[140px] sm:min-h-[160px] shrink-0 p-6 sm:p-8 rounded-2xl sm:rounded-3xl text-left transition-all duration-200 cursor-pointer active:scale-[0.98] flex flex-col justify-between",
                             statusFilter === "All"
                                 ? "bg-black text-white border border-black"
                                 : "bg-white text-slate-900 border border-slate-200 hover:border-slate-300"
                         )}
                     >
                         <div className={cn(
-                            "text-xs sm:text-sm font-medium truncate",
+                            "text-sm sm:text-base font-semibold tracking-wide truncate",
                             statusFilter === "All" ? "text-neutral-400" : "text-slate-500"
                         )}>
                             Total Orders
                         </div>
 
                         <div className={cn(
-                            "text-2xl sm:text-3xl font-extrabold tracking-tight mt-1.5 sm:mt-2",
+                            "text-4xl sm:text-5xl font-black tracking-tight mt-3 sm:mt-4",
                             statusFilter === "All" ? "text-white" : "text-slate-900"
                         )}>
                             {orders.length}
@@ -245,21 +245,21 @@ export default function BackofficePage() {
                                 type="button"
                                 onClick={() => setStatusFilter(isSelected ? "All" : stageName)}
                                 className={cn(
-                                    "flex-1 min-w-[150px] sm:min-w-[180px] max-w-[240px] shrink-0 p-4 sm:p-5 rounded-2xl sm:rounded-3xl text-left transition-all duration-200 cursor-pointer active:scale-[0.98]",
+                                    "flex-1 min-w-[280px] sm:min-w-[340px] max-w-[420px] min-h-[140px] sm:min-h-[160px] shrink-0 p-6 sm:p-8 rounded-2xl sm:rounded-3xl text-left transition-all duration-200 cursor-pointer active:scale-[0.98] flex flex-col justify-between",
                                     isSelected
                                         ? "bg-black text-white border border-black"
                                         : "bg-white text-slate-900 border border-slate-200 hover:border-slate-300"
                                 )}
                             >
                                 <div className={cn(
-                                    "text-xs sm:text-sm font-medium truncate",
+                                    "text-sm sm:text-base font-semibold tracking-wide truncate",
                                     isSelected ? "text-neutral-400" : "text-slate-500"
                                 )}>
                                     {stageName}
                                 </div>
 
                                 <div className={cn(
-                                    "text-2xl sm:text-3xl font-extrabold tracking-tight mt-1.5 sm:mt-2",
+                                    "text-4xl sm:text-5xl font-black tracking-tight mt-3 sm:mt-4",
                                     isSelected ? "text-white" : "text-slate-900"
                                 )}>
                                     {count}

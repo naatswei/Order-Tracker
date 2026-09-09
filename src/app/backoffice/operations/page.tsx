@@ -202,10 +202,33 @@ export default function OperationsPage() {
     }
 
     const getOrderStageName = (order: any) => {
-        const candidate = ((order.metadata as any)?.internalStage || order.currentStatus || "").trim();
+        // Evaluate order.currentStatus FIRST so status changes immediately update operations board
+        const candidate = (order.currentStatus || (order.metadata as any)?.internalStage || "").trim();
         if (candidate && stages.length > 0) {
+            // 1. Exact match (case-insensitive)
             const matched = stages.find(s => s.name.toLowerCase() === candidate.toLowerCase());
             if (matched) return matched.name;
+
+            // 2. Smart alias / fuzzy stage matching
+            const candidateLower = candidate.toLowerCase();
+            if (candidateLower.includes("pick")) {
+                const pickStage = stages.find(s => s.name.toLowerCase().includes("pick"));
+                if (pickStage) return pickStage.name;
+            }
+            if (candidateLower.includes("transit") || candidateLower.includes("way") || candidateLower.includes("dispatch")) {
+                const transitStage = stages.find(s => {
+                    const l = s.name.toLowerCase();
+                    return l.includes("transit") || l.includes("out for delivery") || l.includes("way") || l.includes("delivery");
+                });
+                if (transitStage) return transitStage.name;
+            }
+            if (candidateLower.includes("deliver") || candidateLower.includes("complete") || candidateLower.includes("done")) {
+                const delivStage = stages.find(s => {
+                    const l = s.name.toLowerCase();
+                    return l.includes("deliver") || l.includes("complete") || l.includes("done");
+                });
+                if (delivStage) return delivStage.name;
+            }
         }
         return stages[0]?.name || "Order Received";
     };
@@ -254,7 +277,7 @@ export default function OperationsPage() {
         <div className="bg-[#F8FAFC] min-h-screen pb-16 flex flex-col">
             {/* Mobile-First Header */}
             <header className="bg-white border-b border-slate-200/80 sticky top-0 z-30 shadow-2xs">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-3.5 pb-3 sm:pt-4 sm:pb-3.5 space-y-3 sm:space-y-3.5">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-4 pb-4 sm:pt-5 sm:pb-5 space-y-6 sm:space-y-8">
                     {/* Top Row: Navigation + Neutral Stages Button */}
                     <div className="flex items-center justify-between gap-3">
                         <div className="flex items-center gap-2.5">
@@ -318,8 +341,8 @@ export default function OperationsPage() {
                         )}
                     </div>
 
-                    {/* Pipeline Stages Metric Filter Cards */}
-                    <div className="flex items-stretch gap-3 sm:gap-4 overflow-x-auto pb-2 pt-1 no-scrollbar">
+                    {/* Pipeline Stages Metric Filter Cards (Doubled in Size) */}
+                    <div className="flex items-stretch gap-4 sm:gap-6 overflow-x-auto pb-3 pt-1 no-scrollbar">
                         {/* Total Orders Card */}
                         <button
                             type="button"
@@ -328,7 +351,7 @@ export default function OperationsPage() {
                                 scrollToStart();
                             }}
                             className={cn(
-                                "flex-1 min-w-[150px] sm:min-w-[180px] max-w-[240px] shrink-0 p-4 sm:p-4.5 rounded-2xl sm:rounded-3xl text-left transition-all duration-200 cursor-pointer active:scale-[0.98]",
+                                "flex-1 min-w-[280px] sm:min-w-[340px] max-w-[420px] min-h-[140px] sm:min-h-[160px] shrink-0 p-6 sm:p-8 rounded-2xl sm:rounded-3xl text-left transition-all duration-200 cursor-pointer active:scale-[0.98] flex flex-col justify-between",
                                 activeStage === "All"
                                     ? "bg-black text-white border border-black"
                                     : "bg-white text-slate-900 border border-slate-200 hover:border-slate-300"
@@ -336,14 +359,14 @@ export default function OperationsPage() {
                             title="Scroll to beginning"
                         >
                             <div className={cn(
-                                "text-xs sm:text-sm font-medium truncate",
+                                "text-sm sm:text-base font-semibold tracking-wide truncate",
                                 activeStage === "All" ? "text-neutral-400" : "text-slate-500"
                             )}>
                                 Total Orders
                             </div>
 
                             <div className={cn(
-                                "text-2xl sm:text-3xl font-extrabold tracking-tight mt-1.5 sm:mt-2",
+                                "text-4xl sm:text-5xl font-black tracking-tight mt-3 sm:mt-4",
                                 activeStage === "All" ? "text-white" : "text-slate-900"
                             )}>
                                 {filteredOrders.length}
@@ -353,7 +376,7 @@ export default function OperationsPage() {
                         {/* Pipeline Stage Cards */}
                         {isLoading ? (
                             Array.from({ length: 4 }).map((_, i) => (
-                                <div key={i} className="flex-1 min-w-[150px] sm:min-w-[180px] max-w-[240px] h-[86px] rounded-2xl sm:rounded-3xl bg-slate-200/70 animate-pulse shrink-0" />
+                                <div key={i} className="flex-1 min-w-[280px] sm:min-w-[340px] max-w-[420px] h-[140px] sm:h-[160px] rounded-2xl sm:rounded-3xl bg-slate-200/70 animate-pulse shrink-0" />
                             ))
                         ) : (
                             stages.map((stage) => {
@@ -369,7 +392,7 @@ export default function OperationsPage() {
                                             scrollToStage(stage.name);
                                         }}
                                         className={cn(
-                                            "flex-1 min-w-[150px] sm:min-w-[180px] max-w-[240px] shrink-0 p-4 sm:p-4.5 rounded-2xl sm:rounded-3xl text-left transition-all duration-200 cursor-pointer active:scale-[0.98]",
+                                            "flex-1 min-w-[280px] sm:min-w-[340px] max-w-[420px] min-h-[140px] sm:min-h-[160px] shrink-0 p-6 sm:p-8 rounded-2xl sm:rounded-3xl text-left transition-all duration-200 cursor-pointer active:scale-[0.98] flex flex-col justify-between",
                                             isSelected
                                                 ? "bg-black text-white border border-black"
                                                 : "bg-white text-slate-900 border border-slate-200 hover:border-slate-300"
@@ -377,14 +400,14 @@ export default function OperationsPage() {
                                         title={`Jump to ${stage.name}`}
                                     >
                                         <div className={cn(
-                                            "text-xs sm:text-sm font-medium truncate",
+                                            "text-sm sm:text-base font-semibold tracking-wide truncate",
                                             isSelected ? "text-neutral-400" : "text-slate-500"
                                         )}>
                                             {stage.name}
                                         </div>
 
                                         <div className={cn(
-                                            "text-2xl sm:text-3xl font-extrabold tracking-tight mt-1.5 sm:mt-2",
+                                            "text-4xl sm:text-5xl font-black tracking-tight mt-3 sm:mt-4",
                                             isSelected ? "text-white" : "text-slate-900"
                                         )}>
                                             {count}
