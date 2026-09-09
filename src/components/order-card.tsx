@@ -74,10 +74,12 @@ export function OrderCard({
                                         <span className="text-slate-400 text-sm font-medium w-32 shrink-0 whitespace-nowrap">{config.itemLabel}:</span>
                                         <span className="font-semibold text-slate-800 capitalize">{order.itemType || order.garmentType}</span>
                                     </div>
+                                    {businessType !== "logistics" && (
                                     <div className="flex gap-2 items-center">
-                                        <span className="text-slate-400 text-sm font-medium w-32 shrink-0 whitespace-nowrap">{config.orderLabel === "Tracking Number" ? "Delivery Date" : "Delivery Date"}:</span>
+                                        <span className="text-slate-400 text-sm font-medium w-32 shrink-0 whitespace-nowrap">Delivery Date:</span>
                                         <span className="font-semibold text-red-500" suppressHydrationWarning>{order.pickupDate ? new Date(order.pickupDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}</span>
                                     </div>
+                                    )}
                                     {order.inventoryItems && order.inventoryItems.length > 0 && (
                                         <div className="flex gap-2 items-start pt-1">
                                             <span className="text-slate-400 text-sm font-medium w-32 shrink-0 whitespace-nowrap pt-0.5">Stock Sold:</span>
@@ -119,8 +121,9 @@ export function OrderCard({
                                 ) : (
                                     <Link href={`/backoffice/order/${order.id}`} className="w-full">
                                         <Button
-                                            className="w-full text-white rounded-full h-11 shadow-[0_4px_20px_rgb(0,0,0,0.08)] font-bold border-0 transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.15)] hover:-translate-y-0.5 active:scale-[0.98]"
-                                            style={{ backgroundColor: config.theme.secondary }}
+                                            variant="outline"
+                                            className="w-full rounded-full h-11 font-bold border-2 transition-all duration-300 hover:-translate-y-0.5 active:scale-[0.98] bg-transparent hover:bg-transparent"
+                                            style={{ borderColor: config.theme.secondary, color: config.theme.secondary }}
                                         >
                                             Update Status
                                         </Button>
@@ -146,8 +149,9 @@ export function OrderCard({
                                 ) : (
                                     <Link href={`/backoffice/create?edit=${order.id}`} className="w-full">
                                         <Button
-                                            className="w-full text-white rounded-full h-11 shadow-[0_4px_20px_rgb(0,0,0,0.08)] font-bold mt-1 border-0 transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.15)] hover:-translate-y-0.5 active:scale-[0.98]"
-                                            style={{ backgroundColor: config.theme.primary }}
+                                            variant="outline"
+                                            className="w-full rounded-full h-11 font-bold mt-1 border-2 transition-all duration-300 hover:-translate-y-0.5 active:scale-[0.98] bg-transparent hover:bg-transparent"
+                                            style={{ borderColor: config.theme.primary, color: config.theme.primary }}
                                         >
                                             Edit Order
                                         </Button>

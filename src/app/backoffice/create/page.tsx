@@ -780,52 +780,8 @@ function CreateOrderContent() {
                                     {logisticsMode === "restaurant" && (
                                         <div className="space-y-4">
                                             {/* Restaurant Branch (Pickup) & Customer Dropoff Contact Details */}
-                                            <div className="grid sm:grid-cols-2 gap-3.5 sm:gap-6">
-                                                {/* 1. Restaurant Branch Details */}
-                                                <div className="p-3.5 sm:p-5 rounded-xl sm:rounded-2xl bg-slate-50/60 border border-slate-200/80 shadow-2xs space-y-3">
-                                                    <div className="flex items-center justify-between pb-1.5 border-b border-slate-100">
-                                                        <span className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
-                                                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                                                            1. Restaurant / Branch Details
-                                                        </span>
-                                                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200/60">Pickup</span>
-                                                    </div>
-                                                    <div className="space-y-2.5">
-                                                        <div className="space-y-1">
-                                                            <Label htmlFor="restaurantPickupLocation" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">
-                                                                Branch Name / Pick Up Location <span className="text-slate-400 font-normal">(e.g. Marwako Spintex)</span>
-                                                            </Label>
-                                                            <Input
-                                                                id="restaurantPickupLocation"
-                                                                value={pickupLocation}
-                                                                onChange={(e) => setPickupLocation(e.target.value)}
-                                                                placeholder="e.g. Marwako Fast Food, Spintex Branch"
-                                                                disabled={!canCreateOrder}
-                                                                className="h-10 sm:h-11 rounded-xl bg-white border-zinc-200 focus-visible:border-[#6B1028] text-xs sm:text-sm font-medium"
-                                                            />
-                                                        </div>
-                                                        <div className="space-y-1">
-                                                            <Label htmlFor="branchContactPhone" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">Branch Contact Phone</Label>
-                                                            <PhoneInputWithCountry
-                                                                id="branchContactPhone"
-                                                                countryCode={pickupCountryCode}
-                                                                phoneLocal={pickupPhoneLocal}
-                                                                onCountryCodeChange={(code) => {
-                                                                    setPickupCountryCode(code)
-                                                                    const formatted = formatFullPhone(code, pickupPhoneLocal)
-                                                                    setCustomerPhone(formatted)
-                                                                }}
-                                                                onPhoneLocalChange={(local) => {
-                                                                    setPickupPhoneLocal(local)
-                                                                    const formatted = formatFullPhone(pickupCountryCode, local)
-                                                                    setCustomerPhone(formatted)
-                                                                }}
-                                                                placeholder="54 870 6430"
-                                                                disabled={!canCreateOrder}
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                </div>
+                                            <div className="grid sm:grid-cols-1 gap-3.5 sm:gap-6">
+                                                {/* Restaurant Branch Details — Hidden (registered in backend settings) */}
 
                                                 {/* 2. Customer Drop Off Details */}
                                                 <div className="p-3.5 sm:p-5 rounded-xl sm:rounded-2xl bg-slate-50/60 border border-slate-200/80 shadow-2xs space-y-3">
@@ -2164,7 +2120,8 @@ function CreateOrderContent() {
                                             </>
                                         )}
 
-                                        {/* Pickup/Delivery Date */}
+                                        {/* Pickup/Delivery Date — hidden for logistics (restaurant delivery) */}
+                                        {businessType !== "logistics" && (
                                         <div className="space-y-1 sm:space-y-2">
                                             <Label htmlFor={`${businessType}-pickupDate`} className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">{config.orderLabel === "Tracking Number" ? "Date" : "Delivery Date"}</Label>
                                             <DatePicker
@@ -2175,6 +2132,7 @@ function CreateOrderContent() {
                                                 fromDate={new Date(new Date().setHours(0, 0, 0, 0))}
                                             />
                                         </div>
+                                        )}
 
                                         {/* Delivery Fee Input */}
                                         <div className="space-y-1 sm:space-y-2">
