@@ -9,7 +9,8 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Loader2, ArrowLeft, Camera, Settings, Building2, CreditCard, Check, Clock, Users, Sparkles, UtensilsCrossed, Plus, Trash2, MapPin, Phone, Wallet, DollarSign, Store, Tag, Truck, Ship, Package, Box, Layers, Navigation, Globe, ExternalLink } from "lucide-react"
+import { Loader2, ArrowLeft, Camera, Settings, Building2, CreditCard, Check, Clock, Users, Sparkles, UtensilsCrossed, Plus, Trash2, MapPin, Phone, Wallet, DollarSign, Store, Tag, Truck, Ship, Package, Box, Layers, Navigation, Globe, ExternalLink, Download, Upload, FileSpreadsheet, FileText, Search, X, CheckCircle2 } from "lucide-react"
+import * as XLSX from "xlsx"
 import { getBusinessConfig } from "@/lib/business-configs"
 import { validateLocation } from "@/lib/location-validator"
 import Link from "next/link"
@@ -199,7 +200,253 @@ export default function ProfilePage() {
         description: ""
     })
     const [newCategoryInput, setNewCategoryInput] = useState("")
+    const [categorySearchQuery, setCategorySearchQuery] = useState("")
+    const [menuSearchQuery, setMenuSearchQuery] = useState("")
+    const categoryFileInputRef = useRef<HTMLInputElement>(null)
+    const menuPresetFileInputRef = useRef<HTMLInputElement>(null)
     const [orderDefaultsSaving, setOrderDefaultsSaving] = useState(false)
+
+    // ==========================================
+    // EXCEL EXPORT & IMPORT: PACKAGE CATEGORIES
+    // ==========================================
+    const handleExportPackageCategoriesToExcel = () => {
+        if (!orderDefaults.packageCategories.length) {
+            toast.error("No package categories to export")
+            return
+        }
+        try {
+            const rows = orderDefaults.packageCategories.map((cat, idx) => ({
+                "No.": idx + 1,
+                "Package Category / Item Name": cat,
+                "Service Mode": "Courier Delivery",
+                "Status": "Active"
+            }))
+            const worksheet = XLSX.utils.json_to_sheet(rows)
+            worksheet["!cols"] = [
+                { wch: 6 },
+                { wch: 35 },
+                { wch: 20 },
+                { wch: 10 }
+            ]
+            const workbook = XLSX.utils.book_new()
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Package Categories")
+            const orgSlug = organization?.name?.replace(/[^a-zA-Z0-9]/g, "_") || "Courier"
+            XLSX.writeFile(workbook, `${orgSlug}_Package_Categories.xlsx`)
+            toast.success(`Exported ${orderDefaults.packageCategories.length} categories to Excel successfully!`)
+        } catch (err) {
+            console.error("Export error:", err)
+            toast.error("Failed to export Excel file")
+        }
+    }
+
+    const handleDownloadPackageCategoryTemplate = () => {
+        try {
+            const sampleRows = [
+                { "Package Category / Item Name": "Documents / Envelopes" },
+                { "Package Category / Item Name": "Small Parcel (< 2kg)" },
+                { "Package Category / Item Name": "Medium Box (2-5kg)" },
+                { "Package Category / Item Name": "Large Box (> 5kg)" },
+                { "Package Category / Item Name": "Food & Cake Box" },
+                { "Package Category / Item Name": "Fragile Electronics" },
+                { "Package Category / Item Name": "Clothing & Apparel" },
+                { "Package Category / Item Name": "Medical & Lab Sample" }
+            ]
+            const worksheet = XLSX.utils.json_to_sheet(sampleRows)
+            worksheet["!cols"] = [{ wch: 35 }]
+            const workbook = XLSX.utils.book_new()
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Categories Template")
+            XLSX.writeFile(workbook, "Package_Categories_Template.xlsx")
+            toast.success("Excel template downloaded! Fill in your categories and upload.")
+        } catch (err) {
+            console.error("Template download error:", err)
+            toast.error("Failed to download template")
+        }
+    }
+
+    const handleImportPackageCategoriesFromExcel = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0]
+        if (!file) return
+
+        const reader = new FileReader()
+        reader.onload = (evt) => {
+            try {
+                const data = new Uint8Array(evt.target?.result as ArrayBuffer)
+                const workbook = XLSX.read(data, { type: "array" })
+                const firstSheetName = workbook.SheetNames[0]
+                const worksheet = workbook.Sheets[firstSheetName]
+                const rawJson = XLSX.utils.sheet_to_json(worksheet, { header: 1 }) as any[][]
+
+                if (!rawJson || rawJson.length === 0) {
+                    toast.error("Excel sheet appears to be empty.")
+                    return
+                }
+
+                const headerRow = (rawJson[0] || []).map((c: any) => String(c || "").toLowerCase().trim())
+                const colIndex = headerRow.findIndex((str: string) => 
+                    str.includes("category") || str.includes("package") || str.includes("type") || str.includes("item") || str.includes("name")
+                )
+
+                const targetCol = colIndex >= 0 ? colIndex : 0
+                const isHeaderFirstRow = colIndex >= 0 || (typeof rawJson[0][0] === "string" && (rawJson[0][0].toLowerCase().includes("category") || rawJson[0][0].toLowerCase().includes("item") || rawJson[0][0].toLowerCase().includes("package")))
+                const startRow = isHeaderFirstRow ? 1 : 0
+
+                const newItems: string[] = []
+                for (let r = startRow; r < rawJson.length; r++) {
+                    const row = rawJson[r]
+                    if (!row) continue
+                    const cellVal = row[targetCol] ?? row[0]
+                    if (cellVal !== undefined && cellVal !== null) {
+                        const val = String(cellVal).trim()
+                        if (val && !newItems.includes(val) && !orderDefaults.packageCategories.includes(val)) {
+                            newItems.push(val)
+                        }
+                    }
+                }
+
+                if (newItems.length === 0) {
+                    toast.info("No new unique categories found in file.")
+                    return
+                }
+
+                setOrderDefaults(prev => ({
+                    ...prev,
+                    packageCategories: [...prev.packageCategories, ...newItems]
+                }))
+                toast.success(`Successfully imported ${newItems.length} package categories from Excel!`)
+            } catch (error) {
+                console.error("Excel import error:", error)
+                toast.error("Failed to parse Excel file. Please ensure it is a valid .xlsx, .xls, or .csv file.")
+            } finally {
+                if (categoryFileInputRef.current) {
+                    categoryFileInputRef.current.value = ""
+                }
+            }
+        }
+        reader.readAsArrayBuffer(file)
+    }
+
+    // ==========================================
+    // EXCEL EXPORT & IMPORT: RESTAURANT MENU PRESETS
+    // ==========================================
+    const handleExportMenuPresetsToExcel = () => {
+        if (!orderDefaults.menuPresets.length) {
+            toast.error("No menu presets to export")
+            return
+        }
+        try {
+            const rows = orderDefaults.menuPresets.map((item, idx) => ({
+                "No.": idx + 1,
+                "Dish / Item Name": item.name,
+                "Price (GH₵)": Number(item.price || 0).toFixed(2),
+                "Category / Notes": item.description || ""
+            }))
+            const worksheet = XLSX.utils.json_to_sheet(rows)
+            worksheet["!cols"] = [
+                { wch: 6 },
+                { wch: 30 },
+                { wch: 15 },
+                { wch: 30 }
+            ]
+            const workbook = XLSX.utils.book_new()
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Menu Items")
+            const orgSlug = organization?.name?.replace(/[^a-zA-Z0-9]/g, "_") || "Restaurant"
+            XLSX.writeFile(workbook, `${orgSlug}_Menu_Presets.xlsx`)
+            toast.success(`Exported ${orderDefaults.menuPresets.length} menu items to Excel!`)
+        } catch (err) {
+            console.error("Menu export error:", err)
+            toast.error("Failed to export menu to Excel")
+        }
+    }
+
+    const handleDownloadMenuPresetTemplate = () => {
+        try {
+            const sampleRows = [
+                { "Dish / Item Name": "Jollof Rice with Grilled Chicken", "Price (GH₵)": 45.00, "Category / Notes": "Main Dish" },
+                { "Dish / Item Name": "Fried Rice with Tilapia", "Price (GH₵)": 60.00, "Category / Notes": "Special Combo" },
+                { "Dish / Item Name": "Waakye Special Plate", "Price (GH₵)": 50.00, "Category / Notes": "Includes egg, wele, shito" },
+                { "Dish / Item Name": "Banku with Okro Soup & Fish", "Price (GH₵)": 55.00, "Category / Notes": "Local Cuisine" },
+                { "Dish / Item Name": "Chilled Hibiscus (Sobolo) 500ml", "Price (GH₵)": 15.00, "Category / Notes": "Beverage" }
+            ]
+            const worksheet = XLSX.utils.json_to_sheet(sampleRows)
+            worksheet["!cols"] = [{ wch: 35 }, { wch: 15 }, { wch: 30 }]
+            const workbook = XLSX.utils.book_new()
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Menu Template")
+            XLSX.writeFile(workbook, "Restaurant_Menu_Template.xlsx")
+            toast.success("Menu template downloaded!")
+        } catch (err) {
+            console.error("Template download error:", err)
+            toast.error("Failed to download template")
+        }
+    }
+
+    const handleImportMenuPresetsFromExcel = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0]
+        if (!file) return
+
+        const reader = new FileReader()
+        reader.onload = (evt) => {
+            try {
+                const data = new Uint8Array(evt.target?.result as ArrayBuffer)
+                const workbook = XLSX.read(data, { type: "array" })
+                const firstSheetName = workbook.SheetNames[0]
+                const worksheet = workbook.Sheets[firstSheetName]
+                const rawJson = XLSX.utils.sheet_to_json(worksheet, { header: 1 }) as any[][]
+
+                if (!rawJson || rawJson.length === 0) {
+                    toast.error("Excel sheet is empty")
+                    return
+                }
+
+                const headerRow = (rawJson[0] || []).map((c: any) => String(c || "").toLowerCase().trim())
+                let nameCol = headerRow.findIndex((c: string) => c.includes("name") || c.includes("dish") || c.includes("item"))
+                let priceCol = headerRow.findIndex((c: string) => c.includes("price") || c.includes("cost") || c.includes("ghc") || c.includes("amount"))
+                let descCol = headerRow.findIndex((c: string) => c.includes("desc") || c.includes("note") || c.includes("category"))
+
+                if (nameCol === -1) nameCol = 0
+                if (priceCol === -1) priceCol = 1
+                if (descCol === -1) descCol = 2
+
+                const startRow = (nameCol >= 0 || priceCol >= 0) && isNaN(Number(rawJson[0][priceCol])) ? 1 : 0
+                const newPresets: MenuPresetItem[] = []
+
+                for (let r = startRow; r < rawJson.length; r++) {
+                    const row = rawJson[r]
+                    if (!row) continue
+                    const name = String(row[nameCol] || "").trim()
+                    const price = parseFloat(String(row[priceCol] || "0").replace(/[^0-9.]/g, "")) || 0
+                    const description = row[descCol] ? String(row[descCol]).trim() : undefined
+
+                    if (name && !orderDefaults.menuPresets.some(p => p.name.toLowerCase() === name.toLowerCase()) && !newPresets.some(p => p.name.toLowerCase() === name.toLowerCase())) {
+                        newPresets.push({
+                            id: `preset_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,
+                            name,
+                            price,
+                            description
+                        })
+                    }
+                }
+
+                if (newPresets.length === 0) {
+                    toast.info("No new unique menu items found in file.")
+                    return
+                }
+
+                setOrderDefaults(prev => ({
+                    ...prev,
+                    menuPresets: [...prev.menuPresets, ...newPresets]
+                }))
+                toast.success(`Imported ${newPresets.length} menu items from Excel!`)
+            } catch (error) {
+                console.error("Excel menu import error:", error)
+                toast.error("Failed to parse Excel file.")
+            } finally {
+                if (menuPresetFileInputRef.current) {
+                    menuPresetFileInputRef.current.value = ""
+                }
+            }
+        }
+        reader.readAsArrayBuffer(file)
+    }
 
     useEffect(() => {
         const fetchBanks = async () => {
@@ -1195,37 +1442,109 @@ export default function ProfilePage() {
                                                     </div>
                                                 </div>
 
+                                                {/* Hidden File Input for Menu Excel Import */}
+                                                <input
+                                                    ref={menuPresetFileInputRef}
+                                                    type="file"
+                                                    accept=".xlsx, .xls, .csv"
+                                                    onChange={handleImportMenuPresetsFromExcel}
+                                                    className="hidden"
+                                                />
+
                                                 {/* Menu Presets Catalog */}
                                                 <div className="space-y-4 pt-2">
-                                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-1 border-b border-slate-100">
-                                                        <div className="flex items-center gap-2">
-                                                            <Tag className="w-4 h-4 text-amber-600" />
-                                                            <h3 className="text-xs sm:text-sm font-bold text-slate-900">Menu Entries &amp; Cost Presets</h3>
+                                                    <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 pb-2 border-b border-slate-100">
+                                                        <div>
+                                                            <div className="flex items-center gap-2">
+                                                                <UtensilsCrossed className="w-4 h-4 sm:w-5 sm:h-5 text-amber-600" />
+                                                                <h3 className="text-sm sm:text-base font-bold text-slate-900">Restaurant Menu Entries &amp; Dish Catalog</h3>
+                                                            </div>
+                                                            <p className="text-[11px] sm:text-xs text-slate-500 mt-0.5">
+                                                                Configure restaurant menu presets for 1-click order creation. Export to Excel, bulk import menu spreadsheets, or search instantly.
+                                                            </p>
                                                         </div>
-                                                        <Button
-                                                            type="button"
-                                                            variant="outline"
-                                                            size="sm"
-                                                            onClick={() => {
-                                                                const sampleItems: MenuPresetItem[] = [
-                                                                    { id: `preset_${Date.now()}_1`, name: "Assorted Fried Rice", price: 75, description: "Main Meal" },
-                                                                    { id: `preset_${Date.now()}_2`, name: "Grilled Chicken with Jollof", price: 70, description: "Main Meal" },
-                                                                    { id: `preset_${Date.now()}_3`, name: "Marwako Beef Shawarma", price: 45, description: "Shawarma" },
-                                                                    { id: `preset_${Date.now()}_4`, name: "Marwako Chicken Shawarma", price: 45, description: "Shawarma" },
-                                                                    { id: `preset_${Date.now()}_5`, name: "Grilled Whole Chicken (Only)", price: 120, description: "Grill" },
-                                                                    { id: `preset_${Date.now()}_6`, name: "Fresh Juice / Drink", price: 20, description: "Beverage" }
-                                                                ]
-                                                                setOrderDefaults(prev => ({
-                                                                    ...prev,
-                                                                    menuPresets: [...prev.menuPresets, ...sampleItems]
-                                                                }))
-                                                                toast.success("Loaded sample restaurant menu presets!")
-                                                            }}
-                                                            className="h-8 rounded-lg text-xs font-semibold text-amber-700 border-amber-200 bg-amber-50 hover:bg-amber-100 cursor-pointer"
-                                                        >
-                                                            <Sparkles className="w-3.5 h-3.5 mr-1" />
-                                                            Load Sample Restaurant Menu
-                                                        </Button>
+
+                                                        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                                                            <Button
+                                                                type="button"
+                                                                variant="outline"
+                                                                size="sm"
+                                                                onClick={handleExportMenuPresetsToExcel}
+                                                                disabled={orderDefaults.menuPresets.length === 0}
+                                                                className="h-8 sm:h-8.5 rounded-xl text-xs font-bold text-emerald-700 border-emerald-200 bg-emerald-50 hover:bg-emerald-100 cursor-pointer shadow-2xs"
+                                                                title="Export restaurant menu to Excel"
+                                                            >
+                                                                <Download className="w-3.5 h-3.5 mr-1 text-emerald-600" />
+                                                                Export Excel
+                                                            </Button>
+
+                                                            <Button
+                                                                type="button"
+                                                                variant="outline"
+                                                                size="sm"
+                                                                onClick={() => menuPresetFileInputRef.current?.click()}
+                                                                className="h-8 sm:h-8.5 rounded-xl text-xs font-bold text-indigo-700 border-indigo-200 bg-indigo-50 hover:bg-indigo-100 cursor-pointer shadow-2xs"
+                                                                title="Import menu items from Excel/CSV"
+                                                            >
+                                                                <Upload className="w-3.5 h-3.5 mr-1 text-indigo-600" />
+                                                                Import Excel
+                                                            </Button>
+
+                                                            <Button
+                                                                type="button"
+                                                                variant="ghost"
+                                                                size="sm"
+                                                                onClick={handleDownloadMenuPresetTemplate}
+                                                                className="h-8 sm:h-8.5 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 cursor-pointer"
+                                                                title="Download sample menu Excel template"
+                                                            >
+                                                                <FileSpreadsheet className="w-3.5 h-3.5 mr-1 text-slate-500" />
+                                                                Template
+                                                            </Button>
+
+                                                            <Button
+                                                                type="button"
+                                                                variant="outline"
+                                                                size="sm"
+                                                                onClick={() => {
+                                                                    const sampleItems: MenuPresetItem[] = [
+                                                                        { id: `preset_${Date.now()}_1`, name: "Assorted Fried Rice", price: 75, description: "Main Meal" },
+                                                                        { id: `preset_${Date.now()}_2`, name: "Grilled Chicken with Jollof", price: 70, description: "Main Meal" },
+                                                                        { id: `preset_${Date.now()}_3`, name: "Beef Shawarma Special", price: 45, description: "Shawarma" },
+                                                                        { id: `preset_${Date.now()}_4`, name: "Chicken Shawarma Wrap", price: 45, description: "Shawarma" },
+                                                                        { id: `preset_${Date.now()}_5`, name: "Grilled Whole Chicken", price: 120, description: "Grill" },
+                                                                        { id: `preset_${Date.now()}_6`, name: "Fresh Sobolo / Hibiscus Drink", price: 20, description: "Beverage" }
+                                                                    ]
+                                                                    setOrderDefaults(prev => ({
+                                                                        ...prev,
+                                                                        menuPresets: [...prev.menuPresets, ...sampleItems]
+                                                                    }))
+                                                                    toast.success("Loaded sample restaurant menu presets!")
+                                                                }}
+                                                                className="h-8 sm:h-8.5 rounded-xl text-xs font-bold text-amber-700 border-amber-200 bg-amber-50 hover:bg-amber-100 cursor-pointer shadow-2xs"
+                                                            >
+                                                                <Sparkles className="w-3.5 h-3.5 mr-1 text-amber-600" />
+                                                                Load Sample Menu
+                                                            </Button>
+
+                                                            {orderDefaults.menuPresets.length > 0 && (
+                                                                <Button
+                                                                    type="button"
+                                                                    variant="ghost"
+                                                                    size="sm"
+                                                                    onClick={() => {
+                                                                        if (confirm("Are you sure you want to clear all menu presets?")) {
+                                                                            setOrderDefaults(prev => ({ ...prev, menuPresets: [] }))
+                                                                            toast.info("Cleared all menu presets")
+                                                                        }
+                                                                    }}
+                                                                    className="h-8 sm:h-8.5 rounded-xl text-xs font-semibold text-red-600 hover:bg-red-50 cursor-pointer"
+                                                                >
+                                                                    <Trash2 className="w-3.5 h-3.5 mr-1 text-red-500" />
+                                                                    Clear
+                                                                </Button>
+                                                            )}
+                                                        </div>
                                                     </div>
 
                                                     {/* Add Preset Item Form */}
@@ -1238,7 +1557,7 @@ export default function ProfilePage() {
                                                                     value={newPreset.name}
                                                                     onChange={(e) => setNewPreset(prev => ({ ...prev, name: e.target.value }))}
                                                                     placeholder="e.g. Assorted Fried Rice & Chicken"
-                                                                    className="h-9 rounded-xl bg-white border-slate-200 text-xs"
+                                                                    className="h-10 rounded-xl bg-white border-slate-200 text-xs sm:text-sm font-medium"
                                                                 />
                                                             </div>
                                                             <div className="sm:col-span-3 space-y-1">
@@ -1249,7 +1568,7 @@ export default function ProfilePage() {
                                                                     value={newPreset.price}
                                                                     onChange={(e) => setNewPreset(prev => ({ ...prev, price: e.target.value }))}
                                                                     placeholder="75.00"
-                                                                    className="h-9 rounded-xl bg-white border-slate-200 text-xs font-bold"
+                                                                    className="h-10 rounded-xl bg-white border-slate-200 text-xs sm:text-sm font-bold"
                                                                 />
                                                             </div>
                                                             <div className="sm:col-span-2 space-y-1">
@@ -1258,7 +1577,7 @@ export default function ProfilePage() {
                                                                     value={newPreset.description}
                                                                     onChange={(e) => setNewPreset(prev => ({ ...prev, description: e.target.value }))}
                                                                     placeholder="e.g. Main Dish"
-                                                                    className="h-9 rounded-xl bg-white border-slate-200 text-xs"
+                                                                    className="h-10 rounded-xl bg-white border-slate-200 text-xs sm:text-sm font-medium"
                                                                 />
                                                             </div>
                                                             <div className="sm:col-span-2 flex items-end">
@@ -1287,7 +1606,7 @@ export default function ProfilePage() {
                                                                         setNewPreset({ name: "", price: "", description: "" })
                                                                         toast.success(`Added "${item.name}" (GH₵ ${item.price})`)
                                                                     }}
-                                                                    className="w-full h-9 rounded-xl bg-slate-900 text-white hover:bg-slate-800 text-xs font-bold shadow-xs cursor-pointer"
+                                                                    className="w-full h-10 rounded-xl bg-slate-900 text-white hover:bg-slate-800 text-xs sm:text-sm font-bold shadow-xs cursor-pointer"
                                                                 >
                                                                     <Plus className="w-3.5 h-3.5 mr-1" />
                                                                     Add Item
@@ -1296,56 +1615,106 @@ export default function ProfilePage() {
                                                         </div>
                                                     </div>
 
-                                                    {/* Existing Menu Items List */}
-                                                    {orderDefaults.menuPresets.length > 0 ? (
-                                                        <div className="space-y-2">
-                                                            <p className="text-[11px] text-slate-500 font-medium">
-                                                                {orderDefaults.menuPresets.length} Menu item(s) configured. These will display as 1-click buttons when creating new orders.
-                                                            </p>
-                                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                                                {orderDefaults.menuPresets.map((item, idx) => (
-                                                                    <div
-                                                                        key={item.id || idx}
-                                                                        className="flex items-center justify-between p-3 bg-white rounded-xl border border-slate-200/80 shadow-xs hover:border-slate-300 transition-all"
-                                                                    >
-                                                                        <div className="min-w-0 flex-1 pr-3">
-                                                                            <div className="flex items-center gap-1.5">
-                                                                                <span className="text-xs font-bold text-slate-900 truncate">{item.name}</span>
-                                                                                {item.description && (
-                                                                                    <span className="text-[9px] font-semibold text-slate-500 bg-slate-100 px-1.5 py-0.2 rounded">
-                                                                                        {item.description}
-                                                                                    </span>
-                                                                                )}
-                                                                            </div>
-                                                                            <p className="text-xs font-black text-emerald-700 mt-0.5">
-                                                                                GH₵ {Number(item.price).toFixed(2)}
-                                                                            </p>
-                                                                        </div>
-                                                                        <Button
-                                                                            type="button"
-                                                                            variant="ghost"
-                                                                            size="icon"
-                                                                            onClick={() => {
-                                                                                setOrderDefaults(prev => ({
-                                                                                    ...prev,
-                                                                                    menuPresets: prev.menuPresets.filter((_, i) => i !== idx)
-                                                                                }))
-                                                                            }}
-                                                                            className="w-7 h-7 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 cursor-pointer"
-                                                                        >
-                                                                            <Trash2 className="w-3.5 h-3.5" />
-                                                                        </Button>
-                                                                    </div>
-                                                                ))}
-                                                            </div>
-                                                        </div>
-                                                    ) : (
-                                                        <div className="p-6 text-center border-2 border-dashed border-slate-200 rounded-2xl bg-slate-50/50">
-                                                            <UtensilsCrossed className="w-8 h-8 text-slate-300 mx-auto mb-2" />
-                                                            <p className="text-xs font-semibold text-slate-700">No menu presets added yet</p>
-                                                            <p className="text-[11px] text-slate-400 mt-0.5">Add your common food items and prices above to quickly select them on the order creation page.</p>
+                                                    {/* Search Menu Presets */}
+                                                    {orderDefaults.menuPresets.length > 0 && (
+                                                        <div className="relative">
+                                                            <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                                                            <Input
+                                                                value={menuSearchQuery}
+                                                                onChange={(e) => setMenuSearchQuery(e.target.value)}
+                                                                placeholder="Search menu items by name or category..."
+                                                                className="h-10 pl-9 pr-8 rounded-xl bg-white border-slate-200 focus:border-amber-400 text-xs sm:text-sm font-medium"
+                                                            />
+                                                            {menuSearchQuery && (
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => setMenuSearchQuery("")}
+                                                                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-0.5"
+                                                                >
+                                                                    <X className="w-3.5 h-3.5" />
+                                                                </button>
+                                                            )}
                                                         </div>
                                                     )}
+
+                                                    {/* Existing Menu Items List */}
+                                                    {(() => {
+                                                        const query = menuSearchQuery.toLowerCase().trim()
+                                                        const filtered = orderDefaults.menuPresets.filter(item => 
+                                                            item.name.toLowerCase().includes(query) || (item.description && item.description.toLowerCase().includes(query))
+                                                        )
+
+                                                        if (orderDefaults.menuPresets.length === 0) {
+                                                            return (
+                                                                <div className="p-8 text-center border-2 border-dashed border-slate-200 rounded-2xl bg-slate-50/50 space-y-3">
+                                                                    <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center mx-auto">
+                                                                        <UtensilsCrossed className="w-6 h-6" />
+                                                                    </div>
+                                                                    <div>
+                                                                        <p className="text-sm font-bold text-slate-800">No menu presets configured yet</p>
+                                                                        <p className="text-xs text-slate-500 mt-0.5">Click "Load Sample Menu", upload an Excel file, or type custom food items above.</p>
+                                                                    </div>
+                                                                </div>
+                                                            )
+                                                        }
+
+                                                        return (
+                                                            <div className="space-y-2">
+                                                                <div className="flex items-center justify-between text-xs text-slate-500 px-0.5 font-medium">
+                                                                    <span>
+                                                                        Showing <strong className="text-slate-800 font-bold">{filtered.length}</strong> of {orderDefaults.menuPresets.length} menu items
+                                                                    </span>
+                                                                    {menuSearchQuery && (
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={() => setMenuSearchQuery("")}
+                                                                            className="text-amber-600 hover:underline font-semibold"
+                                                                        >
+                                                                            Reset Search Filter
+                                                                        </button>
+                                                                    )}
+                                                                </div>
+
+                                                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
+                                                                    {filtered.map((item, idx) => (
+                                                                        <div
+                                                                            key={item.id || idx}
+                                                                            className="flex items-center justify-between p-3.5 bg-white rounded-xl border border-slate-200/80 shadow-2xs hover:border-slate-300 transition-all group"
+                                                                        >
+                                                                            <div className="min-w-0 flex-1 pr-2">
+                                                                                <div className="flex items-center gap-1.5 flex-wrap">
+                                                                                    <span className="text-xs sm:text-sm font-bold text-slate-900 truncate">{item.name}</span>
+                                                                                    {item.description && (
+                                                                                        <span className="text-[10px] font-semibold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md">
+                                                                                            {item.description}
+                                                                                        </span>
+                                                                                    )}
+                                                                                </div>
+                                                                                <p className="text-xs sm:text-sm font-black text-emerald-700 mt-1">
+                                                                                    GH₵ {Number(item.price).toFixed(2)}
+                                                                                </p>
+                                                                            </div>
+                                                                            <Button
+                                                                                type="button"
+                                                                                variant="ghost"
+                                                                                size="icon"
+                                                                                onClick={() => {
+                                                                                    setOrderDefaults(prev => ({
+                                                                                        ...prev,
+                                                                                        menuPresets: prev.menuPresets.filter((_, i) => i !== idx)
+                                                                                    }))
+                                                                                    toast.info(`Removed "${item.name}"`)
+                                                                                }}
+                                                                                className="w-8 h-8 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 cursor-pointer shrink-0"
+                                                                            >
+                                                                                <Trash2 className="w-3.5 h-3.5" />
+                                                                            </Button>
+                                                                        </div>
+                                                                    ))}
+                                                                </div>
+                                                            </div>
+                                                        )
+                                                    })()}
                                                 </div>
                                             </div>
                                         )}
@@ -1441,51 +1810,172 @@ export default function ProfilePage() {
                                                     </div>
                                                 </div>
 
-                                                {/* Package Categories / Presets */}
+                                                {/* Hidden File Input for Excel Import */}
+                                                <input
+                                                    ref={categoryFileInputRef}
+                                                    type="file"
+                                                    accept=".xlsx, .xls, .csv"
+                                                    onChange={handleImportPackageCategoriesFromExcel}
+                                                    className="hidden"
+                                                />
+
+                                                {/* Package Categories / Presets Manager */}
                                                 <div className="space-y-4 pt-2">
-                                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-1 border-b border-slate-100">
-                                                        <div className="flex items-center gap-2">
-                                                            <Package className="w-4 h-4 text-blue-600" />
-                                                            <h3 className="text-xs sm:text-sm font-bold text-slate-900">Standard Package Categories</h3>
+                                                    <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 pb-2 border-b border-slate-100">
+                                                        <div>
+                                                            <div className="flex items-center gap-2">
+                                                                <Package className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />
+                                                                <h3 className="text-sm sm:text-base font-bold text-slate-900">Standard Package Categories &amp; Dispatch Goods</h3>
+                                                            </div>
+                                                            <p className="text-[11px] sm:text-xs text-slate-500 mt-0.5">
+                                                                Configure standard package types for 1-click order entry. Export your catalog to Excel, import bulk spreadsheets, or search instantly.
+                                                            </p>
                                                         </div>
-                                                        <Button
-                                                            type="button"
-                                                            variant="outline"
-                                                            size="sm"
-                                                            onClick={() => {
-                                                                const sampleCategories = ["Documents / Envelope", "Small Parcel (<2kg)", "Medium Box (2-5kg)", "Large Box (>5kg)", "Food / Cake Box", "Fragile Electronics", "Clothing / Apparel"]
-                                                                setOrderDefaults(prev => ({
-                                                                    ...prev,
-                                                                    packageCategories: Array.from(new Set([...prev.packageCategories, ...sampleCategories]))
-                                                                }))
-                                                                toast.success("Loaded standard courier package categories!")
-                                                            }}
-                                                            className="h-8 rounded-lg text-xs font-semibold text-blue-700 border-blue-200 bg-blue-50 hover:bg-blue-100 cursor-pointer"
-                                                        >
-                                                            <Sparkles className="w-3.5 h-3.5 mr-1" />
-                                                            Load Standard Categories
-                                                        </Button>
+
+                                                        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                                                            <Button
+                                                                type="button"
+                                                                variant="outline"
+                                                                size="sm"
+                                                                onClick={handleExportPackageCategoriesToExcel}
+                                                                disabled={orderDefaults.packageCategories.length === 0}
+                                                                className="h-8 sm:h-8.5 rounded-xl text-xs font-bold text-emerald-700 border-emerald-200 bg-emerald-50 hover:bg-emerald-100 cursor-pointer shadow-2xs"
+                                                                title="Export all package categories to an Excel spreadsheet"
+                                                            >
+                                                                <Download className="w-3.5 h-3.5 mr-1 text-emerald-600" />
+                                                                Export Excel
+                                                            </Button>
+
+                                                            <Button
+                                                                type="button"
+                                                                variant="outline"
+                                                                size="sm"
+                                                                onClick={() => categoryFileInputRef.current?.click()}
+                                                                className="h-8 sm:h-8.5 rounded-xl text-xs font-bold text-indigo-700 border-indigo-200 bg-indigo-50 hover:bg-indigo-100 cursor-pointer shadow-2xs"
+                                                                title="Import categories from an .xlsx or .csv spreadsheet"
+                                                            >
+                                                                <Upload className="w-3.5 h-3.5 mr-1 text-indigo-600" />
+                                                                Import Excel
+                                                            </Button>
+
+                                                            <Button
+                                                                type="button"
+                                                                variant="ghost"
+                                                                size="sm"
+                                                                onClick={handleDownloadPackageCategoryTemplate}
+                                                                className="h-8 sm:h-8.5 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 cursor-pointer"
+                                                                title="Download a pre-formatted Excel template"
+                                                            >
+                                                                <FileSpreadsheet className="w-3.5 h-3.5 mr-1 text-slate-500" />
+                                                                Template
+                                                            </Button>
+
+                                                            <Button
+                                                                type="button"
+                                                                variant="outline"
+                                                                size="sm"
+                                                                onClick={() => {
+                                                                    const sampleCategories = [
+                                                                        "Documents / Envelope",
+                                                                        "Small Parcel (< 2kg)",
+                                                                        "Medium Box (2-5kg)",
+                                                                        "Large Box (> 5kg)",
+                                                                        "Food / Cake Box",
+                                                                        "Fragile Electronics",
+                                                                        "Clothing / Apparel",
+                                                                        "Medical Samples"
+                                                                    ]
+                                                                    setOrderDefaults(prev => ({
+                                                                        ...prev,
+                                                                        packageCategories: Array.from(new Set([...prev.packageCategories, ...sampleCategories]))
+                                                                    }))
+                                                                    toast.success("Loaded standard courier package categories!")
+                                                                }}
+                                                                className="h-8 sm:h-8.5 rounded-xl text-xs font-bold text-blue-700 border-blue-200 bg-blue-50 hover:bg-blue-100 cursor-pointer shadow-2xs"
+                                                            >
+                                                                <Sparkles className="w-3.5 h-3.5 mr-1 text-blue-600" />
+                                                                Load Defaults
+                                                            </Button>
+
+                                                            {orderDefaults.packageCategories.length > 0 && (
+                                                                <Button
+                                                                    type="button"
+                                                                    variant="ghost"
+                                                                    size="sm"
+                                                                    onClick={() => {
+                                                                        if (confirm("Are you sure you want to clear all package categories?")) {
+                                                                            setOrderDefaults(prev => ({ ...prev, packageCategories: [] }))
+                                                                            toast.info("Cleared all package categories")
+                                                                        }
+                                                                    }}
+                                                                    className="h-8 sm:h-8.5 rounded-xl text-xs font-semibold text-red-600 hover:bg-red-50 cursor-pointer"
+                                                                >
+                                                                    <Trash2 className="w-3.5 h-3.5 mr-1 text-red-500" />
+                                                                    Clear
+                                                                </Button>
+                                                            )}
+                                                        </div>
                                                     </div>
 
-                                                    {/* Add Category Form */}
-                                                    <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-3">
-                                                        <p className="text-[11px] font-bold text-slate-700 uppercase tracking-wider">Add Custom Package Type</p>
-                                                        <div className="flex gap-2">
+                                                    {/* Search & Add Action Bar */}
+                                                    <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
+                                                        {/* Live Search Input */}
+                                                        <div className="md:col-span-5 relative">
+                                                            <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                                                            <Input
+                                                                value={categorySearchQuery}
+                                                                onChange={(e) => setCategorySearchQuery(e.target.value)}
+                                                                placeholder="Search categories (e.g. Box, Food, Sample)..."
+                                                                className="h-10 pl-9 pr-8 rounded-xl bg-white border-slate-200 focus:border-blue-400 text-xs sm:text-sm font-medium"
+                                                            />
+                                                            {categorySearchQuery && (
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => setCategorySearchQuery("")}
+                                                                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-0.5"
+                                                                >
+                                                                    <X className="w-3.5 h-3.5" />
+                                                                </button>
+                                                            )}
+                                                        </div>
+
+                                                        {/* Add Custom Category Form */}
+                                                        <div className="md:col-span-7 flex gap-2">
                                                             <Input
                                                                 value={newCategoryInput}
                                                                 onChange={(e) => setNewCategoryInput(e.target.value)}
-                                                                placeholder="e.g. Sealed Medical Sample, Perfume Fragile"
-                                                                className="h-9 rounded-xl bg-white border-slate-200 text-xs flex-1"
+                                                                onKeyDown={(e) => {
+                                                                    if (e.key === "Enter") {
+                                                                        e.preventDefault()
+                                                                        const val = newCategoryInput.trim()
+                                                                        if (!val) {
+                                                                            toast.error("Please enter a category name")
+                                                                            return
+                                                                        }
+                                                                        if (orderDefaults.packageCategories.some(c => c.toLowerCase() === val.toLowerCase())) {
+                                                                            toast.error("Category already exists")
+                                                                            return
+                                                                        }
+                                                                        setOrderDefaults(prev => ({
+                                                                            ...prev,
+                                                                            packageCategories: [...prev.packageCategories, val]
+                                                                        }))
+                                                                        setNewCategoryInput("")
+                                                                        toast.success(`Added "${val}" category`)
+                                                                    }
+                                                                }}
+                                                                placeholder="Add custom category (e.g. Sealed Medical Sample, Perfume Fragile)..."
+                                                                className="h-10 rounded-xl bg-white border-slate-200 focus:border-blue-400 text-xs sm:text-sm flex-1 font-medium"
                                                             />
                                                             <Button
                                                                 type="button"
                                                                 onClick={() => {
-                                                                    if (!newCategoryInput.trim()) {
+                                                                    const val = newCategoryInput.trim()
+                                                                    if (!val) {
                                                                         toast.error("Please enter a category name")
                                                                         return
                                                                     }
-                                                                    const val = newCategoryInput.trim()
-                                                                    if (orderDefaults.packageCategories.includes(val)) {
+                                                                    if (orderDefaults.packageCategories.some(c => c.toLowerCase() === val.toLowerCase())) {
                                                                         toast.error("Category already exists")
                                                                         return
                                                                     }
@@ -1496,38 +1986,142 @@ export default function ProfilePage() {
                                                                     setNewCategoryInput("")
                                                                     toast.success(`Added "${val}" category`)
                                                                 }}
-                                                                className="h-9 rounded-xl bg-slate-900 text-white hover:bg-slate-800 text-xs font-bold px-4 cursor-pointer"
+                                                                className="h-10 rounded-xl bg-slate-900 text-white hover:bg-slate-800 text-xs sm:text-sm font-bold px-4 cursor-pointer shadow-xs"
                                                             >
-                                                                <Plus className="w-3.5 h-3.5 mr-1" />
+                                                                <Plus className="w-4 h-4 mr-1" />
                                                                 Add
                                                             </Button>
                                                         </div>
                                                     </div>
 
-                                                    {/* Existing Categories Badges */}
-                                                    <div className="flex flex-wrap gap-2">
-                                                        {orderDefaults.packageCategories.map((cat, idx) => (
-                                                            <span
-                                                                key={idx}
-                                                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-slate-200 shadow-xs text-xs font-semibold text-slate-800"
-                                                            >
-                                                                <Package className="w-3 h-3 text-blue-500" />
-                                                                {cat}
-                                                                <button
-                                                                    type="button"
-                                                                    onClick={() => {
-                                                                        setOrderDefaults(prev => ({
-                                                                            ...prev,
-                                                                            packageCategories: prev.packageCategories.filter((_, i) => i !== idx)
-                                                                        }))
-                                                                    }}
-                                                                    className="text-slate-400 hover:text-red-500 ml-1 cursor-pointer"
-                                                                >
-                                                                    <Trash2 className="w-3 h-3" />
-                                                                </button>
-                                                            </span>
-                                                        ))}
-                                                    </div>
+                                                    {/* Categories List View */}
+                                                    {(() => {
+                                                        const query = categorySearchQuery.toLowerCase().trim()
+                                                        const filtered = orderDefaults.packageCategories.filter(cat => 
+                                                            cat.toLowerCase().includes(query)
+                                                        )
+
+                                                        if (orderDefaults.packageCategories.length === 0) {
+                                                            return (
+                                                                <div className="p-8 text-center border-2 border-dashed border-slate-200 rounded-2xl bg-slate-50/50 space-y-3">
+                                                                    <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center mx-auto">
+                                                                        <Package className="w-6 h-6" />
+                                                                    </div>
+                                                                    <div>
+                                                                        <p className="text-sm font-bold text-slate-800">No package categories configured yet</p>
+                                                                        <p className="text-xs text-slate-500 mt-0.5">Click "Load Defaults", upload an Excel file, or type custom package names above.</p>
+                                                                    </div>
+                                                                    <div className="flex items-center justify-center gap-2 pt-1">
+                                                                        <Button
+                                                                            type="button"
+                                                                            size="sm"
+                                                                            onClick={() => {
+                                                                                const sampleCategories = [
+                                                                                    "Documents / Envelope",
+                                                                                    "Small Parcel (< 2kg)",
+                                                                                    "Medium Box (2-5kg)",
+                                                                                    "Large Box (> 5kg)",
+                                                                                    "Food / Cake Box",
+                                                                                    "Fragile Electronics",
+                                                                                    "Clothing / Apparel"
+                                                                                ]
+                                                                                setOrderDefaults(prev => ({
+                                                                                    ...prev,
+                                                                                    packageCategories: sampleCategories
+                                                                                }))
+                                                                                toast.success("Standard package categories loaded!")
+                                                                            }}
+                                                                            className="rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white"
+                                                                        >
+                                                                            <Sparkles className="w-3.5 h-3.5 mr-1" />
+                                                                            Load Standard Defaults
+                                                                        </Button>
+                                                                        <Button
+                                                                            type="button"
+                                                                            variant="outline"
+                                                                            size="sm"
+                                                                            onClick={() => categoryFileInputRef.current?.click()}
+                                                                            className="rounded-xl text-xs font-bold border-slate-200"
+                                                                        >
+                                                                            <Upload className="w-3.5 h-3.5 mr-1" />
+                                                                            Upload Excel
+                                                                        </Button>
+                                                                    </div>
+                                                                </div>
+                                                            )
+                                                        }
+
+                                                        return (
+                                                            <div className="space-y-2.5">
+                                                                <div className="flex items-center justify-between text-xs text-slate-500 px-0.5 font-medium">
+                                                                    <span>
+                                                                        Showing <strong className="text-slate-800 font-bold">{filtered.length}</strong> of {orderDefaults.packageCategories.length} categories
+                                                                    </span>
+                                                                    {categorySearchQuery && (
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={() => setCategorySearchQuery("")}
+                                                                            className="text-blue-600 hover:underline font-semibold"
+                                                                        >
+                                                                            Reset Search Filter
+                                                                        </button>
+                                                                    )}
+                                                                </div>
+
+                                                                {filtered.length > 0 ? (
+                                                                    <div className="flex flex-wrap gap-2.5">
+                                                                        {filtered.map((cat, idx) => (
+                                                                            <span
+                                                                                key={cat + idx}
+                                                                                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white border border-slate-200 hover:border-slate-300 shadow-2xs text-xs sm:text-sm font-semibold text-slate-800 transition-all group"
+                                                                            >
+                                                                                <Package className="w-3.5 h-3.5 text-blue-500 group-hover:text-blue-600" />
+                                                                                <span>{cat}</span>
+                                                                                <button
+                                                                                    type="button"
+                                                                                    onClick={() => {
+                                                                                        setOrderDefaults(prev => ({
+                                                                                            ...prev,
+                                                                                            packageCategories: prev.packageCategories.filter(c => c !== cat)
+                                                                                        }))
+                                                                                        toast.info(`Removed "${cat}"`)
+                                                                                    }}
+                                                                                    className="text-slate-300 hover:text-red-600 p-0.5 rounded-md hover:bg-red-50 transition-colors ml-1 cursor-pointer"
+                                                                                    title={`Remove ${cat}`}
+                                                                                >
+                                                                                    <Trash2 className="w-3.5 h-3.5" />
+                                                                                </button>
+                                                                            </span>
+                                                                        ))}
+                                                                    </div>
+                                                                ) : (
+                                                                    <div className="p-6 text-center bg-slate-50 rounded-2xl border border-slate-200 space-y-2">
+                                                                        <p className="text-xs sm:text-sm font-semibold text-slate-700">
+                                                                            No category matching <span className="text-slate-900 font-bold">"{categorySearchQuery}"</span>
+                                                                        </p>
+                                                                        <Button
+                                                                            type="button"
+                                                                            size="sm"
+                                                                            onClick={() => {
+                                                                                const val = categorySearchQuery.trim()
+                                                                                if (!val) return
+                                                                                setOrderDefaults(prev => ({
+                                                                                    ...prev,
+                                                                                    packageCategories: [...prev.packageCategories, val]
+                                                                                }))
+                                                                                setCategorySearchQuery("")
+                                                                                toast.success(`Added "${val}" category`)
+                                                                            }}
+                                                                            className="rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white"
+                                                                        >
+                                                                            <Plus className="w-3.5 h-3.5 mr-1" />
+                                                                            Add "{categorySearchQuery}" as Category
+                                                                        </Button>
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        )
+                                                    })()}
                                                 </div>
                                             </div>
                                         )}
