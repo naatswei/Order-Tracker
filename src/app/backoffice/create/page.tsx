@@ -703,13 +703,13 @@ function CreateOrderContent() {
                 if (effectiveLogisticsMode === "delivery") {
                     return {
                         title: "Edit Courier Delivery Order",
-                        description: "Update package details, sender, and recipient delivery route."
+                        description: "Update package details, recipient, and delivery route."
                     }
                 }
                 if (effectiveLogisticsMode === "shipping") {
                     return {
                         title: "Edit Cargo Shipment Details",
-                        description: "Update cargo weight, origin/destination hubs, and freight details."
+                        description: "Update cargo specs, consignee details, and destination port."
                     }
                 }
                 return {
@@ -725,14 +725,14 @@ function CreateOrderContent() {
         if (effectiveBusinessType === "logistics") {
             if (effectiveLogisticsMode === "delivery") {
                 return {
-                    title: "Dispatch Hub and Customer Dropoff Route",
-                    description: "Enter dispatch hub, sender, package details, and recipient dropoff to generate a tracking link."
+                    title: "Package Delivery & Recipient Route",
+                    description: "Enter recipient contact, delivery address, and package details to generate a tracking link."
                 }
             }
             if (effectiveLogisticsMode === "shipping") {
                 return {
-                    title: "Origin Port and Regional Freight Waybill",
-                    description: "Enter origin port, recipient destination, cargo specs, and generate a shipping waybill tracking link."
+                    title: "Cargo Shipment & Consignee Destination",
+                    description: "Enter consignee details, destination port, cargo specs, and generate a shipping waybill tracking link."
                 }
             }
             return {
@@ -770,7 +770,11 @@ function CreateOrderContent() {
             deliveryLocation.trim() !== "" &&
             (effectiveLogisticsMode === "restaurant" 
                 ? ((dropoffPhoneLocal.trim() !== "" || recipientPhone.trim() !== "") && (orderMenuItems.length > 0 || itemType.trim() !== ""))
-                : ((recipientName.trim() !== "" || customerName.trim() !== "") && (orderMenuItems.length > 0 || itemType.trim() !== ""))
+                : (
+                    recipientName.trim() !== "" &&
+                    (dropoffPhoneLocal.trim() !== "" || recipientPhone.trim() !== "") &&
+                    (itemType.trim() !== "" || orderMenuItems.length > 0 || (effectiveLogisticsMode === "shipping" && cargoWeight.trim() !== ""))
+                )
             )
         )
         : (
@@ -1249,137 +1253,75 @@ function CreateOrderContent() {
                                                 <div className="flex items-center justify-between">
                                                     <h3 className="text-xs sm:text-sm font-bold text-sky-950 tracking-tight flex items-center gap-2">
                                                         <Truck className="w-4 h-4 text-sky-600" />
-                                                        Dispatch Hub &amp; Package Delivery Route
+                                                        Package Delivery &amp; Recipient Route
                                                     </h3>
                                                     <span className="text-[9px] sm:text-[10px] font-bold text-sky-800 bg-sky-100 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
                                                         Courier Service
                                                     </span>
                                                 </div>
 
-                                                {/* Hub / Sender & Recipient Details */}
-                                                <div className="grid sm:grid-cols-2 gap-3.5 sm:gap-6">
-                                                    {/* 1. Sender / Hub Details */}
-                                                    <div className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-white border border-sky-200/60 shadow-2xs space-y-3">
-                                                        <div className="flex items-center justify-between pb-1.5 border-b border-sky-100">
-                                                            <span className="text-xs font-bold text-sky-900 flex items-center gap-1.5">
-                                                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                                                                1. Dispatch Hub / Sender Details
-                                                            </span>
-                                                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200/60">Sender</span>
-                                                        </div>
-                                                        <div className="space-y-2.5">
-                                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                                                <div className="space-y-1">
-                                                                    <Label htmlFor="courierSenderName" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">Sender / Business Name</Label>
-                                                                    <Input
-                                                                        id="courierSenderName"
-                                                                        value={customerName}
-                                                                        onChange={(e) => setCustomerName(e.target.value)}
-                                                                        placeholder="e.g. Ama Mensah"
-                                                                        disabled={!canCreateOrder}
-                                                                        className="h-10 sm:h-11 rounded-xl bg-slate-50/50 border-zinc-200 text-xs sm:text-sm font-medium"
-                                                                    />
-                                                                </div>
-                                                                <div className="space-y-1">
-                                                                    <Label htmlFor="courierSenderPhone" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">Sender Phone</Label>
-                                                                    <PhoneInputWithCountry
-                                                                        id="courierSenderPhone"
-                                                                        countryCode={pickupCountryCode}
-                                                                        phoneLocal={pickupPhoneLocal}
-                                                                        onCountryCodeChange={(code) => {
-                                                                            setPickupCountryCode(code)
-                                                                            const formatted = formatFullPhone(code, pickupPhoneLocal)
-                                                                            setCustomerPhone(formatted)
-                                                                        }}
-                                                                        onPhoneLocalChange={(local) => {
-                                                                            setPickupPhoneLocal(local)
-                                                                            const formatted = formatFullPhone(pickupCountryCode, local)
-                                                                            setCustomerPhone(formatted)
-                                                                        }}
-                                                                        placeholder="54 870 6430"
-                                                                        disabled={!canCreateOrder}
-                                                                    />
-                                                                </div>
-                                                            </div>
-                                                            <div className="space-y-1">
-                                                                <Label htmlFor="courierPickupLocation" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">
-                                                                    Dispatch Hub / Sender Pick Up Address
-                                                                </Label>
-                                                                <Input
-                                                                    id="courierPickupLocation"
-                                                                    value={pickupLocation}
-                                                                    onChange={(e) => setPickupLocation(e.target.value)}
-                                                                    placeholder="e.g. Central Dispatch Hub, Kwame Nkrumah Circle"
-                                                                    disabled={!canCreateOrder}
-                                                                    className="h-10 sm:h-11 rounded-xl bg-slate-50/50 border-zinc-200 focus-visible:border-sky-400 text-xs sm:text-sm font-medium"
-                                                                />
-                                                            </div>
-                                                        </div>
+                                                {/* Recipient Details */}
+                                                <div className="p-3.5 sm:p-5 rounded-xl sm:rounded-2xl bg-white border border-sky-200/60 shadow-2xs space-y-3">
+                                                    <div className="flex items-center justify-between pb-1.5 border-b border-sky-100">
+                                                        <span className="text-xs font-bold text-sky-900 flex items-center gap-1.5">
+                                                            <span className="w-1.5 h-1.5 rounded-full bg-sky-500" />
+                                                            Recipient Delivery Details
+                                                        </span>
+                                                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-sky-50 text-sky-700 border border-sky-200/60">Recipient</span>
                                                     </div>
-
-                                                    {/* 2. Recipient Details */}
-                                                    <div className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-white border border-sky-200/60 shadow-2xs space-y-3">
-                                                        <div className="flex items-center justify-between pb-1.5 border-b border-sky-100">
-                                                            <span className="text-xs font-bold text-sky-900 flex items-center gap-1.5">
-                                                                <span className="w-1.5 h-1.5 rounded-full bg-sky-500" />
-                                                                2. Recipient Delivery Details
-                                                            </span>
-                                                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-sky-50 text-sky-700 border border-sky-200/60">Recipient</span>
-                                                        </div>
-                                                        <div className="space-y-2.5">
-                                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                                                <div className="space-y-1">
-                                                                    <Label htmlFor="courierRecipientName" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">
-                                                                        Recipient Name <span className="text-red-500">*</span>
-                                                                    </Label>
-                                                                    <Input
-                                                                        id="courierRecipientName"
-                                                                        value={recipientName}
-                                                                        onChange={(e) => setRecipientName(e.target.value)}
-                                                                        placeholder="e.g. Kofi Boateng"
-                                                                        required
-                                                                        disabled={!canCreateOrder}
-                                                                        className="h-10 sm:h-11 rounded-xl bg-slate-50/50 border-zinc-200 focus-visible:border-sky-400 text-xs sm:text-sm font-medium"
-                                                                    />
-                                                                </div>
-                                                                <div className="space-y-1">
-                                                                    <Label htmlFor="courierRecipientPhone" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">
-                                                                        Recipient Phone <span className="text-red-500">*</span>
-                                                                    </Label>
-                                                                    <PhoneInputWithCountry
-                                                                        id="courierRecipientPhone"
-                                                                        countryCode={dropoffCountryCode}
-                                                                        phoneLocal={dropoffPhoneLocal}
-                                                                        onCountryCodeChange={(code) => {
-                                                                            setDropoffCountryCode(code)
-                                                                            const formatted = formatFullPhone(code, dropoffPhoneLocal)
-                                                                            setRecipientPhone(formatted)
-                                                                        }}
-                                                                        onPhoneLocalChange={(local) => {
-                                                                            setDropoffPhoneLocal(local)
-                                                                            const formatted = formatFullPhone(dropoffCountryCode, local)
-                                                                            setRecipientPhone(formatted)
-                                                                        }}
-                                                                        placeholder="24 400 0000"
-                                                                        required
-                                                                        disabled={!canCreateOrder}
-                                                                    />
-                                                                </div>
-                                                            </div>
+                                                    <div className="space-y-2.5">
+                                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                                             <div className="space-y-1">
-                                                                <Label htmlFor="courierDeliveryLocation" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">
-                                                                    Recipient Delivery Address <span className="text-red-500">*</span>
+                                                                <Label htmlFor="courierRecipientName" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">
+                                                                    Recipient Name <span className="text-red-500">*</span>
                                                                 </Label>
                                                                 <Input
-                                                                    id="courierDeliveryLocation"
-                                                                    value={deliveryLocation}
-                                                                    onChange={(e) => setDeliveryLocation(e.target.value)}
-                                                                    placeholder="e.g. Airport Residential, 5th Avenue"
+                                                                    id="courierRecipientName"
+                                                                    value={recipientName}
+                                                                    onChange={(e) => setRecipientName(e.target.value)}
+                                                                    placeholder="e.g. Kofi Boateng"
                                                                     required
                                                                     disabled={!canCreateOrder}
                                                                     className="h-10 sm:h-11 rounded-xl bg-slate-50/50 border-zinc-200 focus-visible:border-sky-400 text-xs sm:text-sm font-medium"
                                                                 />
                                                             </div>
+                                                            <div className="space-y-1">
+                                                                <Label htmlFor="courierRecipientPhone" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">
+                                                                    Recipient Phone <span className="text-red-500">*</span>
+                                                                </Label>
+                                                                <PhoneInputWithCountry
+                                                                    id="courierRecipientPhone"
+                                                                    countryCode={dropoffCountryCode}
+                                                                    phoneLocal={dropoffPhoneLocal}
+                                                                    onCountryCodeChange={(code) => {
+                                                                        setDropoffCountryCode(code)
+                                                                        const formatted = formatFullPhone(code, dropoffPhoneLocal)
+                                                                        setRecipientPhone(formatted)
+                                                                    }}
+                                                                    onPhoneLocalChange={(local) => {
+                                                                        setDropoffPhoneLocal(local)
+                                                                        const formatted = formatFullPhone(dropoffCountryCode, local)
+                                                                        setRecipientPhone(formatted)
+                                                                    }}
+                                                                    placeholder="24 400 0000"
+                                                                    required
+                                                                    disabled={!canCreateOrder}
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                        <div className="space-y-1">
+                                                            <Label htmlFor="courierDeliveryLocation" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">
+                                                                Recipient Delivery Address <span className="text-red-500">*</span>
+                                                            </Label>
+                                                            <Input
+                                                                id="courierDeliveryLocation"
+                                                                value={deliveryLocation}
+                                                                onChange={(e) => setDeliveryLocation(e.target.value)}
+                                                                placeholder="e.g. Airport Residential, 5th Avenue"
+                                                                required
+                                                                disabled={!canCreateOrder}
+                                                                className="h-10 sm:h-11 rounded-xl bg-slate-50/50 border-zinc-200 focus-visible:border-sky-400 text-xs sm:text-sm font-medium"
+                                                            />
                                                         </div>
                                                     </div>
                                                 </div>
@@ -1391,7 +1333,7 @@ function CreateOrderContent() {
                                                             <div className="space-y-1.5">
                                                                 <div className="flex items-center gap-1.5">
                                                                     <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                                                                    <span className="text-[9px] font-bold text-slate-500 uppercase tracking-wider">Dispatch Hub</span>
+                                                                    <span className="text-[9px] font-bold text-slate-500 uppercase tracking-wider">Dispatch Hub (Default)</span>
                                                                 </div>
                                                                 <div className="w-full h-36 sm:h-44 rounded-xl sm:rounded-2xl overflow-hidden border border-slate-200 bg-slate-100 shadow-inner">
                                                                     <iframe
@@ -1527,137 +1469,75 @@ function CreateOrderContent() {
                                                 <div className="flex items-center justify-between">
                                                     <h3 className="text-xs sm:text-sm font-bold text-indigo-950 tracking-tight flex items-center gap-2">
                                                         <Ship className="w-4 h-4 text-indigo-600" />
-                                                        Origin Port / Terminal &amp; Regional Destination
+                                                        Cargo Shipment &amp; Consignee Destination
                                                     </h3>
                                                     <span className="text-[9px] sm:text-[10px] font-bold text-indigo-800 bg-indigo-100 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
                                                         Cargo Shipping
                                                     </span>
                                                 </div>
 
-                                                {/* Consignor & Consignee Details */}
-                                                <div className="grid sm:grid-cols-2 gap-3.5 sm:gap-6">
-                                                    {/* 1. Consignor / Shipper Details */}
-                                                    <div className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-white border border-indigo-200/60 shadow-2xs space-y-3">
-                                                        <div className="flex items-center justify-between pb-1.5 border-b border-indigo-100">
-                                                            <span className="text-xs font-bold text-indigo-900 flex items-center gap-1.5">
-                                                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                                                                1. Consignor / Shipper Details
-                                                            </span>
-                                                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200/60">Shipper</span>
-                                                        </div>
-                                                        <div className="space-y-2.5">
-                                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                                                <div className="space-y-1">
-                                                                    <Label htmlFor="shippingConsignorName" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">Consignor / Shipper Name</Label>
-                                                                    <Input
-                                                                        id="shippingConsignorName"
-                                                                        value={customerName}
-                                                                        onChange={(e) => setCustomerName(e.target.value)}
-                                                                        placeholder="e.g. Global Traders Ltd"
-                                                                        disabled={!canCreateOrder}
-                                                                        className="h-10 sm:h-11 rounded-xl bg-slate-50/50 border-zinc-200 text-xs sm:text-sm font-medium"
-                                                                    />
-                                                                </div>
-                                                                <div className="space-y-1">
-                                                                    <Label htmlFor="shippingConsignorPhone" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">Consignor Phone</Label>
-                                                                    <PhoneInputWithCountry
-                                                                        id="shippingConsignorPhone"
-                                                                        countryCode={pickupCountryCode}
-                                                                        phoneLocal={pickupPhoneLocal}
-                                                                        onCountryCodeChange={(code) => {
-                                                                            setPickupCountryCode(code)
-                                                                            const formatted = formatFullPhone(code, pickupPhoneLocal)
-                                                                            setCustomerPhone(formatted)
-                                                                        }}
-                                                                        onPhoneLocalChange={(local) => {
-                                                                            setPickupPhoneLocal(local)
-                                                                            const formatted = formatFullPhone(pickupCountryCode, local)
-                                                                            setCustomerPhone(formatted)
-                                                                        }}
-                                                                        placeholder="54 870 6430"
-                                                                        disabled={!canCreateOrder}
-                                                                    />
-                                                                </div>
-                                                            </div>
-                                                            <div className="space-y-1">
-                                                                <Label htmlFor="shippingOriginPort" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">
-                                                                    Origin Port / Air Cargo Terminal
-                                                                </Label>
-                                                                <Input
-                                                                    id="shippingOriginPort"
-                                                                    value={pickupLocation}
-                                                                    onChange={(e) => setPickupLocation(e.target.value)}
-                                                                    placeholder="e.g. Tema Port Terminal 3 / Kotoka Cargo Village"
-                                                                    disabled={!canCreateOrder}
-                                                                    className="h-10 sm:h-11 rounded-xl bg-slate-50/50 border-zinc-200 focus-visible:border-indigo-400 text-xs sm:text-sm font-medium"
-                                                                />
-                                                            </div>
-                                                        </div>
+                                                {/* Consignee / Receiver Details */}
+                                                <div className="p-3.5 sm:p-5 rounded-xl sm:rounded-2xl bg-white border border-indigo-200/60 shadow-2xs space-y-3">
+                                                    <div className="flex items-center justify-between pb-1.5 border-b border-indigo-100">
+                                                        <span className="text-xs font-bold text-indigo-900 flex items-center gap-1.5">
+                                                            <span className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
+                                                            Consignee / Receiver Details
+                                                        </span>
+                                                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-indigo-50 text-indigo-700 border border-indigo-200/60">Consignee</span>
                                                     </div>
-
-                                                    {/* 2. Consignee / Receiver Details */}
-                                                    <div className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-white border border-indigo-200/60 shadow-2xs space-y-3">
-                                                        <div className="flex items-center justify-between pb-1.5 border-b border-indigo-100">
-                                                            <span className="text-xs font-bold text-indigo-900 flex items-center gap-1.5">
-                                                                <span className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
-                                                                2. Consignee / Receiver Details
-                                                            </span>
-                                                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-indigo-50 text-indigo-700 border border-indigo-200/60">Consignee</span>
-                                                        </div>
-                                                        <div className="space-y-2.5">
-                                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                                                <div className="space-y-1">
-                                                                    <Label htmlFor="shippingConsigneeName" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">
-                                                                        Consignee Name <span className="text-red-500">*</span>
-                                                                    </Label>
-                                                                    <Input
-                                                                        id="shippingConsigneeName"
-                                                                        value={recipientName}
-                                                                        onChange={(e) => setRecipientName(e.target.value)}
-                                                                        placeholder="e.g. Kwame Mensah"
-                                                                        required
-                                                                        disabled={!canCreateOrder}
-                                                                        className="h-10 sm:h-11 rounded-xl bg-slate-50/50 border-zinc-200 focus-visible:border-indigo-400 text-xs sm:text-sm font-medium"
-                                                                    />
-                                                                </div>
-                                                                <div className="space-y-1">
-                                                                    <Label htmlFor="shippingConsigneePhone" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">
-                                                                        Consignee Phone <span className="text-red-500">*</span>
-                                                                    </Label>
-                                                                    <PhoneInputWithCountry
-                                                                        id="shippingConsigneePhone"
-                                                                        countryCode={dropoffCountryCode}
-                                                                        phoneLocal={dropoffPhoneLocal}
-                                                                        onCountryCodeChange={(code) => {
-                                                                            setDropoffCountryCode(code)
-                                                                            const formatted = formatFullPhone(code, dropoffPhoneLocal)
-                                                                            setRecipientPhone(formatted)
-                                                                        }}
-                                                                        onPhoneLocalChange={(local) => {
-                                                                            setDropoffPhoneLocal(local)
-                                                                            const formatted = formatFullPhone(dropoffCountryCode, local)
-                                                                            setRecipientPhone(formatted)
-                                                                        }}
-                                                                        placeholder="24 400 0000"
-                                                                        required
-                                                                        disabled={!canCreateOrder}
-                                                                    />
-                                                                </div>
-                                                            </div>
+                                                    <div className="space-y-2.5">
+                                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                                             <div className="space-y-1">
-                                                                <Label htmlFor="shippingDestinationPort" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">
-                                                                    Destination Port / Inland Terminal <span className="text-red-500">*</span>
+                                                                <Label htmlFor="shippingConsigneeName" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">
+                                                                    Consignee Name <span className="text-red-500">*</span>
                                                                 </Label>
                                                                 <Input
-                                                                    id="shippingDestinationPort"
-                                                                    value={deliveryLocation}
-                                                                    onChange={(e) => setDeliveryLocation(e.target.value)}
-                                                                    placeholder="e.g. Kumasi Inland Freight Hub"
+                                                                    id="shippingConsigneeName"
+                                                                    value={recipientName}
+                                                                    onChange={(e) => setRecipientName(e.target.value)}
+                                                                    placeholder="e.g. Kwame Mensah"
                                                                     required
                                                                     disabled={!canCreateOrder}
                                                                     className="h-10 sm:h-11 rounded-xl bg-slate-50/50 border-zinc-200 focus-visible:border-indigo-400 text-xs sm:text-sm font-medium"
                                                                 />
                                                             </div>
+                                                            <div className="space-y-1">
+                                                                <Label htmlFor="shippingConsigneePhone" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">
+                                                                    Consignee Phone <span className="text-red-500">*</span>
+                                                                </Label>
+                                                                <PhoneInputWithCountry
+                                                                    id="shippingConsigneePhone"
+                                                                    countryCode={dropoffCountryCode}
+                                                                    phoneLocal={dropoffPhoneLocal}
+                                                                    onCountryCodeChange={(code) => {
+                                                                        setDropoffCountryCode(code)
+                                                                        const formatted = formatFullPhone(code, dropoffPhoneLocal)
+                                                                        setRecipientPhone(formatted)
+                                                                    }}
+                                                                    onPhoneLocalChange={(local) => {
+                                                                        setDropoffPhoneLocal(local)
+                                                                        const formatted = formatFullPhone(dropoffCountryCode, local)
+                                                                        setRecipientPhone(formatted)
+                                                                    }}
+                                                                    placeholder="24 400 0000"
+                                                                    required
+                                                                    disabled={!canCreateOrder}
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                        <div className="space-y-1">
+                                                            <Label htmlFor="shippingDestinationPort" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">
+                                                                Destination Port / Inland Terminal <span className="text-red-500">*</span>
+                                                            </Label>
+                                                            <Input
+                                                                id="shippingDestinationPort"
+                                                                value={deliveryLocation}
+                                                                onChange={(e) => setDeliveryLocation(e.target.value)}
+                                                                placeholder="e.g. Kumasi Inland Freight Hub"
+                                                                required
+                                                                disabled={!canCreateOrder}
+                                                                className="h-10 sm:h-11 rounded-xl bg-slate-50/50 border-zinc-200 focus-visible:border-indigo-400 text-xs sm:text-sm font-medium"
+                                                            />
                                                         </div>
                                                     </div>
                                                 </div>
@@ -1669,7 +1549,7 @@ function CreateOrderContent() {
                                                             <div className="space-y-1.5">
                                                                 <div className="flex items-center gap-1.5">
                                                                     <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                                                                    <span className="text-[9px] font-bold text-slate-500 uppercase tracking-wider">Origin Port</span>
+                                                                    <span className="text-[9px] font-bold text-slate-500 uppercase tracking-wider">Origin Port (Default)</span>
                                                                 </div>
                                                                 <div className="w-full h-36 sm:h-44 rounded-xl sm:rounded-2xl overflow-hidden border border-slate-200 bg-slate-100 shadow-inner">
                                                                     <iframe
