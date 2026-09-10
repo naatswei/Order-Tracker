@@ -316,7 +316,7 @@ export default function OperationsPage() {
     return (
         <div className="bg-[#F8FAFC] min-h-screen pb-16 flex flex-col">
             {/* Mobile-First Header */}
-            <header className="bg-white border-b border-slate-200/80 sticky top-0 z-30 shadow-2xs">
+            <header className="bg-white border-b border-slate-200/80 shadow-2xs">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-4 pb-4 sm:pt-5 sm:pb-5 space-y-6 sm:space-y-8">
                     {/* Top Row: Navigation + Neutral Stages Button */}
                     <div className="flex items-center justify-between gap-4">
