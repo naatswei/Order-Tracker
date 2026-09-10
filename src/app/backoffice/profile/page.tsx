@@ -1250,14 +1250,14 @@ export default function ProfilePage() {
                                         {/* TYPE A: RESTAURANT DELIVERY SERVICE CONFIGURATION                         */}
                                         {/* ========================================================================= */}
                                         {orderDefaults.logisticsType === 'restaurant' && (
-                                            <div className="space-y-8 animate-in fade-in-50 duration-200">
-                                                <div className="pt-6 sm:pt-8 border-t border-slate-100 space-y-6">
+                                            <div className="space-y-8 sm:space-y-10 animate-in fade-in-50 duration-200">
+                                                <div className="pt-8 sm:pt-10 border-t border-slate-100 space-y-8 sm:space-y-10">
                                                     <div>
                                                         <h4 className="text-sm sm:text-base font-bold text-slate-900">Branch &amp; Payment Defaults</h4>
                                                     </div>
 
-                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                                        <div className="space-y-2">
+                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+                                                        <div className="space-y-2.5">
                                                             <Label htmlFor="defaultPickupLocation" className="text-slate-800 font-bold text-xs sm:text-sm flex items-center gap-1.5">
                                                                 <MapPin className="w-4 h-4 text-slate-400" />
                                                                 Default Pickup Location / Branch
@@ -1271,7 +1271,7 @@ export default function ProfilePage() {
                                                             />
                                                         </div>
 
-                                                        <div className="space-y-2">
+                                                        <div className="space-y-2.5">
                                                             <Label htmlFor="defaultPickupContact" className="text-slate-800 font-bold text-xs sm:text-sm flex items-center gap-1.5">
                                                                 <Phone className="w-4 h-4 text-slate-400" />
                                                                 Default Branch / Pickup Phone
@@ -1286,8 +1286,8 @@ export default function ProfilePage() {
                                                         </div>
                                                     </div>
 
-                                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                                        <div className="space-y-2">
+                                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+                                                        <div className="space-y-2.5">
                                                             <Label htmlFor="defaultDeliveryFeeSetting" className="text-slate-800 font-bold text-xs sm:text-sm">
                                                                 Default Delivery Fee (GH₵)
                                                             </Label>
@@ -1302,7 +1302,7 @@ export default function ProfilePage() {
                                                             />
                                                         </div>
 
-                                                        <div className="space-y-2">
+                                                        <div className="space-y-2.5">
                                                             <Label htmlFor="defaultPaymentNumber" className="text-slate-800 font-bold text-xs sm:text-sm">
                                                                 Receiving MoMo Number
                                                             </Label>
@@ -1315,7 +1315,7 @@ export default function ProfilePage() {
                                                             />
                                                         </div>
 
-                                                        <div className="space-y-2">
+                                                        <div className="space-y-2.5">
                                                             <Label htmlFor="defaultPaymentProvider" className="text-slate-800 font-bold text-xs sm:text-sm">
                                                                 MoMo Network Provider
                                                             </Label>
@@ -1343,7 +1343,7 @@ export default function ProfilePage() {
                                                 />
 
                                                 {/* Menu Presets Catalog */}
-                                                <div className="pt-6 sm:pt-8 border-t border-slate-100 space-y-4">
+                                                <div className="pt-8 sm:pt-10 border-t border-slate-100 space-y-6">
                                                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                                                         <div>
                                                             <h4 className="text-sm sm:text-base font-bold text-slate-900">Menu Item Presets</h4>
@@ -1558,14 +1558,14 @@ export default function ProfilePage() {
                                         {/* TYPE B: DELIVERY SERVICE (COURIER) CONFIGURATION                          */}
                                         {/* ========================================================================= */}
                                         {orderDefaults.logisticsType === 'delivery' && (
-                                            <div className="space-y-8 animate-in fade-in-50 duration-200">
-                                                <div className="pt-6 sm:pt-8 border-t border-slate-100 space-y-6">
+                                            <div className="space-y-8 sm:space-y-10 animate-in fade-in-50 duration-200">
+                                                <div className="pt-8 sm:pt-10 border-t border-slate-100 space-y-8 sm:space-y-10">
                                                     <div>
                                                         <h4 className="text-sm sm:text-base font-bold text-slate-900">Hub &amp; Dispatch Defaults</h4>
                                                     </div>
 
-                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                                        <div className="space-y-2">
+                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+                                                        <div className="space-y-2.5">
                                                             <Label htmlFor="defaultDispatchHub" className="text-slate-800 font-bold text-xs sm:text-sm flex items-center gap-1.5">
                                                                 <MapPin className="w-4 h-4 text-slate-400" />
                                                                 Default Dispatch Hub / Sender Address
@@ -1579,7 +1579,7 @@ export default function ProfilePage() {
                                                             />
                                                         </div>
 
-                                                        <div className="space-y-2">
+                                                        <div className="space-y-2.5">
                                                             <Label htmlFor="defaultSenderContact" className="text-slate-800 font-bold text-xs sm:text-sm flex items-center gap-1.5">
                                                                 <Phone className="w-4 h-4 text-slate-400" />
                                                                 Default Dispatch / Sender Phone
@@ -1594,8 +1594,8 @@ export default function ProfilePage() {
                                                         </div>
                                                     </div>
 
-                                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                                        <div className="space-y-2">
+                                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+                                                        <div className="space-y-2.5">
                                                             <Label htmlFor="defaultCourierFee" className="text-slate-800 font-bold text-xs sm:text-sm">
                                                                 Base Courier Delivery Fee (GH₵)
                                                             </Label>
@@ -1610,7 +1610,7 @@ export default function ProfilePage() {
                                                             />
                                                         </div>
 
-                                                        <div className="space-y-2">
+                                                        <div className="space-y-2.5">
                                                             <Label htmlFor="defaultCourierMoMoNumber" className="text-slate-800 font-bold text-xs sm:text-sm">
                                                                 Courier MoMo Payment Number
                                                             </Label>
@@ -1623,7 +1623,7 @@ export default function ProfilePage() {
                                                             />
                                                         </div>
 
-                                                        <div className="space-y-2">
+                                                        <div className="space-y-2.5">
                                                             <Label htmlFor="defaultCourierPaymentProvider" className="text-slate-800 font-bold text-xs sm:text-sm">
                                                                 MoMo Network Provider
                                                             </Label>
@@ -1651,7 +1651,7 @@ export default function ProfilePage() {
                                                 />
 
                                                 {/* Package Categories Section */}
-                                                <div className="pt-6 sm:pt-8 border-t border-slate-100 space-y-4">
+                                                <div className="pt-8 sm:pt-10 border-t border-slate-100 space-y-6">
                                                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                                                         <div>
                                                             <h4 className="text-sm sm:text-base font-bold text-slate-900">Package Categories</h4>
@@ -1748,14 +1748,14 @@ export default function ProfilePage() {
                                         {/* TYPE C: SHIPPING (FREIGHT & CARGO) CONFIGURATION                          */}
                                         {/* ========================================================================= */}
                                         {orderDefaults.logisticsType === 'shipping' && (
-                                            <div className="space-y-8 animate-in fade-in-50 duration-200">
-                                                <div className="pt-6 sm:pt-8 border-t border-slate-100 space-y-6">
+                                            <div className="space-y-8 sm:space-y-10 animate-in fade-in-50 duration-200">
+                                                <div className="pt-8 sm:pt-10 border-t border-slate-100 space-y-8 sm:space-y-10">
                                                     <div>
                                                         <h4 className="text-sm sm:text-base font-bold text-slate-900">Port Origin &amp; Freight Rates</h4>
                                                     </div>
 
-                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                                        <div className="space-y-2">
+                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+                                                        <div className="space-y-2.5">
                                                             <Label htmlFor="defaultOriginPort" className="text-slate-800 font-bold text-xs sm:text-sm flex items-center gap-1.5">
                                                                 <Navigation className="w-4 h-4 text-slate-400" />
                                                                 Default Origin Port / Terminal
@@ -1769,7 +1769,7 @@ export default function ProfilePage() {
                                                             />
                                                         </div>
 
-                                                        <div className="space-y-2">
+                                                        <div className="space-y-2.5">
                                                             <Label htmlFor="defaultDestinationHub" className="text-slate-800 font-bold text-xs sm:text-sm flex items-center gap-1.5">
                                                                 <MapPin className="w-4 h-4 text-slate-400" />
                                                                 Default Destination City / Hub
@@ -1784,8 +1784,8 @@ export default function ProfilePage() {
                                                         </div>
                                                     </div>
 
-                                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                                        <div className="space-y-2">
+                                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+                                                        <div className="space-y-2.5">
                                                             <Label htmlFor="defaultFreightRatePerKg" className="text-slate-800 font-bold text-xs sm:text-sm">
                                                                 Rate per Kg (GH₵ / kg)
                                                             </Label>
@@ -1800,7 +1800,7 @@ export default function ProfilePage() {
                                                             />
                                                         </div>
 
-                                                        <div className="space-y-2">
+                                                        <div className="space-y-2.5">
                                                             <Label htmlFor="defaultHandlingFee" className="text-slate-800 font-bold text-xs sm:text-sm">
                                                                 Customs / Handling Fee (GH₵)
                                                             </Label>
@@ -1815,7 +1815,7 @@ export default function ProfilePage() {
                                                             />
                                                         </div>
 
-                                                        <div className="space-y-2">
+                                                        <div className="space-y-2.5">
                                                             <Label htmlFor="defaultWaybillPrefix" className="text-slate-800 font-bold text-xs sm:text-sm">
                                                                 Waybill / Tracking Prefix
                                                             </Label>
@@ -1829,8 +1829,8 @@ export default function ProfilePage() {
                                                         </div>
                                                     </div>
 
-                                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                                        <div className="space-y-2">
+                                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+                                                        <div className="space-y-2.5">
                                                             <Label htmlFor="defaultOriginContact" className="text-slate-800 font-bold text-xs sm:text-sm">
                                                                 Origin Port Contact Phone
                                                             </Label>
@@ -1843,7 +1843,7 @@ export default function ProfilePage() {
                                                             />
                                                         </div>
 
-                                                        <div className="space-y-2">
+                                                        <div className="space-y-2.5">
                                                             <Label htmlFor="defaultShippingMoMoNumber" className="text-slate-800 font-bold text-xs sm:text-sm">
                                                                 Shipping MoMo Account
                                                             </Label>
@@ -1856,7 +1856,7 @@ export default function ProfilePage() {
                                                             />
                                                         </div>
 
-                                                        <div className="space-y-2">
+                                                        <div className="space-y-2.5">
                                                             <Label htmlFor="defaultShippingPaymentProvider" className="text-slate-800 font-bold text-xs sm:text-sm">
                                                                 MoMo Network Provider
                                                             </Label>
@@ -1877,7 +1877,7 @@ export default function ProfilePage() {
                                         )}
 
                                         {/* Save Defaults Button */}
-                                        <div className="flex justify-end pt-4 border-t border-slate-100">
+                                        <div className="flex justify-end pt-6 sm:pt-8 border-t border-slate-100">
                                             <Button
                                                 type="submit"
                                                 disabled={orderDefaultsSaving}
