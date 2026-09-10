@@ -1694,113 +1694,42 @@ export default function ProfilePage() {
                                                         </div>
                                                     </div>
 
-                                                    {/* Search Menu Presets */}
-                                                    {orderDefaults.packageCategories.length > 0 && (
-                                                        <div className="relative w-full max-w-md">
-                                                            <Search className="w-5 h-5 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-                                                            <Input
-                                                                value={categorySearchQuery}
-                                                                onChange={(e) => setCategorySearchQuery(e.target.value)}
-                                                                placeholder="Search categories (e.g. Box, Food, Sample)..."
-                                                                className="h-11 sm:h-12 pl-10 pr-9 rounded-xl bg-white border-slate-200 focus:border-blue-400 text-sm sm:text-base font-medium"
-                                                            />
-                                                            {categorySearchQuery && (
-                                                                <button
+                                                    {/* Categories List View */}
+                                                    {orderDefaults.packageCategories.length === 0 ? (
+                                                        <div className="p-8 sm:p-10 text-center border-2 border-dashed border-slate-200 rounded-2xl bg-slate-50/50 space-y-3">
+                                                            <div className="w-14 h-14 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center mx-auto">
+                                                                <Package className="w-7 h-7" />
+                                                            </div>
+                                                            <div>
+                                                                <p className="text-base font-bold text-slate-800">No package categories configured yet</p>
+                                                                <p className="text-xs sm:text-sm text-slate-500 mt-1">Upload an Excel file to import package categories.</p>
+                                                            </div>
+                                                            <div className="flex items-center justify-center gap-2 pt-2">
+                                                                <Button
                                                                     type="button"
-                                                                    onClick={() => setCategorySearchQuery("")}
-                                                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-0.5 cursor-pointer"
+                                                                    variant="outline"
+                                                                    size="sm"
+                                                                    onClick={() => categoryFileInputRef.current?.click()}
+                                                                    className="rounded-xl text-xs sm:text-sm font-bold border-slate-200 h-9 px-4"
                                                                 >
-                                                                    <X className="w-4 h-4" />
-                                                                </button>
-                                                            )}
+                                                                    <Upload className="w-4 h-4 mr-1.5" />
+                                                                    Upload Excel
+                                                                </Button>
+                                                            </div>
+                                                        </div>
+                                                    ) : (
+                                                        <div className="flex flex-wrap gap-2.5 sm:gap-3">
+                                                            {orderDefaults.packageCategories.map((cat, idx) => (
+                                                                <span
+                                                                    key={idx}
+                                                                    className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-100 text-slate-800 font-semibold text-xs sm:text-sm border border-slate-200/60 shadow-2xs"
+                                                                >
+                                                                    <Package className="w-4 h-4 text-blue-600" />
+                                                                    <span>{cat}</span>
+                                                                </span>
+                                                            ))}
                                                         </div>
                                                     )}
-
-                                                    {/* Categories List View */}
-                                                    {(() => {
-                                                        const query = categorySearchQuery.toLowerCase().trim()
-                                                        const filtered = orderDefaults.packageCategories.filter(cat => 
-                                                            cat.toLowerCase().includes(query)
-                                                        )
-
-                                                        if (orderDefaults.packageCategories.length === 0) {
-                                                            return (
-                                                                <div className="p-8 sm:p-10 text-center border-2 border-dashed border-slate-200 rounded-2xl bg-slate-50/50 space-y-3">
-                                                                    <div className="w-14 h-14 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center mx-auto">
-                                                                        <Package className="w-7 h-7" />
-                                                                    </div>
-                                                                    <div>
-                                                                        <p className="text-base font-bold text-slate-800">No package categories configured yet</p>
-                                                                        <p className="text-xs sm:text-sm text-slate-500 mt-1">Upload an Excel file to import package categories.</p>
-                                                                    </div>
-                                                                    <div className="flex items-center justify-center gap-2 pt-2">
-                                                                        <Button
-                                                                            type="button"
-                                                                            variant="outline"
-                                                                            size="sm"
-                                                                            onClick={() => categoryFileInputRef.current?.click()}
-                                                                            className="rounded-xl text-xs sm:text-sm font-bold border-slate-200 h-9 px-4"
-                                                                        >
-                                                                            <Upload className="w-4 h-4 mr-1.5" />
-                                                                            Upload Excel
-                                                                        </Button>
-                                                                    </div>
-                                                                </div>
-                                                            )
-                                                        }
-
-                                                        return (
-                                                            <div className="space-y-3">
-                                                                <div className="flex items-center justify-between text-xs sm:text-sm text-slate-500 px-0.5 font-medium">
-                                                                    <span>
-                                                                        Showing <strong className="text-slate-900 font-bold">{filtered.length}</strong> of {orderDefaults.packageCategories.length} categories
-                                                                    </span>
-                                                                    {categorySearchQuery && (
-                                                                        <button
-                                                                            type="button"
-                                                                            onClick={() => setCategorySearchQuery("")}
-                                                                            className="text-blue-600 hover:underline font-semibold cursor-pointer"
-                                                                        >
-                                                                            Reset Search Filter
-                                                                        </button>
-                                                                    )}
-                                                                </div>
-
-                                                                {filtered.length > 0 ? (
-                                                                    <div className="flex flex-wrap gap-2.5 sm:gap-3">
-                                                                        {filtered.map((cat, idx) => (
-                                                                            <span
-                                                                                key={idx}
-                                                                                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200/80 text-slate-800 font-semibold text-xs sm:text-sm transition-all border border-slate-200/60 shadow-2xs group"
-                                                                            >
-                                                                                <Package className="w-4 h-4 text-blue-600" />
-                                                                                <span>{cat}</span>
-                                                                                <button
-                                                                                    type="button"
-                                                                                    onClick={() => {
-                                                                                        setOrderDefaults(prev => ({
-                                                                                            ...prev,
-                                                                                            packageCategories: prev.packageCategories.filter((_, i) => i !== idx)
-                                                                                        }))
-                                                                                    }}
-                                                                                    className="text-slate-300 hover:text-red-600 p-0.5 rounded-md hover:bg-red-50 transition-colors ml-1 cursor-pointer"
-                                                                                    title={`Remove ${cat}`}
-                                                                                >
-                                                                                    <Trash2 className="w-4 h-4" />
-                                                                                </button>
-                                                                            </span>
-                                                                        ))}
-                                                                    </div>
-                                                                ) : (
-                                                                    <div className="p-6 text-center bg-slate-50 rounded-2xl border border-slate-200 space-y-2">
-                                                                        <p className="text-xs sm:text-sm font-semibold text-slate-700">
-                                                                            No category matching <span className="text-slate-900 font-bold">"{categorySearchQuery}"</span>
-                                                                        </p>
-                                                                    </div>
-                                                                )}
-                                                            </div>
-                                                        )
-                                                    })()}
                                                 </div>
                                             </div>
                                         )}
