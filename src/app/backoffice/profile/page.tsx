@@ -183,7 +183,7 @@ export default function ProfilePage() {
         defaultDispatchHub: "",
         defaultSenderContact: "",
         defaultCourierFee: "0",
-        packageCategories: ["Documents", "Small Parcel", "Food/Cake Box", "Electronics", "Fragile"],
+        packageCategories: [],
         defaultCourierMoMoNumber: "",
         defaultCourierPaymentProvider: "MTN",
         defaultOriginPort: "Tema Port / Kotoka Airport",
@@ -492,7 +492,7 @@ export default function ProfilePage() {
                 defaultDispatchHub: (metadata?.defaultDispatchHub as string) || (metadata?.location as string) || "",
                 defaultSenderContact: (metadata?.defaultSenderContact as string) || (metadata?.contact as string) || "",
                 defaultCourierFee: (metadata?.defaultCourierFee as string) || "0",
-                packageCategories: Array.isArray(metadata?.packageCategories) ? metadata.packageCategories : ["Documents", "Small Parcel", "Food/Cake Box", "Electronics", "Fragile"],
+                packageCategories: Array.isArray(metadata?.packageCategories) ? metadata.packageCategories : [],
                 defaultCourierMoMoNumber: (metadata?.defaultCourierMoMoNumber as string) || (metadata?.bulkclixAccountNumber as string) || "",
                 defaultCourierPaymentProvider: (metadata?.defaultCourierPaymentProvider as string) || "MTN",
                 // Shipping
@@ -1129,8 +1129,8 @@ export default function ProfilePage() {
                             <Card className="border-slate-200 shadow-sm overflow-hidden bg-white rounded-3xl">
                                 <CardHeader className="p-6 sm:p-9 pb-5 border-b border-slate-100 bg-gradient-to-r from-indigo-50/40 via-white to-slate-50/30">
                                     <div>
-                                        <h2 className="text-lg sm:text-xl md:text-2xl font-black text-slate-900 tracking-tight">Administrative Default Business Entry</h2>
-                                        <p className="text-xs sm:text-sm md:text-base text-slate-500 font-medium mt-0.5">Configure your primary logistics operation type and default business parameters (Pickup branch, Menu entries, Delivery/Shipping rates, MoMo payments) that directly determine your Create Order page.</p>
+                                        <h2 className="text-base sm:text-lg md:text-xl font-bold text-slate-900 tracking-tight">Administrative Defaults</h2>
+                                        <p className="text-xs text-slate-500 mt-0.5">Set your default business type, rates, and operational settings.</p>
                                     </div>
                                 </CardHeader>
                                 <CardContent className="p-6 sm:p-9 space-y-8 sm:space-y-10">
