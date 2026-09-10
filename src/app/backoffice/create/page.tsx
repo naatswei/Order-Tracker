@@ -1319,16 +1319,6 @@ function CreateOrderContent() {
                                 {effectiveLogisticsMode === "delivery" && (
                                     <div className="space-y-4">
                                             <div className="bg-sky-50/50 p-4 sm:p-6 lg:p-8 rounded-2xl sm:rounded-3xl border border-sky-200/70 space-y-4 sm:space-y-5 shadow-xs">
-                                                <div className="flex items-center justify-between">
-                                                    <h3 className="text-sm sm:text-base lg:text-lg font-black text-sky-950 tracking-tight flex items-center gap-2">
-                                                        <Truck className="w-4 h-4 sm:w-5 sm:h-5 text-sky-600" />
-                                                        Package Delivery &amp; Recipient Route
-                                                    </h3>
-                                                    <span className="text-[10px] sm:text-xs font-bold text-sky-800 bg-sky-100 px-3 py-1 rounded-full uppercase tracking-wider">
-                                                        Courier Service
-                                                    </span>
-                                                </div>
-
                                                 {/* Recipient Details */}
                                                 <div className="p-4 sm:p-6 rounded-2xl bg-white border border-sky-200/60 shadow-2xs space-y-4">
                                                     <div className="flex items-center justify-between pb-2 border-b border-sky-100">
