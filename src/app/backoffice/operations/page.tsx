@@ -152,7 +152,7 @@ export default function OperationsPage() {
 
     useEffect(() => {
         loadData();
-    }, [businessType]);
+    }, [businessType, logisticsType]);
 
     async function loadData() {
         setIsLoading(true);
@@ -354,7 +354,12 @@ export default function OperationsPage() {
                                         {config.operationsDescription}
                                     </DialogDescription>
                                 </DialogHeader>
-                                <StageConfig initialStages={stages} onUpdate={loadData} />
+                                <StageConfig 
+                                    initialStages={stages} 
+                                    onUpdate={loadData} 
+                                    businessType={businessType} 
+                                    logisticsType={logisticsType} 
+                                />
                             </DialogContent>
                         </Dialog>
                     </div>

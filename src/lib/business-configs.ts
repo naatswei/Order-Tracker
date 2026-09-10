@@ -231,7 +231,7 @@ export function getBusinessConfig(id: string | null, logisticsSubType?: string |
                 defaultStatus: "Order Received",
                 defaultMessage: "Your delivery package has been booked and is being processed.",
                 statuses: [
-                    "Order Received", "Package Picked Up", "Sorting", "Out for Delivery", "Delivered", "Cancelled"
+                    "Order Received", "Package Picked Up", "In Sorting / Hub", "Assigned to Rider", "Out for Delivery", "Delivered", "Cancelled"
                 ]
             }
         }
@@ -251,13 +251,43 @@ export function getBusinessConfig(id: string | null, logisticsSubType?: string |
                 defaultStatus: "Shipment Booked",
                 defaultMessage: "Your cargo shipment has been booked and is awaiting pickup.",
                 statuses: [
-                    "Shipment Booked", "Picked Up", "In Transit", "Customs Clearance", "Out for Delivery", "Delivered", "Cancelled"
+                    "Shipment Booked", "Cargo Received at Port", "Customs Clearance", "In Transit (Sea/Air)", "Out for Delivery", "Delivered", "Cancelled"
                 ]
             }
         }
     }
 
     return base
+}
+
+export function getDefaultWorkflowStages(businessType: string | null, logisticsSubType?: string | null): string[] {
+    const bType = businessType || "tailoring"
+    const subType = logisticsSubType || (typeof window !== "undefined" ? localStorage.getItem("logisticsType") : null)
+
+    if (bType === "logistics") {
+        if (subType === "delivery") {
+            return ["Order Received", "Package Picked Up", "In Sorting / Hub", "Assigned to Rider", "Out for Delivery", "Delivered"]
+        }
+        if (subType === "shipping") {
+            return ["Shipment Booked", "Cargo Received at Port", "Customs Clearance", "In Transit (Sea/Air)", "Out for Delivery", "Delivered"]
+        }
+        // restaurant delivery
+        return ["Order Received", "Kitchen Cooking", "Food Ready", "Assigned to Rider", "Out for Delivery", "Delivered"]
+    }
+    if (bType === "tailoring") {
+        return ["Order Received", "Measurement Taken", "Production", "Quality Checks", "First Fitting", "Ready for Pickup", "Completed"]
+    }
+    if (bType === "hair-retail") {
+        return ["Order Received", "Payment Verified", "Wigging / Styling", "Quality Check", "Ready for Pickup", "Delivered"]
+    }
+    if (bType === "online-business") {
+        return ["Order Placed", "Payment Confirmed", "Packaging", "Dispatched", "Delivered"]
+    }
+    if (bType === "laundry") {
+        return ["Order Received", "Sorting & Washing", "Drying & Ironing", "Quality Check", "Ready for Pickup", "Delivered"]
+    }
+
+    return ["Order Received", "Processing", "In Transit / Delivery", "Completed"]
 }
 
 export interface StatusTheme {

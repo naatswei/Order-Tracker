@@ -5,7 +5,7 @@ import { orders, staff, staffAttendance, workflows, statusHistory, inventory, in
 import { eq, desc, and, asc, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { auth, currentUser, clerkClient } from "@clerk/nextjs/server";
-import { getBusinessConfig } from "@/lib/business-configs";
+import { getBusinessConfig, getDefaultWorkflowStages } from "@/lib/business-configs";
 import { nanoid } from "nanoid";
 import { sendRestockNotificationSMS, getWaitingCustomerCount } from "@/lib/stock-notifications";
 import { sendRiderAssignmentSMS } from "@/lib/bulkclix";
@@ -223,11 +223,6 @@ async function initializeDefaultWorkflowStagesIfNeeded(orgId: string) {
             console.warn("Table alter check warning:", e);
         }
 
-        const existingStages = await db.select().from(workflows).where(eq(workflows.clerkOrgId, orgId));
-        if (existingStages.length > 0) {
-            return;
-        }
-
         // Fetch organization businessType from Clerk
         let businessType = "tailoring";
         let logisticsSubType = "restaurant";
@@ -240,51 +235,95 @@ async function initializeDefaultWorkflowStagesIfNeeded(orgId: string) {
             console.warn("Could not fetch org businessType from Clerk:", e);
         }
 
-        let defaultStages: string[] = [];
-        if (businessType === "logistics") {
-            if (logisticsSubType === "restaurant") {
-                defaultStages = ["Order Received", "Kitchen Cooking", "Food Ready", "Assigned to Rider", "Out for Delivery", "Delivered"];
-            } else if (logisticsSubType === "delivery") {
-                defaultStages = ["Order Received", "Package Picked Up", "Sorting", "Out for Delivery", "Delivered"];
-            } else {
-                defaultStages = ["Shipment Booked", "Picked Up", "In Transit", "Out for Delivery", "Delivered"];
+        const expectedStages = getDefaultWorkflowStages(businessType, logisticsSubType);
+        const existingStages = await db.select().from(workflows).where(eq(workflows.clerkOrgId, orgId)).orderBy(asc(workflows.position));
+
+        if (existingStages.length === 0) {
+            // Insert default pipeline stages
+            for (let i = 0; i < expectedStages.length; i++) {
+                await db.insert(workflows).values({
+                    id: `wf_${nanoid(10)}`,
+                    name: expectedStages[i],
+                    position: String(i + 1),
+                    clerkOrgId: orgId,
+                });
             }
-        } else if (businessType === "tailoring") {
-            defaultStages = ["Order Received", "Measurement Taken", "Production", "Quality Checks", "First Fitting", "Ready for Pickup", "Completed"];
-        } else if (businessType === "hair-retail") {
-            defaultStages = ["Order Received", "Payment Verified", "Wigging / Styling", "Quality Check", "Ready for Pickup", "Delivered"];
-        } else if (businessType === "laundry") {
-            defaultStages = ["Order Received", "Sorting & Washing", "Drying & Ironing", "Quality Check", "Ready for Pickup", "Delivered"];
-        } else if (businessType === "online-business") {
-            defaultStages = ["Order Placed", "Payment Confirmed", "Packaging", "Dispatched", "Delivered"];
-        } else {
-            const config = getBusinessConfig(businessType);
-            const activeStatuses = config.statuses.filter(status => 
-                status !== "Pending" && 
-                status !== "Refunded" && 
-                status !== "Cancelled" && 
-                status !== "Order Cancelled" && 
-                status !== "Order Delayed" &&
-                status !== "Delayed" &&
-                status !== "Returned" &&
-                status !== "Returned to Sender" &&
-                status !== "On Hold"
-            );
-            defaultStages = activeStatuses.length > 0 ? activeStatuses : ["Order Received", "Processing", "In Transit / Delivery", "Completed"];
+            return;
         }
 
-        // Insert default pipeline stages
-        for (let i = 0; i < defaultStages.length; i++) {
-            await db.insert(workflows).values({
-                id: `wf_${nanoid(10)}`,
-                name: defaultStages[i],
-                position: String(i + 1),
-                clerkOrgId: orgId,
-            });
+        // Auto-heal / migrate if the existing stages are from a different business model's default template
+        const existingNames = existingStages.map(s => s.name);
+        const hasRestaurantSpecific = existingNames.some(n => n === "Kitchen Cooking" || n === "Food Ready");
+        const hasCourierSpecific = existingNames.some(n => n === "Package Picked Up" || n === "In Sorting / Hub" || n === "Sorting");
+        const hasShippingSpecific = existingNames.some(n => n === "Customs Clearance" || n === "Cargo Received at Port" || n === "In Transit (Sea/Air)");
+        const hasTailoringSpecific = existingNames.some(n => n === "Measurement Taken" || n === "First Fitting" || n === "Second Fitting");
+        const hasHairSpecific = existingNames.some(n => n === "Wigging / Styling" || n === "Wigging/Styling");
+
+        let isMismatched = false;
+        if (businessType === "logistics") {
+            if (logisticsSubType === "delivery" && (hasRestaurantSpecific || hasShippingSpecific || hasTailoringSpecific || hasHairSpecific)) {
+                isMismatched = true;
+            } else if (logisticsSubType === "shipping" && (hasRestaurantSpecific || hasCourierSpecific || hasTailoringSpecific || hasHairSpecific)) {
+                isMismatched = true;
+            } else if (logisticsSubType === "restaurant" && (hasCourierSpecific || hasShippingSpecific || hasTailoringSpecific || hasHairSpecific)) {
+                isMismatched = true;
+            }
+        } else if (businessType === "tailoring" && (hasRestaurantSpecific || hasCourierSpecific || hasShippingSpecific || hasHairSpecific)) {
+            isMismatched = true;
+        } else if (businessType === "hair-retail" && (hasRestaurantSpecific || hasCourierSpecific || hasShippingSpecific || hasTailoringSpecific)) {
+            isMismatched = true;
+        } else if (businessType === "online-business" && (hasRestaurantSpecific || hasTailoringSpecific || hasHairSpecific)) {
+            isMismatched = true;
+        }
+
+        if (isMismatched) {
+            await db.delete(workflows).where(eq(workflows.clerkOrgId, orgId));
+            for (let i = 0; i < expectedStages.length; i++) {
+                await db.insert(workflows).values({
+                    id: `wf_${nanoid(10)}`,
+                    name: expectedStages[i],
+                    position: String(i + 1),
+                    clerkOrgId: orgId,
+                });
+            }
         }
     } catch (err) {
         console.error("Error in initializeDefaultWorkflowStagesIfNeeded:", err);
     }
+}
+
+export async function resetWorkflowStagesToDefault() {
+    const { orgId } = await auth();
+    if (!orgId) throw new Error("Unauthorized");
+
+    let businessType = "tailoring";
+    let logisticsSubType = "restaurant";
+    try {
+        const client = await clerkClient();
+        const org = await client.organizations.getOrganization({ organizationId: orgId });
+        businessType = (org.publicMetadata?.businessType as string) || "tailoring";
+        logisticsSubType = (org.publicMetadata?.logisticsType as string) || (org.publicMetadata?.logisticsSubType as string) || "restaurant";
+    } catch (e) {
+        console.warn("Could not fetch org businessType from Clerk:", e);
+    }
+
+    const defaultStages = getDefaultWorkflowStages(businessType, logisticsSubType);
+
+    await db.delete(workflows).where(eq(workflows.clerkOrgId, orgId));
+
+    for (let i = 0; i < defaultStages.length; i++) {
+        await db.insert(workflows).values({
+            id: `wf_${nanoid(10)}`,
+            name: defaultStages[i],
+            position: String(i + 1),
+            clerkOrgId: orgId,
+        });
+    }
+
+    revalidatePath("/backoffice");
+    revalidatePath("/backoffice/operations");
+    revalidatePath("/backoffice/bulk");
+    return { success: true, count: defaultStages.length };
 }
 
 export async function addWorkflowStage(name: string, position: string, timeLimitMinutes?: number | null) {

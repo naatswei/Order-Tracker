@@ -1,6 +1,11 @@
 'use server'
 
 import { auth, clerkClient } from '@clerk/nextjs/server'
+import { db } from "@/db"
+import { workflows } from "@/db/schema"
+import { eq } from "drizzle-orm"
+import { getDefaultWorkflowStages } from "@/lib/business-configs"
+import { nanoid } from "nanoid"
 
 export async function updateOrgBusinessType(orgId: string, businessType: string, logisticsType?: LogisticsSubType) {
     const { userId } = await auth()
@@ -20,6 +25,33 @@ export async function updateOrgBusinessType(orgId: string, businessType: string,
     await client.organizations.updateOrganizationMetadata(orgId, {
         publicMetadata: updatePayload
     })
+
+    // Auto-align default pipeline stages to the new business/logistics operational model
+    try {
+        const targetStages = getDefaultWorkflowStages(businessType, logisticsType)
+        const existing = await db.select().from(workflows).where(eq(workflows.clerkOrgId, orgId))
+        const existingNames = existing.map(s => s.name)
+        const isTemplate = existingNames.some(n => 
+            n === "Kitchen Cooking" || n === "Food Ready" || 
+            n === "Package Picked Up" || n === "In Sorting / Hub" || 
+            n === "Measurement Taken" || n === "Wigging / Styling" ||
+            n === "Customs Clearance"
+        )
+        if (existing.length === 0 || isTemplate) {
+            await db.delete(workflows).where(eq(workflows.clerkOrgId, orgId))
+            for (let i = 0; i < targetStages.length; i++) {
+                await db.insert(workflows).values({
+                    id: `wf_${nanoid(10)}`,
+                    name: targetStages[i],
+                    position: String(i + 1),
+                    clerkOrgId: orgId,
+                })
+            }
+        }
+    } catch (e) {
+        console.warn("Could not re-seed workflow stages in updateOrgBusinessType:", e)
+    }
+
     return { success: true }
 }
 

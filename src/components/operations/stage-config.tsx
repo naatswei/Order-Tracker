@@ -3,9 +3,10 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Plus, Trash2, ArrowUp, ArrowDown, Sparkles, Layers, Clock } from "lucide-react"
-import { addWorkflowStage, removeWorkflowStage, reorderWorkflowStages, updateWorkflowStageTimeLimit } from "@/app/actions/operations"
+import { Plus, Trash2, ArrowUp, ArrowDown, Sparkles, Layers, Clock, RotateCcw } from "lucide-react"
+import { addWorkflowStage, removeWorkflowStage, reorderWorkflowStages, updateWorkflowStageTimeLimit, resetWorkflowStagesToDefault } from "@/app/actions/operations"
 import { toast } from "sonner"
+import { cn } from "@/lib/utils"
 
 interface Stage {
     id: string
@@ -17,13 +18,16 @@ interface Stage {
 interface StageConfigProps {
     initialStages: Stage[]
     onUpdate: () => void
+    businessType?: string
+    logisticsType?: string
 }
 
-export function StageConfig({ initialStages, onUpdate }: StageConfigProps) {
+export function StageConfig({ initialStages, onUpdate, businessType, logisticsType }: StageConfigProps) {
     const [newStageName, setNewStageName] = useState("")
     const [newStageTimeLimit, setNewStageTimeLimit] = useState("")
     const [isAdding, setIsAdding] = useState(false)
     const [isReordering, setIsReordering] = useState(false)
+    const [isResetting, setIsResetting] = useState(false)
 
     async function handleAdd() {
         if (!newStageName.trim()) return
@@ -71,6 +75,19 @@ export function StageConfig({ initialStages, onUpdate }: StageConfigProps) {
         }
     }
 
+    async function handleResetDefaults() {
+        setIsResetting(true)
+        try {
+            await resetWorkflowStagesToDefault()
+            toast.success("Pipeline stages reset to default!")
+            onUpdate()
+        } catch (error) {
+            toast.error("Failed to reset stages")
+        } finally {
+            setIsResetting(false)
+        }
+    }
+
     async function handleMove(index: number, direction: "up" | "down") {
         if (isReordering) return
         const targetIndex = direction === "up" ? index - 1 : index + 1
@@ -93,6 +110,18 @@ export function StageConfig({ initialStages, onUpdate }: StageConfigProps) {
         }
     }
 
+    const stagePlaceholder = (() => {
+        if (businessType === "logistics") {
+            if (logisticsType === "delivery") return "Stage name (e.g. In Sorting / Hub)"
+            if (logisticsType === "shipping") return "Stage name (e.g. Customs Clearance)"
+            return "Stage name (e.g. Kitchen Cooking, Food Ready)"
+        }
+        if (businessType === "tailoring") return "Stage name (e.g. First Fitting, Production)"
+        if (businessType === "hair-retail") return "Stage name (e.g. Wigging / Styling)"
+        if (businessType === "online-business") return "Stage name (e.g. Packaging, Dispatched)"
+        return "Stage name (e.g. In Progress)"
+    })()
+
     return (
         <div className="space-y-5">
             <div className="space-y-2.5">
@@ -101,7 +130,16 @@ export function StageConfig({ initialStages, onUpdate }: StageConfigProps) {
                         <Layers className="w-3.5 h-3.5 text-slate-400" />
                         <span>Active Pipeline Stages ({initialStages.length})</span>
                     </p>
-                    <span className="text-[11px] text-slate-400 font-medium">Set limits & reorder</span>
+                    <button
+                        type="button"
+                        onClick={handleResetDefaults}
+                        disabled={isResetting}
+                        className="text-[11px] text-slate-500 hover:text-[#191A43] font-bold flex items-center gap-1 cursor-pointer transition-colors disabled:opacity-40"
+                        title="Reset stages to default template for your business model"
+                    >
+                        <RotateCcw className={cn("w-3 h-3", isResetting && "animate-spin")} />
+                        <span>Reset Defaults</span>
+                    </button>
                 </div>
 
                 <div className="space-y-2 max-h-[340px] overflow-y-auto pr-1">
@@ -137,9 +175,9 @@ export function StageConfig({ initialStages, onUpdate }: StageConfigProps) {
                                         placeholder="No limit"
                                         onBlur={(e) => handleUpdateTimeLimit(stage.id, e.target.value)}
                                         onKeyDown={(e) => {
-                                            if (e.key === "Enter") {
-                                                (e.target as HTMLInputElement).blur()
-                                            }
+                                             if (e.key === "Enter") {
+                                                 (e.target as HTMLInputElement).blur()
+                                             }
                                         }}
                                         className="w-12 bg-transparent text-xs font-bold text-slate-800 placeholder:text-slate-400 focus:outline-none text-right [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                     />
@@ -196,7 +234,7 @@ export function StageConfig({ initialStages, onUpdate }: StageConfigProps) {
             <div className="pt-3 border-t border-slate-100 space-y-2">
                 <div className="flex gap-2">
                     <Input 
-                        placeholder="Stage name (e.g. Kitchen Cooking)" 
+                        placeholder={stagePlaceholder} 
                         value={newStageName}
                         onChange={(e) => setNewStageName(e.target.value)}
                         onKeyDown={(e) => {
