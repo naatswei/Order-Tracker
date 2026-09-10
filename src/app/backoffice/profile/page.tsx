@@ -1579,7 +1579,6 @@ export default function ProfilePage() {
                                                             placeholder="e.g. Accra Central Dispatch Hub, Osu"
                                                             className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-12 px-4 text-sm sm:text-base"
                                                         />
-                                                        <p className="text-xs text-slate-400">Pre-populates the default sender/pickup hub for courier bookings.</p>
                                                     </div>
 
                                                     <div className="space-y-2">
@@ -1594,7 +1593,6 @@ export default function ProfilePage() {
                                                             placeholder="e.g. 0548706430"
                                                             className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-12 px-4 text-sm sm:text-base"
                                                         />
-                                                        <p className="text-xs text-slate-400">Default contact number for sender dispatch inquiries.</p>
                                                     </div>
                                                 </div>
 
@@ -1612,7 +1610,6 @@ export default function ProfilePage() {
                                                             placeholder="30.00"
                                                             className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-12 px-4 text-sm sm:text-base font-bold"
                                                         />
-                                                        <p className="text-xs text-slate-400">Base fee automatically applied to courier shipments.</p>
                                                     </div>
 
                                                     <div className="space-y-2">
@@ -1626,7 +1623,6 @@ export default function ProfilePage() {
                                                             placeholder="e.g. 0548706430"
                                                             className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-12 px-4 text-sm sm:text-base"
                                                         />
-                                                        <p className="text-xs text-slate-400">Receiving mobile money line for courier payment prompts.</p>
                                                     </div>
 
                                                     <div className="space-y-2">
@@ -1643,7 +1639,6 @@ export default function ProfilePage() {
                                                             <option value="TELECEL">Telecel Cash (Vodafone)</option>
                                                             <option value="AIRTELTIGO">AirtelTigo Money</option>
                                                         </select>
-                                                        <p className="text-xs text-slate-400">Provider network for courier billing.</p>
                                                     </div>
                                                 </div>
 
@@ -1664,9 +1659,6 @@ export default function ProfilePage() {
                                                                 <Package className="w-5 h-5 text-blue-600" />
                                                                 <h3 className="text-sm sm:text-base md:text-lg font-bold text-slate-900">Standard Package Categories &amp; Dispatch Goods</h3>
                                                             </div>
-                                                            <p className="text-xs sm:text-sm text-slate-500 mt-1">
-                                                                Configure standard package types for 1-click order entry. Bulk import spreadsheets or search instantly.
-                                                            </p>
                                                         </div>
 
                                                         <div className="flex flex-wrap items-center gap-2">
@@ -1702,10 +1694,9 @@ export default function ProfilePage() {
                                                         </div>
                                                     </div>
 
-                                                    {/* Search & Add Action Bar */}
-                                                    <div className="grid grid-cols-1 md:grid-cols-12 gap-3 sm:gap-4">
-                                                        {/* Live Search Input */}
-                                                        <div className="md:col-span-5 relative">
+                                                    {/* Search Menu Presets */}
+                                                    {orderDefaults.packageCategories.length > 0 && (
+                                                        <div className="relative w-full max-w-md">
                                                             <Search className="w-5 h-5 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                                                             <Input
                                                                 value={categorySearchQuery}
@@ -1723,61 +1714,7 @@ export default function ProfilePage() {
                                                                 </button>
                                                             )}
                                                         </div>
-
-                                                        {/* Add Custom Category Form */}
-                                                        <div className="md:col-span-7 flex gap-2 sm:gap-3">
-                                                            <Input
-                                                                value={newCategoryInput}
-                                                                onChange={(e) => setNewCategoryInput(e.target.value)}
-                                                                onKeyDown={(e) => {
-                                                                    if (e.key === "Enter") {
-                                                                        e.preventDefault()
-                                                                        const val = newCategoryInput.trim()
-                                                                        if (!val) {
-                                                                            toast.error("Please enter a category name")
-                                                                            return
-                                                                        }
-                                                                        if (orderDefaults.packageCategories.some(c => c.toLowerCase() === val.toLowerCase())) {
-                                                                            toast.error("Category already exists")
-                                                                            return
-                                                                        }
-                                                                        setOrderDefaults(prev => ({
-                                                                            ...prev,
-                                                                            packageCategories: [...prev.packageCategories, val]
-                                                                        }))
-                                                                        setNewCategoryInput("")
-                                                                        toast.success(`Added "${val}" category`)
-                                                                    }
-                                                                }}
-                                                                placeholder="Add custom category (e.g. Sealed Medical Sample, Perfume Fragile)..."
-                                                                className="h-11 sm:h-12 rounded-xl bg-white border-slate-200 focus:border-blue-400 text-sm sm:text-base flex-1 font-medium px-4"
-                                                            />
-                                                            <Button
-                                                                type="button"
-                                                                onClick={() => {
-                                                                    const val = newCategoryInput.trim()
-                                                                    if (!val) {
-                                                                        toast.error("Please enter a category name")
-                                                                        return
-                                                                    }
-                                                                    if (orderDefaults.packageCategories.some(c => c.toLowerCase() === val.toLowerCase())) {
-                                                                        toast.error("Category already exists")
-                                                                        return
-                                                                    }
-                                                                    setOrderDefaults(prev => ({
-                                                                        ...prev,
-                                                                        packageCategories: [...prev.packageCategories, val]
-                                                                    }))
-                                                                    setNewCategoryInput("")
-                                                                    toast.success(`Added "${val}" category`)
-                                                                }}
-                                                                className="h-11 sm:h-12 rounded-xl bg-slate-900 text-white hover:bg-slate-800 text-sm font-bold px-5 cursor-pointer shadow-xs shrink-0"
-                                                            >
-                                                                <Plus className="w-4 h-4 mr-1.5" />
-                                                                Add
-                                                            </Button>
-                                                        </div>
-                                                    </div>
+                                                    )}
 
                                                     {/* Categories List View */}
                                                     {(() => {
@@ -1794,7 +1731,7 @@ export default function ProfilePage() {
                                                                     </div>
                                                                     <div>
                                                                         <p className="text-base font-bold text-slate-800">No package categories configured yet</p>
-                                                                        <p className="text-xs sm:text-sm text-slate-500 mt-1">Upload an Excel file or type custom package names above.</p>
+                                                                        <p className="text-xs sm:text-sm text-slate-500 mt-1">Upload an Excel file to import package categories.</p>
                                                                     </div>
                                                                     <div className="flex items-center justify-center gap-2 pt-2">
                                                                         <Button
@@ -1833,19 +1770,18 @@ export default function ProfilePage() {
                                                                     <div className="flex flex-wrap gap-2.5 sm:gap-3">
                                                                         {filtered.map((cat, idx) => (
                                                                             <span
-                                                                                key={cat + idx}
-                                                                                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white border border-slate-200 hover:border-slate-300 shadow-2xs text-xs sm:text-sm md:text-base font-semibold text-slate-800 transition-all group"
+                                                                                key={idx}
+                                                                                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200/80 text-slate-800 font-semibold text-xs sm:text-sm transition-all border border-slate-200/60 shadow-2xs group"
                                                                             >
-                                                                                <Package className="w-4 h-4 text-blue-500 group-hover:text-blue-600" />
+                                                                                <Package className="w-4 h-4 text-blue-600" />
                                                                                 <span>{cat}</span>
                                                                                 <button
                                                                                     type="button"
                                                                                     onClick={() => {
                                                                                         setOrderDefaults(prev => ({
                                                                                             ...prev,
-                                                                                            packageCategories: prev.packageCategories.filter(c => c !== cat)
+                                                                                            packageCategories: prev.packageCategories.filter((_, i) => i !== idx)
                                                                                         }))
-                                                                                        toast.info(`Removed "${cat}"`)
                                                                                     }}
                                                                                     className="text-slate-300 hover:text-red-600 p-0.5 rounded-md hover:bg-red-50 transition-colors ml-1 cursor-pointer"
                                                                                     title={`Remove ${cat}`}
@@ -1860,24 +1796,6 @@ export default function ProfilePage() {
                                                                         <p className="text-xs sm:text-sm font-semibold text-slate-700">
                                                                             No category matching <span className="text-slate-900 font-bold">"{categorySearchQuery}"</span>
                                                                         </p>
-                                                                        <Button
-                                                                            type="button"
-                                                                            size="sm"
-                                                                            onClick={() => {
-                                                                                const val = categorySearchQuery.trim()
-                                                                                if (!val) return
-                                                                                setOrderDefaults(prev => ({
-                                                                                    ...prev,
-                                                                                    packageCategories: [...prev.packageCategories, val]
-                                                                                }))
-                                                                                setCategorySearchQuery("")
-                                                                                toast.success(`Added "${val}" category`)
-                                                                            }}
-                                                                            className="rounded-xl text-xs sm:text-sm font-bold bg-blue-600 hover:bg-blue-700 text-white"
-                                                                        >
-                                                                            <Plus className="w-4 h-4 mr-1" />
-                                                                            Add "{categorySearchQuery}" as Category
-                                                                        </Button>
                                                                     </div>
                                                                 )}
                                                             </div>
