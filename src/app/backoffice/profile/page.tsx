@@ -1125,20 +1125,13 @@ export default function ProfilePage() {
                                     </CardContent>
                                 </Card>
                             </div>
-
                         </motion.div>
                     </TabsContent>
 
                     <TabsContent value="defaults">
                         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
                             <Card className="border-slate-200 shadow-sm overflow-hidden bg-white rounded-3xl">
-                                <CardHeader className="p-6 sm:p-9 pb-5 border-b border-slate-100 bg-gradient-to-r from-indigo-50/40 via-white to-slate-50/30">
-                                    <div>
-                                        <h2 className="text-base sm:text-lg md:text-xl font-bold text-slate-900 tracking-tight">Administrative Defaults</h2>
-                                        <p className="text-xs text-slate-500 mt-0.5">Set your default business type, rates, and operational settings.</p>
-                                    </div>
-                                </CardHeader>
-                                <CardContent className="p-6 sm:p-9 space-y-8 sm:space-y-10">
+                                <CardContent className="p-6 sm:p-9">
                                     <form onSubmit={async (e) => {
                                         e.preventDefault()
                                         if (!organization) return
@@ -1164,36 +1157,38 @@ export default function ProfilePage() {
                                         } finally {
                                             setOrderDefaultsSaving(false)
                                         }
-                                    }} className="space-y-8 sm:space-y-10">
+                                    }} className="space-y-8">
 
-                                        {/* 1. Logistics Operation Type Selection */}
-                                        <div className="space-y-3.5">
-                                            <Label className="text-xs sm:text-sm font-black text-slate-800 uppercase tracking-wider">
-                                                Select Logistics Operation Model
-                                            </Label>
+                                        {/* 1. Logistics & Operational Model */}
+                                        <div className="space-y-4">
+                                            <div>
+                                                <h3 className="text-sm sm:text-base font-bold text-slate-900">Logistics &amp; Operational Model</h3>
+                                                <p className="text-xs sm:text-sm text-slate-500 mt-0.5">Select the primary operation workflow that best matches your business.</p>
+                                            </div>
                                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5">
                                                 {/* Option 1: Restaurant Delivery Service */}
                                                 <div
                                                     onClick={() => setOrderDefaults(prev => ({ ...prev, logisticsType: 'restaurant' }))}
                                                     className={cn(
-                                                        "p-5 sm:p-6 lg:p-7 rounded-2xl border-2 transition-all cursor-pointer flex flex-col justify-between space-y-4 relative hover:shadow-md",
+                                                        "p-5 sm:p-6 rounded-2xl border-2 transition-all cursor-pointer flex flex-col justify-between space-y-4 relative",
                                                         orderDefaults.logisticsType === 'restaurant'
-                                                            ? "border-amber-500 bg-amber-50/30 ring-2 ring-amber-500/20 shadow-sm"
-                                                            : "border-slate-200/80 bg-slate-50/50 hover:bg-white hover:border-slate-300"
+                                                            ? "border-amber-500 bg-amber-50/25 ring-2 ring-amber-500/20 shadow-xs"
+                                                            : "border-slate-200/80 bg-slate-50/40 hover:bg-white hover:border-slate-300"
                                                     )}
                                                 >
                                                     <div className="flex items-start justify-between">
-                                                        <div className="p-3 rounded-2xl bg-amber-500/10 text-amber-600">
-                                                            <UtensilsCrossed className="w-6 h-6 sm:w-7 sm:h-7" />
+                                                        <div className="w-11 h-11 rounded-xl bg-amber-50 text-amber-600 border border-amber-200/60 flex items-center justify-center">
+                                                            <UtensilsCrossed className="w-5 h-5" />
                                                         </div>
                                                         {orderDefaults.logisticsType === 'restaurant' && (
-                                                            <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-500 text-white shadow-xs">
-                                                                Active Default
+                                                            <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-500 text-white shadow-2xs">
+                                                                Active
                                                             </span>
                                                         )}
                                                     </div>
                                                     <div>
-                                                        <h4 className="text-base sm:text-lg font-bold text-slate-900">Restaurant Delivery Service</h4>
+                                                        <h4 className="text-sm sm:text-base font-bold text-slate-900">Restaurant Delivery</h4>
+                                                        <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">Food orders, kitchen menu items &amp; rider dispatch</p>
                                                     </div>
                                                 </div>
 
@@ -1201,24 +1196,25 @@ export default function ProfilePage() {
                                                 <div
                                                     onClick={() => setOrderDefaults(prev => ({ ...prev, logisticsType: 'delivery' }))}
                                                     className={cn(
-                                                        "p-5 sm:p-6 lg:p-7 rounded-2xl border-2 transition-all cursor-pointer flex flex-col justify-between space-y-4 relative hover:shadow-md",
+                                                        "p-5 sm:p-6 rounded-2xl border-2 transition-all cursor-pointer flex flex-col justify-between space-y-4 relative",
                                                         orderDefaults.logisticsType === 'delivery'
-                                                            ? "border-blue-500 bg-blue-50/30 ring-2 ring-blue-500/20 shadow-sm"
-                                                            : "border-slate-200/80 bg-slate-50/50 hover:bg-white hover:border-slate-300"
+                                                            ? "border-blue-500 bg-blue-50/25 ring-2 ring-blue-500/20 shadow-xs"
+                                                            : "border-slate-200/80 bg-slate-50/40 hover:bg-white hover:border-slate-300"
                                                     )}
                                                 >
                                                     <div className="flex items-start justify-between">
-                                                        <div className="p-3 rounded-2xl bg-blue-500/10 text-blue-600">
-                                                            <Truck className="w-6 h-6 sm:w-7 sm:h-7" />
+                                                        <div className="w-11 h-11 rounded-xl bg-blue-50 text-blue-600 border border-blue-200/60 flex items-center justify-center">
+                                                            <Truck className="w-5 h-5" />
                                                         </div>
                                                         {orderDefaults.logisticsType === 'delivery' && (
-                                                            <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-blue-500 text-white shadow-xs">
-                                                                Active Default
+                                                            <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-blue-500 text-white shadow-2xs">
+                                                                Active
                                                             </span>
                                                         )}
                                                     </div>
                                                     <div>
-                                                        <h4 className="text-base sm:text-lg font-bold text-slate-900">Delivery Service (Courier)</h4>
+                                                        <h4 className="text-sm sm:text-base font-bold text-slate-900">Courier Service</h4>
+                                                        <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">Package delivery, dispatch hubs &amp; waybills</p>
                                                     </div>
                                                 </div>
 
@@ -1226,24 +1222,25 @@ export default function ProfilePage() {
                                                 <div
                                                     onClick={() => setOrderDefaults(prev => ({ ...prev, logisticsType: 'shipping' }))}
                                                     className={cn(
-                                                        "p-5 sm:p-6 lg:p-7 rounded-2xl border-2 transition-all cursor-pointer flex flex-col justify-between space-y-4 relative hover:shadow-md",
+                                                        "p-5 sm:p-6 rounded-2xl border-2 transition-all cursor-pointer flex flex-col justify-between space-y-4 relative",
                                                         orderDefaults.logisticsType === 'shipping'
-                                                            ? "border-emerald-500 bg-emerald-50/30 ring-2 ring-emerald-500/20 shadow-sm"
-                                                            : "border-slate-200/80 bg-slate-50/50 hover:bg-white hover:border-slate-300"
+                                                            ? "border-emerald-500 bg-emerald-50/25 ring-2 ring-emerald-500/20 shadow-xs"
+                                                            : "border-slate-200/80 bg-slate-50/40 hover:bg-white hover:border-slate-300"
                                                     )}
                                                 >
                                                     <div className="flex items-start justify-between">
-                                                        <div className="p-3 rounded-2xl bg-emerald-500/10 text-emerald-600">
-                                                            <Ship className="w-6 h-6 sm:w-7 sm:h-7" />
+                                                        <div className="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-200/60 flex items-center justify-center">
+                                                            <Ship className="w-5 h-5" />
                                                         </div>
                                                         {orderDefaults.logisticsType === 'shipping' && (
-                                                            <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-500 text-white shadow-xs">
-                                                                Active Default
+                                                            <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-500 text-white shadow-2xs">
+                                                                Active
                                                             </span>
                                                         )}
                                                     </div>
                                                     <div>
-                                                        <h4 className="text-base sm:text-lg font-bold text-slate-900">Shipping (Freight &amp; Cargo)</h4>
+                                                        <h4 className="text-sm sm:text-base font-bold text-slate-900">Freight &amp; Shipping</h4>
+                                                        <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">Port origin terminals, customs fees &amp; kg rates</p>
                                                     </div>
                                                 </div>
                                             </div>
@@ -1253,90 +1250,92 @@ export default function ProfilePage() {
                                         {/* TYPE A: RESTAURANT DELIVERY SERVICE CONFIGURATION                         */}
                                         {/* ========================================================================= */}
                                         {orderDefaults.logisticsType === 'restaurant' && (
-                                            <div className="space-y-6 sm:space-y-8 pt-6 border-t border-slate-100 animate-in fade-in-50 duration-200">
-                                                <div className="flex items-center gap-2.5 pb-2 border-b border-slate-100">
-                                                    <UtensilsCrossed className="w-5 h-5 text-amber-600" />
-                                                    <h3 className="text-sm sm:text-base md:text-lg font-bold text-slate-900">Restaurant Branch &amp; MoMo Settlement</h3>
-                                                </div>
-
-                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
-                                                    <div className="space-y-2">
-                                                        <Label htmlFor="defaultPickupLocation" className="text-xs sm:text-sm font-bold text-slate-700 flex items-center gap-1.5">
-                                                            <MapPin className="w-4 h-4 text-slate-400" />
-                                                            Default Pickup Location / Branch
-                                                        </Label>
-                                                        <Input
-                                                            id="defaultPickupLocation"
-                                                            value={orderDefaults.defaultPickupLocation}
-                                                            onChange={(e) => setOrderDefaults(prev => ({ ...prev, defaultPickupLocation: e.target.value }))}
-                                                            placeholder="e.g. Marwako Fast Food - East Legon Branch"
-                                                            className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-12 px-4 text-sm sm:text-base"
-                                                        />
-                                                        <p className="text-xs text-slate-400">Pre-populates the pickup branch for new delivery and customer orders.</p>
+                                            <div className="space-y-8 animate-in fade-in-50 duration-200">
+                                                <div className="pt-6 sm:pt-8 border-t border-slate-100 space-y-6">
+                                                    <div>
+                                                        <h4 className="text-sm sm:text-base font-bold text-slate-900">Branch &amp; Payment Defaults</h4>
+                                                        <p className="text-xs sm:text-sm text-slate-500 mt-0.5">Pre-populates pickup locations, default delivery charges, and receiving MoMo details.</p>
                                                     </div>
 
-                                                    <div className="space-y-2">
-                                                        <Label htmlFor="defaultPickupContact" className="text-xs sm:text-sm font-bold text-slate-700 flex items-center gap-1.5">
-                                                            <Phone className="w-4 h-4 text-slate-400" />
-                                                            Default Branch / Pickup Phone
-                                                        </Label>
-                                                        <Input
-                                                            id="defaultPickupContact"
-                                                            value={orderDefaults.defaultPickupContact}
-                                                            onChange={(e) => setOrderDefaults(prev => ({ ...prev, defaultPickupContact: e.target.value }))}
-                                                            placeholder="e.g. 0244123456"
-                                                            className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-12 px-4 text-sm sm:text-base"
-                                                        />
-                                                        <p className="text-xs text-slate-400">Default contact number displayed for riders and dispatchers.</p>
-                                                    </div>
-                                                </div>
+                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                        <div className="space-y-2">
+                                                            <Label htmlFor="defaultPickupLocation" className="text-slate-800 font-bold text-xs sm:text-sm flex items-center gap-1.5">
+                                                                <MapPin className="w-4 h-4 text-slate-400" />
+                                                                Default Pickup Location / Branch
+                                                            </Label>
+                                                            <Input
+                                                                id="defaultPickupLocation"
+                                                                value={orderDefaults.defaultPickupLocation}
+                                                                onChange={(e) => setOrderDefaults(prev => ({ ...prev, defaultPickupLocation: e.target.value }))}
+                                                                placeholder="e.g. Marwako Fast Food - East Legon Branch"
+                                                                className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-12 px-4 transition-colors text-sm sm:text-base"
+                                                            />
+                                                            <p className="text-xs text-slate-400">Pre-populates the pickup branch for new orders.</p>
+                                                        </div>
 
-                                                <div className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6">
-                                                    <div className="space-y-2">
-                                                        <Label htmlFor="defaultDeliveryFeeSetting" className="text-xs sm:text-sm font-bold text-slate-700">
-                                                            Default Delivery Fee (GH₵)
-                                                        </Label>
-                                                        <Input
-                                                            id="defaultDeliveryFeeSetting"
-                                                            type="number"
-                                                            step="0.01"
-                                                            value={orderDefaults.defaultDeliveryFee}
-                                                            onChange={(e) => setOrderDefaults(prev => ({ ...prev, defaultDeliveryFee: e.target.value }))}
-                                                            placeholder="25.00"
-                                                            className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-12 px-4 text-sm sm:text-base font-bold"
-                                                        />
-                                                        <p className="text-xs text-slate-400">Baseline dispatch charge pre-filled on new orders.</p>
-                                                    </div>
-
-                                                    <div className="space-y-2">
-                                                        <Label htmlFor="defaultPaymentNumber" className="text-xs sm:text-sm font-bold text-slate-700">
-                                                            Receiving MoMo Number
-                                                        </Label>
-                                                        <Input
-                                                            id="defaultPaymentNumber"
-                                                            value={orderDefaults.defaultPaymentNumber}
-                                                            onChange={(e) => setOrderDefaults(prev => ({ ...prev, defaultPaymentNumber: e.target.value }))}
-                                                            placeholder="e.g. 0548706430"
-                                                            className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-12 px-4 text-sm sm:text-base"
-                                                        />
-                                                        <p className="text-xs text-slate-400">Merchant MoMo line for payments and prompt requests.</p>
+                                                        <div className="space-y-2">
+                                                            <Label htmlFor="defaultPickupContact" className="text-slate-800 font-bold text-xs sm:text-sm flex items-center gap-1.5">
+                                                                <Phone className="w-4 h-4 text-slate-400" />
+                                                                Default Branch / Pickup Phone
+                                                            </Label>
+                                                            <Input
+                                                                id="defaultPickupContact"
+                                                                value={orderDefaults.defaultPickupContact}
+                                                                onChange={(e) => setOrderDefaults(prev => ({ ...prev, defaultPickupContact: e.target.value }))}
+                                                                placeholder="e.g. 0244123456"
+                                                                className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-12 px-4 transition-colors text-sm sm:text-base"
+                                                            />
+                                                            <p className="text-xs text-slate-400">Default contact number displayed for riders and dispatchers.</p>
+                                                        </div>
                                                     </div>
 
-                                                    <div className="space-y-2">
-                                                        <Label htmlFor="defaultPaymentProvider" className="text-xs sm:text-sm font-bold text-slate-700">
-                                                            MoMo Network Provider
-                                                        </Label>
-                                                        <select
-                                                            id="defaultPaymentProvider"
-                                                            value={orderDefaults.defaultPaymentProvider}
-                                                            onChange={(e) => setOrderDefaults(prev => ({ ...prev, defaultPaymentProvider: e.target.value }))}
-                                                            className="w-full bg-slate-50/50 border border-slate-200 focus:bg-white rounded-xl h-12 px-3.5 transition-colors text-slate-800 focus:outline-none text-xs sm:text-sm"
-                                                        >
-                                                            <option value="MTN">MTN Mobile Money</option>
-                                                            <option value="TELECEL">Telecel Cash (Vodafone)</option>
-                                                            <option value="AIRTELTIGO">AirtelTigo Money</option>
-                                                        </select>
-                                                        <p className="text-xs text-slate-400">Primary telco gateway for instant prompt processing.</p>
+                                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                                        <div className="space-y-2">
+                                                            <Label htmlFor="defaultDeliveryFeeSetting" className="text-slate-800 font-bold text-xs sm:text-sm">
+                                                                Default Delivery Fee (GH₵)
+                                                            </Label>
+                                                            <Input
+                                                                id="defaultDeliveryFeeSetting"
+                                                                type="number"
+                                                                step="0.01"
+                                                                value={orderDefaults.defaultDeliveryFee}
+                                                                onChange={(e) => setOrderDefaults(prev => ({ ...prev, defaultDeliveryFee: e.target.value }))}
+                                                                placeholder="25.00"
+                                                                className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-12 px-4 transition-colors text-sm sm:text-base font-semibold"
+                                                            />
+                                                            <p className="text-xs text-slate-400">Baseline dispatch charge pre-filled on new orders.</p>
+                                                        </div>
+
+                                                        <div className="space-y-2">
+                                                            <Label htmlFor="defaultPaymentNumber" className="text-slate-800 font-bold text-xs sm:text-sm">
+                                                                Receiving MoMo Number
+                                                            </Label>
+                                                            <Input
+                                                                id="defaultPaymentNumber"
+                                                                value={orderDefaults.defaultPaymentNumber}
+                                                                onChange={(e) => setOrderDefaults(prev => ({ ...prev, defaultPaymentNumber: e.target.value }))}
+                                                                placeholder="e.g. 0548706430"
+                                                                className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-12 px-4 transition-colors text-sm sm:text-base"
+                                                            />
+                                                            <p className="text-xs text-slate-400">Merchant MoMo line for receiving payments.</p>
+                                                        </div>
+
+                                                        <div className="space-y-2">
+                                                            <Label htmlFor="defaultPaymentProvider" className="text-slate-800 font-bold text-xs sm:text-sm">
+                                                                MoMo Network Provider
+                                                            </Label>
+                                                            <select
+                                                                id="defaultPaymentProvider"
+                                                                value={orderDefaults.defaultPaymentProvider}
+                                                                onChange={(e) => setOrderDefaults(prev => ({ ...prev, defaultPaymentProvider: e.target.value }))}
+                                                                className="w-full bg-slate-50/50 border border-slate-200 focus:bg-white rounded-xl h-12 px-3.5 transition-colors text-slate-800 focus:outline-none text-xs sm:text-sm"
+                                                            >
+                                                                <option value="MTN">MTN Mobile Money</option>
+                                                                <option value="TELECEL">Telecel Cash (Vodafone)</option>
+                                                                <option value="AIRTELTIGO">AirtelTigo Money</option>
+                                                            </select>
+                                                            <p className="text-xs text-slate-400">Primary telco gateway for payments.</p>
+                                                        </div>
                                                     </div>
                                                 </div>
 
@@ -1350,16 +1349,11 @@ export default function ProfilePage() {
                                                 />
 
                                                 {/* Menu Presets Catalog */}
-                                                <div className="space-y-4 pt-2">
-                                                    <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 pb-2 border-b border-slate-100">
+                                                <div className="pt-6 sm:pt-8 border-t border-slate-100 space-y-4">
+                                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                                                         <div>
-                                                            <div className="flex items-center gap-2">
-                                                                <UtensilsCrossed className="w-5 h-5 text-amber-600" />
-                                                                <h3 className="text-sm sm:text-base md:text-lg font-bold text-slate-900">Restaurant Menu Entries &amp; Dish Catalog</h3>
-                                                            </div>
-                                                            <p className="text-xs sm:text-sm text-slate-500 mt-1">
-                                                                Configure restaurant menu presets for 1-click order creation. Bulk import menu spreadsheets or search instantly.
-                                                            </p>
+                                                            <h4 className="text-sm sm:text-base font-bold text-slate-900">Menu Item Presets</h4>
+                                                            <p className="text-xs sm:text-sm text-slate-500 mt-0.5">Preset dishes for 1-click addition when creating food orders.</p>
                                                         </div>
 
                                                         <div className="flex flex-wrap items-center gap-2">
@@ -1368,10 +1362,10 @@ export default function ProfilePage() {
                                                                 variant="outline"
                                                                 size="sm"
                                                                 onClick={() => menuPresetFileInputRef.current?.click()}
-                                                                className="h-9 sm:h-10 rounded-xl text-xs sm:text-sm font-bold text-indigo-700 border-indigo-200 bg-indigo-50 hover:bg-indigo-100 cursor-pointer shadow-2xs px-3.5"
+                                                                className="h-9 rounded-xl text-xs font-bold text-indigo-700 border-indigo-200 bg-indigo-50 hover:bg-indigo-100 cursor-pointer shadow-2xs px-3.5"
                                                                 title="Import menu items from Excel/CSV"
                                                             >
-                                                                <Upload className="w-4 h-4 mr-1.5 text-indigo-600" />
+                                                                <Upload className="w-3.5 h-3.5 mr-1.5 text-indigo-600" />
                                                                 Import Excel
                                                             </Button>
 
@@ -1386,9 +1380,9 @@ export default function ProfilePage() {
                                                                             toast.info("Cleared all menu presets")
                                                                         }
                                                                     }}
-                                                                    className="h-9 sm:h-10 rounded-xl text-xs sm:text-sm font-semibold text-red-600 hover:bg-red-50 cursor-pointer px-3"
+                                                                    className="h-9 rounded-xl text-xs font-semibold text-red-600 hover:bg-red-50 cursor-pointer px-3"
                                                                 >
-                                                                    <Trash2 className="w-4 h-4 mr-1.5 text-red-500" />
+                                                                    <Trash2 className="w-3.5 h-3.5 mr-1 text-red-500" />
                                                                     Clear
                                                                 </Button>
                                                             )}
@@ -1396,36 +1390,36 @@ export default function ProfilePage() {
                                                     </div>
 
                                                     {/* Add Preset Item Form */}
-                                                    <div className="p-5 sm:p-6 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-3.5">
-                                                        <p className="text-xs font-bold text-slate-800 uppercase tracking-wider">Add New Menu Preset Item</p>
-                                                        <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 sm:gap-4">
-                                                            <div className="sm:col-span-5 space-y-1.5">
+                                                    <div className="p-4 sm:p-5 rounded-2xl bg-slate-50/70 border border-slate-200/80 space-y-3">
+                                                        <h5 className="text-xs font-bold text-slate-800">Add Single Menu Item</h5>
+                                                        <div className="grid grid-cols-1 sm:grid-cols-12 gap-3">
+                                                            <div className="sm:col-span-5 space-y-1">
                                                                 <Label className="text-xs font-semibold text-slate-700">Menu Item Name</Label>
                                                                 <Input
                                                                     value={newPreset.name}
                                                                     onChange={(e) => setNewPreset(prev => ({ ...prev, name: e.target.value }))}
-                                                                    placeholder="e.g. Assorted Fried Rice & Chicken"
-                                                                    className="h-11 sm:h-12 rounded-xl bg-white border-slate-200 text-sm sm:text-base font-medium"
+                                                                    placeholder="e.g. Assorted Fried Rice &amp; Chicken"
+                                                                    className="h-10 rounded-xl bg-white border-slate-200 text-xs sm:text-sm font-medium"
                                                                 />
                                                             </div>
-                                                            <div className="sm:col-span-3 space-y-1.5">
-                                                                <Label className="text-xs font-semibold text-slate-700">Price / Cost (GH₵)</Label>
+                                                            <div className="sm:col-span-3 space-y-1">
+                                                                <Label className="text-xs font-semibold text-slate-700">Price (GH₵)</Label>
                                                                 <Input
                                                                     type="number"
                                                                     step="0.01"
                                                                     value={newPreset.price}
                                                                     onChange={(e) => setNewPreset(prev => ({ ...prev, price: e.target.value }))}
                                                                     placeholder="75.00"
-                                                                    className="h-11 sm:h-12 rounded-xl bg-white border-slate-200 text-sm sm:text-base font-bold"
+                                                                    className="h-10 rounded-xl bg-white border-slate-200 text-xs sm:text-sm font-semibold"
                                                                 />
                                                             </div>
-                                                            <div className="sm:col-span-2 space-y-1.5">
-                                                                <Label className="text-xs font-semibold text-slate-700">Category / Note</Label>
+                                                            <div className="sm:col-span-2 space-y-1">
+                                                                <Label className="text-xs font-semibold text-slate-700">Category (Optional)</Label>
                                                                 <Input
                                                                     value={newPreset.description}
                                                                     onChange={(e) => setNewPreset(prev => ({ ...prev, description: e.target.value }))}
                                                                     placeholder="e.g. Main Dish"
-                                                                    className="h-11 sm:h-12 rounded-xl bg-white border-slate-200 text-sm sm:text-base font-medium"
+                                                                    className="h-10 rounded-xl bg-white border-slate-200 text-xs sm:text-sm font-medium"
                                                                 />
                                                             </div>
                                                             <div className="sm:col-span-2 flex items-end">
@@ -1449,14 +1443,14 @@ export default function ProfilePage() {
                                                                         }
                                                                         setOrderDefaults(prev => ({
                                                                             ...prev,
-                                                                            menuPresets: [...prev.menuPresets, item]
+                                                                            menuPresets: [item, ...prev.menuPresets]
                                                                         }))
                                                                         setNewPreset({ name: "", price: "", description: "" })
                                                                         toast.success(`Added "${item.name}" (GH₵ ${item.price})`)
                                                                     }}
-                                                                    className="w-full h-11 sm:h-12 rounded-xl bg-slate-900 text-white hover:bg-slate-800 text-sm font-bold shadow-xs cursor-pointer"
+                                                                    className="w-full h-10 rounded-xl bg-slate-900 text-white hover:bg-slate-800 text-xs font-bold shadow-2xs cursor-pointer"
                                                                 >
-                                                                    <Plus className="w-4 h-4 mr-1.5" />
+                                                                    <Plus className="w-3.5 h-3.5 mr-1" />
                                                                     Add Item
                                                                 </Button>
                                                             </div>
@@ -1466,12 +1460,12 @@ export default function ProfilePage() {
                                                     {/* Search Menu Presets */}
                                                     {orderDefaults.menuPresets.length > 0 && (
                                                         <div className="relative">
-                                                            <Search className="w-5 h-5 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                                                            <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                                                             <Input
                                                                 value={menuSearchQuery}
                                                                 onChange={(e) => setMenuSearchQuery(e.target.value)}
                                                                 placeholder="Search menu items by name or category..."
-                                                                className="h-11 sm:h-12 pl-10 pr-9 rounded-xl bg-white border-slate-200 focus:border-amber-400 text-sm sm:text-base font-medium"
+                                                                className="h-10 pl-9 pr-8 rounded-xl bg-white border-slate-200 text-xs sm:text-sm font-medium"
                                                             />
                                                             {menuSearchQuery && (
                                                                 <button
@@ -1479,7 +1473,7 @@ export default function ProfilePage() {
                                                                     onClick={() => setMenuSearchQuery("")}
                                                                     className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-0.5 cursor-pointer"
                                                                 >
-                                                                    <X className="w-4 h-4" />
+                                                                    <X className="w-3.5 h-3.5" />
                                                                 </button>
                                                             )}
                                                         </div>
@@ -1495,12 +1489,12 @@ export default function ProfilePage() {
                                                         if (orderDefaults.menuPresets.length === 0) {
                                                             return (
                                                                 <div className="p-8 sm:p-10 text-center border-2 border-dashed border-slate-200 rounded-2xl bg-slate-50/50 space-y-3">
-                                                                    <div className="w-14 h-14 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center mx-auto">
-                                                                        <UtensilsCrossed className="w-7 h-7" />
+                                                                    <div className="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center mx-auto">
+                                                                        <UtensilsCrossed className="w-6 h-6" />
                                                                     </div>
                                                                     <div>
-                                                                        <p className="text-base font-bold text-slate-800">No menu presets configured yet</p>
-                                                                        <p className="text-xs sm:text-sm text-slate-500 mt-1">Upload an Excel file or type custom food items above.</p>
+                                                                        <p className="text-sm font-bold text-slate-800">No menu presets configured yet</p>
+                                                                        <p className="text-xs text-slate-500 mt-0.5">Upload an Excel file or add custom food items above.</p>
                                                                     </div>
                                                                 </div>
                                                             )
@@ -1508,9 +1502,9 @@ export default function ProfilePage() {
 
                                                         return (
                                                             <div className="space-y-3">
-                                                                <div className="flex items-center justify-between text-xs sm:text-sm text-slate-500 px-0.5 font-medium">
+                                                                <div className="flex items-center justify-between text-xs text-slate-500 px-0.5 font-medium">
                                                                     <span>
-                                                                        Showing <strong className="text-slate-900 font-bold">{filtered.length}</strong> of {orderDefaults.menuPresets.length} menu items
+                                                                        Showing <strong className="text-slate-900 font-bold">{filtered.length}</strong> of {orderDefaults.menuPresets.length} items
                                                                     </span>
                                                                     {menuSearchQuery && (
                                                                         <button
@@ -1518,7 +1512,7 @@ export default function ProfilePage() {
                                                                             onClick={() => setMenuSearchQuery("")}
                                                                             className="text-amber-600 hover:underline font-semibold cursor-pointer"
                                                                         >
-                                                                            Reset Search Filter
+                                                                            Reset Filter
                                                                         </button>
                                                                     )}
                                                                 </div>
@@ -1527,18 +1521,18 @@ export default function ProfilePage() {
                                                                     {filtered.map((item, idx) => (
                                                                         <div
                                                                             key={item.id || idx}
-                                                                            className="flex items-center justify-between p-4 bg-white rounded-xl border border-slate-200/80 shadow-2xs hover:border-slate-300 transition-all group"
+                                                                            className="flex items-center justify-between p-3.5 bg-white rounded-xl border border-slate-200/80 shadow-2xs hover:border-slate-300 transition-all group"
                                                                         >
                                                                             <div className="min-w-0 flex-1 pr-2">
-                                                                                <div className="flex items-center gap-2 flex-wrap">
-                                                                                    <span className="text-sm sm:text-base font-bold text-slate-900 truncate">{item.name}</span>
+                                                                                <div className="flex items-center gap-1.5 flex-wrap">
+                                                                                    <span className="text-xs sm:text-sm font-bold text-slate-900 truncate">{item.name}</span>
                                                                                     {item.description && (
-                                                                                        <span className="text-xs font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md">
+                                                                                        <span className="text-[10px] font-semibold text-slate-600 bg-slate-100 px-1.5 py-0.5 rounded">
                                                                                             {item.description}
                                                                                         </span>
                                                                                     )}
                                                                                 </div>
-                                                                                <p className="text-sm sm:text-base font-black text-emerald-700 mt-1.5">
+                                                                                <p className="text-xs sm:text-sm font-bold text-emerald-700 mt-1">
                                                                                     GH₵ {Number(item.price).toFixed(2)}
                                                                                 </p>
                                                                             </div>
@@ -1553,9 +1547,9 @@ export default function ProfilePage() {
                                                                                     }))
                                                                                     toast.info(`Removed "${item.name}"`)
                                                                                 }}
-                                                                                className="w-9 h-9 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 cursor-pointer shrink-0"
+                                                                                className="w-8 h-8 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 cursor-pointer shrink-0"
                                                                             >
-                                                                                <Trash2 className="w-4 h-4" />
+                                                                                <Trash2 className="w-3.5 h-3.5" />
                                                                             </Button>
                                                                         </div>
                                                                     ))}
@@ -1571,85 +1565,92 @@ export default function ProfilePage() {
                                         {/* TYPE B: DELIVERY SERVICE (COURIER) CONFIGURATION                          */}
                                         {/* ========================================================================= */}
                                         {orderDefaults.logisticsType === 'delivery' && (
-                                            <div className="space-y-6 sm:space-y-8 pt-6 border-t border-slate-100 animate-in fade-in-50 duration-200">
-                                                <div className="flex items-center gap-2.5 pb-2 border-b border-slate-100">
-                                                    <Truck className="w-5 h-5 text-blue-600" />
-                                                    <h3 className="text-sm sm:text-base md:text-lg font-bold text-slate-900">Courier Dispatch Hub &amp; Delivery Parameters</h3>
-                                                </div>
-
-                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
-                                                    <div className="space-y-2">
-                                                        <Label htmlFor="defaultDispatchHub" className="text-xs sm:text-sm font-bold text-slate-700 flex items-center gap-1.5">
-                                                            <MapPin className="w-4 h-4 text-slate-400" />
-                                                            Default Dispatch Hub / Sender Address
-                                                        </Label>
-                                                        <Input
-                                                            id="defaultDispatchHub"
-                                                            value={orderDefaults.defaultDispatchHub}
-                                                            onChange={(e) => setOrderDefaults(prev => ({ ...prev, defaultDispatchHub: e.target.value }))}
-                                                            placeholder="e.g. Accra Central Dispatch Hub, Osu"
-                                                            className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-12 px-4 text-sm sm:text-base"
-                                                        />
+                                            <div className="space-y-8 animate-in fade-in-50 duration-200">
+                                                <div className="pt-6 sm:pt-8 border-t border-slate-100 space-y-6">
+                                                    <div>
+                                                        <h4 className="text-sm sm:text-base font-bold text-slate-900">Hub &amp; Dispatch Defaults</h4>
+                                                        <p className="text-xs sm:text-sm text-slate-500 mt-0.5">Pre-populates dispatch locations, base courier rates, and MoMo details.</p>
                                                     </div>
 
-                                                    <div className="space-y-2">
-                                                        <Label htmlFor="defaultSenderContact" className="text-xs sm:text-sm font-bold text-slate-700 flex items-center gap-1.5">
-                                                            <Phone className="w-4 h-4 text-slate-400" />
-                                                            Default Dispatch / Sender Phone
-                                                        </Label>
-                                                        <Input
-                                                            id="defaultSenderContact"
-                                                            value={orderDefaults.defaultSenderContact}
-                                                            onChange={(e) => setOrderDefaults(prev => ({ ...prev, defaultSenderContact: e.target.value }))}
-                                                            placeholder="e.g. 0548706430"
-                                                            className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-12 px-4 text-sm sm:text-base"
-                                                        />
-                                                    </div>
-                                                </div>
+                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                        <div className="space-y-2">
+                                                            <Label htmlFor="defaultDispatchHub" className="text-slate-800 font-bold text-xs sm:text-sm flex items-center gap-1.5">
+                                                                <MapPin className="w-4 h-4 text-slate-400" />
+                                                                Default Dispatch Hub / Sender Address
+                                                            </Label>
+                                                            <Input
+                                                                id="defaultDispatchHub"
+                                                                value={orderDefaults.defaultDispatchHub}
+                                                                onChange={(e) => setOrderDefaults(prev => ({ ...prev, defaultDispatchHub: e.target.value }))}
+                                                                placeholder="e.g. Accra Central Dispatch Hub, Osu"
+                                                                className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-12 px-4 transition-colors text-sm sm:text-base"
+                                                            />
+                                                            <p className="text-xs text-slate-400">Default dispatch hub for courier pickups.</p>
+                                                        </div>
 
-                                                <div className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6">
-                                                    <div className="space-y-2">
-                                                        <Label htmlFor="defaultCourierFee" className="text-xs sm:text-sm font-bold text-slate-700">
-                                                            Base Courier Delivery Fee (GH₵)
-                                                        </Label>
-                                                        <Input
-                                                            id="defaultCourierFee"
-                                                            type="number"
-                                                            step="0.01"
-                                                            value={orderDefaults.defaultCourierFee}
-                                                            onChange={(e) => setOrderDefaults(prev => ({ ...prev, defaultCourierFee: e.target.value }))}
-                                                            placeholder="30.00"
-                                                            className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-12 px-4 text-sm sm:text-base font-bold"
-                                                        />
-                                                    </div>
-
-                                                    <div className="space-y-2">
-                                                        <Label htmlFor="defaultCourierMoMoNumber" className="text-xs sm:text-sm font-bold text-slate-700">
-                                                            Courier MoMo Payment Number
-                                                        </Label>
-                                                        <Input
-                                                            id="defaultCourierMoMoNumber"
-                                                            value={orderDefaults.defaultCourierMoMoNumber}
-                                                            onChange={(e) => setOrderDefaults(prev => ({ ...prev, defaultCourierMoMoNumber: e.target.value }))}
-                                                            placeholder="e.g. 0548706430"
-                                                            className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-12 px-4 text-sm sm:text-base"
-                                                        />
+                                                        <div className="space-y-2">
+                                                            <Label htmlFor="defaultSenderContact" className="text-slate-800 font-bold text-xs sm:text-sm flex items-center gap-1.5">
+                                                                <Phone className="w-4 h-4 text-slate-400" />
+                                                                Default Dispatch / Sender Phone
+                                                            </Label>
+                                                            <Input
+                                                                id="defaultSenderContact"
+                                                                value={orderDefaults.defaultSenderContact}
+                                                                onChange={(e) => setOrderDefaults(prev => ({ ...prev, defaultSenderContact: e.target.value }))}
+                                                                placeholder="e.g. 0548706430"
+                                                                className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-12 px-4 transition-colors text-sm sm:text-base"
+                                                            />
+                                                            <p className="text-xs text-slate-400">Dispatcher phone number for waybills.</p>
+                                                        </div>
                                                     </div>
 
-                                                    <div className="space-y-2">
-                                                        <Label htmlFor="defaultCourierPaymentProvider" className="text-xs sm:text-sm font-bold text-slate-700">
-                                                            MoMo Network Provider
-                                                        </Label>
-                                                        <select
-                                                            id="defaultCourierPaymentProvider"
-                                                            value={orderDefaults.defaultCourierPaymentProvider}
-                                                            onChange={(e) => setOrderDefaults(prev => ({ ...prev, defaultCourierPaymentProvider: e.target.value }))}
-                                                            className="w-full bg-slate-50/50 border border-slate-200 focus:bg-white rounded-xl h-12 px-3.5 transition-colors text-slate-800 focus:outline-none text-xs sm:text-sm"
-                                                        >
-                                                            <option value="MTN">MTN Mobile Money</option>
-                                                            <option value="TELECEL">Telecel Cash (Vodafone)</option>
-                                                            <option value="AIRTELTIGO">AirtelTigo Money</option>
-                                                        </select>
+                                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                                        <div className="space-y-2">
+                                                            <Label htmlFor="defaultCourierFee" className="text-slate-800 font-bold text-xs sm:text-sm">
+                                                                Base Courier Delivery Fee (GH₵)
+                                                            </Label>
+                                                            <Input
+                                                                id="defaultCourierFee"
+                                                                type="number"
+                                                                step="0.01"
+                                                                value={orderDefaults.defaultCourierFee}
+                                                                onChange={(e) => setOrderDefaults(prev => ({ ...prev, defaultCourierFee: e.target.value }))}
+                                                                placeholder="30.00"
+                                                                className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-12 px-4 transition-colors text-sm sm:text-base font-semibold"
+                                                            />
+                                                            <p className="text-xs text-slate-400">Standard base rate for parcel deliveries.</p>
+                                                        </div>
+
+                                                        <div className="space-y-2">
+                                                            <Label htmlFor="defaultCourierMoMoNumber" className="text-slate-800 font-bold text-xs sm:text-sm">
+                                                                Courier MoMo Payment Number
+                                                            </Label>
+                                                            <Input
+                                                                id="defaultCourierMoMoNumber"
+                                                                value={orderDefaults.defaultCourierMoMoNumber}
+                                                                onChange={(e) => setOrderDefaults(prev => ({ ...prev, defaultCourierMoMoNumber: e.target.value }))}
+                                                                placeholder="e.g. 0548706430"
+                                                                className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-12 px-4 transition-colors text-sm sm:text-base"
+                                                            />
+                                                            <p className="text-xs text-slate-400">Merchant MoMo line for receiving payments.</p>
+                                                        </div>
+
+                                                        <div className="space-y-2">
+                                                            <Label htmlFor="defaultCourierPaymentProvider" className="text-slate-800 font-bold text-xs sm:text-sm">
+                                                                MoMo Network Provider
+                                                            </Label>
+                                                            <select
+                                                                id="defaultCourierPaymentProvider"
+                                                                value={orderDefaults.defaultCourierPaymentProvider}
+                                                                onChange={(e) => setOrderDefaults(prev => ({ ...prev, defaultCourierPaymentProvider: e.target.value }))}
+                                                                className="w-full bg-slate-50/50 border border-slate-200 focus:bg-white rounded-xl h-12 px-3.5 transition-colors text-slate-800 focus:outline-none text-xs sm:text-sm"
+                                                            >
+                                                                <option value="MTN">MTN Mobile Money</option>
+                                                                <option value="TELECEL">Telecel Cash (Vodafone)</option>
+                                                                <option value="AIRTELTIGO">AirtelTigo Money</option>
+                                                            </select>
+                                                            <p className="text-xs text-slate-400">Primary telco gateway for payments.</p>
+                                                        </div>
                                                     </div>
                                                 </div>
 
@@ -1662,14 +1663,12 @@ export default function ProfilePage() {
                                                     className="hidden"
                                                 />
 
-                                                {/* Package Categories / Presets Manager */}
-                                                <div className="space-y-4 pt-2">
-                                                    <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 pb-2 border-b border-slate-100">
+                                                {/* Package Categories Section */}
+                                                <div className="pt-6 sm:pt-8 border-t border-slate-100 space-y-4">
+                                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                                                         <div>
-                                                            <div className="flex items-center gap-2">
-                                                                <Package className="w-5 h-5 text-blue-600" />
-                                                                <h3 className="text-sm sm:text-base md:text-lg font-bold text-slate-900">Standard Package Categories &amp; Dispatch Goods</h3>
-                                                            </div>
+                                                            <h4 className="text-sm sm:text-base font-bold text-slate-900">Package Categories</h4>
+                                                            <p className="text-xs sm:text-sm text-slate-500 mt-0.5">Preset package types for fast parcel selection.</p>
                                                         </div>
 
                                                         <div className="flex flex-wrap items-center gap-2">
@@ -1678,10 +1677,10 @@ export default function ProfilePage() {
                                                                 variant="outline"
                                                                 size="sm"
                                                                 onClick={() => categoryFileInputRef.current?.click()}
-                                                                className="h-9 sm:h-10 rounded-xl text-xs sm:text-sm font-bold text-indigo-700 border-indigo-200 bg-indigo-50 hover:bg-indigo-100 cursor-pointer shadow-2xs px-3.5"
+                                                                className="h-9 rounded-xl text-xs font-bold text-indigo-700 border-indigo-200 bg-indigo-50 hover:bg-indigo-100 cursor-pointer shadow-2xs px-3.5"
                                                                 title="Import categories from an .xlsx or .csv spreadsheet"
                                                             >
-                                                                <Upload className="w-4 h-4 mr-1.5 text-indigo-600" />
+                                                                <Upload className="w-3.5 h-3.5 mr-1.5 text-indigo-600" />
                                                                 Import Excel
                                                             </Button>
 
@@ -1696,9 +1695,9 @@ export default function ProfilePage() {
                                                                             toast.info("Cleared all package categories")
                                                                         }
                                                                     }}
-                                                                    className="h-9 sm:h-10 rounded-xl text-xs sm:text-sm font-semibold text-red-600 hover:bg-red-50 cursor-pointer px-3"
+                                                                    className="h-9 rounded-xl text-xs font-semibold text-red-600 hover:bg-red-50 cursor-pointer px-3"
                                                                 >
-                                                                    <Trash2 className="w-4 h-4 mr-1.5 text-red-500" />
+                                                                    <Trash2 className="w-3.5 h-3.5 mr-1 text-red-500" />
                                                                     Clear
                                                                 </Button>
                                                             )}
@@ -1708,34 +1707,34 @@ export default function ProfilePage() {
                                                     {/* Categories List View */}
                                                     {orderDefaults.packageCategories.length === 0 ? (
                                                         <div className="p-8 sm:p-10 text-center border-2 border-dashed border-slate-200 rounded-2xl bg-slate-50/50 space-y-3">
-                                                            <div className="w-14 h-14 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center mx-auto">
-                                                                <Package className="w-7 h-7" />
+                                                            <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center mx-auto">
+                                                                <Package className="w-6 h-6" />
                                                             </div>
                                                             <div>
-                                                                <p className="text-base font-bold text-slate-800">No package categories configured yet</p>
-                                                                <p className="text-xs sm:text-sm text-slate-500 mt-1">Upload an Excel file to import package categories.</p>
+                                                                <p className="text-sm font-bold text-slate-800">No package categories configured yet</p>
+                                                                <p className="text-xs text-slate-500 mt-0.5">Upload an Excel file to import your package categories.</p>
                                                             </div>
-                                                            <div className="flex items-center justify-center gap-2 pt-2">
+                                                            <div className="flex items-center justify-center gap-2 pt-1">
                                                                 <Button
                                                                     type="button"
                                                                     variant="outline"
                                                                     size="sm"
                                                                     onClick={() => categoryFileInputRef.current?.click()}
-                                                                    className="rounded-xl text-xs sm:text-sm font-bold border-slate-200 h-9 px-4"
+                                                                    className="rounded-xl text-xs font-bold border-slate-200 h-8.5 px-3.5"
                                                                 >
-                                                                    <Upload className="w-4 h-4 mr-1.5" />
+                                                                    <Upload className="w-3.5 h-3.5 mr-1.5" />
                                                                     Upload Excel
                                                                 </Button>
                                                             </div>
                                                         </div>
                                                     ) : (
-                                                        <div className="flex flex-wrap gap-2.5 sm:gap-3">
+                                                        <div className="flex flex-wrap gap-2.5">
                                                             {orderDefaults.packageCategories.map((cat, idx) => (
                                                                 <span
                                                                     key={idx}
-                                                                    className="inline-flex items-center gap-2 pl-3.5 pr-2 py-1.5 rounded-xl bg-slate-100 text-slate-800 font-semibold text-xs sm:text-sm border border-slate-200/60 shadow-2xs"
+                                                                    className="inline-flex items-center gap-2 pl-3 pr-1.5 py-1 rounded-xl bg-slate-100 text-slate-800 font-semibold text-xs border border-slate-200/60 shadow-2xs"
                                                                 >
-                                                                    <Package className="w-4 h-4 text-blue-600" />
+                                                                    <Package className="w-3.5 h-3.5 text-blue-600" />
                                                                     <span>{cat}</span>
                                                                     <button
                                                                         type="button"
@@ -1746,10 +1745,10 @@ export default function ProfilePage() {
                                                                             }))
                                                                             toast.info(`Removed "${cat}"`)
                                                                         }}
-                                                                        className="text-slate-400 hover:text-red-600 p-0.5 rounded-md hover:bg-red-50 cursor-pointer ml-1"
+                                                                        className="text-slate-400 hover:text-red-600 p-0.5 rounded hover:bg-red-50 cursor-pointer ml-0.5"
                                                                         title={`Remove ${cat}`}
                                                                     >
-                                                                        <X className="w-3.5 h-3.5" />
+                                                                        <X className="w-3 h-3" />
                                                                     </button>
                                                                 </span>
                                                             ))}
@@ -1763,150 +1762,152 @@ export default function ProfilePage() {
                                         {/* TYPE C: SHIPPING (FREIGHT & CARGO) CONFIGURATION                          */}
                                         {/* ========================================================================= */}
                                         {orderDefaults.logisticsType === 'shipping' && (
-                                            <div className="space-y-6 sm:space-y-8 pt-6 border-t border-slate-100 animate-in fade-in-50 duration-200">
-                                                <div className="flex items-center gap-2.5 pb-2 border-b border-slate-100">
-                                                    <Ship className="w-5 h-5 text-emerald-600" />
-                                                    <h3 className="text-sm sm:text-base md:text-lg font-bold text-slate-900">Freight Origin Ports &amp; Cargo Rates</h3>
-                                                </div>
-
-                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
-                                                    <div className="space-y-2">
-                                                        <Label htmlFor="defaultOriginPort" className="text-xs sm:text-sm font-bold text-slate-700 flex items-center gap-1.5">
-                                                            <Navigation className="w-4 h-4 text-slate-400" />
-                                                            Default Origin Port / Terminal
-                                                        </Label>
-                                                        <Input
-                                                            id="defaultOriginPort"
-                                                            value={orderDefaults.defaultOriginPort}
-                                                            onChange={(e) => setOrderDefaults(prev => ({ ...prev, defaultOriginPort: e.target.value }))}
-                                                            placeholder="e.g. Tema Sea Port / Kotoka Air Cargo Terminal"
-                                                            className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-12 px-4 text-sm sm:text-base"
-                                                        />
-                                                        <p className="text-xs text-slate-400">Primary origin departure terminal for international / regional freight.</p>
+                                            <div className="space-y-8 animate-in fade-in-50 duration-200">
+                                                <div className="pt-6 sm:pt-8 border-t border-slate-100 space-y-6">
+                                                    <div>
+                                                        <h4 className="text-sm sm:text-base font-bold text-slate-900">Port Origin &amp; Freight Rates</h4>
+                                                        <p className="text-xs sm:text-sm text-slate-500 mt-0.5">Pre-populates departure ports, per-kg shipping rates, and port clearance fees.</p>
                                                     </div>
 
-                                                    <div className="space-y-2">
-                                                        <Label htmlFor="defaultDestinationHub" className="text-xs sm:text-sm font-bold text-slate-700 flex items-center gap-1.5">
-                                                            <MapPin className="w-4 h-4 text-slate-400" />
-                                                            Default Destination City / Hub
-                                                        </Label>
-                                                        <Input
-                                                            id="defaultDestinationHub"
-                                                            value={orderDefaults.defaultDestinationHub}
-                                                            onChange={(e) => setOrderDefaults(prev => ({ ...prev, defaultDestinationHub: e.target.value }))}
-                                                            placeholder="e.g. Kumasi Central Cargo Depot / Takoradi Hub"
-                                                            className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-12 px-4 text-sm sm:text-base"
-                                                        />
-                                                        <p className="text-xs text-slate-400">Target transit warehouse or receiving hub.</p>
-                                                    </div>
-                                                </div>
+                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                        <div className="space-y-2">
+                                                            <Label htmlFor="defaultOriginPort" className="text-slate-800 font-bold text-xs sm:text-sm flex items-center gap-1.5">
+                                                                <Navigation className="w-4 h-4 text-slate-400" />
+                                                                Default Origin Port / Terminal
+                                                            </Label>
+                                                            <Input
+                                                                id="defaultOriginPort"
+                                                                value={orderDefaults.defaultOriginPort}
+                                                                onChange={(e) => setOrderDefaults(prev => ({ ...prev, defaultOriginPort: e.target.value }))}
+                                                                placeholder="e.g. Tema Sea Port / Kotoka Air Cargo Terminal"
+                                                                className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-12 px-4 transition-colors text-sm sm:text-base"
+                                                            />
+                                                            <p className="text-xs text-slate-400">Primary origin departure terminal for international / regional freight.</p>
+                                                        </div>
 
-                                                <div className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6">
-                                                    <div className="space-y-2">
-                                                        <Label htmlFor="defaultFreightRatePerKg" className="text-xs sm:text-sm font-bold text-slate-700">
-                                                            Rate per Kg (GH₵ / kg)
-                                                        </Label>
-                                                        <Input
-                                                            id="defaultFreightRatePerKg"
-                                                            type="number"
-                                                            step="0.01"
-                                                            value={orderDefaults.defaultFreightRatePerKg}
-                                                            onChange={(e) => setOrderDefaults(prev => ({ ...prev, defaultFreightRatePerKg: e.target.value }))}
-                                                            placeholder="15.00"
-                                                            className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-12 px-4 text-sm sm:text-base font-bold"
-                                                        />
-                                                        <p className="text-xs text-slate-400">Charge per kilogram for freight calculations.</p>
-                                                    </div>
-
-                                                    <div className="space-y-2">
-                                                        <Label htmlFor="defaultHandlingFee" className="text-xs sm:text-sm font-bold text-slate-700">
-                                                            Customs / Handling Fee (GH₵)
-                                                        </Label>
-                                                        <Input
-                                                            id="defaultHandlingFee"
-                                                            type="number"
-                                                            step="0.01"
-                                                            value={orderDefaults.defaultHandlingFee}
-                                                            onChange={(e) => setOrderDefaults(prev => ({ ...prev, defaultHandlingFee: e.target.value }))}
-                                                            placeholder="50.00"
-                                                            className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-12 px-4 text-sm sm:text-base font-bold"
-                                                        />
-                                                        <p className="text-xs text-slate-400">Base port clearance or documentation fee.</p>
+                                                        <div className="space-y-2">
+                                                            <Label htmlFor="defaultDestinationHub" className="text-slate-800 font-bold text-xs sm:text-sm flex items-center gap-1.5">
+                                                                <MapPin className="w-4 h-4 text-slate-400" />
+                                                                Default Destination City / Hub
+                                                            </Label>
+                                                            <Input
+                                                                id="defaultDestinationHub"
+                                                                value={orderDefaults.defaultDestinationHub}
+                                                                onChange={(e) => setOrderDefaults(prev => ({ ...prev, defaultDestinationHub: e.target.value }))}
+                                                                placeholder="e.g. Kumasi Central Cargo Depot / Takoradi Hub"
+                                                                className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-12 px-4 transition-colors text-sm sm:text-base"
+                                                            />
+                                                            <p className="text-xs text-slate-400">Target transit warehouse or receiving hub.</p>
+                                                        </div>
                                                     </div>
 
-                                                    <div className="space-y-2">
-                                                        <Label htmlFor="defaultWaybillPrefix" className="text-xs sm:text-sm font-bold text-slate-700">
-                                                            Waybill / Tracking Prefix
-                                                        </Label>
-                                                        <Input
-                                                            id="defaultWaybillPrefix"
-                                                            value={orderDefaults.defaultWaybillPrefix}
-                                                            onChange={(e) => setOrderDefaults(prev => ({ ...prev, defaultWaybillPrefix: e.target.value }))}
-                                                            placeholder="SHP"
-                                                            className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-12 px-4 text-sm sm:text-base uppercase font-bold"
-                                                        />
-                                                        <p className="text-xs text-slate-400">Prefix attached to generated tracking barcodes.</p>
-                                                    </div>
-                                                </div>
+                                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                                        <div className="space-y-2">
+                                                            <Label htmlFor="defaultFreightRatePerKg" className="text-slate-800 font-bold text-xs sm:text-sm">
+                                                                Rate per Kg (GH₵ / kg)
+                                                            </Label>
+                                                            <Input
+                                                                id="defaultFreightRatePerKg"
+                                                                type="number"
+                                                                step="0.01"
+                                                                value={orderDefaults.defaultFreightRatePerKg}
+                                                                onChange={(e) => setOrderDefaults(prev => ({ ...prev, defaultFreightRatePerKg: e.target.value }))}
+                                                                placeholder="15.00"
+                                                                className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-12 px-4 transition-colors text-sm sm:text-base font-semibold"
+                                                            />
+                                                            <p className="text-xs text-slate-400">Charge per kilogram for freight calculations.</p>
+                                                        </div>
 
-                                                <div className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6">
-                                                    <div className="space-y-2">
-                                                        <Label htmlFor="defaultOriginContact" className="text-xs sm:text-sm font-bold text-slate-700">
-                                                            Origin Port Contact Phone
-                                                        </Label>
-                                                        <Input
-                                                            id="defaultOriginContact"
-                                                            value={orderDefaults.defaultOriginContact}
-                                                            onChange={(e) => setOrderDefaults(prev => ({ ...prev, defaultOriginContact: e.target.value }))}
-                                                            placeholder="e.g. 0548706430"
-                                                            className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-12 px-4 text-sm sm:text-base"
-                                                        />
-                                                        <p className="text-xs text-slate-400">Origin port clearing agent or dispatcher phone.</p>
+                                                        <div className="space-y-2">
+                                                            <Label htmlFor="defaultHandlingFee" className="text-slate-800 font-bold text-xs sm:text-sm">
+                                                                Customs / Handling Fee (GH₵)
+                                                            </Label>
+                                                            <Input
+                                                                id="defaultHandlingFee"
+                                                                type="number"
+                                                                step="0.01"
+                                                                value={orderDefaults.defaultHandlingFee}
+                                                                onChange={(e) => setOrderDefaults(prev => ({ ...prev, defaultHandlingFee: e.target.value }))}
+                                                                placeholder="50.00"
+                                                                className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-12 px-4 transition-colors text-sm sm:text-base font-semibold"
+                                                            />
+                                                            <p className="text-xs text-slate-400">Base port clearance or documentation fee.</p>
+                                                        </div>
+
+                                                        <div className="space-y-2">
+                                                            <Label htmlFor="defaultWaybillPrefix" className="text-slate-800 font-bold text-xs sm:text-sm">
+                                                                Waybill / Tracking Prefix
+                                                            </Label>
+                                                            <Input
+                                                                id="defaultWaybillPrefix"
+                                                                value={orderDefaults.defaultWaybillPrefix}
+                                                                onChange={(e) => setOrderDefaults(prev => ({ ...prev, defaultWaybillPrefix: e.target.value }))}
+                                                                placeholder="SHP"
+                                                                className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-12 px-4 transition-colors text-sm sm:text-base uppercase font-semibold"
+                                                            />
+                                                            <p className="text-xs text-slate-400">Prefix attached to generated tracking barcodes.</p>
+                                                        </div>
                                                     </div>
 
-                                                    <div className="space-y-2">
-                                                        <Label htmlFor="defaultShippingMoMoNumber" className="text-xs sm:text-sm font-bold text-slate-700">
-                                                            Shipping MoMo Account
-                                                        </Label>
-                                                        <Input
-                                                            id="defaultShippingMoMoNumber"
-                                                            value={orderDefaults.defaultShippingMoMoNumber}
-                                                            onChange={(e) => setOrderDefaults(prev => ({ ...prev, defaultShippingMoMoNumber: e.target.value }))}
-                                                            placeholder="e.g. 0548706430"
-                                                            className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-12 px-4 text-sm sm:text-base"
-                                                        />
-                                                        <p className="text-xs text-slate-400">Merchant MoMo line for cargo payments.</p>
-                                                    </div>
+                                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                                        <div className="space-y-2">
+                                                            <Label htmlFor="defaultOriginContact" className="text-slate-800 font-bold text-xs sm:text-sm">
+                                                                Origin Port Contact Phone
+                                                            </Label>
+                                                            <Input
+                                                                id="defaultOriginContact"
+                                                                value={orderDefaults.defaultOriginContact}
+                                                                onChange={(e) => setOrderDefaults(prev => ({ ...prev, defaultOriginContact: e.target.value }))}
+                                                                placeholder="e.g. 0548706430"
+                                                                className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-12 px-4 transition-colors text-sm sm:text-base"
+                                                            />
+                                                            <p className="text-xs text-slate-400">Origin port clearing agent or dispatcher phone.</p>
+                                                        </div>
 
-                                                    <div className="space-y-2">
-                                                        <Label htmlFor="defaultShippingPaymentProvider" className="text-xs sm:text-sm font-bold text-slate-700">
-                                                            MoMo Network Provider
-                                                        </Label>
-                                                        <select
-                                                            id="defaultShippingPaymentProvider"
-                                                            value={orderDefaults.defaultShippingPaymentProvider}
-                                                            onChange={(e) => setOrderDefaults(prev => ({ ...prev, defaultShippingPaymentProvider: e.target.value }))}
-                                                            className="w-full bg-slate-50/50 border border-slate-200 focus:bg-white rounded-xl h-12 px-3.5 transition-colors text-slate-800 focus:outline-none text-xs sm:text-sm"
-                                                        >
-                                                            <option value="MTN">MTN Mobile Money</option>
-                                                            <option value="TELECEL">Telecel Cash (Vodafone)</option>
-                                                            <option value="AIRTELTIGO">AirtelTigo Money</option>
-                                                        </select>
-                                                        <p className="text-xs text-slate-400">Telco channel for cargo prompt billing.</p>
+                                                        <div className="space-y-2">
+                                                            <Label htmlFor="defaultShippingMoMoNumber" className="text-slate-800 font-bold text-xs sm:text-sm">
+                                                                Shipping MoMo Account
+                                                            </Label>
+                                                            <Input
+                                                                id="defaultShippingMoMoNumber"
+                                                                value={orderDefaults.defaultShippingMoMoNumber}
+                                                                onChange={(e) => setOrderDefaults(prev => ({ ...prev, defaultShippingMoMoNumber: e.target.value }))}
+                                                                placeholder="e.g. 0548706430"
+                                                                className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-12 px-4 transition-colors text-sm sm:text-base"
+                                                            />
+                                                            <p className="text-xs text-slate-400">Merchant MoMo line for cargo payments.</p>
+                                                        </div>
+
+                                                        <div className="space-y-2">
+                                                            <Label htmlFor="defaultShippingPaymentProvider" className="text-slate-800 font-bold text-xs sm:text-sm">
+                                                                MoMo Network Provider
+                                                            </Label>
+                                                            <select
+                                                                id="defaultShippingPaymentProvider"
+                                                                value={orderDefaults.defaultShippingPaymentProvider}
+                                                                onChange={(e) => setOrderDefaults(prev => ({ ...prev, defaultShippingPaymentProvider: e.target.value }))}
+                                                                className="w-full bg-slate-50/50 border border-slate-200 focus:bg-white rounded-xl h-12 px-3.5 transition-colors text-slate-800 focus:outline-none text-xs sm:text-sm"
+                                                            >
+                                                                <option value="MTN">MTN Mobile Money</option>
+                                                                <option value="TELECEL">Telecel Cash (Vodafone)</option>
+                                                                <option value="AIRTELTIGO">AirtelTigo Money</option>
+                                                            </select>
+                                                            <p className="text-xs text-slate-400">Telco channel for cargo prompt billing.</p>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         )}
 
                                         {/* Save Defaults Button */}
-                                        <div className="flex justify-end pt-5 border-t border-slate-100">
+                                        <div className="flex justify-end pt-4 border-t border-slate-100">
                                             <Button
                                                 type="submit"
                                                 disabled={orderDefaultsSaving}
-                                                className="w-full sm:w-auto min-w-[240px] h-12 sm:h-13 px-8 rounded-xl sm:rounded-full bg-[#111827] hover:bg-[#1f2937] text-white font-bold text-sm sm:text-base shadow-sm transition-all hover:-translate-y-0.5 active:scale-[0.98] cursor-pointer"
+                                                className="w-full sm:w-auto min-w-[200px] h-12 sm:h-13 px-8 rounded-xl sm:rounded-full bg-[#111827] hover:bg-[#1f2937] text-white font-bold text-sm sm:text-base shadow-sm transition-all hover:-translate-y-0.5 active:scale-[0.98] cursor-pointer"
                                             >
                                                 {orderDefaultsSaving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Check className="w-4 h-4 mr-2 text-emerald-400" />}
-                                                Save Administrative Defaults
+                                                Save Defaults
                                             </Button>
                                         </div>
                                     </form>
