@@ -171,9 +171,14 @@ function CreateOrderContent() {
         ? (organization?.publicMetadata?.menuPresets as any[])
         : []
 
-    const packageCategories: string[] = Array.isArray(organization?.publicMetadata?.packageCategories)
-        ? (organization?.publicMetadata?.packageCategories as string[])
-        : []
+    const packageCategories: string[] = (() => {
+        const raw = Array.isArray(organization?.publicMetadata?.packageCategories)
+            ? (organization?.publicMetadata?.packageCategories as string[])
+            : []
+        const legacy = ["Documents", "Small Parcel", "Food/Cake Box", "Electronics", "Fragile"]
+        const isLegacy = raw.length === legacy.length && legacy.every(item => raw.includes(item))
+        return isLegacy ? [] : raw
+    })()
 
     // Helper to switch logistics mode and load the corresponding administrative defaults
     const handleSwitchLogisticsMode = (mode: LogisticsSubType) => {

@@ -492,7 +492,12 @@ export default function ProfilePage() {
                 defaultDispatchHub: (metadata?.defaultDispatchHub as string) || (metadata?.location as string) || "",
                 defaultSenderContact: (metadata?.defaultSenderContact as string) || (metadata?.contact as string) || "",
                 defaultCourierFee: (metadata?.defaultCourierFee as string) || "0",
-                packageCategories: Array.isArray(metadata?.packageCategories) ? metadata.packageCategories : [],
+                packageCategories: (() => {
+                    const raw = Array.isArray(metadata?.packageCategories) ? (metadata.packageCategories as string[]) : []
+                    const legacy = ["Documents", "Small Parcel", "Food/Cake Box", "Electronics", "Fragile"]
+                    const isLegacy = raw.length === legacy.length && legacy.every(item => raw.includes(item))
+                    return isLegacy ? [] : raw
+                })(),
                 defaultCourierMoMoNumber: (metadata?.defaultCourierMoMoNumber as string) || (metadata?.bulkclixAccountNumber as string) || "",
                 defaultCourierPaymentProvider: (metadata?.defaultCourierPaymentProvider as string) || "MTN",
                 // Shipping
@@ -1728,10 +1733,24 @@ export default function ProfilePage() {
                                                             {orderDefaults.packageCategories.map((cat, idx) => (
                                                                 <span
                                                                     key={idx}
-                                                                    className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-100 text-slate-800 font-semibold text-xs sm:text-sm border border-slate-200/60 shadow-2xs"
+                                                                    className="inline-flex items-center gap-2 pl-3.5 pr-2 py-1.5 rounded-xl bg-slate-100 text-slate-800 font-semibold text-xs sm:text-sm border border-slate-200/60 shadow-2xs"
                                                                 >
                                                                     <Package className="w-4 h-4 text-blue-600" />
                                                                     <span>{cat}</span>
+                                                                    <button
+                                                                        type="button"
+                                                                        onClick={() => {
+                                                                            setOrderDefaults(prev => ({
+                                                                                ...prev,
+                                                                                packageCategories: prev.packageCategories.filter((_, i) => i !== idx)
+                                                                            }))
+                                                                            toast.info(`Removed "${cat}"`)
+                                                                        }}
+                                                                        className="text-slate-400 hover:text-red-600 p-0.5 rounded-md hover:bg-red-50 cursor-pointer ml-1"
+                                                                        title={`Remove ${cat}`}
+                                                                    >
+                                                                        <X className="w-3.5 h-3.5" />
+                                                                    </button>
                                                                 </span>
                                                             ))}
                                                         </div>
