@@ -130,6 +130,7 @@ function CreateOrderContent() {
     // Administrative Menu Items state
     const [orderMenuItems, setOrderMenuItems] = useState<{ id: string; name: string; price: number; quantity: number }[]>([])
     const [menuSearchQuery, setMenuSearchQuery] = useState("")
+    const [customItemName, setCustomItemName] = useState("")
     const [customItemPrice, setCustomItemPrice] = useState("")
     const [isMenuDropdownOpen, setIsMenuDropdownOpen] = useState(false)
     const menuContainerRef = useRef<HTMLDivElement>(null)
@@ -297,14 +298,7 @@ function CreateOrderContent() {
 
     const handleTogglePackageCategory = (cat: string) => {
         if (!cat) return
-        const currentItems = itemType.split(", ").map(s => s.trim()).filter(Boolean)
-        let updatedItems: string[]
-        if (currentItems.includes(cat)) {
-            updatedItems = currentItems.filter(c => c !== cat)
-        } else {
-            updatedItems = [...currentItems, cat]
-        }
-        setItemType(updatedItems.join(", "))
+        handleAddMenuItem({ name: cat, price: 0 })
     }
 
     const handleCargoWeightChange = (newWeight: string) => {
@@ -1177,6 +1171,81 @@ function CreateOrderContent() {
                                                     )}
                                                 </div>
 
+                                                {/* Direct Add Custom Dish / Order Item Row */}
+                                                <div className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-white border border-slate-200/80 shadow-2xs space-y-2.5">
+                                                    <span className="text-[11px] font-bold text-slate-700 uppercase tracking-wider block">
+                                                        Add Custom Dish / Unlisted Item
+                                                    </span>
+                                                    <div className="grid grid-cols-1 sm:grid-cols-12 gap-2.5 items-end">
+                                                        <div className="sm:col-span-6 space-y-1">
+                                                            <Label htmlFor="restaurantCustomDishName" className="text-[11px] font-semibold text-slate-600">
+                                                                Dish / Item Name
+                                                            </Label>
+                                                            <Input
+                                                                id="restaurantCustomDishName"
+                                                                placeholder="e.g. Special Jollof Rice + Chicken, Extra Sauce"
+                                                                value={customItemName}
+                                                                onChange={(e) => setCustomItemName(e.target.value)}
+                                                                onKeyDown={(e) => {
+                                                                    if (e.key === "Enter") {
+                                                                        e.preventDefault()
+                                                                        if (customItemName.trim()) {
+                                                                            handleAddCustomMenuItem(customItemName.trim(), parseFloat(customItemPrice) || 0)
+                                                                            setCustomItemName("")
+                                                                            setCustomItemPrice("")
+                                                                        }
+                                                                    }
+                                                                }}
+                                                                className="h-10 rounded-xl bg-slate-50/50 border-zinc-200 focus-visible:border-[#6B1028] text-xs sm:text-sm font-medium"
+                                                            />
+                                                        </div>
+                                                        <div className="sm:col-span-3 space-y-1">
+                                                            <Label htmlFor="restaurantCustomDishPrice" className="text-[11px] font-semibold text-slate-600">
+                                                                Price (GH₵)
+                                                            </Label>
+                                                            <div className="relative">
+                                                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">GH₵</span>
+                                                                <Input
+                                                                    id="restaurantCustomDishPrice"
+                                                                    type="number"
+                                                                    step="0.01"
+                                                                    placeholder="0.00"
+                                                                    value={customItemPrice}
+                                                                    onChange={(e) => setCustomItemPrice(e.target.value)}
+                                                                    onKeyDown={(e) => {
+                                                                        if (e.key === "Enter") {
+                                                                            e.preventDefault()
+                                                                            if (customItemName.trim()) {
+                                                                                handleAddCustomMenuItem(customItemName.trim(), parseFloat(customItemPrice) || 0)
+                                                                                setCustomItemName("")
+                                                                                setCustomItemPrice("")
+                                                                            }
+                                                                        }
+                                                                    }}
+                                                                    className="h-10 pl-10 rounded-xl bg-slate-50/50 border-zinc-200 focus-visible:border-[#6B1028] text-xs sm:text-sm font-medium"
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                        <div className="sm:col-span-3">
+                                                            <Button
+                                                                type="button"
+                                                                onClick={() => {
+                                                                    if (customItemName.trim()) {
+                                                                        handleAddCustomMenuItem(customItemName.trim(), parseFloat(customItemPrice) || 0)
+                                                                        setCustomItemName("")
+                                                                        setCustomItemPrice("")
+                                                                    }
+                                                                }}
+                                                                disabled={!customItemName.trim()}
+                                                                className="w-full h-10 rounded-xl bg-[#6B1028] hover:bg-[#540d20] text-white text-xs font-bold shadow-xs cursor-pointer"
+                                                            >
+                                                                <Plus className="w-4 h-4 mr-1" />
+                                                                Add Item
+                                                            </Button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
                                                 {/* Selected Menu Items Table */}
                                                 {orderMenuItems.length > 0 && (
                                                     <div className="space-y-2 pt-2 border-t border-slate-200">
@@ -1388,47 +1457,199 @@ function CreateOrderContent() {
                                                 )}
                                             </div>
 
-                                            {/* Package Categories & Parcel Specs */}
+                                            {/* Package Categories & Custom Order Items Entry */}
                                             <div className="bg-sky-50/40 p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl border border-sky-200/70 space-y-3.5 sm:space-y-4 shadow-xs">
                                                 <div className="flex items-center justify-between">
                                                     <div className="flex items-center gap-2">
                                                         <Box className="w-4 h-4 text-sky-600" />
                                                         <Label className="text-xs sm:text-sm font-bold text-slate-900 tracking-tight">
-                                                            Package Category Presets (1-Click Tag)
+                                                            Package &amp; Order Items
                                                         </Label>
                                                     </div>
                                                     <span className="text-[9px] sm:text-[10px] font-bold text-sky-800 bg-sky-100 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
-                                                        Administrative Defaults
+                                                        Courier Service
                                                     </span>
                                                 </div>
 
-                                                {/* Category Chips */}
-                                                <div className="flex flex-wrap gap-2">
-                                                    {packageCategories.map((cat: string) => {
-                                                        const isSelected = itemType.includes(cat)
-                                                        return (
-                                                            <button
-                                                                key={cat}
-                                                                type="button"
-                                                                onClick={() => handleTogglePackageCategory(cat)}
-                                                                className={cn(
-                                                                    "px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 border shadow-2xs cursor-pointer",
-                                                                    isSelected
-                                                                        ? "bg-sky-600 text-white border-sky-700 shadow-xs"
-                                                                        : "bg-white text-slate-800 border-sky-200/80 hover:bg-sky-50 hover:border-sky-300"
-                                                                )}
-                                                            >
-                                                                <Tag className="w-3 h-3" />
-                                                                <span>{cat}</span>
-                                                            </button>
-                                                        )
-                                                    })}
+                                                {/* 1-Click Package Category Presets */}
+                                                <div className="space-y-1.5">
+                                                    <p className="text-[11px] font-bold text-slate-600">Quick-Add Category Presets:</p>
+                                                    <div className="flex flex-wrap gap-2">
+                                                        {packageCategories.map((cat: string) => {
+                                                            const existingItem = orderMenuItems.find(m => m.name.toLowerCase() === cat.toLowerCase())
+                                                            const isSelected = Boolean(existingItem) || itemType.includes(cat)
+                                                            return (
+                                                                <button
+                                                                    key={cat}
+                                                                    type="button"
+                                                                    onClick={() => handleTogglePackageCategory(cat)}
+                                                                    className={cn(
+                                                                        "px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 border shadow-2xs cursor-pointer",
+                                                                        isSelected
+                                                                            ? "bg-sky-600 text-white border-sky-700 shadow-xs"
+                                                                            : "bg-white text-slate-800 border-sky-200/80 hover:bg-sky-50 hover:border-sky-300"
+                                                                    )}
+                                                                >
+                                                                    <Tag className="w-3 h-3" />
+                                                                    <span>{cat}</span>
+                                                                    {existingItem && (
+                                                                        <span className="ml-1 px-1.5 py-0.2 bg-white/25 rounded-full text-[10px]">
+                                                                            {existingItem.quantity}
+                                                                        </span>
+                                                                    )}
+                                                                </button>
+                                                            )
+                                                        })}
+                                                    </div>
                                                 </div>
 
-                                                {/* Selected Package Items / Description */}
+                                                {/* Direct Custom Package / Order Item Entry */}
+                                                <div className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-white border border-sky-200/70 shadow-2xs space-y-2.5">
+                                                    <div className="flex items-center justify-between">
+                                                        <span className="text-xs font-bold text-sky-950 flex items-center gap-1.5">
+                                                            <Plus className="w-3.5 h-3.5 text-sky-600" />
+                                                            Add Custom Package / Order Item
+                                                        </span>
+                                                        <span className="text-[10px] text-slate-500 font-medium">Add parcels, goods or items to deliver</span>
+                                                    </div>
+                                                    <div className="grid grid-cols-1 sm:grid-cols-12 gap-2">
+                                                        <div className="sm:col-span-6">
+                                                            <Input
+                                                                placeholder="e.g. 2x Designer Sneakers, Birthday Cake, iPhone..."
+                                                                value={customItemName}
+                                                                onChange={(e) => setCustomItemName(e.target.value)}
+                                                                onKeyDown={(e) => {
+                                                                    if (e.key === "Enter") {
+                                                                        e.preventDefault()
+                                                                        if (customItemName.trim()) {
+                                                                            handleAddCustomMenuItem(customItemName.trim(), parseFloat(customItemPrice) || 0)
+                                                                            setCustomItemName("")
+                                                                            setCustomItemPrice("")
+                                                                        }
+                                                                    }
+                                                                }}
+                                                                className="h-10 rounded-xl bg-slate-50/50 border-zinc-200 focus-visible:border-sky-400 text-xs sm:text-sm font-medium"
+                                                            />
+                                                        </div>
+                                                        <div className="sm:col-span-3">
+                                                            <div className="relative">
+                                                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">GH₵</span>
+                                                                <Input
+                                                                    type="number"
+                                                                    step="0.01"
+                                                                    placeholder="Price / Val (Opt)"
+                                                                    value={customItemPrice}
+                                                                    onChange={(e) => setCustomItemPrice(e.target.value)}
+                                                                    onKeyDown={(e) => {
+                                                                        if (e.key === "Enter") {
+                                                                            e.preventDefault()
+                                                                            if (customItemName.trim()) {
+                                                                                handleAddCustomMenuItem(customItemName.trim(), parseFloat(customItemPrice) || 0)
+                                                                                setCustomItemName("")
+                                                                                setCustomItemPrice("")
+                                                                            }
+                                                                        }
+                                                                    }}
+                                                                    className="h-10 pl-10 rounded-xl bg-slate-50/50 border-zinc-200 focus-visible:border-sky-400 text-xs sm:text-sm font-medium"
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                        <div className="sm:col-span-3">
+                                                            <Button
+                                                                type="button"
+                                                                onClick={() => {
+                                                                    if (customItemName.trim()) {
+                                                                        handleAddCustomMenuItem(customItemName.trim(), parseFloat(customItemPrice) || 0)
+                                                                        setCustomItemName("")
+                                                                        setCustomItemPrice("")
+                                                                    }
+                                                                }}
+                                                                disabled={!customItemName.trim()}
+                                                                className="w-full h-10 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold shadow-xs cursor-pointer"
+                                                            >
+                                                                <Plus className="w-4 h-4 mr-1" />
+                                                                Add Item
+                                                            </Button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                {/* Selected Package / Order Items Table */}
+                                                {orderMenuItems.length > 0 && (
+                                                    <div className="space-y-2 pt-2 border-t border-sky-200/50">
+                                                        <div className="flex items-center justify-between">
+                                                            <p className="text-[11px] font-bold text-slate-700 uppercase tracking-wider">
+                                                                Selected Order Items ({orderMenuItems.reduce((s, i) => s + i.quantity, 0)})
+                                                            </p>
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => {
+                                                                    setOrderMenuItems([])
+                                                                    setItemType("")
+                                                                }}
+                                                                className="px-3 py-1 rounded-full bg-red-50 hover:bg-red-100 text-red-600 border border-red-200/60 text-[10px] font-bold transition-colors cursor-pointer"
+                                                            >
+                                                                Clear All
+                                                            </button>
+                                                        </div>
+                                                        <div className="space-y-1.5">
+                                                            {orderMenuItems.map((item, idx) => (
+                                                                <div key={item.id || idx} className="flex items-center justify-between gap-3 p-2.5 sm:p-3 bg-white rounded-xl border border-sky-200/70 shadow-xs">
+                                                                    <div className="min-w-0 flex-1">
+                                                                        <p className="text-xs font-bold text-slate-800 truncate">{item.name}</p>
+                                                                        <p className="text-[10px] text-slate-400">
+                                                                            {item.price > 0 ? `GH₵ ${item.price.toFixed(2)} / each` : "Delivery Item"}
+                                                                        </p>
+                                                                    </div>
+                                                                    <div className="flex items-center gap-2">
+                                                                        <div className="flex items-center border border-slate-200 rounded-full overflow-hidden bg-slate-50 p-0.5">
+                                                                            <button
+                                                                                type="button"
+                                                                                onClick={() => handleUpdateMenuItemQty(idx, item.quantity - 1)}
+                                                                                className="w-7 h-7 rounded-full flex items-center justify-center text-slate-600 hover:bg-slate-200 text-xs font-bold cursor-pointer transition-colors"
+                                                                            >
+                                                                                -
+                                                                            </button>
+                                                                            <span className="w-8 text-center text-xs font-bold text-slate-800">{item.quantity}</span>
+                                                                            <button
+                                                                                type="button"
+                                                                                onClick={() => handleUpdateMenuItemQty(idx, item.quantity + 1)}
+                                                                                className="w-7 h-7 rounded-full flex items-center justify-center text-slate-600 hover:bg-slate-200 text-xs font-bold cursor-pointer transition-colors"
+                                                                            >
+                                                                                +
+                                                                            </button>
+                                                                        </div>
+                                                                        {item.price > 0 && (
+                                                                            <div className="text-right min-w-[70px]">
+                                                                                <span className="text-xs font-black text-slate-900">GH₵ {(item.quantity * item.price).toFixed(2)}</span>
+                                                                            </div>
+                                                                        )}
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={() => handleRemoveMenuItem(idx)}
+                                                                            className="w-7 h-7 rounded-full flex items-center justify-center text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
+                                                                        >
+                                                                            <Trash2 className="w-3.5 h-3.5" />
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                        {orderMenuItems.some(i => i.price > 0) && (
+                                                            <div className="p-3 bg-sky-100/60 rounded-2xl flex items-center justify-between text-xs font-bold text-slate-900">
+                                                                <span>Items Subtotal:</span>
+                                                                <span className="text-sm font-black text-sky-950">
+                                                                    GH₵ {orderMenuItems.reduce((s, i) => s + (i.quantity * i.price), 0).toFixed(2)}
+                                                                </span>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                )}
+
+                                                {/* Package Description / Items Summary */}
                                                 <div className="space-y-1.5 pt-2 border-t border-sky-200/50">
                                                     <Label htmlFor="courierItemType" className="text-xs font-semibold text-slate-700">
-                                                        Package Description / Items Summary
+                                                        Package Description / Additional Notes
                                                     </Label>
                                                     <Input
                                                         id="courierItemType"
