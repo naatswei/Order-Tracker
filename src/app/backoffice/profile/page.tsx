@@ -717,38 +717,38 @@ export default function ProfilePage() {
         <div className="min-h-screen bg-slate-50/50 font-sans">
             <BackofficeHeader config={config} />
 
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-16 sm:pt-20 pb-8 sm:pb-12 max-w-[1000px] space-y-6 sm:space-y-8">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-12 sm:pt-14 pb-12 sm:pb-16 max-w-[1240px] space-y-6 sm:space-y-8">
                 {/* Header */}
                 <div className="flex items-center gap-4">
-                    <Button asChild variant="ghost" size="icon" className="shrink-0 text-slate-500 hover:text-slate-900 rounded-full hover:bg-white shadow-sm transition-all border border-transparent hover:border-slate-200">
+                    <Button asChild variant="ghost" size="icon" className="shrink-0 w-11 h-11 text-slate-500 hover:text-slate-900 rounded-full hover:bg-white shadow-sm transition-all border border-transparent hover:border-slate-200">
                         <Link href="/backoffice">
-                            <ArrowLeft className="w-5 h-5" />
+                            <ArrowLeft className="w-5 h-5 sm:w-6 sm:h-6" />
                         </Link>
                     </Button>
 
                     <div>
-                        <h1 className="text-2xl font-bold tracking-tight text-slate-900">Settings</h1>
-                        <p className="text-xs sm:text-sm text-slate-500 font-medium">Manage your business profile and subscription</p>
+                        <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900">Settings</h1>
+                        <p className="text-xs sm:text-sm md:text-base text-slate-500 font-medium">Manage your business profile and subscription</p>
                     </div>
                 </div>
 
                 <Tabs defaultValue="profile" className="space-y-6 sm:space-y-8">
                     <div className="overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 sm:pb-0 hide-scrollbar">
-                        <TabsList className="bg-white border border-slate-200 p-1.5 h-12 sm:h-14 rounded-2xl shadow-sm inline-flex min-w-max w-full sm:w-auto">
-                            <TabsTrigger value="profile" className="rounded-xl px-4 sm:px-6 data-[state=active]:bg-slate-100 data-[state=active]:text-slate-900 data-[state=active]:shadow-none text-slate-500 font-medium transition-all gap-1.5 sm:gap-2 flex-1 sm:flex-none text-xs sm:text-sm">
-                                <Building2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                        <TabsList className="bg-white border border-slate-200 p-1.5 sm:p-2 h-13 sm:h-15 rounded-2xl shadow-sm inline-flex min-w-max w-full sm:w-auto gap-1">
+                            <TabsTrigger value="profile" className="rounded-xl px-4 sm:px-6 py-2 sm:py-2.5 data-[state=active]:bg-slate-100 data-[state=active]:text-slate-900 data-[state=active]:shadow-none text-slate-500 font-semibold transition-all gap-2 flex-1 sm:flex-none text-xs sm:text-sm md:text-base">
+                                <Building2 className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
                                 Business Profile
                             </TabsTrigger>
-                            <TabsTrigger value="defaults" className="rounded-xl px-4 sm:px-6 data-[state=active]:bg-slate-100 data-[state=active]:text-slate-900 data-[state=active]:shadow-none text-slate-500 font-medium transition-all gap-1.5 sm:gap-2 flex-1 sm:flex-none text-xs sm:text-sm">
-                                <Store className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-indigo-600" />
+                            <TabsTrigger value="defaults" className="rounded-xl px-4 sm:px-6 py-2 sm:py-2.5 data-[state=active]:bg-slate-100 data-[state=active]:text-slate-900 data-[state=active]:shadow-none text-slate-500 font-semibold transition-all gap-2 flex-1 sm:flex-none text-xs sm:text-sm md:text-base">
+                                <Store className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-indigo-600" />
                                 Administrative Defaults
                             </TabsTrigger>
-                            <TabsTrigger value="team" className="rounded-xl px-4 sm:px-6 data-[state=active]:bg-slate-100 data-[state=active]:text-slate-900 data-[state=active]:shadow-none text-slate-500 font-medium transition-all gap-1.5 sm:gap-2 flex-1 sm:flex-none text-xs sm:text-sm">
-                                <Users className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                            <TabsTrigger value="team" className="rounded-xl px-4 sm:px-6 py-2 sm:py-2.5 data-[state=active]:bg-slate-100 data-[state=active]:text-slate-900 data-[state=active]:shadow-none text-slate-500 font-semibold transition-all gap-2 flex-1 sm:flex-none text-xs sm:text-sm md:text-base">
+                                <Users className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
                                 Team Management
                             </TabsTrigger>
-                            <TabsTrigger value="subscription" className="rounded-xl px-4 sm:px-6 data-[state=active]:bg-slate-100 data-[state=active]:text-slate-900 data-[state=active]:shadow-none text-slate-500 font-medium transition-all gap-1.5 sm:gap-2 flex-1 sm:flex-none text-xs sm:text-sm">
-                                <CreditCard className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                            <TabsTrigger value="subscription" className="rounded-xl px-4 sm:px-6 py-2 sm:py-2.5 data-[state=active]:bg-slate-100 data-[state=active]:text-slate-900 data-[state=active]:shadow-none text-slate-500 font-semibold transition-all gap-2 flex-1 sm:flex-none text-xs sm:text-sm md:text-base">
+                                <CreditCard className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
                                 Subscription & Billing
                             </TabsTrigger>
                         </TabsList>
@@ -757,22 +757,22 @@ export default function ProfilePage() {
                     <TabsContent value="profile">
                         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
                             <Card className="border-slate-200 shadow-sm overflow-hidden bg-white rounded-3xl">
-                                <CardContent className="p-5 sm:p-8">
+                                <CardContent className="p-6 sm:p-9">
                                     <form onSubmit={handleProfileSubmit} className="space-y-8">
                                         <div className="flex flex-col sm:flex-row items-center gap-6 pb-8 border-b border-slate-100">
                                             <div
                                                 onClick={triggerFileInput}
-                                                className="relative h-24 w-24 rounded-2xl overflow-hidden cursor-pointer group shadow-sm ring-1 ring-slate-200"
+                                                className="relative h-24 w-24 sm:h-28 sm:w-28 rounded-2xl overflow-hidden cursor-pointer group shadow-sm ring-1 ring-slate-200 shrink-0"
                                             >
                                                 {imagePreview ? (
                                                     <img src={imagePreview} alt="Logo" className="h-full w-full object-cover" />
                                                 ) : (
                                                     <div className="h-full w-full bg-slate-50 flex items-center justify-center">
-                                                        <Camera className="w-8 h-8 text-slate-300" />
+                                                        <Camera className="w-9 h-9 text-slate-300" />
                                                     </div>
                                                 )}
                                                 <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                                    <Camera className="w-6 h-6 text-white" />
+                                                    <Camera className="w-7 h-7 text-white" />
                                                 </div>
                                                 <input
                                                     type="file"
@@ -782,10 +782,10 @@ export default function ProfilePage() {
                                                     accept="image/*"
                                                 />
                                             </div>
-                                            <div className="text-center sm:text-left">
-                                                <h3 className="text-xs sm:text-sm font-bold text-slate-900">Business Logo</h3>
-                                                <p className="text-[11px] sm:text-xs text-slate-500 mb-2.5">Appears on customer tracking pages.</p>
-                                                <Button type="button" variant="outline" size="sm" className="rounded-xl font-semibold border-slate-200 text-slate-700 text-xs h-8 px-3" onClick={triggerFileInput}>
+                                            <div className="text-center sm:text-left space-y-1">
+                                                <h3 className="text-sm sm:text-base font-bold text-slate-900">Business Logo</h3>
+                                                <p className="text-xs sm:text-sm text-slate-500 mb-3">Appears on customer tracking pages, order confirmations, and receipts.</p>
+                                                <Button type="button" variant="outline" size="sm" className="rounded-xl font-bold border-slate-200 text-slate-700 text-xs sm:text-sm h-9 px-4 cursor-pointer hover:bg-slate-100" onClick={triggerFileInput}>
                                                     Change Logo
                                                 </Button>
                                             </div>
@@ -793,53 +793,53 @@ export default function ProfilePage() {
 
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                             <div className="space-y-2 md:col-span-2">
-                                                <Label className="text-slate-700 font-semibold text-xs sm:text-sm" htmlFor="companyName">Company Name</Label>
+                                                <Label className="text-slate-800 font-bold text-xs sm:text-sm" htmlFor="companyName">Company Name</Label>
                                                 <Input
                                                     id="companyName"
                                                     name="companyName"
                                                     value={formData.companyName}
                                                     onChange={handleInputChange}
-                                                    className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-11 transition-colors text-sm"
+                                                    className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-12 px-4 transition-colors text-sm sm:text-base"
                                                 />
                                             </div>
                                             <div className="space-y-2">
-                                                <Label className="text-slate-700 font-semibold text-xs sm:text-sm" htmlFor="contact">Contact Number</Label>
+                                                <Label className="text-slate-800 font-bold text-xs sm:text-sm" htmlFor="contact">Contact Number</Label>
                                                 <Input
                                                     id="contact"
                                                     name="contact"
                                                     value={formData.contact}
                                                     onChange={handleInputChange}
-                                                    className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-11 transition-colors text-sm"
+                                                    className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-12 px-4 transition-colors text-sm sm:text-base"
                                                 />
                                             </div>
                                             <div className="space-y-2">
-                                                <Label className="text-slate-700 font-semibold text-xs sm:text-sm" htmlFor="email">Public Email</Label>
+                                                <Label className="text-slate-800 font-bold text-xs sm:text-sm" htmlFor="email">Public Email</Label>
                                                 <Input
                                                     id="email"
                                                     name="email"
                                                     value={formData.email}
                                                     onChange={handleInputChange}
-                                                    className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-11 transition-colors text-sm"
+                                                    className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-12 px-4 transition-colors text-sm sm:text-base"
                                                 />
                                             </div>
                                             <div className="space-y-2 md:col-span-2">
-                                                <Label className="text-slate-700 font-semibold text-xs sm:text-sm" htmlFor="location">Business Address</Label>
+                                                <Label className="text-slate-800 font-bold text-xs sm:text-sm" htmlFor="location">Business Address</Label>
                                                 <Input
                                                     id="location"
                                                     name="location"
                                                     value={formData.location}
                                                     onChange={handleInputChange}
-                                                    className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-11 transition-colors text-sm"
+                                                    className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-12 px-4 transition-colors text-sm sm:text-base"
                                                 />
                                             </div>
                                             <div className="space-y-2 md:col-span-2">
-                                                <Label className="text-slate-700 font-semibold text-xs sm:text-sm" htmlFor="website">Website URL (Optional)</Label>
+                                                <Label className="text-slate-800 font-bold text-xs sm:text-sm" htmlFor="website">Website URL (Optional)</Label>
                                                 <Input
                                                     id="website"
                                                     name="website"
                                                     value={formData.website}
                                                     onChange={handleInputChange}
-                                                    className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-11 transition-colors text-sm"
+                                                    className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-12 px-4 transition-colors text-sm sm:text-base"
                                                 />
                                             </div>
                                         </div>
@@ -847,12 +847,12 @@ export default function ProfilePage() {
                                         {/* Default Invoice Settings */}
                                         <div className="pt-6 border-t border-slate-100 space-y-4">
                                             <div>
-                                                <h4 className="text-xs sm:text-sm font-bold text-slate-900">Default Invoice Settings</h4>
-                                                <p className="text-[11px] sm:text-xs text-slate-500">Default values automatically pre-filled on invoices.</p>
+                                                <h4 className="text-sm sm:text-base font-bold text-slate-900">Default Invoice Settings</h4>
+                                                <p className="text-xs sm:text-sm text-slate-500">Default values automatically pre-filled on new invoices.</p>
                                             </div>
                                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                                 <div className="space-y-2">
-                                                    <Label className="text-xs text-slate-700 font-semibold" htmlFor="defaultTaxRate">Default Tax Rate (%)</Label>
+                                                    <Label className="text-xs sm:text-sm text-slate-800 font-bold" htmlFor="defaultTaxRate">Default Tax Rate (%)</Label>
                                                     <Input
                                                         id="defaultTaxRate"
                                                         name="defaultTaxRate"
@@ -860,11 +860,11 @@ export default function ProfilePage() {
                                                         step="0.01"
                                                         value={invoiceSettings.defaultTaxRate}
                                                         onChange={(e) => setInvoiceSettings(prev => ({ ...prev, defaultTaxRate: e.target.value }))}
-                                                        className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-11 transition-colors text-sm"
+                                                        className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-12 px-4 transition-colors text-sm sm:text-base font-semibold"
                                                     />
                                                 </div>
                                                 <div className="space-y-2">
-                                                    <Label className="text-xs text-slate-700 font-semibold" htmlFor="defaultDeliveryFee">Default Delivery Fee (GH₵)</Label>
+                                                    <Label className="text-xs sm:text-sm text-slate-800 font-bold" htmlFor="defaultDeliveryFee">Default Delivery Fee (GH₵)</Label>
                                                     <Input
                                                         id="defaultDeliveryFee"
                                                         name="defaultDeliveryFee"
@@ -872,11 +872,11 @@ export default function ProfilePage() {
                                                         step="0.01"
                                                         value={invoiceSettings.defaultDeliveryFee}
                                                         onChange={(e) => setInvoiceSettings(prev => ({ ...prev, defaultDeliveryFee: e.target.value }))}
-                                                        className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-11 transition-colors text-sm"
+                                                        className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-12 px-4 transition-colors text-sm sm:text-base font-semibold"
                                                     />
                                                 </div>
                                                 <div className="space-y-2">
-                                                    <Label className="text-xs text-slate-700 font-semibold" htmlFor="defaultDiscount">Default Discount (GH₵)</Label>
+                                                    <Label className="text-xs sm:text-sm text-slate-800 font-bold" htmlFor="defaultDiscount">Default Discount (GH₵)</Label>
                                                     <Input
                                                         id="defaultDiscount"
                                                         name="defaultDiscount"
@@ -884,7 +884,7 @@ export default function ProfilePage() {
                                                         step="0.01"
                                                         value={invoiceSettings.defaultDiscount}
                                                         onChange={(e) => setInvoiceSettings(prev => ({ ...prev, defaultDiscount: e.target.value }))}
-                                                        className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-11 transition-colors text-sm"
+                                                        className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-12 px-4 transition-colors text-sm sm:text-base font-semibold"
                                                     />
                                                 </div>
                                             </div>
@@ -894,7 +894,7 @@ export default function ProfilePage() {
                                             <Button
                                                 type="submit"
                                                 disabled={profileLoading}
-                                                className="w-full sm:w-auto min-w-[140px] h-11 px-6 rounded-xl sm:rounded-full bg-[#111827] hover:bg-[#1f2937] text-white font-bold text-xs sm:text-sm shadow-sm transition-all hover:-translate-y-0.5 active:scale-[0.98] cursor-pointer"
+                                                className="w-full sm:w-auto min-w-[180px] h-12 sm:h-13 px-8 rounded-xl sm:rounded-full bg-[#111827] hover:bg-[#1f2937] text-white font-bold text-sm sm:text-base shadow-sm transition-all hover:-translate-y-0.5 active:scale-[0.98] cursor-pointer"
                                             >
                                                 {profileLoading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
                                                 Save Changes
@@ -906,38 +906,38 @@ export default function ProfilePage() {
 
                             {/* Dual Gateway Payout & Settlement Settings */}
                             <div className="mt-8 space-y-4">
-                                <div className="space-y-0.5">
+                                <div className="space-y-1">
                                     <div className="flex items-center justify-between gap-2">
-                                        <h2 className="text-xs sm:text-sm md:text-base font-bold text-slate-900 tracking-tight truncate">
+                                        <h2 className="text-sm sm:text-base md:text-lg font-bold text-slate-900 tracking-tight truncate">
                                             Payout &amp; Settlement Settings
                                         </h2>
-                                        <span className="text-[9px] sm:text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 shrink-0">
+                                        <span className="text-[10px] sm:text-xs uppercase tracking-wider font-bold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 shrink-0">
                                             Instant Active
                                         </span>
                                     </div>
-                                    <p className="text-[11px] sm:text-xs text-slate-500 font-normal leading-normal">
+                                    <p className="text-xs sm:text-sm text-slate-500 font-normal leading-normal">
                                         Receive automatic customer payouts to your MoMo or bank account.
                                     </p>
                                 </div>
 
                                 {/* 1. Primary Gateway: Instant Payouts */}
                                 <Card className="border-emerald-200/80 shadow-xs overflow-hidden bg-gradient-to-br from-white to-emerald-50/20 rounded-2xl relative">
-                                    <div className="flex items-center justify-between px-3.5 sm:px-5 py-2 border-b border-emerald-100/60 bg-emerald-50/50">
-                                        <div className="flex items-center gap-1.5">
-                                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                                            <span className="text-[9px] sm:text-[10px] font-bold text-emerald-900 uppercase tracking-wider">Primary Gateway</span>
+                                    <div className="flex items-center justify-between px-4 sm:px-6 py-2.5 border-b border-emerald-100/60 bg-emerald-50/50">
+                                        <div className="flex items-center gap-2">
+                                            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                                            <span className="text-[10px] sm:text-xs font-bold text-emerald-900 uppercase tracking-wider">Primary Gateway</span>
                                         </div>
-                                        <span className="text-[8.5px] sm:text-[9.5px] font-bold px-1.5 py-0.5 rounded bg-emerald-600 text-white shadow-xs">Instant Settlement</span>
+                                        <span className="text-[10px] sm:text-xs font-bold px-2 py-0.5 rounded bg-emerald-600 text-white shadow-xs">Instant Settlement</span>
                                     </div>
-                                    <CardHeader className="p-3.5 sm:p-5 pb-2.5 pt-3">
-                                        <h3 className="text-xs sm:text-sm md:text-base font-bold text-slate-900 leading-snug truncate">
+                                    <CardHeader className="p-4 sm:p-6 pb-3 pt-4">
+                                        <h3 className="text-sm sm:text-base md:text-lg font-bold text-slate-900 leading-snug truncate">
                                             Instant Mobile Money &amp; Bank Settlement
                                         </h3>
-                                        <p className="text-[11px] sm:text-xs text-slate-500 font-normal leading-normal mt-0.5">
+                                        <p className="text-xs sm:text-sm text-slate-500 font-normal leading-normal mt-0.5">
                                             Instant direct payouts as soon as an order is paid.
                                         </p>
                                     </CardHeader>
-                                    <CardContent className="p-3.5 sm:p-5 pt-0">
+                                    <CardContent className="p-4 sm:p-6 pt-0">
                                         <form onSubmit={async (e) => {
                                             e.preventDefault()
                                             if (!organization) return
@@ -968,7 +968,7 @@ export default function ProfilePage() {
                                             }
                                         }} className="space-y-4">
                                             {/* Payout Type Switcher */}
-                                            <div className="grid grid-cols-2 sm:flex items-center gap-1 p-1 bg-slate-100 rounded-xl w-full sm:w-fit">
+                                            <div className="grid grid-cols-2 sm:flex items-center gap-1.5 p-1 bg-slate-100 rounded-xl w-full sm:w-fit">
                                                 <button
                                                     type="button"
                                                     onClick={() => {
@@ -977,7 +977,7 @@ export default function ProfilePage() {
                                                         setBulkclixAccountName("")
                                                     }}
                                                     className={cn(
-                                                        "px-2.5 py-1.5 rounded-lg text-[11px] sm:text-xs font-bold transition-all text-center cursor-pointer",
+                                                        "px-3.5 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all text-center cursor-pointer",
                                                         bulkclixPayoutType === "momo"
                                                             ? "bg-white text-emerald-800 shadow-xs"
                                                             : "text-slate-500 hover:text-slate-800"
@@ -993,7 +993,7 @@ export default function ProfilePage() {
                                                         setBulkclixAccountName("")
                                                     }}
                                                     className={cn(
-                                                        "px-2.5 py-1.5 rounded-lg text-[11px] sm:text-xs font-bold transition-all text-center cursor-pointer",
+                                                        "px-3.5 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all text-center cursor-pointer",
                                                         bulkclixPayoutType === "bank"
                                                             ? "bg-white text-emerald-800 shadow-xs"
                                                             : "text-slate-500 hover:text-slate-800"
@@ -1003,10 +1003,10 @@ export default function ProfilePage() {
                                                 </button>
                                             </div>
 
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 sm:gap-5">
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                                                 {bulkclixPayoutType === "momo" ? (
-                                                    <div className="space-y-1">
-                                                        <Label className="text-slate-700 font-semibold text-[11px] sm:text-xs" htmlFor="bulkclixNetwork">Mobile Money Network</Label>
+                                                    <div className="space-y-1.5">
+                                                        <Label className="text-slate-700 font-bold text-xs sm:text-sm" htmlFor="bulkclixNetwork">Mobile Money Network</Label>
                                                         <select
                                                             id="bulkclixNetwork"
                                                             value={bulkclixChannelOrBankId}
@@ -1014,7 +1014,7 @@ export default function ProfilePage() {
                                                                 setBulkclixChannelOrBankId(e.target.value)
                                                                 setBulkclixAccountName("")
                                                             }}
-                                                            className="w-full bg-slate-50/50 border border-slate-200 focus:bg-white rounded-xl h-10 px-3 transition-colors text-slate-800 focus:outline-none text-xs sm:text-sm"
+                                                            className="w-full bg-slate-50/50 border border-slate-200 focus:bg-white rounded-xl h-12 px-3.5 transition-colors text-slate-800 focus:outline-none text-xs sm:text-sm"
                                                         >
                                                             <option value="MTN">MTN Mobile Money</option>
                                                             <option value="TELECEL">Telecel Cash (Vodafone)</option>
@@ -1022,8 +1022,8 @@ export default function ProfilePage() {
                                                         </select>
                                                     </div>
                                                 ) : (
-                                                    <div className="space-y-1">
-                                                        <Label className="text-slate-700 font-semibold text-[11px] sm:text-xs" htmlFor="bulkclixBank">Select Bank</Label>
+                                                    <div className="space-y-1.5">
+                                                        <Label className="text-slate-700 font-bold text-xs sm:text-sm" htmlFor="bulkclixBank">Select Bank</Label>
                                                         <select
                                                             id="bulkclixBank"
                                                             disabled={bulkclixBanksLoading}
@@ -1034,7 +1034,7 @@ export default function ProfilePage() {
                                                                 setBulkclixBankName(selected ? selected.name : "")
                                                                 setBulkclixAccountName("")
                                                             }}
-                                                            className="w-full bg-slate-50/50 border border-slate-200 focus:bg-white rounded-xl h-10 px-3 transition-colors text-slate-800 focus:outline-none text-xs sm:text-sm"
+                                                            className="w-full bg-slate-50/50 border border-slate-200 focus:bg-white rounded-xl h-12 px-3.5 transition-colors text-slate-800 focus:outline-none text-xs sm:text-sm"
                                                         >
                                                             <option value="">Select Target Bank</option>
                                                             {bulkclixBanks.map((b) => (
@@ -1044,8 +1044,8 @@ export default function ProfilePage() {
                                                     </div>
                                                 )}
 
-                                                <div className="space-y-1">
-                                                    <Label className="text-slate-700 font-semibold text-[11px] sm:text-xs" htmlFor="bulkclixAccountNumber">
+                                                <div className="space-y-1.5">
+                                                    <Label className="text-slate-700 font-bold text-xs sm:text-sm" htmlFor="bulkclixAccountNumber">
                                                         {bulkclixPayoutType === "momo" ? "Mobile Money Phone Number" : "Bank Account Number"}
                                                     </Label>
                                                     <div className="flex gap-2">
@@ -1057,39 +1057,39 @@ export default function ProfilePage() {
                                                                 setBulkclixAccountName("")
                                                             }}
                                                             placeholder={bulkclixPayoutType === "momo" ? "e.g. 0548706430" : "e.g. 1441001234567"}
-                                                            className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-10 transition-colors flex-1 text-xs sm:text-sm"
+                                                            className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-12 px-3.5 transition-colors flex-1 text-xs sm:text-sm"
                                                         />
                                                         <Button
                                                             type="button"
                                                             onClick={handleResolveBulkClixAccount}
                                                             disabled={resolvingBulkclixAccount || !bulkclixAccountNumber}
-                                                            className="h-10 rounded-xl bg-emerald-600 text-white hover:bg-emerald-700 font-bold px-3.5 shadow-xs text-xs cursor-pointer"
+                                                            className="h-12 rounded-xl bg-emerald-600 text-white hover:bg-emerald-700 font-bold px-4 shadow-xs text-xs sm:text-sm cursor-pointer"
                                                         >
-                                                            {resolvingBulkclixAccount ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : "Verify"}
+                                                            {resolvingBulkclixAccount ? <Loader2 className="w-4 h-4 animate-spin" /> : "Verify"}
                                                         </Button>
                                                     </div>
                                                 </div>
 
                                                 {bulkclixAccountName && (
-                                                    <div className="md:col-span-2 p-2.5 bg-emerald-100/70 border border-emerald-200 rounded-xl flex items-center justify-between">
+                                                    <div className="md:col-span-2 p-3 bg-emerald-100/70 border border-emerald-200 rounded-xl flex items-center justify-between">
                                                         <div>
-                                                            <p className="text-[9px] uppercase tracking-wider text-emerald-800 font-bold">Verified Account Name</p>
-                                                            <p className="text-xs sm:text-sm text-emerald-950 font-bold">{bulkclixAccountName}</p>
+                                                            <p className="text-[10px] uppercase tracking-wider text-emerald-800 font-bold">Verified Account Name</p>
+                                                            <p className="text-sm sm:text-base text-emerald-950 font-black">{bulkclixAccountName}</p>
                                                         </div>
-                                                        <span className="text-[10px] font-bold text-emerald-700 bg-white px-2 py-0.5 rounded-md border border-emerald-200">
+                                                        <span className="text-xs font-bold text-emerald-700 bg-white px-2.5 py-1 rounded-md border border-emerald-200 shadow-2xs">
                                                             Verified
                                                         </span>
                                                     </div>
                                                 )}
                                             </div>
 
-                                            <div className="flex justify-end pt-2.5 border-t border-slate-100">
+                                            <div className="flex justify-end pt-3 border-t border-slate-100">
                                                 <Button
                                                     type="submit"
                                                     disabled={bulkclixSaving || !bulkclixAccountName}
-                                                    className="w-full sm:w-auto h-10 px-5 rounded-xl sm:rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm shadow-sm transition-all hover:-translate-y-0.5 active:scale-[0.98] cursor-pointer"
+                                                    className="w-full sm:w-auto h-11 sm:h-12 px-6 rounded-xl sm:rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm shadow-sm transition-all hover:-translate-y-0.5 active:scale-[0.98] cursor-pointer"
                                                 >
-                                                    {bulkclixSaving ? <Loader2 className="w-3.5 h-3.5 animate-spin mr-2" /> : null}
+                                                    {bulkclixSaving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
                                                     Save Settlement Details
                                                 </Button>
                                             </div>
@@ -1099,19 +1099,19 @@ export default function ProfilePage() {
 
                                 {/* 2. Secondary Gateway: Card & International Fallback */}
                                 <Card className="border-slate-200 shadow-xs overflow-hidden bg-white rounded-2xl">
-                                    <div className="flex items-center justify-between px-3.5 sm:px-5 py-2 border-b border-slate-100 bg-slate-50/50">
-                                        <span className="text-[9px] sm:text-[10px] font-bold text-slate-600 uppercase tracking-wider">Fallback Gateway</span>
-                                        <span className="text-[8.5px] sm:text-[9.5px] font-medium px-1.5 py-0.5 rounded bg-slate-200/70 text-slate-700">Paystack</span>
+                                    <div className="flex items-center justify-between px-4 sm:px-6 py-2.5 border-b border-slate-100 bg-slate-50/50">
+                                        <span className="text-[10px] sm:text-xs font-bold text-slate-600 uppercase tracking-wider">Fallback Gateway</span>
+                                        <span className="text-[9px] sm:text-[10px] font-semibold px-2 py-0.5 rounded bg-slate-200/70 text-slate-700">Paystack</span>
                                     </div>
-                                    <CardHeader className="p-3.5 sm:p-5 pb-2.5 pt-3">
-                                        <h3 className="text-xs sm:text-sm md:text-base font-bold text-slate-900 leading-snug truncate">
+                                    <CardHeader className="p-4 sm:p-6 pb-3 pt-4">
+                                        <h3 className="text-sm sm:text-base md:text-lg font-bold text-slate-900 leading-snug truncate">
                                             Card &amp; International Payment Backup
                                         </h3>
-                                        <p className="text-[11px] sm:text-xs text-slate-500 font-normal leading-normal mt-0.5">
+                                        <p className="text-xs sm:text-sm text-slate-500 font-normal leading-normal mt-0.5">
                                             Fallback account for Visa, Mastercard, and failovers.
                                         </p>
                                     </CardHeader>
-                                    <CardContent className="p-3.5 sm:p-5 pt-0">
+                                    <CardContent className="p-4 sm:p-6 pt-0">
                                         <form onSubmit={async (e) => {
                                             e.preventDefault()
                                             if (!organization) return
@@ -1140,9 +1140,9 @@ export default function ProfilePage() {
                                                 setPayoutLoading(false)
                                             }
                                         }} className="space-y-4">
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 sm:gap-5">
-                                                <div className="space-y-1">
-                                                    <Label className="text-slate-700 font-semibold text-[11px] sm:text-xs" htmlFor="payoutBank">Paystack Settlement Bank</Label>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                                                <div className="space-y-1.5">
+                                                    <Label className="text-slate-700 font-bold text-xs sm:text-sm" htmlFor="payoutBank">Paystack Settlement Bank</Label>
                                                     <select
                                                         id="payoutBank"
                                                         disabled={banksLoading}
@@ -1156,7 +1156,7 @@ export default function ProfilePage() {
                                                                 accountName: ""
                                                             }))
                                                         }}
-                                                        className="w-full bg-slate-50/50 border border-slate-200 focus:bg-white rounded-xl h-10 px-3 transition-colors text-slate-800 focus:outline-none text-xs sm:text-sm"
+                                                        className="w-full bg-slate-50/50 border border-slate-200 focus:bg-white rounded-xl h-12 px-3.5 transition-colors text-slate-800 focus:outline-none text-xs sm:text-sm"
                                                     >
                                                         <option value="">Select Settlement Bank</option>
                                                         {banks.map((b) => (
@@ -1165,8 +1165,8 @@ export default function ProfilePage() {
                                                     </select>
                                                 </div>
 
-                                                <div className="space-y-1">
-                                                    <Label className="text-slate-700 font-semibold text-[11px] sm:text-xs" htmlFor="accountNumber">Account / Mobile Number</Label>
+                                                <div className="space-y-1.5">
+                                                    <Label className="text-slate-700 font-bold text-xs sm:text-sm" htmlFor="accountNumber">Account / Mobile Number</Label>
                                                     <div className="flex gap-2">
                                                         <Input
                                                             id="accountNumber"
@@ -1177,34 +1177,34 @@ export default function ProfilePage() {
                                                                 accountName: ""
                                                             }))}
                                                             placeholder="Enter bank account / phone number"
-                                                            className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-10 transition-colors flex-1 text-xs sm:text-sm"
+                                                            className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-12 px-3.5 transition-colors flex-1 text-xs sm:text-sm"
                                                         />
                                                         <Button
                                                             type="button"
                                                             onClick={handleResolveAccount}
                                                             disabled={resolvingAccount || !payoutSettings.bankCode || !payoutSettings.accountNumber}
-                                                            className="h-10 rounded-xl bg-slate-100 border border-slate-200 text-slate-700 hover:bg-slate-200 font-bold px-3.5 text-xs cursor-pointer"
+                                                            className="h-12 rounded-xl bg-slate-100 border border-slate-200 text-slate-700 hover:bg-slate-200 font-bold px-4 text-xs sm:text-sm cursor-pointer"
                                                         >
-                                                            {resolvingAccount ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : "Verify"}
+                                                            {resolvingAccount ? <Loader2 className="w-4 h-4 animate-spin" /> : "Verify"}
                                                         </Button>
                                                     </div>
                                                 </div>
 
                                                 {payoutSettings.accountName && (
-                                                    <div className="md:col-span-2 p-2.5 bg-slate-50 border border-slate-200 rounded-xl">
-                                                        <p className="text-[9px] text-slate-500 font-bold uppercase tracking-wider">Verified Account Name</p>
-                                                        <p className="text-xs sm:text-sm text-slate-900 font-medium">{payoutSettings.accountName}</p>
+                                                    <div className="md:col-span-2 p-3 bg-slate-50 border border-slate-200 rounded-xl">
+                                                        <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Verified Account Name</p>
+                                                        <p className="text-sm sm:text-base text-slate-900 font-bold">{payoutSettings.accountName}</p>
                                                     </div>
                                                 )}
                                             </div>
 
-                                            <div className="flex justify-end pt-2.5 border-t border-slate-100">
+                                            <div className="flex justify-end pt-3 border-t border-slate-100">
                                                 <Button
                                                     type="submit"
                                                     disabled={payoutLoading || !payoutSettings.accountName}
-                                                    className="w-full sm:w-auto h-10 px-5 rounded-xl sm:rounded-full bg-[#111827] hover:bg-[#1f2937] text-white font-bold text-xs sm:text-sm shadow-sm transition-all hover:-translate-y-0.5 active:scale-[0.98] cursor-pointer"
+                                                    className="w-full sm:w-auto h-11 sm:h-12 px-6 rounded-xl sm:rounded-full bg-[#111827] hover:bg-[#1f2937] text-white font-bold text-xs sm:text-sm shadow-sm transition-all hover:-translate-y-0.5 active:scale-[0.98] cursor-pointer"
                                                 >
-                                                    {payoutLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin mr-2" /> : null}
+                                                    {payoutLoading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
                                                     Save Paystack Details
                                                 </Button>
                                             </div>
@@ -1219,18 +1219,18 @@ export default function ProfilePage() {
                     <TabsContent value="defaults">
                         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
                             <Card className="border-slate-200 shadow-sm overflow-hidden bg-white rounded-3xl">
-                                <CardHeader className="p-5 sm:p-8 pb-4 border-b border-slate-100 bg-gradient-to-r from-indigo-50/40 via-white to-slate-50/30">
-                                    <div className="flex items-center gap-2.5">
-                                        <div className="p-2 rounded-xl bg-indigo-500/10 text-indigo-600">
-                                            <Store className="w-5 h-5" />
+                                <CardHeader className="p-6 sm:p-9 pb-5 border-b border-slate-100 bg-gradient-to-r from-indigo-50/40 via-white to-slate-50/30">
+                                    <div className="flex items-center gap-3.5">
+                                        <div className="p-3 rounded-2xl bg-indigo-500/10 text-indigo-600">
+                                            <Store className="w-6 h-6 sm:w-7 sm:h-7" />
                                         </div>
                                         <div>
-                                            <h2 className="text-base sm:text-lg font-bold text-slate-900 tracking-tight">Administrative Default Business Entry</h2>
-                                            <p className="text-xs text-slate-500 font-medium">Configure your primary logistics operation type and default business parameters (Pickup branch, Menu entries, Delivery/Shipping rates, MoMo payments) that directly determine your Create Order page.</p>
+                                            <h2 className="text-lg sm:text-xl md:text-2xl font-black text-slate-900 tracking-tight">Administrative Default Business Entry</h2>
+                                            <p className="text-xs sm:text-sm md:text-base text-slate-500 font-medium mt-0.5">Configure your primary logistics operation type and default business parameters (Pickup branch, Menu entries, Delivery/Shipping rates, MoMo payments) that directly determine your Create Order page.</p>
                                         </div>
                                     </div>
                                 </CardHeader>
-                                <CardContent className="p-5 sm:p-8 space-y-8">
+                                <CardContent className="p-6 sm:p-9 space-y-8 sm:space-y-10">
                                     <form onSubmit={async (e) => {
                                         e.preventDefault()
                                         if (!organization) return
@@ -1256,38 +1256,38 @@ export default function ProfilePage() {
                                         } finally {
                                             setOrderDefaultsSaving(false)
                                         }
-                                    }} className="space-y-8">
+                                    }} className="space-y-8 sm:space-y-10">
 
                                         {/* 1. Logistics Operation Type Selection */}
-                                        <div className="space-y-3">
-                                            <Label className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
-                                                <Layers className="w-3.5 h-3.5 text-indigo-600" />
+                                        <div className="space-y-3.5">
+                                            <Label className="text-xs sm:text-sm font-black text-slate-800 uppercase tracking-wider flex items-center gap-2">
+                                                <Layers className="w-4 h-4 sm:w-5 sm:h-5 text-indigo-600" />
                                                 Select Logistics Operation Model
                                             </Label>
-                                            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5">
                                                 {/* Option 1: Restaurant Delivery Service */}
                                                 <div
                                                     onClick={() => setOrderDefaults(prev => ({ ...prev, logisticsType: 'restaurant' }))}
                                                     className={cn(
-                                                        "p-4 rounded-2xl border-2 transition-all cursor-pointer flex flex-col justify-between space-y-3 relative",
+                                                        "p-5 sm:p-6 lg:p-7 rounded-2xl border-2 transition-all cursor-pointer flex flex-col justify-between space-y-4 relative hover:shadow-md",
                                                         orderDefaults.logisticsType === 'restaurant'
                                                             ? "border-amber-500 bg-amber-50/30 ring-2 ring-amber-500/20 shadow-sm"
                                                             : "border-slate-200/80 bg-slate-50/50 hover:bg-white hover:border-slate-300"
                                                     )}
                                                 >
                                                     <div className="flex items-start justify-between">
-                                                        <div className="p-2.5 rounded-xl bg-amber-500/10 text-amber-600">
-                                                            <UtensilsCrossed className="w-5 h-5" />
+                                                        <div className="p-3 rounded-2xl bg-amber-500/10 text-amber-600">
+                                                            <UtensilsCrossed className="w-6 h-6 sm:w-7 sm:h-7" />
                                                         </div>
                                                         {orderDefaults.logisticsType === 'restaurant' && (
-                                                            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500 text-white shadow-xs">
+                                                            <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-500 text-white shadow-xs">
                                                                 Active Default
                                                             </span>
                                                         )}
                                                     </div>
                                                     <div>
-                                                        <h4 className="text-sm font-bold text-slate-900">Restaurant Delivery Service</h4>
-                                                        <p className="text-[11px] text-slate-500 mt-1 leading-relaxed">
+                                                        <h4 className="text-base sm:text-lg font-bold text-slate-900">Restaurant Delivery Service</h4>
+                                                        <p className="text-xs sm:text-sm text-slate-500 mt-1.5 leading-relaxed">
                                                             Contract food orders (e.g. Marwako, Papaye) with branch pickups, 1-click menu catalog, dish pricing, and delivery fees.
                                                         </p>
                                                     </div>
@@ -1297,25 +1297,25 @@ export default function ProfilePage() {
                                                 <div
                                                     onClick={() => setOrderDefaults(prev => ({ ...prev, logisticsType: 'delivery' }))}
                                                     className={cn(
-                                                        "p-4 rounded-2xl border-2 transition-all cursor-pointer flex flex-col justify-between space-y-3 relative",
+                                                        "p-5 sm:p-6 lg:p-7 rounded-2xl border-2 transition-all cursor-pointer flex flex-col justify-between space-y-4 relative hover:shadow-md",
                                                         orderDefaults.logisticsType === 'delivery'
                                                             ? "border-blue-500 bg-blue-50/30 ring-2 ring-blue-500/20 shadow-sm"
                                                             : "border-slate-200/80 bg-slate-50/50 hover:bg-white hover:border-slate-300"
                                                     )}
                                                 >
                                                     <div className="flex items-start justify-between">
-                                                        <div className="p-2.5 rounded-xl bg-blue-500/10 text-blue-600">
-                                                            <Truck className="w-5 h-5" />
+                                                        <div className="p-3 rounded-2xl bg-blue-500/10 text-blue-600">
+                                                            <Truck className="w-6 h-6 sm:w-7 sm:h-7" />
                                                         </div>
                                                         {orderDefaults.logisticsType === 'delivery' && (
-                                                            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-500 text-white shadow-xs">
+                                                            <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-blue-500 text-white shadow-xs">
                                                                 Active Default
                                                             </span>
                                                         )}
                                                     </div>
                                                     <div>
-                                                        <h4 className="text-sm font-bold text-slate-900">Delivery Service (Courier)</h4>
-                                                        <p className="text-[11px] text-slate-500 mt-1 leading-relaxed">
+                                                        <h4 className="text-base sm:text-lg font-bold text-slate-900">Delivery Service (Courier)</h4>
+                                                        <p className="text-xs sm:text-sm text-slate-500 mt-1.5 leading-relaxed">
                                                             Local on-demand courier &amp; dispatch. Pickup hub, recipient dropoff, package category tags, and courier delivery rates.
                                                         </p>
                                                     </div>
@@ -1325,25 +1325,25 @@ export default function ProfilePage() {
                                                 <div
                                                     onClick={() => setOrderDefaults(prev => ({ ...prev, logisticsType: 'shipping' }))}
                                                     className={cn(
-                                                        "p-4 rounded-2xl border-2 transition-all cursor-pointer flex flex-col justify-between space-y-3 relative",
+                                                        "p-5 sm:p-6 lg:p-7 rounded-2xl border-2 transition-all cursor-pointer flex flex-col justify-between space-y-4 relative hover:shadow-md",
                                                         orderDefaults.logisticsType === 'shipping'
                                                             ? "border-emerald-500 bg-emerald-50/30 ring-2 ring-emerald-500/20 shadow-sm"
                                                             : "border-slate-200/80 bg-slate-50/50 hover:bg-white hover:border-slate-300"
                                                     )}
                                                 >
                                                     <div className="flex items-start justify-between">
-                                                        <div className="p-2.5 rounded-xl bg-emerald-500/10 text-emerald-600">
-                                                            <Ship className="w-5 h-5" />
+                                                        <div className="p-3 rounded-2xl bg-emerald-500/10 text-emerald-600">
+                                                            <Ship className="w-6 h-6 sm:w-7 sm:h-7" />
                                                         </div>
                                                         {orderDefaults.logisticsType === 'shipping' && (
-                                                            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500 text-white shadow-xs">
+                                                            <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-500 text-white shadow-xs">
                                                                 Active Default
                                                             </span>
                                                         )}
                                                     </div>
                                                     <div>
-                                                        <h4 className="text-sm font-bold text-slate-900">Shipping (Freight &amp; Cargo)</h4>
-                                                        <p className="text-[11px] text-slate-500 mt-1 leading-relaxed">
+                                                        <h4 className="text-base sm:text-lg font-bold text-slate-900">Shipping (Freight &amp; Cargo)</h4>
+                                                        <p className="text-xs sm:text-sm text-slate-500 mt-1.5 leading-relaxed">
                                                             Intercity/international cargo &amp; forwarding. Origin ports, destination hubs, per-kg rates, handling fees, and waybill numbers.
                                                         </p>
                                                     </div>
@@ -1355,16 +1355,16 @@ export default function ProfilePage() {
                                         {/* TYPE A: RESTAURANT DELIVERY SERVICE CONFIGURATION                         */}
                                         {/* ========================================================================= */}
                                         {orderDefaults.logisticsType === 'restaurant' && (
-                                            <div className="space-y-6 pt-4 border-t border-slate-100 animate-in fade-in-50 duration-200">
-                                                <div className="flex items-center gap-2 pb-1 border-b border-slate-100">
-                                                    <UtensilsCrossed className="w-4 h-4 text-amber-600" />
-                                                    <h3 className="text-xs sm:text-sm font-bold text-slate-900">Restaurant Branch &amp; MoMo Settlement</h3>
+                                            <div className="space-y-6 sm:space-y-8 pt-6 border-t border-slate-100 animate-in fade-in-50 duration-200">
+                                                <div className="flex items-center gap-2.5 pb-2 border-b border-slate-100">
+                                                    <UtensilsCrossed className="w-5 h-5 text-amber-600" />
+                                                    <h3 className="text-sm sm:text-base md:text-lg font-bold text-slate-900">Restaurant Branch &amp; MoMo Settlement</h3>
                                                 </div>
 
-                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                    <div className="space-y-1.5">
-                                                        <Label htmlFor="defaultPickupLocation" className="text-xs font-semibold text-slate-700 flex items-center gap-1.5">
-                                                            <MapPin className="w-3.5 h-3.5 text-slate-400" />
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
+                                                    <div className="space-y-2">
+                                                        <Label htmlFor="defaultPickupLocation" className="text-xs sm:text-sm font-bold text-slate-700 flex items-center gap-1.5">
+                                                            <MapPin className="w-4 h-4 text-slate-400" />
                                                             Default Pickup Location / Branch
                                                         </Label>
                                                         <Input
@@ -1372,14 +1372,14 @@ export default function ProfilePage() {
                                                             value={orderDefaults.defaultPickupLocation}
                                                             onChange={(e) => setOrderDefaults(prev => ({ ...prev, defaultPickupLocation: e.target.value }))}
                                                             placeholder="e.g. Marwako Fast Food - East Legon Branch"
-                                                            className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-11 text-xs sm:text-sm"
+                                                            className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-12 px-4 text-sm sm:text-base"
                                                         />
-                                                        <p className="text-[10px] text-slate-400">Pre-populates the pickup branch for new delivery and customer orders.</p>
+                                                        <p className="text-xs text-slate-400">Pre-populates the pickup branch for new delivery and customer orders.</p>
                                                     </div>
 
-                                                    <div className="space-y-1.5">
-                                                        <Label htmlFor="defaultPickupContact" className="text-xs font-semibold text-slate-700 flex items-center gap-1.5">
-                                                            <Phone className="w-3.5 h-3.5 text-slate-400" />
+                                                    <div className="space-y-2">
+                                                        <Label htmlFor="defaultPickupContact" className="text-xs sm:text-sm font-bold text-slate-700 flex items-center gap-1.5">
+                                                            <Phone className="w-4 h-4 text-slate-400" />
                                                             Default Branch / Pickup Phone
                                                         </Label>
                                                         <Input
@@ -1387,15 +1387,15 @@ export default function ProfilePage() {
                                                             value={orderDefaults.defaultPickupContact}
                                                             onChange={(e) => setOrderDefaults(prev => ({ ...prev, defaultPickupContact: e.target.value }))}
                                                             placeholder="e.g. 0244123456"
-                                                            className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-11 text-xs sm:text-sm"
+                                                            className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-12 px-4 text-sm sm:text-base"
                                                         />
-                                                        <p className="text-[10px] text-slate-400">Default contact number displayed for riders and dispatchers.</p>
+                                                        <p className="text-xs text-slate-400">Default contact number displayed for riders and dispatchers.</p>
                                                     </div>
                                                 </div>
 
-                                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                                    <div className="space-y-1.5">
-                                                        <Label htmlFor="defaultDeliveryFeeSetting" className="text-xs font-semibold text-slate-700">
+                                                <div className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6">
+                                                    <div className="space-y-2">
+                                                        <Label htmlFor="defaultDeliveryFeeSetting" className="text-xs sm:text-sm font-bold text-slate-700">
                                                             Default Delivery Fee (GH₵)
                                                         </Label>
                                                         <Input
@@ -1405,13 +1405,13 @@ export default function ProfilePage() {
                                                             value={orderDefaults.defaultDeliveryFee}
                                                             onChange={(e) => setOrderDefaults(prev => ({ ...prev, defaultDeliveryFee: e.target.value }))}
                                                             placeholder="25.00"
-                                                            className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-11 text-xs sm:text-sm"
+                                                            className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-12 px-4 text-sm sm:text-base font-bold"
                                                         />
-                                                        <p className="text-[10px] text-slate-400">Baseline dispatch charge pre-filled on new orders.</p>
+                                                        <p className="text-xs text-slate-400">Baseline dispatch charge pre-filled on new orders.</p>
                                                     </div>
 
-                                                    <div className="space-y-1.5">
-                                                        <Label htmlFor="defaultPaymentNumber" className="text-xs font-semibold text-slate-700">
+                                                    <div className="space-y-2">
+                                                        <Label htmlFor="defaultPaymentNumber" className="text-xs sm:text-sm font-bold text-slate-700">
                                                             Receiving MoMo Number
                                                         </Label>
                                                         <Input
@@ -1419,26 +1419,26 @@ export default function ProfilePage() {
                                                             value={orderDefaults.defaultPaymentNumber}
                                                             onChange={(e) => setOrderDefaults(prev => ({ ...prev, defaultPaymentNumber: e.target.value }))}
                                                             placeholder="e.g. 0548706430"
-                                                            className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-11 text-xs sm:text-sm"
+                                                            className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-12 px-4 text-sm sm:text-base"
                                                         />
-                                                        <p className="text-[10px] text-slate-400">Merchant MoMo line for payments and prompt requests.</p>
+                                                        <p className="text-xs text-slate-400">Merchant MoMo line for payments and prompt requests.</p>
                                                     </div>
 
-                                                    <div className="space-y-1.5">
-                                                        <Label htmlFor="defaultPaymentProvider" className="text-xs font-semibold text-slate-700">
+                                                    <div className="space-y-2">
+                                                        <Label htmlFor="defaultPaymentProvider" className="text-xs sm:text-sm font-bold text-slate-700">
                                                             MoMo Network Provider
                                                         </Label>
                                                         <select
                                                             id="defaultPaymentProvider"
                                                             value={orderDefaults.defaultPaymentProvider}
                                                             onChange={(e) => setOrderDefaults(prev => ({ ...prev, defaultPaymentProvider: e.target.value }))}
-                                                            className="w-full bg-slate-50/50 border border-slate-200 focus:bg-white rounded-xl h-11 px-3 transition-colors text-slate-800 focus:outline-none text-xs sm:text-sm"
+                                                            className="w-full bg-slate-50/50 border border-slate-200 focus:bg-white rounded-xl h-12 px-3.5 transition-colors text-slate-800 focus:outline-none text-xs sm:text-sm"
                                                         >
                                                             <option value="MTN">MTN Mobile Money</option>
                                                             <option value="TELECEL">Telecel Cash (Vodafone)</option>
                                                             <option value="AIRTELTIGO">AirtelTigo Money</option>
                                                         </select>
-                                                        <p className="text-[10px] text-slate-400">Primary telco gateway for instant prompt processing.</p>
+                                                        <p className="text-xs text-slate-400">Primary telco gateway for instant prompt processing.</p>
                                                     </div>
                                                 </div>
 
@@ -1456,25 +1456,25 @@ export default function ProfilePage() {
                                                     <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 pb-2 border-b border-slate-100">
                                                         <div>
                                                             <div className="flex items-center gap-2">
-                                                                <UtensilsCrossed className="w-4 h-4 sm:w-5 sm:h-5 text-amber-600" />
-                                                                <h3 className="text-sm sm:text-base font-bold text-slate-900">Restaurant Menu Entries &amp; Dish Catalog</h3>
+                                                                <UtensilsCrossed className="w-5 h-5 text-amber-600" />
+                                                                <h3 className="text-sm sm:text-base md:text-lg font-bold text-slate-900">Restaurant Menu Entries &amp; Dish Catalog</h3>
                                                             </div>
-                                                            <p className="text-[11px] sm:text-xs text-slate-500 mt-0.5">
+                                                            <p className="text-xs sm:text-sm text-slate-500 mt-1">
                                                                 Configure restaurant menu presets for 1-click order creation. Export to Excel, bulk import menu spreadsheets, or search instantly.
                                                             </p>
                                                         </div>
 
-                                                        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                                                        <div className="flex flex-wrap items-center gap-2">
                                                             <Button
                                                                 type="button"
                                                                 variant="outline"
                                                                 size="sm"
                                                                 onClick={handleExportMenuPresetsToExcel}
                                                                 disabled={orderDefaults.menuPresets.length === 0}
-                                                                className="h-8 sm:h-8.5 rounded-xl text-xs font-bold text-emerald-700 border-emerald-200 bg-emerald-50 hover:bg-emerald-100 cursor-pointer shadow-2xs"
+                                                                className="h-9 sm:h-10 rounded-xl text-xs sm:text-sm font-bold text-emerald-700 border-emerald-200 bg-emerald-50 hover:bg-emerald-100 cursor-pointer shadow-2xs px-3.5"
                                                                 title="Export restaurant menu to Excel"
                                                             >
-                                                                <Download className="w-3.5 h-3.5 mr-1 text-emerald-600" />
+                                                                <Download className="w-4 h-4 mr-1.5 text-emerald-600" />
                                                                 Export Excel
                                                             </Button>
 
@@ -1483,10 +1483,10 @@ export default function ProfilePage() {
                                                                 variant="outline"
                                                                 size="sm"
                                                                 onClick={() => menuPresetFileInputRef.current?.click()}
-                                                                className="h-8 sm:h-8.5 rounded-xl text-xs font-bold text-indigo-700 border-indigo-200 bg-indigo-50 hover:bg-indigo-100 cursor-pointer shadow-2xs"
+                                                                className="h-9 sm:h-10 rounded-xl text-xs sm:text-sm font-bold text-indigo-700 border-indigo-200 bg-indigo-50 hover:bg-indigo-100 cursor-pointer shadow-2xs px-3.5"
                                                                 title="Import menu items from Excel/CSV"
                                                             >
-                                                                <Upload className="w-3.5 h-3.5 mr-1 text-indigo-600" />
+                                                                <Upload className="w-4 h-4 mr-1.5 text-indigo-600" />
                                                                 Import Excel
                                                             </Button>
 
@@ -1495,10 +1495,10 @@ export default function ProfilePage() {
                                                                 variant="ghost"
                                                                 size="sm"
                                                                 onClick={handleDownloadMenuPresetTemplate}
-                                                                className="h-8 sm:h-8.5 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 cursor-pointer"
+                                                                className="h-9 sm:h-10 rounded-xl text-xs sm:text-sm font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 cursor-pointer px-3"
                                                                 title="Download sample menu Excel template"
                                                             >
-                                                                <FileSpreadsheet className="w-3.5 h-3.5 mr-1 text-slate-500" />
+                                                                <FileSpreadsheet className="w-4 h-4 mr-1.5 text-slate-500" />
                                                                 Template
                                                             </Button>
 
@@ -1521,9 +1521,9 @@ export default function ProfilePage() {
                                                                     }))
                                                                     toast.success("Loaded sample restaurant menu presets!")
                                                                 }}
-                                                                className="h-8 sm:h-8.5 rounded-xl text-xs font-bold text-amber-700 border-amber-200 bg-amber-50 hover:bg-amber-100 cursor-pointer shadow-2xs"
+                                                                className="h-9 sm:h-10 rounded-xl text-xs sm:text-sm font-bold text-amber-700 border-amber-200 bg-amber-50 hover:bg-amber-100 cursor-pointer shadow-2xs px-3.5"
                                                             >
-                                                                <Sparkles className="w-3.5 h-3.5 mr-1 text-amber-600" />
+                                                                <Sparkles className="w-4 h-4 mr-1.5 text-amber-600" />
                                                                 Load Sample Menu
                                                             </Button>
 
@@ -1538,9 +1538,9 @@ export default function ProfilePage() {
                                                                             toast.info("Cleared all menu presets")
                                                                         }
                                                                     }}
-                                                                    className="h-8 sm:h-8.5 rounded-xl text-xs font-semibold text-red-600 hover:bg-red-50 cursor-pointer"
+                                                                    className="h-9 sm:h-10 rounded-xl text-xs sm:text-sm font-semibold text-red-600 hover:bg-red-50 cursor-pointer px-3"
                                                                 >
-                                                                    <Trash2 className="w-3.5 h-3.5 mr-1 text-red-500" />
+                                                                    <Trash2 className="w-4 h-4 mr-1.5 text-red-500" />
                                                                     Clear
                                                                 </Button>
                                                             )}
@@ -1548,36 +1548,36 @@ export default function ProfilePage() {
                                                     </div>
 
                                                     {/* Add Preset Item Form */}
-                                                    <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-3">
-                                                        <p className="text-[11px] font-bold text-slate-700 uppercase tracking-wider">Add New Menu Preset Item</p>
-                                                        <div className="grid grid-cols-1 sm:grid-cols-12 gap-2.5 sm:gap-3">
-                                                            <div className="sm:col-span-5 space-y-1">
-                                                                <Label className="text-[11px] text-slate-600 font-medium">Menu Item Name</Label>
+                                                    <div className="p-5 sm:p-6 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-3.5">
+                                                        <p className="text-xs font-bold text-slate-800 uppercase tracking-wider">Add New Menu Preset Item</p>
+                                                        <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 sm:gap-4">
+                                                            <div className="sm:col-span-5 space-y-1.5">
+                                                                <Label className="text-xs font-semibold text-slate-700">Menu Item Name</Label>
                                                                 <Input
                                                                     value={newPreset.name}
                                                                     onChange={(e) => setNewPreset(prev => ({ ...prev, name: e.target.value }))}
                                                                     placeholder="e.g. Assorted Fried Rice & Chicken"
-                                                                    className="h-10 rounded-xl bg-white border-slate-200 text-xs sm:text-sm font-medium"
+                                                                    className="h-11 sm:h-12 rounded-xl bg-white border-slate-200 text-sm sm:text-base font-medium"
                                                                 />
                                                             </div>
-                                                            <div className="sm:col-span-3 space-y-1">
-                                                                <Label className="text-[11px] text-slate-600 font-medium">Price / Cost (GH₵)</Label>
+                                                            <div className="sm:col-span-3 space-y-1.5">
+                                                                <Label className="text-xs font-semibold text-slate-700">Price / Cost (GH₵)</Label>
                                                                 <Input
                                                                     type="number"
                                                                     step="0.01"
                                                                     value={newPreset.price}
                                                                     onChange={(e) => setNewPreset(prev => ({ ...prev, price: e.target.value }))}
                                                                     placeholder="75.00"
-                                                                    className="h-10 rounded-xl bg-white border-slate-200 text-xs sm:text-sm font-bold"
+                                                                    className="h-11 sm:h-12 rounded-xl bg-white border-slate-200 text-sm sm:text-base font-bold"
                                                                 />
                                                             </div>
-                                                            <div className="sm:col-span-2 space-y-1">
-                                                                <Label className="text-[11px] text-slate-600 font-medium">Category / Note</Label>
+                                                            <div className="sm:col-span-2 space-y-1.5">
+                                                                <Label className="text-xs font-semibold text-slate-700">Category / Note</Label>
                                                                 <Input
                                                                     value={newPreset.description}
                                                                     onChange={(e) => setNewPreset(prev => ({ ...prev, description: e.target.value }))}
                                                                     placeholder="e.g. Main Dish"
-                                                                    className="h-10 rounded-xl bg-white border-slate-200 text-xs sm:text-sm font-medium"
+                                                                    className="h-11 sm:h-12 rounded-xl bg-white border-slate-200 text-sm sm:text-base font-medium"
                                                                 />
                                                             </div>
                                                             <div className="sm:col-span-2 flex items-end">
@@ -1606,9 +1606,9 @@ export default function ProfilePage() {
                                                                         setNewPreset({ name: "", price: "", description: "" })
                                                                         toast.success(`Added "${item.name}" (GH₵ ${item.price})`)
                                                                     }}
-                                                                    className="w-full h-10 rounded-xl bg-slate-900 text-white hover:bg-slate-800 text-xs sm:text-sm font-bold shadow-xs cursor-pointer"
+                                                                    className="w-full h-11 sm:h-12 rounded-xl bg-slate-900 text-white hover:bg-slate-800 text-sm font-bold shadow-xs cursor-pointer"
                                                                 >
-                                                                    <Plus className="w-3.5 h-3.5 mr-1" />
+                                                                    <Plus className="w-4 h-4 mr-1.5" />
                                                                     Add Item
                                                                 </Button>
                                                             </div>
@@ -1618,20 +1618,20 @@ export default function ProfilePage() {
                                                     {/* Search Menu Presets */}
                                                     {orderDefaults.menuPresets.length > 0 && (
                                                         <div className="relative">
-                                                            <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                                                            <Search className="w-5 h-5 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                                                             <Input
                                                                 value={menuSearchQuery}
                                                                 onChange={(e) => setMenuSearchQuery(e.target.value)}
                                                                 placeholder="Search menu items by name or category..."
-                                                                className="h-10 pl-9 pr-8 rounded-xl bg-white border-slate-200 focus:border-amber-400 text-xs sm:text-sm font-medium"
+                                                                className="h-11 sm:h-12 pl-10 pr-9 rounded-xl bg-white border-slate-200 focus:border-amber-400 text-sm sm:text-base font-medium"
                                                             />
                                                             {menuSearchQuery && (
                                                                 <button
                                                                     type="button"
                                                                     onClick={() => setMenuSearchQuery("")}
-                                                                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-0.5"
+                                                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-0.5 cursor-pointer"
                                                                 >
-                                                                    <X className="w-3.5 h-3.5" />
+                                                                    <X className="w-4 h-4" />
                                                                 </button>
                                                             )}
                                                         </div>
@@ -1646,51 +1646,51 @@ export default function ProfilePage() {
 
                                                         if (orderDefaults.menuPresets.length === 0) {
                                                             return (
-                                                                <div className="p-8 text-center border-2 border-dashed border-slate-200 rounded-2xl bg-slate-50/50 space-y-3">
-                                                                    <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center mx-auto">
-                                                                        <UtensilsCrossed className="w-6 h-6" />
+                                                                <div className="p-8 sm:p-10 text-center border-2 border-dashed border-slate-200 rounded-2xl bg-slate-50/50 space-y-3">
+                                                                    <div className="w-14 h-14 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center mx-auto">
+                                                                        <UtensilsCrossed className="w-7 h-7" />
                                                                     </div>
                                                                     <div>
-                                                                        <p className="text-sm font-bold text-slate-800">No menu presets configured yet</p>
-                                                                        <p className="text-xs text-slate-500 mt-0.5">Click "Load Sample Menu", upload an Excel file, or type custom food items above.</p>
+                                                                        <p className="text-base font-bold text-slate-800">No menu presets configured yet</p>
+                                                                        <p className="text-xs sm:text-sm text-slate-500 mt-1">Click "Load Sample Menu", upload an Excel file, or type custom food items above.</p>
                                                                     </div>
                                                                 </div>
                                                             )
                                                         }
 
                                                         return (
-                                                            <div className="space-y-2">
-                                                                <div className="flex items-center justify-between text-xs text-slate-500 px-0.5 font-medium">
+                                                            <div className="space-y-3">
+                                                                <div className="flex items-center justify-between text-xs sm:text-sm text-slate-500 px-0.5 font-medium">
                                                                     <span>
-                                                                        Showing <strong className="text-slate-800 font-bold">{filtered.length}</strong> of {orderDefaults.menuPresets.length} menu items
+                                                                        Showing <strong className="text-slate-900 font-bold">{filtered.length}</strong> of {orderDefaults.menuPresets.length} menu items
                                                                     </span>
                                                                     {menuSearchQuery && (
                                                                         <button
                                                                             type="button"
                                                                             onClick={() => setMenuSearchQuery("")}
-                                                                            className="text-amber-600 hover:underline font-semibold"
+                                                                            className="text-amber-600 hover:underline font-semibold cursor-pointer"
                                                                         >
                                                                             Reset Search Filter
                                                                         </button>
                                                                     )}
                                                                 </div>
 
-                                                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
+                                                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                                                                     {filtered.map((item, idx) => (
                                                                         <div
                                                                             key={item.id || idx}
-                                                                            className="flex items-center justify-between p-3.5 bg-white rounded-xl border border-slate-200/80 shadow-2xs hover:border-slate-300 transition-all group"
+                                                                            className="flex items-center justify-between p-4 bg-white rounded-xl border border-slate-200/80 shadow-2xs hover:border-slate-300 transition-all group"
                                                                         >
                                                                             <div className="min-w-0 flex-1 pr-2">
-                                                                                <div className="flex items-center gap-1.5 flex-wrap">
-                                                                                    <span className="text-xs sm:text-sm font-bold text-slate-900 truncate">{item.name}</span>
+                                                                                <div className="flex items-center gap-2 flex-wrap">
+                                                                                    <span className="text-sm sm:text-base font-bold text-slate-900 truncate">{item.name}</span>
                                                                                     {item.description && (
-                                                                                        <span className="text-[10px] font-semibold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md">
+                                                                                        <span className="text-xs font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md">
                                                                                             {item.description}
                                                                                         </span>
                                                                                     )}
                                                                                 </div>
-                                                                                <p className="text-xs sm:text-sm font-black text-emerald-700 mt-1">
+                                                                                <p className="text-sm sm:text-base font-black text-emerald-700 mt-1.5">
                                                                                     GH₵ {Number(item.price).toFixed(2)}
                                                                                 </p>
                                                                             </div>
@@ -1705,9 +1705,9 @@ export default function ProfilePage() {
                                                                                     }))
                                                                                     toast.info(`Removed "${item.name}"`)
                                                                                 }}
-                                                                                className="w-8 h-8 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 cursor-pointer shrink-0"
+                                                                                className="w-9 h-9 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 cursor-pointer shrink-0"
                                                                             >
-                                                                                <Trash2 className="w-3.5 h-3.5" />
+                                                                                <Trash2 className="w-4 h-4" />
                                                                             </Button>
                                                                         </div>
                                                                     ))}
@@ -1723,16 +1723,16 @@ export default function ProfilePage() {
                                         {/* TYPE B: DELIVERY SERVICE (COURIER) CONFIGURATION                          */}
                                         {/* ========================================================================= */}
                                         {orderDefaults.logisticsType === 'delivery' && (
-                                            <div className="space-y-6 pt-4 border-t border-slate-100 animate-in fade-in-50 duration-200">
-                                                <div className="flex items-center gap-2 pb-1 border-b border-slate-100">
-                                                    <Truck className="w-4 h-4 text-blue-600" />
-                                                    <h3 className="text-xs sm:text-sm font-bold text-slate-900">Courier Dispatch Hub &amp; Delivery Parameters</h3>
+                                            <div className="space-y-6 sm:space-y-8 pt-6 border-t border-slate-100 animate-in fade-in-50 duration-200">
+                                                <div className="flex items-center gap-2.5 pb-2 border-b border-slate-100">
+                                                    <Truck className="w-5 h-5 text-blue-600" />
+                                                    <h3 className="text-sm sm:text-base md:text-lg font-bold text-slate-900">Courier Dispatch Hub &amp; Delivery Parameters</h3>
                                                 </div>
 
-                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                    <div className="space-y-1.5">
-                                                        <Label htmlFor="defaultDispatchHub" className="text-xs font-semibold text-slate-700 flex items-center gap-1.5">
-                                                            <MapPin className="w-3.5 h-3.5 text-slate-400" />
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
+                                                    <div className="space-y-2">
+                                                        <Label htmlFor="defaultDispatchHub" className="text-xs sm:text-sm font-bold text-slate-700 flex items-center gap-1.5">
+                                                            <MapPin className="w-4 h-4 text-slate-400" />
                                                             Default Dispatch Hub / Sender Address
                                                         </Label>
                                                         <Input
@@ -1740,14 +1740,14 @@ export default function ProfilePage() {
                                                             value={orderDefaults.defaultDispatchHub}
                                                             onChange={(e) => setOrderDefaults(prev => ({ ...prev, defaultDispatchHub: e.target.value }))}
                                                             placeholder="e.g. Accra Central Dispatch Hub, Osu"
-                                                            className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-11 text-xs sm:text-sm"
+                                                            className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-12 px-4 text-sm sm:text-base"
                                                         />
-                                                        <p className="text-[10px] text-slate-400">Pre-populates the default sender/pickup hub for courier bookings.</p>
+                                                        <p className="text-xs text-slate-400">Pre-populates the default sender/pickup hub for courier bookings.</p>
                                                     </div>
 
-                                                    <div className="space-y-1.5">
-                                                        <Label htmlFor="defaultSenderContact" className="text-xs font-semibold text-slate-700 flex items-center gap-1.5">
-                                                            <Phone className="w-3.5 h-3.5 text-slate-400" />
+                                                    <div className="space-y-2">
+                                                        <Label htmlFor="defaultSenderContact" className="text-xs sm:text-sm font-bold text-slate-700 flex items-center gap-1.5">
+                                                            <Phone className="w-4 h-4 text-slate-400" />
                                                             Default Dispatch / Sender Phone
                                                         </Label>
                                                         <Input
@@ -1755,15 +1755,15 @@ export default function ProfilePage() {
                                                             value={orderDefaults.defaultSenderContact}
                                                             onChange={(e) => setOrderDefaults(prev => ({ ...prev, defaultSenderContact: e.target.value }))}
                                                             placeholder="e.g. 0548706430"
-                                                            className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-11 text-xs sm:text-sm"
+                                                            className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-12 px-4 text-sm sm:text-base"
                                                         />
-                                                        <p className="text-[10px] text-slate-400">Default contact number for sender dispatch inquiries.</p>
+                                                        <p className="text-xs text-slate-400">Default contact number for sender dispatch inquiries.</p>
                                                     </div>
                                                 </div>
 
-                                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                                    <div className="space-y-1.5">
-                                                        <Label htmlFor="defaultCourierFee" className="text-xs font-semibold text-slate-700">
+                                                <div className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6">
+                                                    <div className="space-y-2">
+                                                        <Label htmlFor="defaultCourierFee" className="text-xs sm:text-sm font-bold text-slate-700">
                                                             Base Courier Delivery Fee (GH₵)
                                                         </Label>
                                                         <Input
@@ -1773,13 +1773,13 @@ export default function ProfilePage() {
                                                             value={orderDefaults.defaultCourierFee}
                                                             onChange={(e) => setOrderDefaults(prev => ({ ...prev, defaultCourierFee: e.target.value }))}
                                                             placeholder="30.00"
-                                                            className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-11 text-xs sm:text-sm font-bold"
+                                                            className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-12 px-4 text-sm sm:text-base font-bold"
                                                         />
-                                                        <p className="text-[10px] text-slate-400">Base fee automatically applied to courier shipments.</p>
+                                                        <p className="text-xs text-slate-400">Base fee automatically applied to courier shipments.</p>
                                                     </div>
 
-                                                    <div className="space-y-1.5">
-                                                        <Label htmlFor="defaultCourierMoMoNumber" className="text-xs font-semibold text-slate-700">
+                                                    <div className="space-y-2">
+                                                        <Label htmlFor="defaultCourierMoMoNumber" className="text-xs sm:text-sm font-bold text-slate-700">
                                                             Courier MoMo Payment Number
                                                         </Label>
                                                         <Input
@@ -1787,26 +1787,26 @@ export default function ProfilePage() {
                                                             value={orderDefaults.defaultCourierMoMoNumber}
                                                             onChange={(e) => setOrderDefaults(prev => ({ ...prev, defaultCourierMoMoNumber: e.target.value }))}
                                                             placeholder="e.g. 0548706430"
-                                                            className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-11 text-xs sm:text-sm"
+                                                            className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-12 px-4 text-sm sm:text-base"
                                                         />
-                                                        <p className="text-[10px] text-slate-400">Receiving mobile money line for courier payment prompts.</p>
+                                                        <p className="text-xs text-slate-400">Receiving mobile money line for courier payment prompts.</p>
                                                     </div>
 
-                                                    <div className="space-y-1.5">
-                                                        <Label htmlFor="defaultCourierPaymentProvider" className="text-xs font-semibold text-slate-700">
+                                                    <div className="space-y-2">
+                                                        <Label htmlFor="defaultCourierPaymentProvider" className="text-xs sm:text-sm font-bold text-slate-700">
                                                             MoMo Network Provider
                                                         </Label>
                                                         <select
                                                             id="defaultCourierPaymentProvider"
                                                             value={orderDefaults.defaultCourierPaymentProvider}
                                                             onChange={(e) => setOrderDefaults(prev => ({ ...prev, defaultCourierPaymentProvider: e.target.value }))}
-                                                            className="w-full bg-slate-50/50 border border-slate-200 focus:bg-white rounded-xl h-11 px-3 transition-colors text-slate-800 focus:outline-none text-xs sm:text-sm"
+                                                            className="w-full bg-slate-50/50 border border-slate-200 focus:bg-white rounded-xl h-12 px-3.5 transition-colors text-slate-800 focus:outline-none text-xs sm:text-sm"
                                                         >
                                                             <option value="MTN">MTN Mobile Money</option>
                                                             <option value="TELECEL">Telecel Cash (Vodafone)</option>
                                                             <option value="AIRTELTIGO">AirtelTigo Money</option>
                                                         </select>
-                                                        <p className="text-[10px] text-slate-400">Provider network for courier billing.</p>
+                                                        <p className="text-xs text-slate-400">Provider network for courier billing.</p>
                                                     </div>
                                                 </div>
 
@@ -1824,25 +1824,25 @@ export default function ProfilePage() {
                                                     <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 pb-2 border-b border-slate-100">
                                                         <div>
                                                             <div className="flex items-center gap-2">
-                                                                <Package className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />
-                                                                <h3 className="text-sm sm:text-base font-bold text-slate-900">Standard Package Categories &amp; Dispatch Goods</h3>
+                                                                <Package className="w-5 h-5 text-blue-600" />
+                                                                <h3 className="text-sm sm:text-base md:text-lg font-bold text-slate-900">Standard Package Categories &amp; Dispatch Goods</h3>
                                                             </div>
-                                                            <p className="text-[11px] sm:text-xs text-slate-500 mt-0.5">
+                                                            <p className="text-xs sm:text-sm text-slate-500 mt-1">
                                                                 Configure standard package types for 1-click order entry. Export your catalog to Excel, import bulk spreadsheets, or search instantly.
                                                             </p>
                                                         </div>
 
-                                                        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                                                        <div className="flex flex-wrap items-center gap-2">
                                                             <Button
                                                                 type="button"
                                                                 variant="outline"
                                                                 size="sm"
                                                                 onClick={handleExportPackageCategoriesToExcel}
                                                                 disabled={orderDefaults.packageCategories.length === 0}
-                                                                className="h-8 sm:h-8.5 rounded-xl text-xs font-bold text-emerald-700 border-emerald-200 bg-emerald-50 hover:bg-emerald-100 cursor-pointer shadow-2xs"
+                                                                className="h-9 sm:h-10 rounded-xl text-xs sm:text-sm font-bold text-emerald-700 border-emerald-200 bg-emerald-50 hover:bg-emerald-100 cursor-pointer shadow-2xs px-3.5"
                                                                 title="Export all package categories to an Excel spreadsheet"
                                                             >
-                                                                <Download className="w-3.5 h-3.5 mr-1 text-emerald-600" />
+                                                                <Download className="w-4 h-4 mr-1.5 text-emerald-600" />
                                                                 Export Excel
                                                             </Button>
 
@@ -1851,10 +1851,10 @@ export default function ProfilePage() {
                                                                 variant="outline"
                                                                 size="sm"
                                                                 onClick={() => categoryFileInputRef.current?.click()}
-                                                                className="h-8 sm:h-8.5 rounded-xl text-xs font-bold text-indigo-700 border-indigo-200 bg-indigo-50 hover:bg-indigo-100 cursor-pointer shadow-2xs"
+                                                                className="h-9 sm:h-10 rounded-xl text-xs sm:text-sm font-bold text-indigo-700 border-indigo-200 bg-indigo-50 hover:bg-indigo-100 cursor-pointer shadow-2xs px-3.5"
                                                                 title="Import categories from an .xlsx or .csv spreadsheet"
                                                             >
-                                                                <Upload className="w-3.5 h-3.5 mr-1 text-indigo-600" />
+                                                                <Upload className="w-4 h-4 mr-1.5 text-indigo-600" />
                                                                 Import Excel
                                                             </Button>
 
@@ -1863,10 +1863,10 @@ export default function ProfilePage() {
                                                                 variant="ghost"
                                                                 size="sm"
                                                                 onClick={handleDownloadPackageCategoryTemplate}
-                                                                className="h-8 sm:h-8.5 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 cursor-pointer"
+                                                                className="h-9 sm:h-10 rounded-xl text-xs sm:text-sm font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 cursor-pointer px-3"
                                                                 title="Download a pre-formatted Excel template"
                                                             >
-                                                                <FileSpreadsheet className="w-3.5 h-3.5 mr-1 text-slate-500" />
+                                                                <FileSpreadsheet className="w-4 h-4 mr-1.5 text-slate-500" />
                                                                 Template
                                                             </Button>
 
@@ -1891,9 +1891,9 @@ export default function ProfilePage() {
                                                                     }))
                                                                     toast.success("Loaded standard courier package categories!")
                                                                 }}
-                                                                className="h-8 sm:h-8.5 rounded-xl text-xs font-bold text-blue-700 border-blue-200 bg-blue-50 hover:bg-blue-100 cursor-pointer shadow-2xs"
+                                                                className="h-9 sm:h-10 rounded-xl text-xs sm:text-sm font-bold text-blue-700 border-blue-200 bg-blue-50 hover:bg-blue-100 cursor-pointer shadow-2xs px-3.5"
                                                             >
-                                                                <Sparkles className="w-3.5 h-3.5 mr-1 text-blue-600" />
+                                                                <Sparkles className="w-4 h-4 mr-1.5 text-blue-600" />
                                                                 Load Defaults
                                                             </Button>
 
@@ -1908,9 +1908,9 @@ export default function ProfilePage() {
                                                                             toast.info("Cleared all package categories")
                                                                         }
                                                                     }}
-                                                                    className="h-8 sm:h-8.5 rounded-xl text-xs font-semibold text-red-600 hover:bg-red-50 cursor-pointer"
+                                                                    className="h-9 sm:h-10 rounded-xl text-xs sm:text-sm font-semibold text-red-600 hover:bg-red-50 cursor-pointer px-3"
                                                                 >
-                                                                    <Trash2 className="w-3.5 h-3.5 mr-1 text-red-500" />
+                                                                    <Trash2 className="w-4 h-4 mr-1.5 text-red-500" />
                                                                     Clear
                                                                 </Button>
                                                             )}
@@ -1918,29 +1918,29 @@ export default function ProfilePage() {
                                                     </div>
 
                                                     {/* Search & Add Action Bar */}
-                                                    <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
+                                                    <div className="grid grid-cols-1 md:grid-cols-12 gap-3 sm:gap-4">
                                                         {/* Live Search Input */}
                                                         <div className="md:col-span-5 relative">
-                                                            <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                                                            <Search className="w-5 h-5 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                                                             <Input
                                                                 value={categorySearchQuery}
                                                                 onChange={(e) => setCategorySearchQuery(e.target.value)}
                                                                 placeholder="Search categories (e.g. Box, Food, Sample)..."
-                                                                className="h-10 pl-9 pr-8 rounded-xl bg-white border-slate-200 focus:border-blue-400 text-xs sm:text-sm font-medium"
+                                                                className="h-11 sm:h-12 pl-10 pr-9 rounded-xl bg-white border-slate-200 focus:border-blue-400 text-sm sm:text-base font-medium"
                                                             />
                                                             {categorySearchQuery && (
                                                                 <button
                                                                     type="button"
                                                                     onClick={() => setCategorySearchQuery("")}
-                                                                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-0.5"
+                                                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-0.5 cursor-pointer"
                                                                 >
-                                                                    <X className="w-3.5 h-3.5" />
+                                                                    <X className="w-4 h-4" />
                                                                 </button>
                                                             )}
                                                         </div>
 
                                                         {/* Add Custom Category Form */}
-                                                        <div className="md:col-span-7 flex gap-2">
+                                                        <div className="md:col-span-7 flex gap-2 sm:gap-3">
                                                             <Input
                                                                 value={newCategoryInput}
                                                                 onChange={(e) => setNewCategoryInput(e.target.value)}
@@ -1965,7 +1965,7 @@ export default function ProfilePage() {
                                                                     }
                                                                 }}
                                                                 placeholder="Add custom category (e.g. Sealed Medical Sample, Perfume Fragile)..."
-                                                                className="h-10 rounded-xl bg-white border-slate-200 focus:border-blue-400 text-xs sm:text-sm flex-1 font-medium"
+                                                                className="h-11 sm:h-12 rounded-xl bg-white border-slate-200 focus:border-blue-400 text-sm sm:text-base flex-1 font-medium px-4"
                                                             />
                                                             <Button
                                                                 type="button"
@@ -1986,9 +1986,9 @@ export default function ProfilePage() {
                                                                     setNewCategoryInput("")
                                                                     toast.success(`Added "${val}" category`)
                                                                 }}
-                                                                className="h-10 rounded-xl bg-slate-900 text-white hover:bg-slate-800 text-xs sm:text-sm font-bold px-4 cursor-pointer shadow-xs"
+                                                                className="h-11 sm:h-12 rounded-xl bg-slate-900 text-white hover:bg-slate-800 text-sm font-bold px-5 cursor-pointer shadow-xs shrink-0"
                                                             >
-                                                                <Plus className="w-4 h-4 mr-1" />
+                                                                <Plus className="w-4 h-4 mr-1.5" />
                                                                 Add
                                                             </Button>
                                                         </div>
@@ -2003,15 +2003,15 @@ export default function ProfilePage() {
 
                                                         if (orderDefaults.packageCategories.length === 0) {
                                                             return (
-                                                                <div className="p-8 text-center border-2 border-dashed border-slate-200 rounded-2xl bg-slate-50/50 space-y-3">
-                                                                    <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center mx-auto">
-                                                                        <Package className="w-6 h-6" />
+                                                                <div className="p-8 sm:p-10 text-center border-2 border-dashed border-slate-200 rounded-2xl bg-slate-50/50 space-y-3">
+                                                                    <div className="w-14 h-14 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center mx-auto">
+                                                                        <Package className="w-7 h-7" />
                                                                     </div>
                                                                     <div>
-                                                                        <p className="text-sm font-bold text-slate-800">No package categories configured yet</p>
-                                                                        <p className="text-xs text-slate-500 mt-0.5">Click "Load Defaults", upload an Excel file, or type custom package names above.</p>
+                                                                        <p className="text-base font-bold text-slate-800">No package categories configured yet</p>
+                                                                        <p className="text-xs sm:text-sm text-slate-500 mt-1">Click "Load Defaults", upload an Excel file, or type custom package names above.</p>
                                                                     </div>
-                                                                    <div className="flex items-center justify-center gap-2 pt-1">
+                                                                    <div className="flex items-center justify-center gap-2 pt-2">
                                                                         <Button
                                                                             type="button"
                                                                             size="sm"
@@ -2031,9 +2031,9 @@ export default function ProfilePage() {
                                                                                 }))
                                                                                 toast.success("Standard package categories loaded!")
                                                                             }}
-                                                                            className="rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white"
+                                                                            className="rounded-xl text-xs sm:text-sm font-bold bg-blue-600 hover:bg-blue-700 text-white h-9 px-4"
                                                                         >
-                                                                            <Sparkles className="w-3.5 h-3.5 mr-1" />
+                                                                            <Sparkles className="w-4 h-4 mr-1.5" />
                                                                             Load Standard Defaults
                                                                         </Button>
                                                                         <Button
@@ -2041,9 +2041,9 @@ export default function ProfilePage() {
                                                                             variant="outline"
                                                                             size="sm"
                                                                             onClick={() => categoryFileInputRef.current?.click()}
-                                                                            className="rounded-xl text-xs font-bold border-slate-200"
+                                                                            className="rounded-xl text-xs sm:text-sm font-bold border-slate-200 h-9 px-4"
                                                                         >
-                                                                            <Upload className="w-3.5 h-3.5 mr-1" />
+                                                                            <Upload className="w-4 h-4 mr-1.5" />
                                                                             Upload Excel
                                                                         </Button>
                                                                     </div>
@@ -2052,16 +2052,16 @@ export default function ProfilePage() {
                                                         }
 
                                                         return (
-                                                            <div className="space-y-2.5">
-                                                                <div className="flex items-center justify-between text-xs text-slate-500 px-0.5 font-medium">
+                                                            <div className="space-y-3">
+                                                                <div className="flex items-center justify-between text-xs sm:text-sm text-slate-500 px-0.5 font-medium">
                                                                     <span>
-                                                                        Showing <strong className="text-slate-800 font-bold">{filtered.length}</strong> of {orderDefaults.packageCategories.length} categories
+                                                                        Showing <strong className="text-slate-900 font-bold">{filtered.length}</strong> of {orderDefaults.packageCategories.length} categories
                                                                     </span>
                                                                     {categorySearchQuery && (
                                                                         <button
                                                                             type="button"
                                                                             onClick={() => setCategorySearchQuery("")}
-                                                                            className="text-blue-600 hover:underline font-semibold"
+                                                                            className="text-blue-600 hover:underline font-semibold cursor-pointer"
                                                                         >
                                                                             Reset Search Filter
                                                                         </button>
@@ -2069,13 +2069,13 @@ export default function ProfilePage() {
                                                                 </div>
 
                                                                 {filtered.length > 0 ? (
-                                                                    <div className="flex flex-wrap gap-2.5">
+                                                                    <div className="flex flex-wrap gap-2.5 sm:gap-3">
                                                                         {filtered.map((cat, idx) => (
                                                                             <span
                                                                                 key={cat + idx}
-                                                                                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white border border-slate-200 hover:border-slate-300 shadow-2xs text-xs sm:text-sm font-semibold text-slate-800 transition-all group"
+                                                                                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white border border-slate-200 hover:border-slate-300 shadow-2xs text-xs sm:text-sm md:text-base font-semibold text-slate-800 transition-all group"
                                                                             >
-                                                                                <Package className="w-3.5 h-3.5 text-blue-500 group-hover:text-blue-600" />
+                                                                                <Package className="w-4 h-4 text-blue-500 group-hover:text-blue-600" />
                                                                                 <span>{cat}</span>
                                                                                 <button
                                                                                     type="button"
@@ -2089,7 +2089,7 @@ export default function ProfilePage() {
                                                                                     className="text-slate-300 hover:text-red-600 p-0.5 rounded-md hover:bg-red-50 transition-colors ml-1 cursor-pointer"
                                                                                     title={`Remove ${cat}`}
                                                                                 >
-                                                                                    <Trash2 className="w-3.5 h-3.5" />
+                                                                                    <Trash2 className="w-4 h-4" />
                                                                                 </button>
                                                                             </span>
                                                                         ))}
@@ -2112,9 +2112,9 @@ export default function ProfilePage() {
                                                                                 setCategorySearchQuery("")
                                                                                 toast.success(`Added "${val}" category`)
                                                                             }}
-                                                                            className="rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white"
+                                                                            className="rounded-xl text-xs sm:text-sm font-bold bg-blue-600 hover:bg-blue-700 text-white"
                                                                         >
-                                                                            <Plus className="w-3.5 h-3.5 mr-1" />
+                                                                            <Plus className="w-4 h-4 mr-1" />
                                                                             Add "{categorySearchQuery}" as Category
                                                                         </Button>
                                                                     </div>
@@ -2130,16 +2130,16 @@ export default function ProfilePage() {
                                         {/* TYPE C: SHIPPING (FREIGHT & CARGO) CONFIGURATION                          */}
                                         {/* ========================================================================= */}
                                         {orderDefaults.logisticsType === 'shipping' && (
-                                            <div className="space-y-6 pt-4 border-t border-slate-100 animate-in fade-in-50 duration-200">
-                                                <div className="flex items-center gap-2 pb-1 border-b border-slate-100">
-                                                    <Ship className="w-4 h-4 text-emerald-600" />
-                                                    <h3 className="text-xs sm:text-sm font-bold text-slate-900">Freight Origin Ports &amp; Cargo Rates</h3>
+                                            <div className="space-y-6 sm:space-y-8 pt-6 border-t border-slate-100 animate-in fade-in-50 duration-200">
+                                                <div className="flex items-center gap-2.5 pb-2 border-b border-slate-100">
+                                                    <Ship className="w-5 h-5 text-emerald-600" />
+                                                    <h3 className="text-sm sm:text-base md:text-lg font-bold text-slate-900">Freight Origin Ports &amp; Cargo Rates</h3>
                                                 </div>
 
-                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                    <div className="space-y-1.5">
-                                                        <Label htmlFor="defaultOriginPort" className="text-xs font-semibold text-slate-700 flex items-center gap-1.5">
-                                                            <Navigation className="w-3.5 h-3.5 text-slate-400" />
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
+                                                    <div className="space-y-2">
+                                                        <Label htmlFor="defaultOriginPort" className="text-xs sm:text-sm font-bold text-slate-700 flex items-center gap-1.5">
+                                                            <Navigation className="w-4 h-4 text-slate-400" />
                                                             Default Origin Port / Terminal
                                                         </Label>
                                                         <Input
@@ -2147,14 +2147,14 @@ export default function ProfilePage() {
                                                             value={orderDefaults.defaultOriginPort}
                                                             onChange={(e) => setOrderDefaults(prev => ({ ...prev, defaultOriginPort: e.target.value }))}
                                                             placeholder="e.g. Tema Sea Port / Kotoka Air Cargo Terminal"
-                                                            className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-11 text-xs sm:text-sm"
+                                                            className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-12 px-4 text-sm sm:text-base"
                                                         />
-                                                        <p className="text-[10px] text-slate-400">Primary origin departure terminal for international / regional freight.</p>
+                                                        <p className="text-xs text-slate-400">Primary origin departure terminal for international / regional freight.</p>
                                                     </div>
 
-                                                    <div className="space-y-1.5">
-                                                        <Label htmlFor="defaultDestinationHub" className="text-xs font-semibold text-slate-700 flex items-center gap-1.5">
-                                                            <MapPin className="w-3.5 h-3.5 text-slate-400" />
+                                                    <div className="space-y-2">
+                                                        <Label htmlFor="defaultDestinationHub" className="text-xs sm:text-sm font-bold text-slate-700 flex items-center gap-1.5">
+                                                            <MapPin className="w-4 h-4 text-slate-400" />
                                                             Default Destination City / Hub
                                                         </Label>
                                                         <Input
@@ -2162,15 +2162,15 @@ export default function ProfilePage() {
                                                             value={orderDefaults.defaultDestinationHub}
                                                             onChange={(e) => setOrderDefaults(prev => ({ ...prev, defaultDestinationHub: e.target.value }))}
                                                             placeholder="e.g. Kumasi Central Cargo Depot / Takoradi Hub"
-                                                            className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-11 text-xs sm:text-sm"
+                                                            className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-12 px-4 text-sm sm:text-base"
                                                         />
-                                                        <p className="text-[10px] text-slate-400">Target transit warehouse or receiving hub.</p>
+                                                        <p className="text-xs text-slate-400">Target transit warehouse or receiving hub.</p>
                                                     </div>
                                                 </div>
 
-                                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                                    <div className="space-y-1.5">
-                                                        <Label htmlFor="defaultFreightRatePerKg" className="text-xs font-semibold text-slate-700">
+                                                <div className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6">
+                                                    <div className="space-y-2">
+                                                        <Label htmlFor="defaultFreightRatePerKg" className="text-xs sm:text-sm font-bold text-slate-700">
                                                             Rate per Kg (GH₵ / kg)
                                                         </Label>
                                                         <Input
@@ -2180,13 +2180,13 @@ export default function ProfilePage() {
                                                             value={orderDefaults.defaultFreightRatePerKg}
                                                             onChange={(e) => setOrderDefaults(prev => ({ ...prev, defaultFreightRatePerKg: e.target.value }))}
                                                             placeholder="15.00"
-                                                            className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-11 text-xs sm:text-sm font-bold"
+                                                            className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-12 px-4 text-sm sm:text-base font-bold"
                                                         />
-                                                        <p className="text-[10px] text-slate-400">Charge per kilogram for freight calculations.</p>
+                                                        <p className="text-xs text-slate-400">Charge per kilogram for freight calculations.</p>
                                                     </div>
 
-                                                    <div className="space-y-1.5">
-                                                        <Label htmlFor="defaultHandlingFee" className="text-xs font-semibold text-slate-700">
+                                                    <div className="space-y-2">
+                                                        <Label htmlFor="defaultHandlingFee" className="text-xs sm:text-sm font-bold text-slate-700">
                                                             Customs / Handling Fee (GH₵)
                                                         </Label>
                                                         <Input
@@ -2196,13 +2196,13 @@ export default function ProfilePage() {
                                                             value={orderDefaults.defaultHandlingFee}
                                                             onChange={(e) => setOrderDefaults(prev => ({ ...prev, defaultHandlingFee: e.target.value }))}
                                                             placeholder="50.00"
-                                                            className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-11 text-xs sm:text-sm font-bold"
+                                                            className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-12 px-4 text-sm sm:text-base font-bold"
                                                         />
-                                                        <p className="text-[10px] text-slate-400">Base port clearance or documentation fee.</p>
+                                                        <p className="text-xs text-slate-400">Base port clearance or documentation fee.</p>
                                                     </div>
 
-                                                    <div className="space-y-1.5">
-                                                        <Label htmlFor="defaultWaybillPrefix" className="text-xs font-semibold text-slate-700">
+                                                    <div className="space-y-2">
+                                                        <Label htmlFor="defaultWaybillPrefix" className="text-xs sm:text-sm font-bold text-slate-700">
                                                             Waybill / Tracking Prefix
                                                         </Label>
                                                         <Input
@@ -2210,15 +2210,15 @@ export default function ProfilePage() {
                                                             value={orderDefaults.defaultWaybillPrefix}
                                                             onChange={(e) => setOrderDefaults(prev => ({ ...prev, defaultWaybillPrefix: e.target.value }))}
                                                             placeholder="SHP"
-                                                            className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-11 text-xs sm:text-sm uppercase font-bold"
+                                                            className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-12 px-4 text-sm sm:text-base uppercase font-bold"
                                                         />
-                                                        <p className="text-[10px] text-slate-400">Prefix attached to generated tracking barcodes.</p>
+                                                        <p className="text-xs text-slate-400">Prefix attached to generated tracking barcodes.</p>
                                                     </div>
                                                 </div>
 
-                                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                                    <div className="space-y-1.5">
-                                                        <Label htmlFor="defaultOriginContact" className="text-xs font-semibold text-slate-700">
+                                                <div className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6">
+                                                    <div className="space-y-2">
+                                                        <Label htmlFor="defaultOriginContact" className="text-xs sm:text-sm font-bold text-slate-700">
                                                             Origin Port Contact Phone
                                                         </Label>
                                                         <Input
@@ -2226,13 +2226,13 @@ export default function ProfilePage() {
                                                             value={orderDefaults.defaultOriginContact}
                                                             onChange={(e) => setOrderDefaults(prev => ({ ...prev, defaultOriginContact: e.target.value }))}
                                                             placeholder="e.g. 0548706430"
-                                                            className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-11 text-xs sm:text-sm"
+                                                            className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-12 px-4 text-sm sm:text-base"
                                                         />
-                                                        <p className="text-[10px] text-slate-400">Origin port clearing agent or dispatcher phone.</p>
+                                                        <p className="text-xs text-slate-400">Origin port clearing agent or dispatcher phone.</p>
                                                     </div>
 
-                                                    <div className="space-y-1.5">
-                                                        <Label htmlFor="defaultShippingMoMoNumber" className="text-xs font-semibold text-slate-700">
+                                                    <div className="space-y-2">
+                                                        <Label htmlFor="defaultShippingMoMoNumber" className="text-xs sm:text-sm font-bold text-slate-700">
                                                             Shipping MoMo Account
                                                         </Label>
                                                         <Input
@@ -2240,37 +2240,37 @@ export default function ProfilePage() {
                                                             value={orderDefaults.defaultShippingMoMoNumber}
                                                             onChange={(e) => setOrderDefaults(prev => ({ ...prev, defaultShippingMoMoNumber: e.target.value }))}
                                                             placeholder="e.g. 0548706430"
-                                                            className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-11 text-xs sm:text-sm"
+                                                            className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-12 px-4 text-sm sm:text-base"
                                                         />
-                                                        <p className="text-[10px] text-slate-400">Merchant MoMo line for cargo payments.</p>
+                                                        <p className="text-xs text-slate-400">Merchant MoMo line for cargo payments.</p>
                                                     </div>
 
-                                                    <div className="space-y-1.5">
-                                                        <Label htmlFor="defaultShippingPaymentProvider" className="text-xs font-semibold text-slate-700">
+                                                    <div className="space-y-2">
+                                                        <Label htmlFor="defaultShippingPaymentProvider" className="text-xs sm:text-sm font-bold text-slate-700">
                                                             MoMo Network Provider
                                                         </Label>
                                                         <select
                                                             id="defaultShippingPaymentProvider"
                                                             value={orderDefaults.defaultShippingPaymentProvider}
                                                             onChange={(e) => setOrderDefaults(prev => ({ ...prev, defaultShippingPaymentProvider: e.target.value }))}
-                                                            className="w-full bg-slate-50/50 border border-slate-200 focus:bg-white rounded-xl h-11 px-3 transition-colors text-slate-800 focus:outline-none text-xs sm:text-sm"
+                                                            className="w-full bg-slate-50/50 border border-slate-200 focus:bg-white rounded-xl h-12 px-3.5 transition-colors text-slate-800 focus:outline-none text-xs sm:text-sm"
                                                         >
                                                             <option value="MTN">MTN Mobile Money</option>
                                                             <option value="TELECEL">Telecel Cash (Vodafone)</option>
                                                             <option value="AIRTELTIGO">AirtelTigo Money</option>
                                                         </select>
-                                                        <p className="text-[10px] text-slate-400">Telco channel for cargo prompt billing.</p>
+                                                        <p className="text-xs text-slate-400">Telco channel for cargo prompt billing.</p>
                                                     </div>
                                                 </div>
                                             </div>
                                         )}
 
                                         {/* Save Defaults Button */}
-                                        <div className="flex justify-end pt-4 border-t border-slate-100">
+                                        <div className="flex justify-end pt-5 border-t border-slate-100">
                                             <Button
                                                 type="submit"
                                                 disabled={orderDefaultsSaving}
-                                                className="w-full sm:w-auto min-w-[200px] h-11 px-6 rounded-xl sm:rounded-full bg-[#111827] hover:bg-[#1f2937] text-white font-bold text-xs sm:text-sm shadow-sm transition-all hover:-translate-y-0.5 active:scale-[0.98] cursor-pointer"
+                                                className="w-full sm:w-auto min-w-[240px] h-12 sm:h-13 px-8 rounded-xl sm:rounded-full bg-[#111827] hover:bg-[#1f2937] text-white font-bold text-sm sm:text-base shadow-sm transition-all hover:-translate-y-0.5 active:scale-[0.98] cursor-pointer"
                                             >
                                                 {orderDefaultsSaving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Check className="w-4 h-4 mr-2 text-emerald-400" />}
                                                 Save Administrative Defaults
