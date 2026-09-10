@@ -1254,7 +1254,6 @@ export default function ProfilePage() {
                                                 <div className="pt-6 sm:pt-8 border-t border-slate-100 space-y-6">
                                                     <div>
                                                         <h4 className="text-sm sm:text-base font-bold text-slate-900">Branch &amp; Payment Defaults</h4>
-                                                        <p className="text-xs sm:text-sm text-slate-500 mt-0.5">Pre-populates pickup locations, default delivery charges, and receiving MoMo details.</p>
                                                     </div>
 
                                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -1270,7 +1269,6 @@ export default function ProfilePage() {
                                                                 placeholder="e.g. Marwako Fast Food - East Legon Branch"
                                                                 className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-12 px-4 transition-colors text-sm sm:text-base"
                                                             />
-                                                            <p className="text-xs text-slate-400">Pre-populates the pickup branch for new orders.</p>
                                                         </div>
 
                                                         <div className="space-y-2">
@@ -1285,7 +1283,6 @@ export default function ProfilePage() {
                                                                 placeholder="e.g. 0244123456"
                                                                 className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-12 px-4 transition-colors text-sm sm:text-base"
                                                             />
-                                                            <p className="text-xs text-slate-400">Default contact number displayed for riders and dispatchers.</p>
                                                         </div>
                                                     </div>
 
@@ -1303,7 +1300,6 @@ export default function ProfilePage() {
                                                                 placeholder="25.00"
                                                                 className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-12 px-4 transition-colors text-sm sm:text-base font-semibold"
                                                             />
-                                                            <p className="text-xs text-slate-400">Baseline dispatch charge pre-filled on new orders.</p>
                                                         </div>
 
                                                         <div className="space-y-2">
@@ -1317,7 +1313,6 @@ export default function ProfilePage() {
                                                                 placeholder="e.g. 0548706430"
                                                                 className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-12 px-4 transition-colors text-sm sm:text-base"
                                                             />
-                                                            <p className="text-xs text-slate-400">Merchant MoMo line for receiving payments.</p>
                                                         </div>
 
                                                         <div className="space-y-2">
@@ -1334,7 +1329,6 @@ export default function ProfilePage() {
                                                                 <option value="TELECEL">Telecel Cash (Vodafone)</option>
                                                                 <option value="AIRTELTIGO">AirtelTigo Money</option>
                                                             </select>
-                                                            <p className="text-xs text-slate-400">Primary telco gateway for payments.</p>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -1569,7 +1563,6 @@ export default function ProfilePage() {
                                                 <div className="pt-6 sm:pt-8 border-t border-slate-100 space-y-6">
                                                     <div>
                                                         <h4 className="text-sm sm:text-base font-bold text-slate-900">Hub &amp; Dispatch Defaults</h4>
-                                                        <p className="text-xs sm:text-sm text-slate-500 mt-0.5">Pre-populates dispatch locations, base courier rates, and MoMo details.</p>
                                                     </div>
 
                                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -1585,7 +1578,6 @@ export default function ProfilePage() {
                                                                 placeholder="e.g. Accra Central Dispatch Hub, Osu"
                                                                 className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-12 px-4 transition-colors text-sm sm:text-base"
                                                             />
-                                                            <p className="text-xs text-slate-400">Default dispatch hub for courier pickups.</p>
                                                         </div>
 
                                                         <div className="space-y-2">
@@ -1600,7 +1592,6 @@ export default function ProfilePage() {
                                                                 placeholder="e.g. 0548706430"
                                                                 className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-12 px-4 transition-colors text-sm sm:text-base"
                                                             />
-                                                            <p className="text-xs text-slate-400">Dispatcher phone number for waybills.</p>
                                                         </div>
                                                     </div>
 
@@ -1618,7 +1609,6 @@ export default function ProfilePage() {
                                                                 placeholder="30.00"
                                                                 className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-12 px-4 transition-colors text-sm sm:text-base font-semibold"
                                                             />
-                                                            <p className="text-xs text-slate-400">Standard base rate for parcel deliveries.</p>
                                                         </div>
 
                                                         <div className="space-y-2">
@@ -1632,7 +1622,6 @@ export default function ProfilePage() {
                                                                 placeholder="e.g. 0548706430"
                                                                 className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-12 px-4 transition-colors text-sm sm:text-base"
                                                             />
-                                                            <p className="text-xs text-slate-400">Merchant MoMo line for receiving payments.</p>
                                                         </div>
 
                                                         <div className="space-y-2">
@@ -1649,7 +1638,6 @@ export default function ProfilePage() {
                                                                 <option value="TELECEL">Telecel Cash (Vodafone)</option>
                                                                 <option value="AIRTELTIGO">AirtelTigo Money</option>
                                                             </select>
-                                                            <p className="text-xs text-slate-400">Primary telco gateway for payments.</p>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -1766,7 +1754,6 @@ export default function ProfilePage() {
                                                 <div className="pt-6 sm:pt-8 border-t border-slate-100 space-y-6">
                                                     <div>
                                                         <h4 className="text-sm sm:text-base font-bold text-slate-900">Port Origin &amp; Freight Rates</h4>
-                                                        <p className="text-xs sm:text-sm text-slate-500 mt-0.5">Pre-populates departure ports, per-kg shipping rates, and port clearance fees.</p>
                                                     </div>
 
                                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -1782,7 +1769,6 @@ export default function ProfilePage() {
                                                                 placeholder="e.g. Tema Sea Port / Kotoka Air Cargo Terminal"
                                                                 className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-12 px-4 transition-colors text-sm sm:text-base"
                                                             />
-                                                            <p className="text-xs text-slate-400">Primary origin departure terminal for international / regional freight.</p>
                                                         </div>
 
                                                         <div className="space-y-2">
@@ -1797,7 +1783,6 @@ export default function ProfilePage() {
                                                                 placeholder="e.g. Kumasi Central Cargo Depot / Takoradi Hub"
                                                                 className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-12 px-4 transition-colors text-sm sm:text-base"
                                                             />
-                                                            <p className="text-xs text-slate-400">Target transit warehouse or receiving hub.</p>
                                                         </div>
                                                     </div>
 
@@ -1815,7 +1800,6 @@ export default function ProfilePage() {
                                                                 placeholder="15.00"
                                                                 className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-12 px-4 transition-colors text-sm sm:text-base font-semibold"
                                                             />
-                                                            <p className="text-xs text-slate-400">Charge per kilogram for freight calculations.</p>
                                                         </div>
 
                                                         <div className="space-y-2">
@@ -1831,7 +1815,6 @@ export default function ProfilePage() {
                                                                 placeholder="50.00"
                                                                 className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-12 px-4 transition-colors text-sm sm:text-base font-semibold"
                                                             />
-                                                            <p className="text-xs text-slate-400">Base port clearance or documentation fee.</p>
                                                         </div>
 
                                                         <div className="space-y-2">
@@ -1845,7 +1828,6 @@ export default function ProfilePage() {
                                                                 placeholder="SHP"
                                                                 className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-12 px-4 transition-colors text-sm sm:text-base uppercase font-semibold"
                                                             />
-                                                            <p className="text-xs text-slate-400">Prefix attached to generated tracking barcodes.</p>
                                                         </div>
                                                     </div>
 
@@ -1861,7 +1843,6 @@ export default function ProfilePage() {
                                                                 placeholder="e.g. 0548706430"
                                                                 className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-12 px-4 transition-colors text-sm sm:text-base"
                                                             />
-                                                            <p className="text-xs text-slate-400">Origin port clearing agent or dispatcher phone.</p>
                                                         </div>
 
                                                         <div className="space-y-2">
@@ -1875,7 +1856,6 @@ export default function ProfilePage() {
                                                                 placeholder="e.g. 0548706430"
                                                                 className="bg-slate-50/50 border-slate-200 focus:bg-white rounded-xl h-12 px-4 transition-colors text-sm sm:text-base"
                                                             />
-                                                            <p className="text-xs text-slate-400">Merchant MoMo line for cargo payments.</p>
                                                         </div>
 
                                                         <div className="space-y-2">
@@ -1892,7 +1872,6 @@ export default function ProfilePage() {
                                                                 <option value="TELECEL">Telecel Cash (Vodafone)</option>
                                                                 <option value="AIRTELTIGO">AirtelTigo Money</option>
                                                             </select>
-                                                            <p className="text-xs text-slate-400">Telco channel for cargo prompt billing.</p>
                                                         </div>
                                                     </div>
                                                 </div>
