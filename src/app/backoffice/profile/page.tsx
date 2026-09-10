@@ -99,6 +99,7 @@ export default function ProfilePage() {
     // Profile State
     const [profileLoading, setProfileLoading] = useState(false)
     const [imagePreview, setImagePreview] = useState<string | null>(null)
+    const [selectedImageFile, setSelectedImageFile] = useState<File | null>(null)
     const fileInputRef = useRef<HTMLInputElement>(null)
     const [formData, setFormData] = useState({
         companyName: "",
@@ -519,6 +520,7 @@ export default function ProfilePage() {
                 toast.error("File size must be less than 5MB")
                 return
             }
+            setSelectedImageFile(file)
             const reader = new FileReader()
             reader.onloadend = () => {
                 setImagePreview(reader.result as string)
@@ -543,9 +545,19 @@ export default function ProfilePage() {
 
         setProfileLoading(true)
         try {
+            if (selectedImageFile) {
+                try {
+                    await organization.setLogo({ file: selectedImageFile })
+                    setSelectedImageFile(null)
+                } catch (logoErr) {
+                    console.error("Failed to upload organization logo:", logoErr)
+                    toast.error("Could not update business logo image. Updating other profile fields...")
+                }
+            }
             await updateOrgProfile(organization.id, formData)
             await updateOrgInvoiceSettings(organization.id, invoiceSettings)
             toast.success("Profile and settings updated successfully")
+            router.refresh()
         } catch (error) {
             console.error(error)
             toast.error("Failed to update profile")

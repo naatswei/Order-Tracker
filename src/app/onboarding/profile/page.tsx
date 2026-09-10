@@ -49,6 +49,7 @@ export default function BusinessProfilePage() {
     const [isLocationDropdownOpen, setIsLocationDropdownOpen] = useState(false)
     const locationDropdownRef = useRef<HTMLDivElement>(null)
     const [imagePreview, setImagePreview] = useState<string | null>(null)
+    const [selectedImageFile, setSelectedImageFile] = useState<File | null>(null)
     const fileInputRef = useRef<HTMLInputElement>(null)
 
     const [formData, setFormData] = useState({
@@ -135,6 +136,7 @@ export default function BusinessProfilePage() {
                 return
             }
 
+            setSelectedImageFile(file)
             const reader = new FileReader()
             reader.onloadend = () => {
                 setImagePreview(reader.result as string)
@@ -157,6 +159,14 @@ export default function BusinessProfilePage() {
         setIsLoading(true)
 
         try {
+            if (selectedImageFile) {
+                try {
+                    await organization.setLogo({ file: selectedImageFile })
+                } catch (logoErr) {
+                    console.error("Failed to upload organization logo during onboarding:", logoErr)
+                }
+            }
+
             const cleanPhone = phoneLocal.replace(/^0+/, "").replace(/\D/g, "")
             const finalContact = `${countryCode} ${cleanPhone}`
             const finalPayload = { ...formData, contact: finalContact }
