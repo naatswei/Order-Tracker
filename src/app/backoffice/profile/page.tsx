@@ -1159,89 +1159,40 @@ export default function ProfilePage() {
                                         }
                                     }} className="space-y-8">
 
-                                        {/* 1. Logistics & Operational Model */}
-                                        <div className="space-y-4">
-                                            <div>
-                                                <h3 className="text-sm sm:text-base font-bold text-slate-900">Logistics &amp; Operational Model</h3>
-                                                <p className="text-xs sm:text-sm text-slate-500 mt-0.5">Select the primary operation workflow that best matches your business.</p>
-                                            </div>
-                                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5">
-                                                {/* Option 1: Restaurant Delivery Service */}
-                                                <div
-                                                    onClick={() => setOrderDefaults(prev => ({ ...prev, logisticsType: 'restaurant' }))}
-                                                    className={cn(
-                                                        "p-5 sm:p-6 rounded-2xl border-2 transition-all cursor-pointer flex flex-col justify-between space-y-4 relative",
-                                                        orderDefaults.logisticsType === 'restaurant'
-                                                            ? "border-amber-500 bg-amber-50/25 ring-2 ring-amber-500/20 shadow-xs"
-                                                            : "border-slate-200/80 bg-slate-50/40 hover:bg-white hover:border-slate-300"
-                                                    )}
-                                                >
-                                                    <div className="flex items-start justify-between">
-                                                        <div className="w-11 h-11 rounded-xl bg-amber-50 text-amber-600 border border-amber-200/60 flex items-center justify-center">
-                                                            <UtensilsCrossed className="w-5 h-5" />
-                                                        </div>
-                                                        {orderDefaults.logisticsType === 'restaurant' && (
-                                                            <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-500 text-white shadow-2xs">
-                                                                Active
-                                                            </span>
-                                                        )}
+                                        {/* 1. Logistics & Operational Model (Selected Single Model) */}
+                                        <div className="p-5 sm:p-6 rounded-2xl border border-slate-200/90 bg-slate-50/70 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-2xs">
+                                            <div className="flex items-center gap-4">
+                                                {orderDefaults.logisticsType === 'restaurant' && (
+                                                    <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 border border-amber-200/70 flex items-center justify-center shrink-0">
+                                                        <UtensilsCrossed className="w-6 h-6" />
                                                     </div>
-                                                    <div>
-                                                        <h4 className="text-sm sm:text-base font-bold text-slate-900">Restaurant Delivery</h4>
-                                                        <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">Food orders, kitchen menu items &amp; rider dispatch</p>
+                                                )}
+                                                {orderDefaults.logisticsType === 'delivery' && (
+                                                    <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 border border-blue-200/70 flex items-center justify-center shrink-0">
+                                                        <Truck className="w-6 h-6" />
                                                     </div>
-                                                </div>
-
-                                                {/* Option 2: Delivery Service (Courier) */}
-                                                <div
-                                                    onClick={() => setOrderDefaults(prev => ({ ...prev, logisticsType: 'delivery' }))}
-                                                    className={cn(
-                                                        "p-5 sm:p-6 rounded-2xl border-2 transition-all cursor-pointer flex flex-col justify-between space-y-4 relative",
-                                                        orderDefaults.logisticsType === 'delivery'
-                                                            ? "border-blue-500 bg-blue-50/25 ring-2 ring-blue-500/20 shadow-xs"
-                                                            : "border-slate-200/80 bg-slate-50/40 hover:bg-white hover:border-slate-300"
-                                                    )}
-                                                >
-                                                    <div className="flex items-start justify-between">
-                                                        <div className="w-11 h-11 rounded-xl bg-blue-50 text-blue-600 border border-blue-200/60 flex items-center justify-center">
-                                                            <Truck className="w-5 h-5" />
-                                                        </div>
-                                                        {orderDefaults.logisticsType === 'delivery' && (
-                                                            <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-blue-500 text-white shadow-2xs">
-                                                                Active
-                                                            </span>
-                                                        )}
+                                                )}
+                                                {orderDefaults.logisticsType === 'shipping' && (
+                                                    <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 border border-emerald-200/70 flex items-center justify-center shrink-0">
+                                                        <Ship className="w-6 h-6" />
                                                     </div>
-                                                    <div>
-                                                        <h4 className="text-sm sm:text-base font-bold text-slate-900">Courier Service</h4>
-                                                        <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">Package delivery, dispatch hubs &amp; waybills</p>
+                                                )}
+                                                <div>
+                                                    <div className="flex items-center gap-2 flex-wrap">
+                                                        <h3 className="text-sm sm:text-base font-bold text-slate-900">
+                                                            {orderDefaults.logisticsType === 'restaurant' && "Restaurant Delivery"}
+                                                            {orderDefaults.logisticsType === 'delivery' && "Courier Service"}
+                                                            {orderDefaults.logisticsType === 'shipping' && "Freight & Shipping"}
+                                                        </h3>
+                                                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-200/80 text-slate-700 tracking-wide">
+                                                            Active Operational Model
+                                                        </span>
                                                     </div>
-                                                </div>
-
-                                                {/* Option 3: Shipping (Freight / Cargo) */}
-                                                <div
-                                                    onClick={() => setOrderDefaults(prev => ({ ...prev, logisticsType: 'shipping' }))}
-                                                    className={cn(
-                                                        "p-5 sm:p-6 rounded-2xl border-2 transition-all cursor-pointer flex flex-col justify-between space-y-4 relative",
-                                                        orderDefaults.logisticsType === 'shipping'
-                                                            ? "border-emerald-500 bg-emerald-50/25 ring-2 ring-emerald-500/20 shadow-xs"
-                                                            : "border-slate-200/80 bg-slate-50/40 hover:bg-white hover:border-slate-300"
-                                                    )}
-                                                >
-                                                    <div className="flex items-start justify-between">
-                                                        <div className="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-200/60 flex items-center justify-center">
-                                                            <Ship className="w-5 h-5" />
-                                                        </div>
-                                                        {orderDefaults.logisticsType === 'shipping' && (
-                                                            <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-500 text-white shadow-2xs">
-                                                                Active
-                                                            </span>
-                                                        )}
-                                                    </div>
-                                                    <div>
-                                                        <h4 className="text-sm sm:text-base font-bold text-slate-900">Freight &amp; Shipping</h4>
-                                                        <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">Port origin terminals, customs fees &amp; kg rates</p>
-                                                    </div>
+                                                    <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">
+                                                        {orderDefaults.logisticsType === 'restaurant' && "Configured for food orders, kitchen menu items, and rider dispatch."}
+                                                        {orderDefaults.logisticsType === 'delivery' && "Configured for package delivery, dispatch hubs, and waybill tracking."}
+                                                        {orderDefaults.logisticsType === 'shipping' && "Configured for port origin terminals, customs fees, and freight kg rates."}
+                                                    </p>
                                                 </div>
                                             </div>
                                         </div>

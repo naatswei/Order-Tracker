@@ -2,18 +2,23 @@
 
 import { auth, clerkClient } from '@clerk/nextjs/server'
 
-export async function updateOrgBusinessType(orgId: string, businessType: string) {
+export async function updateOrgBusinessType(orgId: string, businessType: string, logisticsType?: LogisticsSubType) {
     const { userId } = await auth()
     if (!userId) throw new Error('Unauthorized')
 
     const client = await clerkClient()
     const org = await client.organizations.getOrganization({ organizationId: orgId })
     
+    const updatePayload: Record<string, any> = {
+        ...(org.publicMetadata || {}),
+        businessType 
+    }
+    if (logisticsType) {
+        updatePayload.logisticsType = logisticsType
+    }
+
     await client.organizations.updateOrganizationMetadata(orgId, {
-        publicMetadata: { 
-            ...(org.publicMetadata || {}),
-            businessType 
-        }
+        publicMetadata: updatePayload
     })
     return { success: true }
 }
