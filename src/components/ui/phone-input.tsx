@@ -64,24 +64,24 @@ export function PhoneInputWithCountry({
                     variant="outline"
                     disabled={disabled}
                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                    className="h-10 sm:h-11 px-3 sm:px-4 rounded-full border border-zinc-200 bg-white text-xs font-bold flex items-center gap-1 sm:gap-1.5 hover:bg-slate-50 transition-all cursor-pointer text-slate-800 shadow-xs"
+                    className="h-11 sm:h-12 px-3.5 sm:px-4 rounded-full border border-zinc-200 bg-white text-xs sm:text-sm font-bold flex items-center gap-1 sm:gap-2 hover:bg-slate-50 transition-all cursor-pointer text-slate-800 shadow-xs"
                 >
-                    <span className="text-sm sm:text-base leading-none">{selectedCountry.flag}</span>
-                    <span className="text-xs font-bold">{selectedCountry.code}</span>
-                    <ChevronDown className={cn("h-3 w-3 sm:h-3.5 sm:w-3.5 opacity-50 transition-transform duration-200", isDropdownOpen && "rotate-180")} />
+                    <span className="text-base sm:text-lg leading-none">{selectedCountry.flag}</span>
+                    <span className="text-xs sm:text-sm font-bold">{selectedCountry.code}</span>
+                    <ChevronDown className={cn("h-3.5 w-3.5 opacity-50 transition-transform duration-200", isDropdownOpen && "rotate-180")} />
                 </Button>
 
                 {/* Country Search Dropdown */}
                 {isDropdownOpen && (
                     <div className="absolute left-0 mt-1.5 p-2 w-72 rounded-2xl shadow-xl border border-slate-100 bg-white z-50 animate-in fade-in-50 slide-in-from-top-1 duration-150">
                         <div className="flex items-center gap-2 px-2.5 pb-2 pt-1 border-b border-slate-100">
-                            <Search className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                            <Search className="h-4 w-4 text-muted-foreground shrink-0" />
                             <input
                                 type="text"
                                 placeholder="Search country or code..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className="w-full bg-transparent border-0 p-0 text-xs focus:ring-0 focus:outline-none placeholder:text-muted-foreground/70 text-slate-800 font-medium"
+                                className="w-full bg-transparent border-0 p-0 text-sm focus:ring-0 focus:outline-none placeholder:text-muted-foreground/70 text-slate-800 font-medium"
                                 autoFocus
                             />
                         </div>
@@ -99,25 +99,25 @@ export function PhoneInputWithCountry({
                                                 setSearchQuery("")
                                             }}
                                             className={cn(
-                                                "w-full flex items-center justify-between px-2.5 py-2 rounded-lg text-left text-xs transition-all cursor-pointer",
+                                                "w-full flex items-center justify-between px-2.5 py-2 rounded-lg text-left text-xs sm:text-sm transition-all cursor-pointer",
                                                 isSelected
                                                     ? "bg-slate-100 font-bold text-slate-900"
                                                     : "hover:bg-slate-50 text-slate-700 font-medium"
                                             )}
                                         >
                                             <div className="flex items-center gap-2">
-                                                <span className="text-base leading-none" role="img" aria-label={c.name}>{c.flag}</span>
+                                                <span className="text-base sm:text-lg leading-none" role="img" aria-label={c.name}>{c.flag}</span>
                                                 <span className="truncate max-w-[120px]">{c.name}</span>
                                             </div>
                                             <div className="flex items-center gap-1 shrink-0">
-                                                <span className="text-[10px] text-muted-foreground font-mono">{c.code}</span>
-                                                {isSelected && <Check className="h-3.5 w-3.5 text-primary shrink-0" />}
+                                                <span className="text-xs text-muted-foreground font-mono">{c.code}</span>
+                                                {isSelected && <Check className="h-4 w-4 text-primary shrink-0" />}
                                             </div>
                                         </button>
                                     );
                                 })
                             ) : (
-                                <div className="py-4 text-center text-xs text-muted-foreground">
+                                <div className="py-4 text-center text-xs sm:text-sm text-muted-foreground">
                                     No countries found
                                 </div>
                             )}
@@ -140,7 +140,7 @@ export function PhoneInputWithCountry({
                         onPhoneLocalChange(val);
                     }}
                     className={cn(
-                        "h-10 sm:h-11 border-zinc-200 bg-white text-xs sm:text-sm font-medium focus-visible:ring-primary transition-all px-4 pr-8 rounded-full",
+                        "h-11 sm:h-12 border-zinc-200 bg-white text-sm sm:text-base font-medium focus-visible:ring-primary transition-all px-4 pr-8 rounded-full",
                         phoneLocal && !isValid && "border-red-400 focus-visible:ring-red-400 focus-visible:border-red-400",
                         phoneLocal && isValid && "border-emerald-500 focus-visible:ring-emerald-500 focus-visible:border-emerald-500",
                         className

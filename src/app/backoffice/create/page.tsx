@@ -789,12 +789,12 @@ function CreateOrderContent() {
                 />
             )}
 
-            <div className="container mx-auto px-3 sm:px-6 lg:px-8 pt-16 sm:pt-20 pb-8 sm:pb-12 max-w-[1400px] space-y-4 sm:space-y-6">
-                <div>
+            <div className="container mx-auto px-3 sm:px-6 lg:px-8 pt-3 sm:pt-4 pb-8 sm:pb-12 max-w-[1400px] space-y-3 sm:space-y-4">
+                <div className="flex items-center justify-between">
                     <Button
                         asChild
                         variant="outline"
-                        className="gap-2 mb-4 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 hover:text-slate-900 transition-all duration-300 rounded-full shadow-xs hover:shadow-sm hover:-translate-y-0.5 text-xs sm:text-sm h-10 px-5"
+                        className="gap-2 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 hover:text-slate-900 transition-all duration-300 rounded-full shadow-xs hover:shadow-sm text-xs sm:text-sm h-9 sm:h-10 px-4 sm:px-5 font-bold"
                     >
                         <Link href="/backoffice">
                             <ArrowLeft className="w-4 h-4" />
@@ -803,12 +803,12 @@ function CreateOrderContent() {
                     </Button>
                 </div>
 
-                <Card className="border-white/50 bg-white/60 backdrop-blur-md shadow-lg sm:shadow-xl rounded-2xl sm:rounded-3xl overflow-hidden mb-4">
-                    <CardHeader className="bg-primary/5 pb-5 sm:pb-8 pt-5 sm:pt-6 px-4 sm:px-8">
-                        <CardTitle className="text-lg sm:text-xl font-bold text-slate-900">{cardHeader.title}</CardTitle>
-                        <CardDescription className="text-xs sm:text-sm">{cardHeader.description}</CardDescription>
+                <Card className="border-white/60 bg-white/70 backdrop-blur-md shadow-xl rounded-2xl sm:rounded-3xl overflow-hidden mb-4">
+                    <CardHeader className="bg-primary/5 pb-4 sm:pb-6 pt-4 sm:pt-6 px-4 sm:px-8">
+                        <CardTitle className="text-xl sm:text-2xl lg:text-3xl font-black text-slate-900 tracking-tight">{cardHeader.title}</CardTitle>
+                        <CardDescription className="text-sm sm:text-base text-slate-600 font-medium mt-1">{cardHeader.description}</CardDescription>
                     </CardHeader>
-                    <CardContent className="p-3.5 sm:p-8 pt-4 sm:pt-8">
+                    <CardContent className="p-4 sm:p-8 pt-4 sm:pt-6">
                         {/* sliding tab switcher */}
                         {effectiveBusinessType !== "logistics" && (
                         <div className="mb-5 sm:mb-6 flex justify-start">
@@ -878,21 +878,21 @@ function CreateOrderContent() {
                                     {effectiveLogisticsMode === "restaurant" && (
                                         <div className="space-y-4">
                                             {/* Restaurant Branch (Pickup) & Customer Dropoff Contact Details */}
-                                            <div className="grid sm:grid-cols-1 gap-3.5 sm:gap-6">
+                                            <div className="grid sm:grid-cols-1 gap-4 sm:gap-6">
                                                 {/* Restaurant Branch Details — Hidden (registered in backend settings) */}
 
                                                 {/* 2. Customer Drop Off Details */}
-                                                <div className="p-3.5 sm:p-5 rounded-xl sm:rounded-2xl bg-slate-50/60 border border-slate-200/80 shadow-2xs space-y-3">
-                                                    <div className="flex items-center justify-between pb-1.5 border-b border-slate-100">
-                                                        <span className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
-                                                            <span className="w-1.5 h-1.5 rounded-full bg-slate-700" />
+                                                <div className="p-4 sm:p-6 rounded-2xl bg-slate-50/70 border border-slate-200/80 shadow-2xs space-y-4">
+                                                    <div className="flex items-center justify-between pb-2 border-b border-slate-200/60">
+                                                        <span className="text-sm sm:text-base font-bold text-slate-900 flex items-center gap-2">
+                                                            <span className="w-2 h-2 rounded-full bg-slate-700" />
                                                             Customer Dropoff Details
                                                         </span>
-                                                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 border border-slate-200">Recipient</span>
+                                                        <span className="text-xs font-bold px-2.5 py-0.5 rounded-md bg-slate-100 text-slate-700 border border-slate-200">Recipient</span>
                                                     </div>
-                                                    <div className="space-y-2.5">
-                                                        <div className="space-y-1 max-w-sm">
-                                                            <Label htmlFor="restaurantCustomerPhone" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">
+                                                    <div className="space-y-3.5 sm:space-y-4">
+                                                        <div className="space-y-1.5 max-w-sm">
+                                                            <Label htmlFor="restaurantCustomerPhone" className="ml-0.5 text-xs sm:text-sm font-bold text-slate-700">
                                                                 Customer Contact <span className="text-red-500">*</span>
                                                             </Label>
                                                             <PhoneInputWithCountry
@@ -914,8 +914,8 @@ function CreateOrderContent() {
                                                                 disabled={!canCreateOrder}
                                                             />
                                                         </div>
-                                                        <div className="space-y-1">
-                                                            <Label htmlFor="restaurantDeliveryLocation" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">
+                                                        <div className="space-y-1.5">
+                                                            <Label htmlFor="restaurantDeliveryLocation" className="ml-0.5 text-xs sm:text-sm font-bold text-slate-700">
                                                                 Customer Drop Off Address / Location <span className="text-red-500">*</span>
                                                             </Label>
                                                             <Input
@@ -925,7 +925,7 @@ function CreateOrderContent() {
                                                                 placeholder="e.g. East Legon, near Shell / Accra Mall"
                                                                 required
                                                                 disabled={!canCreateOrder}
-                                                                className="h-10 sm:h-11 rounded-full px-4 bg-white border-zinc-200 focus-visible:border-[#6B1028] text-xs sm:text-sm font-medium"
+                                                                className="h-11 sm:h-12 rounded-xl px-4 bg-white border-zinc-200 focus-visible:border-[#6B1028] text-sm sm:text-base font-medium"
                                                             />
                                                         </div>
                                                     </div>
@@ -939,7 +939,7 @@ function CreateOrderContent() {
                                                         <div className="space-y-1.5">
                                                             <div className="flex items-center gap-1.5">
                                                                 <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                                                                <span className="text-[9px] font-bold text-slate-500 uppercase tracking-wider">Restaurant Branch</span>
+                                                                <span className="text-[10px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider">Restaurant Branch</span>
                                                             </div>
                                                             <div className="w-full h-36 sm:h-44 rounded-xl sm:rounded-2xl overflow-hidden border border-slate-200 bg-slate-100 shadow-inner">
                                                                 <iframe
@@ -955,9 +955,9 @@ function CreateOrderContent() {
                                                                 href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(pickupLocation)}`}
                                                                 target="_blank"
                                                                 rel="noopener noreferrer"
-                                                                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white border border-slate-200 text-[#6B1028] hover:bg-slate-50 text-[11px] font-bold shadow-xs transition-all"
+                                                                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white border border-slate-200 text-[#6B1028] hover:bg-slate-50 text-xs font-bold shadow-xs transition-all"
                                                             >
-                                                                <Navigation className="w-3 h-3" />
+                                                                <Navigation className="w-3.5 h-3.5" />
                                                                 Open in Google Maps
                                                             </a>
                                                         </div>
@@ -967,7 +967,7 @@ function CreateOrderContent() {
                                                         <div className={cn("space-y-1.5", !pickupLocation && "sm:col-start-2")}>
                                                             <div className="flex items-center gap-1.5">
                                                                 <div className="w-1.5 h-1.5 rounded-full bg-slate-700 animate-pulse" />
-                                                                <span className="text-[9px] font-bold text-slate-500 uppercase tracking-wider">Customer Drop Off</span>
+                                                                <span className="text-[10px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider">Customer Drop Off</span>
                                                             </div>
                                                             <div className="w-full h-36 sm:h-44 rounded-xl sm:rounded-2xl overflow-hidden border border-slate-200 bg-slate-100 shadow-inner">
                                                                 <iframe
@@ -983,9 +983,9 @@ function CreateOrderContent() {
                                                                 href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(deliveryLocation)}`}
                                                                 target="_blank"
                                                                 rel="noopener noreferrer"
-                                                                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white border border-slate-200 text-[#6B1028] hover:bg-slate-50 text-[11px] font-bold shadow-xs transition-all"
+                                                                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white border border-slate-200 text-[#6B1028] hover:bg-slate-50 text-xs font-bold shadow-xs transition-all"
                                                             >
-                                                                <Navigation className="w-3 h-3" />
+                                                                <Navigation className="w-3.5 h-3.5" />
                                                                 Open in Google Maps
                                                             </a>
                                                         </div>
@@ -994,15 +994,15 @@ function CreateOrderContent() {
                                             )}
 
                                             {/* Quick Menu & Item Presets (Clean, Neutral Modern Container) */}
-                                            <div className="bg-slate-50/60 p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-200/80 space-y-3.5 sm:space-y-4 shadow-2xs">
+                                            <div className="bg-slate-50/60 p-4 sm:p-6 lg:p-8 rounded-2xl sm:rounded-3xl border border-slate-200/80 space-y-4 sm:space-y-5 shadow-2xs">
                                                 <div className="flex items-center justify-between">
                                                     <div className="flex items-center gap-2">
-                                                        <UtensilsCrossed className="w-4 h-4 text-[#6B1028]" />
-                                                        <Label className="text-xs sm:text-sm font-bold text-slate-900 tracking-tight">
+                                                        <UtensilsCrossed className="w-4 h-4 sm:w-5 sm:h-5 text-[#6B1028]" />
+                                                        <Label className="text-sm sm:text-base lg:text-lg font-black text-slate-900 tracking-tight">
                                                             MENU
                                                         </Label>
                                                     </div>
-                                                    <span className="text-[9px] sm:text-[10px] font-bold text-slate-600 bg-slate-100 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                                                    <span className="text-[10px] sm:text-xs font-bold text-slate-600 bg-slate-100 px-3 py-1 rounded-full uppercase tracking-wider">
                                                         Administrative Defaults
                                                     </span>
                                                 </div>
@@ -1114,11 +1114,11 @@ function CreateOrderContent() {
                                                                                 )
                                                                             })
                                                                         ) : query ? (
-                                                                            <div className="p-4 text-center text-xs text-slate-500">
+                                                                            <div className="p-4 text-center text-xs sm:text-sm text-slate-500">
                                                                                 No preset matching &ldquo;<span className="font-semibold text-slate-700">{menuSearchQuery}</span>&rdquo;
                                                                             </div>
                                                                         ) : (
-                                                                            <div className="p-4 text-center text-xs text-slate-500">
+                                                                            <div className="p-4 text-center text-xs sm:text-sm text-slate-500">
                                                                                 No menu presets found in Settings.
                                                                             </div>
                                                                         )}
@@ -1126,20 +1126,20 @@ function CreateOrderContent() {
                                                                         {/* Add custom / unlisted dish if query is typed */}
                                                                         {query && !exactMatch && (
                                                                             <div className="p-3 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
-                                                                                <div className="text-xs">
+                                                                                <div className="text-xs sm:text-sm">
                                                                                     <span className="font-bold text-slate-800">Add custom item: </span>
                                                                                     <span className="text-slate-900 font-black">&ldquo;{menuSearchQuery}&rdquo;</span>
                                                                                 </div>
                                                                                 <div className="flex items-center gap-2">
                                                                                     <div className="relative w-28">
-                                                                                        <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[10px] font-bold text-slate-400">GH₵</span>
+                                                                                        <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">GH₵</span>
                                                                                         <Input
                                                                                             type="number"
                                                                                             step="0.01"
                                                                                             placeholder="0.00"
                                                                                             value={customItemPrice}
                                                                                             onChange={(e) => setCustomItemPrice(e.target.value)}
-                                                                                            className="h-9 pl-7 pr-2.5 text-xs rounded-full bg-white border-zinc-200"
+                                                                                            className="h-9 pl-8 pr-2.5 text-xs sm:text-sm rounded-full bg-white border-zinc-200"
                                                                                         />
                                                                                     </div>
                                                                                     <button
@@ -1172,13 +1172,13 @@ function CreateOrderContent() {
                                                 </div>
 
                                                 {/* Direct Add Custom Dish / Order Item Row */}
-                                                <div className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-white border border-slate-200/80 shadow-2xs space-y-2.5">
-                                                    <span className="text-[11px] font-bold text-slate-700 uppercase tracking-wider block">
+                                                <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs space-y-3">
+                                                    <span className="text-xs sm:text-sm font-bold text-slate-700 uppercase tracking-wider block">
                                                         Add Custom Dish / Unlisted Item
                                                     </span>
                                                     <div className="grid grid-cols-1 sm:grid-cols-12 gap-2.5 items-end">
                                                         <div className="sm:col-span-6 space-y-1">
-                                                            <Label htmlFor="restaurantCustomDishName" className="text-[11px] font-semibold text-slate-600">
+                                                            <Label htmlFor="restaurantCustomDishName" className="text-xs sm:text-sm font-semibold text-slate-600">
                                                                 Dish / Item Name
                                                             </Label>
                                                             <Input
@@ -1196,15 +1196,15 @@ function CreateOrderContent() {
                                                                         }
                                                                     }
                                                                 }}
-                                                                className="h-10 rounded-xl bg-slate-50/50 border-zinc-200 focus-visible:border-[#6B1028] text-xs sm:text-sm font-medium"
+                                                                className="h-11 sm:h-12 rounded-xl bg-slate-50/50 border-zinc-200 focus-visible:border-[#6B1028] text-sm sm:text-base font-medium"
                                                             />
                                                         </div>
                                                         <div className="sm:col-span-3 space-y-1">
-                                                            <Label htmlFor="restaurantCustomDishPrice" className="text-[11px] font-semibold text-slate-600">
+                                                            <Label htmlFor="restaurantCustomDishPrice" className="text-xs sm:text-sm font-semibold text-slate-600">
                                                                 Price (GH₵)
                                                             </Label>
                                                             <div className="relative">
-                                                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">GH₵</span>
+                                                                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm font-bold text-slate-400">GH₵</span>
                                                                 <Input
                                                                     id="restaurantCustomDishPrice"
                                                                     type="number"
@@ -1216,132 +1216,131 @@ function CreateOrderContent() {
                                                                         if (e.key === "Enter") {
                                                                             e.preventDefault()
                                                                             if (customItemName.trim()) {
-                                                                                handleAddCustomMenuItem(customItemName.trim(), parseFloat(customItemPrice) || 0)
-                                                                                setCustomItemName("")
-                                                                                setCustomItemPrice("")
-                                                                            }
+                                                                            handleAddCustomMenuItem(customItemName.trim(), parseFloat(customItemPrice) || 0)
+                                                                            setCustomItemName("")
+                                                                            setCustomItemPrice("")
                                                                         }
-                                                                    }}
-                                                                    className="h-10 pl-10 rounded-xl bg-slate-50/50 border-zinc-200 focus-visible:border-[#6B1028] text-xs sm:text-sm font-medium"
-                                                                />
-                                                            </div>
-                                                        </div>
-                                                        <div className="sm:col-span-3">
-                                                            <Button
-                                                                type="button"
-                                                                onClick={() => {
-                                                                    if (customItemName.trim()) {
-                                                                        handleAddCustomMenuItem(customItemName.trim(), parseFloat(customItemPrice) || 0)
-                                                                        setCustomItemName("")
-                                                                        setCustomItemPrice("")
                                                                     }
                                                                 }}
-                                                                disabled={!customItemName.trim()}
-                                                                className="w-full h-10 rounded-xl bg-[#6B1028] hover:bg-[#540d20] text-white text-xs font-bold shadow-xs cursor-pointer"
-                                                            >
-                                                                <Plus className="w-4 h-4 mr-1" />
-                                                                Add Item
-                                                            </Button>
+                                                                className="h-11 sm:h-12 pl-12 rounded-xl bg-slate-50/50 border-zinc-200 focus-visible:border-[#6B1028] text-sm sm:text-base font-medium"
+                                                            />
                                                         </div>
+                                                    </div>
+                                                    <div className="sm:col-span-3">
+                                                        <Button
+                                                            type="button"
+                                                            onClick={() => {
+                                                                if (customItemName.trim()) {
+                                                                    handleAddCustomMenuItem(customItemName.trim(), parseFloat(customItemPrice) || 0)
+                                                                    setCustomItemName("")
+                                                                    setCustomItemPrice("")
+                                                                }
+                                                            }}
+                                                            disabled={!customItemName.trim()}
+                                                            className="w-full h-11 sm:h-12 rounded-xl bg-[#6B1028] hover:bg-[#540d20] text-white text-sm sm:text-base font-bold shadow-xs cursor-pointer"
+                                                        >
+                                                            <Plus className="w-4 h-4 mr-1.5" />
+                                                            Add Item
+                                                        </Button>
                                                     </div>
                                                 </div>
+                                            </div>
 
-                                                {/* Selected Menu Items Table */}
-                                                {orderMenuItems.length > 0 && (
-                                                    <div className="space-y-2 pt-2 border-t border-slate-200">
-                                                        <div className="flex items-center justify-between">
-                                                            <p className="text-[11px] font-bold text-slate-700 uppercase tracking-wider">
-                                                                Selected Order Items ({orderMenuItems.reduce((s, i) => s + i.quantity, 0)})
-                                                            </p>
-                                                            <button
-                                                                type="button"
-                                                                onClick={() => {
-                                                                    setOrderMenuItems([])
-                                                                    setItemType("")
-                                                                }}
-                                                                className="px-3 py-1 rounded-full bg-red-50 hover:bg-red-100 text-red-600 border border-red-200/60 text-[10px] font-bold transition-colors cursor-pointer"
-                                                            >
-                                                                Clear All
-                                                            </button>
-                                                        </div>
-                                                        <div className="space-y-1.5">
-                                                            {orderMenuItems.map((item, idx) => (
-                                                                <div key={item.id || idx} className="flex items-center justify-between gap-3 p-2.5 sm:p-3 bg-white rounded-xl border border-slate-200/80 shadow-xs">
-                                                                    <div className="min-w-0 flex-1">
-                                                                        <p className="text-xs font-bold text-slate-800 truncate">{item.name}</p>
-                                                                        <p className="text-[10px] text-slate-400">GH₵ {item.price.toFixed(2)} / each</p>
-                                                                    </div>
-                                                                    <div className="flex items-center gap-2">
-                                                                        <div className="flex items-center border border-slate-200 rounded-full overflow-hidden bg-slate-50 p-0.5">
-                                                                            <button
-                                                                                type="button"
-                                                                                onClick={() => handleUpdateMenuItemQty(idx, item.quantity - 1)}
-                                                                                className="w-7 h-7 rounded-full flex items-center justify-center text-slate-600 hover:bg-slate-200 text-xs font-bold cursor-pointer transition-colors"
-                                                                            >
-                                                                                -
-                                                                            </button>
-                                                                            <span className="w-8 text-center text-xs font-bold text-slate-800">{item.quantity}</span>
-                                                                            <button
-                                                                                type="button"
-                                                                                onClick={() => handleUpdateMenuItemQty(idx, item.quantity + 1)}
-                                                                                className="w-7 h-7 rounded-full flex items-center justify-center text-slate-600 hover:bg-slate-200 text-xs font-bold cursor-pointer transition-colors"
-                                                                            >
-                                                                                +
-                                                                            </button>
-                                                                        </div>
-                                                                        <div className="text-right min-w-[70px]">
-                                                                            <span className="text-xs font-black text-slate-900">GH₵ {(item.quantity * item.price).toFixed(2)}</span>
-                                                                        </div>
+                                            {/* Selected Menu Items Table */}
+                                            {orderMenuItems.length > 0 && (
+                                                <div className="space-y-2.5 pt-2 border-t border-slate-200">
+                                                    <div className="flex items-center justify-between">
+                                                        <p className="text-xs sm:text-sm font-bold text-slate-700 uppercase tracking-wider">
+                                                            Selected Order Items ({orderMenuItems.reduce((s, i) => s + i.quantity, 0)})
+                                                        </p>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => {
+                                                                setOrderMenuItems([])
+                                                                setItemType("")
+                                                            }}
+                                                            className="px-3.5 py-1 rounded-full bg-red-50 hover:bg-red-100 text-red-600 border border-red-200/60 text-xs font-bold transition-colors cursor-pointer"
+                                                        >
+                                                            Clear All
+                                                        </button>
+                                                    </div>
+                                                    <div className="space-y-2">
+                                                        {orderMenuItems.map((item, idx) => (
+                                                            <div key={item.id || idx} className="flex items-center justify-between gap-3 p-3 sm:p-4 bg-white rounded-xl border border-slate-200/80 shadow-xs">
+                                                                <div className="min-w-0 flex-1">
+                                                                    <p className="text-sm sm:text-base font-bold text-slate-800 truncate">{item.name}</p>
+                                                                    <p className="text-xs text-slate-500 font-medium">GH₵ {item.price.toFixed(2)} / each</p>
+                                                                </div>
+                                                                <div className="flex items-center gap-3">
+                                                                    <div className="flex items-center border border-slate-200 rounded-full overflow-hidden bg-slate-50 p-0.5">
                                                                         <button
                                                                             type="button"
-                                                                            onClick={() => handleRemoveMenuItem(idx)}
-                                                                            className="w-7 h-7 rounded-full flex items-center justify-center text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
+                                                                            onClick={() => handleUpdateMenuItemQty(idx, item.quantity - 1)}
+                                                                            className="w-8 h-8 rounded-full flex items-center justify-center text-slate-600 hover:bg-slate-200 text-sm font-bold cursor-pointer transition-colors"
                                                                         >
-                                                                            <Trash2 className="w-3.5 h-3.5" />
+                                                                            -
+                                                                        </button>
+                                                                        <span className="w-9 text-center text-sm sm:text-base font-bold text-slate-800">{item.quantity}</span>
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={() => handleUpdateMenuItemQty(idx, item.quantity + 1)}
+                                                                            className="w-8 h-8 rounded-full flex items-center justify-center text-slate-600 hover:bg-slate-200 text-sm font-bold cursor-pointer transition-colors"
+                                                                        >
+                                                                            +
                                                                         </button>
                                                                     </div>
+                                                                    <div className="text-right min-w-[80px]">
+                                                                        <span className="text-sm sm:text-base font-black text-slate-900">GH₵ {(item.quantity * item.price).toFixed(2)}</span>
+                                                                    </div>
+                                                                    <button
+                                                                        type="button"
+                                                                        onClick={() => handleRemoveMenuItem(idx)}
+                                                                        className="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
+                                                                    >
+                                                                        <Trash2 className="w-4 h-4" />
+                                                                    </button>
                                                                 </div>
-                                                            ))}
-                                                        </div>
-                                                        <div className="p-3 bg-slate-100 rounded-2xl flex items-center justify-between text-xs font-bold text-slate-900">
-                                                            <span>Menu Subtotal:</span>
-                                                            <span className="text-sm font-black text-slate-900">
-                                                                GH₵ {orderMenuItems.reduce((s, i) => s + (i.quantity * i.price), 0).toFixed(2)}
-                                                            </span>
-                                                        </div>
+                                                            </div>
+                                                        ))}
                                                     </div>
-                                                )}
-                                            </div>
+                                                    <div className="p-3.5 sm:p-4 bg-slate-100 rounded-2xl flex items-center justify-between text-sm sm:text-base font-bold text-slate-900">
+                                                        <span>Menu Subtotal:</span>
+                                                        <span className="text-base sm:text-lg font-black text-slate-900">
+                                                            GH₵ {orderMenuItems.reduce((s, i) => s + (i.quantity * i.price), 0).toFixed(2)}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            )}
                                         </div>
-                                    )}
+                                    </div>
+                                )}
 
-                                    {effectiveLogisticsMode === "delivery" && (
-                                        <div className="space-y-4">
-                                            {/* Courier Route & Contact Card */}
-                                            <div className="bg-sky-50/50 p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl border border-sky-200/70 space-y-3.5 sm:space-y-4">
+                                {effectiveLogisticsMode === "delivery" && (
+                                    <div className="space-y-4">
+                                            <div className="bg-sky-50/50 p-4 sm:p-6 lg:p-8 rounded-2xl sm:rounded-3xl border border-sky-200/70 space-y-4 sm:space-y-5 shadow-xs">
                                                 <div className="flex items-center justify-between">
-                                                    <h3 className="text-xs sm:text-sm font-bold text-sky-950 tracking-tight flex items-center gap-2">
-                                                        <Truck className="w-4 h-4 text-sky-600" />
+                                                    <h3 className="text-sm sm:text-base lg:text-lg font-black text-sky-950 tracking-tight flex items-center gap-2">
+                                                        <Truck className="w-4 h-4 sm:w-5 sm:h-5 text-sky-600" />
                                                         Package Delivery &amp; Recipient Route
                                                     </h3>
-                                                    <span className="text-[9px] sm:text-[10px] font-bold text-sky-800 bg-sky-100 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                                                    <span className="text-[10px] sm:text-xs font-bold text-sky-800 bg-sky-100 px-3 py-1 rounded-full uppercase tracking-wider">
                                                         Courier Service
                                                     </span>
                                                 </div>
 
                                                 {/* Recipient Details */}
-                                                <div className="p-3.5 sm:p-5 rounded-xl sm:rounded-2xl bg-white border border-sky-200/60 shadow-2xs space-y-3">
-                                                    <div className="flex items-center justify-between pb-1.5 border-b border-sky-100">
-                                                        <span className="text-xs font-bold text-sky-900 flex items-center gap-1.5">
-                                                            <span className="w-1.5 h-1.5 rounded-full bg-sky-500" />
+                                                <div className="p-4 sm:p-6 rounded-2xl bg-white border border-sky-200/60 shadow-2xs space-y-4">
+                                                    <div className="flex items-center justify-between pb-2 border-b border-sky-100">
+                                                        <span className="text-sm sm:text-base font-bold text-sky-900 flex items-center gap-2">
+                                                            <span className="w-2 h-2 rounded-full bg-sky-500" />
                                                             Recipient Delivery Details
                                                         </span>
-                                                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-sky-50 text-sky-700 border border-sky-200/60">Recipient</span>
+                                                        <span className="text-xs font-bold px-2.5 py-0.5 rounded-md bg-sky-50 text-sky-700 border border-sky-200/60">Recipient</span>
                                                     </div>
-                                                    <div className="space-y-2.5">
-                                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                                            <div className="space-y-1">
-                                                                <Label htmlFor="courierRecipientName" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">
+                                                    <div className="space-y-3 sm:space-y-4">
+                                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                                                            <div className="space-y-1.5">
+                                                                <Label htmlFor="courierRecipientName" className="ml-0.5 text-xs sm:text-sm font-bold text-slate-700">
                                                                     Recipient Name <span className="text-red-500">*</span>
                                                                 </Label>
                                                                 <Input
@@ -1351,11 +1350,11 @@ function CreateOrderContent() {
                                                                     placeholder="e.g. Kofi Boateng"
                                                                     required
                                                                     disabled={!canCreateOrder}
-                                                                    className="h-10 sm:h-11 rounded-xl bg-slate-50/50 border-zinc-200 focus-visible:border-sky-400 text-xs sm:text-sm font-medium"
+                                                                    className="h-11 sm:h-12 rounded-xl bg-slate-50/50 border-zinc-200 focus-visible:border-sky-400 text-sm sm:text-base font-medium"
                                                                 />
                                                             </div>
-                                                            <div className="space-y-1">
-                                                                <Label htmlFor="courierRecipientPhone" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">
+                                                            <div className="space-y-1.5">
+                                                                <Label htmlFor="courierRecipientPhone" className="ml-0.5 text-xs sm:text-sm font-bold text-slate-700">
                                                                     Recipient Phone <span className="text-red-500">*</span>
                                                                 </Label>
                                                                 <PhoneInputWithCountry
@@ -1378,8 +1377,8 @@ function CreateOrderContent() {
                                                                 />
                                                             </div>
                                                         </div>
-                                                        <div className="space-y-1">
-                                                            <Label htmlFor="courierDeliveryLocation" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">
+                                                        <div className="space-y-1.5">
+                                                            <Label htmlFor="courierDeliveryLocation" className="ml-0.5 text-xs sm:text-sm font-bold text-slate-700">
                                                                 Recipient Delivery Address <span className="text-red-500">*</span>
                                                             </Label>
                                                             <Input
@@ -1389,7 +1388,7 @@ function CreateOrderContent() {
                                                                 placeholder="e.g. Airport Residential, 5th Avenue"
                                                                 required
                                                                 disabled={!canCreateOrder}
-                                                                className="h-10 sm:h-11 rounded-xl bg-slate-50/50 border-zinc-200 focus-visible:border-sky-400 text-xs sm:text-sm font-medium"
+                                                                className="h-11 sm:h-12 rounded-xl bg-slate-50/50 border-zinc-200 focus-visible:border-sky-400 text-sm sm:text-base font-medium"
                                                             />
                                                         </div>
                                                     </div>
@@ -1399,12 +1398,12 @@ function CreateOrderContent() {
                                                 {(pickupLocation || deliveryLocation) && (
                                                     <div className="grid sm:grid-cols-2 gap-3 sm:gap-4 pt-1">
                                                         {pickupLocation && (
-                                                            <div className="space-y-1.5">
+                                                             <div className="space-y-1.5">
                                                                 <div className="flex items-center gap-1.5">
                                                                     <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                                                                    <span className="text-[9px] font-bold text-slate-500 uppercase tracking-wider">Dispatch Hub (Default)</span>
+                                                                    <span className="text-[10px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider">Dispatch Hub (Default)</span>
                                                                 </div>
-                                                                <div className="w-full h-36 sm:h-44 rounded-xl sm:rounded-2xl overflow-hidden border border-slate-200 bg-slate-100 shadow-inner">
+                                                                <div className="w-full h-40 sm:h-48 rounded-xl sm:rounded-2xl overflow-hidden border border-slate-200 bg-slate-100 shadow-inner">
                                                                     <iframe
                                                                         title="Hub Location Map"
                                                                         width="100%"
@@ -1418,9 +1417,9 @@ function CreateOrderContent() {
                                                                     href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(pickupLocation)}`}
                                                                     target="_blank"
                                                                     rel="noopener noreferrer"
-                                                                    className="inline-flex items-center gap-1 text-[10px] font-bold text-sky-700 hover:text-sky-800 transition-colors"
+                                                                    className="inline-flex items-center gap-1.5 text-xs font-bold text-sky-700 hover:text-sky-800 transition-colors"
                                                                 >
-                                                                    <Navigation className="w-3 h-3" />
+                                                                    <Navigation className="w-3.5 h-3.5" />
                                                                     Open in Google Maps
                                                                 </a>
                                                             </div>
@@ -1430,9 +1429,9 @@ function CreateOrderContent() {
                                                             <div className={cn("space-y-1.5", !pickupLocation && "sm:col-start-2")}>
                                                                 <div className="flex items-center gap-1.5">
                                                                     <div className="w-1.5 h-1.5 rounded-full bg-sky-500 animate-pulse" />
-                                                                    <span className="text-[9px] font-bold text-slate-500 uppercase tracking-wider">Drop Off Location</span>
+                                                                    <span className="text-[10px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider">Drop Off Location</span>
                                                                 </div>
-                                                                <div className="w-full h-36 sm:h-44 rounded-xl sm:rounded-2xl overflow-hidden border border-slate-200 bg-slate-100 shadow-inner">
+                                                                <div className="w-full h-40 sm:h-48 rounded-xl sm:rounded-2xl overflow-hidden border border-slate-200 bg-slate-100 shadow-inner">
                                                                     <iframe
                                                                         title="Drop Off Location Map"
                                                                         width="100%"
@@ -1446,9 +1445,9 @@ function CreateOrderContent() {
                                                                     href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(deliveryLocation)}`}
                                                                     target="_blank"
                                                                     rel="noopener noreferrer"
-                                                                    className="inline-flex items-center gap-1 text-[10px] font-bold text-sky-700 hover:text-sky-800 transition-colors"
+                                                                    className="inline-flex items-center gap-1.5 text-xs font-bold text-sky-700 hover:text-sky-800 transition-colors"
                                                                 >
-                                                                    <Navigation className="w-3 h-3" />
+                                                                    <Navigation className="w-3.5 h-3.5" />
                                                                     Open in Google Maps
                                                                 </a>
                                                             </div>
@@ -1458,23 +1457,23 @@ function CreateOrderContent() {
                                             </div>
 
                                             {/* Package Categories & Custom Order Items Entry */}
-                                            <div className="bg-sky-50/40 p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl border border-sky-200/70 space-y-3.5 sm:space-y-4 shadow-xs">
+                                            <div className="bg-sky-50/40 p-4 sm:p-6 lg:p-8 rounded-2xl sm:rounded-3xl border border-sky-200/70 space-y-4 sm:space-y-5 shadow-xs">
                                                 <div className="flex items-center justify-between">
                                                     <div className="flex items-center gap-2">
-                                                        <Box className="w-4 h-4 text-sky-600" />
-                                                        <Label className="text-xs sm:text-sm font-bold text-slate-900 tracking-tight">
+                                                        <Box className="w-4 h-4 sm:w-5 sm:h-5 text-sky-600" />
+                                                        <Label className="text-sm sm:text-base lg:text-lg font-black text-slate-900 tracking-tight">
                                                             Package &amp; Order Items
                                                         </Label>
                                                     </div>
-                                                    <span className="text-[9px] sm:text-[10px] font-bold text-sky-800 bg-sky-100 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                                                    <span className="text-[10px] sm:text-xs font-bold text-sky-800 bg-sky-100 px-3 py-1 rounded-full uppercase tracking-wider">
                                                         Courier Service
                                                     </span>
                                                 </div>
 
                                                 {/* 1-Click Package Category Presets */}
-                                                <div className="space-y-1.5">
-                                                    <p className="text-[11px] font-bold text-slate-600">Quick-Add Category Presets:</p>
-                                                    <div className="flex flex-wrap gap-2">
+                                                <div className="space-y-2">
+                                                    <p className="text-xs sm:text-sm font-bold text-slate-700">Quick-Add Category Presets:</p>
+                                                    <div className="flex flex-wrap gap-2.5">
                                                         {packageCategories.map((cat: string) => {
                                                             const existingItem = orderMenuItems.find(m => m.name.toLowerCase() === cat.toLowerCase())
                                                             const isSelected = Boolean(existingItem) || itemType.includes(cat)
@@ -1484,16 +1483,16 @@ function CreateOrderContent() {
                                                                     type="button"
                                                                     onClick={() => handleTogglePackageCategory(cat)}
                                                                     className={cn(
-                                                                        "px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 border shadow-2xs cursor-pointer",
+                                                                        "px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 border shadow-2xs cursor-pointer",
                                                                         isSelected
                                                                             ? "bg-sky-600 text-white border-sky-700 shadow-xs"
                                                                             : "bg-white text-slate-800 border-sky-200/80 hover:bg-sky-50 hover:border-sky-300"
                                                                     )}
                                                                 >
-                                                                    <Tag className="w-3 h-3" />
+                                                                    <Tag className="w-3.5 h-3.5" />
                                                                     <span>{cat}</span>
                                                                     {existingItem && (
-                                                                        <span className="ml-1 px-1.5 py-0.2 bg-white/25 rounded-full text-[10px]">
+                                                                        <span className="ml-1 px-2 py-0.5 bg-white/25 rounded-full text-xs font-bold">
                                                                             {existingItem.quantity}
                                                                         </span>
                                                                     )}
@@ -1504,15 +1503,15 @@ function CreateOrderContent() {
                                                 </div>
 
                                                 {/* Direct Custom Package / Order Item Entry */}
-                                                <div className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-white border border-sky-200/70 shadow-2xs space-y-2.5">
+                                                <div className="p-4 sm:p-5 rounded-2xl bg-white border border-sky-200/70 shadow-2xs space-y-3">
                                                     <div className="flex items-center justify-between">
-                                                        <span className="text-xs font-bold text-sky-950 flex items-center gap-1.5">
-                                                            <Plus className="w-3.5 h-3.5 text-sky-600" />
+                                                        <span className="text-sm sm:text-base font-bold text-sky-950 flex items-center gap-1.5">
+                                                            <Plus className="w-4 h-4 text-sky-600" />
                                                             Add Custom Package / Order Item
                                                         </span>
-                                                        <span className="text-[10px] text-slate-500 font-medium">Add parcels, goods or items to deliver</span>
+                                                        <span className="text-xs text-slate-500 font-medium">Add parcels, goods or items to deliver</span>
                                                     </div>
-                                                    <div className="grid grid-cols-1 sm:grid-cols-12 gap-2">
+                                                    <div className="grid grid-cols-1 sm:grid-cols-12 gap-2.5">
                                                         <div className="sm:col-span-6">
                                                             <Input
                                                                 placeholder="e.g. 2x Designer Sneakers, Birthday Cake, iPhone..."
@@ -1528,12 +1527,12 @@ function CreateOrderContent() {
                                                                         }
                                                                     }
                                                                 }}
-                                                                className="h-10 rounded-xl bg-slate-50/50 border-zinc-200 focus-visible:border-sky-400 text-xs sm:text-sm font-medium"
+                                                                className="h-11 sm:h-12 rounded-xl bg-slate-50/50 border-zinc-200 focus-visible:border-sky-400 text-sm sm:text-base font-medium"
                                                             />
                                                         </div>
                                                         <div className="sm:col-span-3">
                                                             <div className="relative">
-                                                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">GH₵</span>
+                                                                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm font-bold text-slate-400">GH₵</span>
                                                                 <Input
                                                                     type="number"
                                                                     step="0.01"
@@ -1550,7 +1549,7 @@ function CreateOrderContent() {
                                                                             }
                                                                         }
                                                                     }}
-                                                                    className="h-10 pl-10 rounded-xl bg-slate-50/50 border-zinc-200 focus-visible:border-sky-400 text-xs sm:text-sm font-medium"
+                                                                    className="h-11 sm:h-12 pl-12 rounded-xl bg-slate-50/50 border-zinc-200 focus-visible:border-sky-400 text-sm sm:text-base font-medium"
                                                                 />
                                                             </div>
                                                         </div>
@@ -1565,9 +1564,9 @@ function CreateOrderContent() {
                                                                     }
                                                                 }}
                                                                 disabled={!customItemName.trim()}
-                                                                className="w-full h-10 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold shadow-xs cursor-pointer"
+                                                                className="w-full h-11 sm:h-12 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-sm sm:text-base font-bold shadow-xs cursor-pointer"
                                                             >
-                                                                <Plus className="w-4 h-4 mr-1" />
+                                                                <Plus className="w-4 h-4 mr-1.5" />
                                                                 Add Item
                                                             </Button>
                                                         </div>
@@ -1576,9 +1575,9 @@ function CreateOrderContent() {
 
                                                 {/* Selected Package / Order Items Table */}
                                                 {orderMenuItems.length > 0 && (
-                                                    <div className="space-y-2 pt-2 border-t border-sky-200/50">
+                                                    <div className="space-y-2.5 pt-2 border-t border-sky-200/50">
                                                         <div className="flex items-center justify-between">
-                                                            <p className="text-[11px] font-bold text-slate-700 uppercase tracking-wider">
+                                                            <p className="text-xs sm:text-sm font-bold text-slate-700 uppercase tracking-wider">
                                                                 Selected Order Items ({orderMenuItems.reduce((s, i) => s + i.quantity, 0)})
                                                             </p>
                                                             <button
@@ -1587,58 +1586,58 @@ function CreateOrderContent() {
                                                                     setOrderMenuItems([])
                                                                     setItemType("")
                                                                 }}
-                                                                className="px-3 py-1 rounded-full bg-red-50 hover:bg-red-100 text-red-600 border border-red-200/60 text-[10px] font-bold transition-colors cursor-pointer"
+                                                                className="px-3.5 py-1 rounded-full bg-red-50 hover:bg-red-100 text-red-600 border border-red-200/60 text-xs font-bold transition-colors cursor-pointer"
                                                             >
                                                                 Clear All
                                                             </button>
                                                         </div>
-                                                        <div className="space-y-1.5">
+                                                        <div className="space-y-2">
                                                             {orderMenuItems.map((item, idx) => (
-                                                                <div key={item.id || idx} className="flex items-center justify-between gap-3 p-2.5 sm:p-3 bg-white rounded-xl border border-sky-200/70 shadow-xs">
+                                                                <div key={item.id || idx} className="flex items-center justify-between gap-3 p-3 sm:p-4 bg-white rounded-xl border border-sky-200/70 shadow-xs">
                                                                     <div className="min-w-0 flex-1">
-                                                                        <p className="text-xs font-bold text-slate-800 truncate">{item.name}</p>
-                                                                        <p className="text-[10px] text-slate-400">
+                                                                        <p className="text-sm sm:text-base font-bold text-slate-900 truncate">{item.name}</p>
+                                                                        <p className="text-xs text-slate-500 font-medium">
                                                                             {item.price > 0 ? `GH₵ ${item.price.toFixed(2)} / each` : "Delivery Item"}
                                                                         </p>
                                                                     </div>
-                                                                    <div className="flex items-center gap-2">
+                                                                    <div className="flex items-center gap-3">
                                                                         <div className="flex items-center border border-slate-200 rounded-full overflow-hidden bg-slate-50 p-0.5">
                                                                             <button
                                                                                 type="button"
                                                                                 onClick={() => handleUpdateMenuItemQty(idx, item.quantity - 1)}
-                                                                                className="w-7 h-7 rounded-full flex items-center justify-center text-slate-600 hover:bg-slate-200 text-xs font-bold cursor-pointer transition-colors"
+                                                                                className="w-8 h-8 rounded-full flex items-center justify-center text-slate-600 hover:bg-slate-200 text-sm font-bold cursor-pointer transition-colors"
                                                                             >
                                                                                 -
                                                                             </button>
-                                                                            <span className="w-8 text-center text-xs font-bold text-slate-800">{item.quantity}</span>
+                                                                            <span className="w-9 text-center text-sm sm:text-base font-bold text-slate-800">{item.quantity}</span>
                                                                             <button
                                                                                 type="button"
                                                                                 onClick={() => handleUpdateMenuItemQty(idx, item.quantity + 1)}
-                                                                                className="w-7 h-7 rounded-full flex items-center justify-center text-slate-600 hover:bg-slate-200 text-xs font-bold cursor-pointer transition-colors"
+                                                                                className="w-8 h-8 rounded-full flex items-center justify-center text-slate-600 hover:bg-slate-200 text-sm font-bold cursor-pointer transition-colors"
                                                                             >
                                                                                 +
                                                                             </button>
                                                                         </div>
                                                                         {item.price > 0 && (
-                                                                            <div className="text-right min-w-[70px]">
-                                                                                <span className="text-xs font-black text-slate-900">GH₵ {(item.quantity * item.price).toFixed(2)}</span>
+                                                                            <div className="text-right min-w-[80px]">
+                                                                                <span className="text-sm sm:text-base font-black text-slate-900">GH₵ {(item.quantity * item.price).toFixed(2)}</span>
                                                                             </div>
                                                                         )}
                                                                         <button
                                                                             type="button"
                                                                             onClick={() => handleRemoveMenuItem(idx)}
-                                                                            className="w-7 h-7 rounded-full flex items-center justify-center text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
+                                                                            className="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
                                                                         >
-                                                                            <Trash2 className="w-3.5 h-3.5" />
+                                                                            <Trash2 className="w-4 h-4" />
                                                                         </button>
                                                                     </div>
                                                                 </div>
                                                             ))}
                                                         </div>
                                                         {orderMenuItems.some(i => i.price > 0) && (
-                                                            <div className="p-3 bg-sky-100/60 rounded-2xl flex items-center justify-between text-xs font-bold text-slate-900">
+                                                            <div className="p-3.5 sm:p-4 bg-sky-100/70 rounded-2xl flex items-center justify-between text-sm sm:text-base font-bold text-slate-900">
                                                                 <span>Items Subtotal:</span>
-                                                                <span className="text-sm font-black text-sky-950">
+                                                                <span className="text-base sm:text-lg font-black text-sky-950">
                                                                     GH₵ {orderMenuItems.reduce((s, i) => s + (i.quantity * i.price), 0).toFixed(2)}
                                                                 </span>
                                                             </div>
@@ -1648,7 +1647,7 @@ function CreateOrderContent() {
 
                                                 {/* Package Description / Items Summary */}
                                                 <div className="space-y-1.5 pt-2 border-t border-sky-200/50">
-                                                    <Label htmlFor="courierItemType" className="text-xs font-semibold text-slate-700">
+                                                    <Label htmlFor="courierItemType" className="text-xs sm:text-sm font-bold text-slate-700">
                                                         Package Description / Additional Notes
                                                     </Label>
                                                     <Input
@@ -1656,7 +1655,7 @@ function CreateOrderContent() {
                                                         placeholder="e.g. Documents, Cake Box, Electronics..."
                                                         value={itemType}
                                                         onChange={(e) => setItemType(e.target.value)}
-                                                        className="h-10 sm:h-11 rounded-xl bg-white border-zinc-200 focus-visible:border-sky-400 text-xs sm:text-sm font-medium"
+                                                        className="h-11 sm:h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-sky-400 text-sm sm:text-base font-medium"
                                                     />
                                                 </div>
                                             </div>
@@ -1667,30 +1666,30 @@ function CreateOrderContent() {
                                     {effectiveLogisticsMode === "shipping" && (
                                         <div className="space-y-4">
                                             {/* Shipping Terminal & Consignee Route Card */}
-                                            <div className="bg-indigo-50/50 p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl border border-indigo-200/70 space-y-3.5 sm:space-y-4">
+                                            <div className="bg-indigo-50/50 p-4 sm:p-6 lg:p-8 rounded-2xl sm:rounded-3xl border border-indigo-200/70 space-y-4 sm:space-y-5">
                                                 <div className="flex items-center justify-between">
-                                                    <h3 className="text-xs sm:text-sm font-bold text-indigo-950 tracking-tight flex items-center gap-2">
-                                                        <Ship className="w-4 h-4 text-indigo-600" />
+                                                    <h3 className="text-sm sm:text-base lg:text-lg font-black text-indigo-950 tracking-tight flex items-center gap-2">
+                                                        <Ship className="w-4 h-4 sm:w-5 sm:h-5 text-indigo-600" />
                                                         Cargo Shipment &amp; Consignee Destination
                                                     </h3>
-                                                    <span className="text-[9px] sm:text-[10px] font-bold text-indigo-800 bg-indigo-100 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                                                    <span className="text-[10px] sm:text-xs font-bold text-indigo-800 bg-indigo-100 px-3 py-1 rounded-full uppercase tracking-wider">
                                                         Cargo Shipping
                                                     </span>
                                                 </div>
 
                                                 {/* Consignee / Receiver Details */}
-                                                <div className="p-3.5 sm:p-5 rounded-xl sm:rounded-2xl bg-white border border-indigo-200/60 shadow-2xs space-y-3">
-                                                    <div className="flex items-center justify-between pb-1.5 border-b border-indigo-100">
-                                                        <span className="text-xs font-bold text-indigo-900 flex items-center gap-1.5">
-                                                            <span className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
+                                                <div className="p-4 sm:p-6 rounded-2xl bg-white border border-indigo-200/60 shadow-2xs space-y-4">
+                                                    <div className="flex items-center justify-between pb-2 border-b border-indigo-100">
+                                                        <span className="text-sm sm:text-base font-bold text-indigo-900 flex items-center gap-2">
+                                                            <span className="w-2 h-2 rounded-full bg-indigo-500" />
                                                             Consignee / Receiver Details
                                                         </span>
-                                                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-indigo-50 text-indigo-700 border border-indigo-200/60">Consignee</span>
+                                                        <span className="text-xs font-bold px-2.5 py-0.5 rounded-md bg-indigo-50 text-indigo-700 border border-indigo-200/60">Consignee</span>
                                                     </div>
-                                                    <div className="space-y-2.5">
-                                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                                            <div className="space-y-1">
-                                                                <Label htmlFor="shippingConsigneeName" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">
+                                                    <div className="space-y-3.5 sm:space-y-4">
+                                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                                                            <div className="space-y-1.5">
+                                                                <Label htmlFor="shippingConsigneeName" className="ml-0.5 text-xs sm:text-sm font-bold text-slate-700">
                                                                     Consignee Name <span className="text-red-500">*</span>
                                                                 </Label>
                                                                 <Input
@@ -1700,11 +1699,11 @@ function CreateOrderContent() {
                                                                     placeholder="e.g. Kwame Mensah"
                                                                     required
                                                                     disabled={!canCreateOrder}
-                                                                    className="h-10 sm:h-11 rounded-xl bg-slate-50/50 border-zinc-200 focus-visible:border-indigo-400 text-xs sm:text-sm font-medium"
+                                                                    className="h-11 sm:h-12 rounded-xl bg-slate-50/50 border-zinc-200 focus-visible:border-indigo-400 text-sm sm:text-base font-medium"
                                                                 />
                                                             </div>
-                                                            <div className="space-y-1">
-                                                                <Label htmlFor="shippingConsigneePhone" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">
+                                                            <div className="space-y-1.5">
+                                                                <Label htmlFor="shippingConsigneePhone" className="ml-0.5 text-xs sm:text-sm font-bold text-slate-700">
                                                                     Consignee Phone <span className="text-red-500">*</span>
                                                                 </Label>
                                                                 <PhoneInputWithCountry
@@ -1727,8 +1726,8 @@ function CreateOrderContent() {
                                                                 />
                                                             </div>
                                                         </div>
-                                                        <div className="space-y-1">
-                                                            <Label htmlFor="shippingDestinationPort" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">
+                                                        <div className="space-y-1.5">
+                                                            <Label htmlFor="shippingDestinationPort" className="ml-0.5 text-xs sm:text-sm font-bold text-slate-700">
                                                                 Destination Port / Inland Terminal <span className="text-red-500">*</span>
                                                             </Label>
                                                             <Input
@@ -1738,7 +1737,7 @@ function CreateOrderContent() {
                                                                 placeholder="e.g. Kumasi Inland Freight Hub"
                                                                 required
                                                                 disabled={!canCreateOrder}
-                                                                className="h-10 sm:h-11 rounded-xl bg-slate-50/50 border-zinc-200 focus-visible:border-indigo-400 text-xs sm:text-sm font-medium"
+                                                                className="h-11 sm:h-12 rounded-xl bg-slate-50/50 border-zinc-200 focus-visible:border-indigo-400 text-sm sm:text-base font-medium"
                                                             />
                                                         </div>
                                                     </div>
@@ -1751,7 +1750,7 @@ function CreateOrderContent() {
                                                             <div className="space-y-1.5">
                                                                 <div className="flex items-center gap-1.5">
                                                                     <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                                                                    <span className="text-[9px] font-bold text-slate-500 uppercase tracking-wider">Origin Port (Default)</span>
+                                                                    <span className="text-[10px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider">Origin Port (Default)</span>
                                                                 </div>
                                                                 <div className="w-full h-36 sm:h-44 rounded-xl sm:rounded-2xl overflow-hidden border border-slate-200 bg-slate-100 shadow-inner">
                                                                     <iframe
@@ -1767,9 +1766,9 @@ function CreateOrderContent() {
                                                                     href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(pickupLocation)}`}
                                                                     target="_blank"
                                                                     rel="noopener noreferrer"
-                                                                    className="inline-flex items-center gap-1 text-[10px] font-bold text-indigo-700 hover:text-indigo-800 transition-colors"
+                                                                    className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-700 hover:text-indigo-800 transition-colors"
                                                                 >
-                                                                    <Navigation className="w-3 h-3" />
+                                                                    <Navigation className="w-3.5 h-3.5" />
                                                                     Open in Google Maps
                                                                 </a>
                                                             </div>
@@ -1779,7 +1778,7 @@ function CreateOrderContent() {
                                                             <div className={cn("space-y-1.5", !pickupLocation && "sm:col-start-2")}>
                                                                 <div className="flex items-center gap-1.5">
                                                                     <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse" />
-                                                                    <span className="text-[9px] font-bold text-slate-500 uppercase tracking-wider">Destination Hub</span>
+                                                                    <span className="text-[10px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider">Destination Hub</span>
                                                                 </div>
                                                                 <div className="w-full h-36 sm:h-44 rounded-xl sm:rounded-2xl overflow-hidden border border-slate-200 bg-slate-100 shadow-inner">
                                                                     <iframe
@@ -1795,9 +1794,9 @@ function CreateOrderContent() {
                                                                     href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(deliveryLocation)}`}
                                                                     target="_blank"
                                                                     rel="noopener noreferrer"
-                                                                    className="inline-flex items-center gap-1 text-[10px] font-bold text-indigo-700 hover:text-indigo-800 transition-colors"
+                                                                    className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-700 hover:text-indigo-800 transition-colors"
                                                                 >
-                                                                    <Navigation className="w-3 h-3" />
+                                                                    <Navigation className="w-3.5 h-3.5" />
                                                                     Open in Google Maps
                                                                 </a>
                                                             </div>
@@ -1807,22 +1806,22 @@ function CreateOrderContent() {
                                             </div>
 
                                             {/* Cargo Specifications & Dynamic Freight Calculator */}
-                                            <div className="bg-indigo-50/40 p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl border border-indigo-200/70 space-y-3.5 sm:space-y-4 shadow-xs">
+                                            <div className="bg-indigo-50/40 p-4 sm:p-6 lg:p-8 rounded-2xl sm:rounded-3xl border border-indigo-200/70 space-y-4 sm:space-y-5 shadow-xs">
                                                 <div className="flex items-center justify-between">
                                                     <div className="flex items-center gap-2">
-                                                        <Globe className="w-4 h-4 text-indigo-600" />
-                                                        <Label className="text-xs sm:text-sm font-bold text-slate-900 tracking-tight">
+                                                        <Globe className="w-4 h-4 sm:w-5 sm:h-5 text-indigo-600" />
+                                                        <Label className="text-sm sm:text-base lg:text-lg font-black text-slate-900 tracking-tight">
                                                             Cargo Specifications &amp; Live Freight Calculation
                                                         </Label>
                                                     </div>
-                                                    <span className="text-[9px] sm:text-[10px] font-bold text-indigo-800 bg-indigo-100 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                                                    <span className="text-[10px] sm:text-xs font-bold text-indigo-800 bg-indigo-100 px-3 py-1 rounded-full uppercase tracking-wider">
                                                         Administrative Defaults
                                                     </span>
                                                 </div>
 
                                                 <div className="grid sm:grid-cols-3 gap-3 sm:gap-4">
                                                     <div className="space-y-1.5">
-                                                        <Label htmlFor="waybillRef" className="text-xs font-semibold text-slate-700">
+                                                        <Label htmlFor="waybillRef" className="text-xs sm:text-sm font-bold text-slate-700">
                                                             Waybill Reference / Bill of Lading
                                                         </Label>
                                                         <Input
@@ -1830,13 +1829,13 @@ function CreateOrderContent() {
                                                             placeholder="SHP-ABC123XYZ"
                                                             value={waybillNumber}
                                                             onChange={(e) => setWaybillNumber(e.target.value)}
-                                                            className="h-10 rounded-xl bg-white border-zinc-200 text-xs sm:text-sm font-mono font-bold"
+                                                            className="h-11 sm:h-12 rounded-xl bg-white border-zinc-200 text-sm sm:text-base font-mono font-bold"
                                                         />
                                                     </div>
 
                                                     <div className="space-y-1.5">
-                                                        <Label htmlFor="shippingWeight" className="text-xs font-semibold text-slate-700 flex items-center gap-1">
-                                                            <Scale className="w-3.5 h-3.5 text-indigo-600" />
+                                                        <Label htmlFor="shippingWeight" className="text-xs sm:text-sm font-bold text-slate-700 flex items-center gap-1">
+                                                            <Scale className="w-4 h-4 text-indigo-600" />
                                                             Gross Cargo Weight (kg)
                                                         </Label>
                                                         <Input
@@ -1846,13 +1845,13 @@ function CreateOrderContent() {
                                                             placeholder="e.g. 50"
                                                             value={cargoWeight}
                                                             onChange={(e) => handleCargoWeightChange(e.target.value)}
-                                                            className="h-10 rounded-xl bg-white border-zinc-200 text-xs sm:text-sm font-bold"
+                                                            className="h-11 sm:h-12 rounded-xl bg-white border-zinc-200 text-sm sm:text-base font-bold"
                                                         />
                                                     </div>
 
                                                     <div className="space-y-1.5">
-                                                        <Label htmlFor="shippingVolume" className="text-xs font-semibold text-slate-700 flex items-center gap-1">
-                                                            <Layers className="w-3.5 h-3.5 text-indigo-600" />
+                                                        <Label htmlFor="shippingVolume" className="text-xs sm:text-sm font-bold text-slate-700 flex items-center gap-1">
+                                                            <Layers className="w-4 h-4 text-indigo-600" />
                                                             Volume / CBM (Optional)
                                                         </Label>
                                                         <Input
@@ -1860,24 +1859,24 @@ function CreateOrderContent() {
                                                             placeholder="e.g. 1.2 CBM / Pallet"
                                                             value={cargoDimensions}
                                                             onChange={(e) => setCargoDimensions(e.target.value)}
-                                                            className="h-10 rounded-xl bg-white border-zinc-200 text-xs sm:text-sm"
+                                                            className="h-11 sm:h-12 rounded-xl bg-white border-zinc-200 text-sm sm:text-base font-medium"
                                                         />
                                                     </div>
                                                 </div>
 
                                                 {/* Live Freight Rate Breakdown Card */}
-                                                <div className="p-3 bg-white rounded-xl border border-indigo-200/60 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
-                                                    <div className="space-y-0.5">
+                                                <div className="p-4 sm:p-5 bg-white rounded-2xl border border-indigo-200/60 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-sm">
+                                                    <div className="space-y-1">
                                                         <div className="flex items-center gap-2">
-                                                            <span className="font-bold text-slate-800">Automated Freight Cost:</span>
-                                                            <span className="text-[11px] text-slate-500 font-mono">
+                                                            <span className="font-bold text-slate-800 text-sm sm:text-base">Automated Freight Cost:</span>
+                                                            <span className="text-xs sm:text-sm text-slate-500 font-mono">
                                                                 ({parseFloat(cargoWeight) || 0} kg × GH₵ {freightRatePerKg}/kg) + GH₵ {handlingFee} handling
                                                             </span>
                                                         </div>
-                                                        <p className="text-[10px] text-indigo-600 font-medium">Applied automatically to the order delivery &amp; freight fee.</p>
+                                                        <p className="text-xs text-indigo-600 font-medium">Applied automatically to the order delivery &amp; freight fee.</p>
                                                     </div>
                                                     <div className="text-right">
-                                                        <span className="text-sm sm:text-base font-black text-indigo-950 font-mono">
+                                                        <span className="text-base sm:text-lg font-black text-indigo-950 font-mono">
                                                             GH₵ {(((parseFloat(cargoWeight) || 0) * freightRatePerKg) + handlingFee).toFixed(2)}
                                                         </span>
                                                     </div>
@@ -1890,13 +1889,13 @@ function CreateOrderContent() {
 
                             {/* Customer Information (Retail / Fashion / Non-Logistics Only) */}
                             {effectiveBusinessType !== "logistics" && (
-                                <div className="bg-slate-50/60 p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-200/70 space-y-3.5 sm:space-y-4">
-                                    <h3 className="text-xs sm:text-sm font-bold text-slate-900 tracking-tight flex items-center gap-2">
+                                <div className="bg-slate-50/60 p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-200/70 space-y-4">
+                                    <h3 className="text-sm sm:text-base font-bold text-slate-900 tracking-tight flex items-center gap-2">
                                         Customer Information
                                     </h3>
-                                    <div className="grid sm:grid-cols-2 gap-3 sm:gap-6">
-                                        <div className="space-y-1 sm:space-y-2">
-                                            <Label htmlFor={`${effectiveBusinessType}-customerName`} className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">Customer Name <span className="text-red-500">*</span></Label>
+                                    <div className="grid sm:grid-cols-2 gap-3.5 sm:gap-6">
+                                        <div className="space-y-1.5 sm:space-y-2">
+                                            <Label htmlFor={`${effectiveBusinessType}-customerName`} className="ml-0.5 text-xs sm:text-sm font-bold text-slate-700">Customer Name <span className="text-red-500">*</span></Label>
                                             <Input
                                                 id={`${effectiveBusinessType}-customerName`}
                                                 value={customerName}
@@ -1904,12 +1903,12 @@ function CreateOrderContent() {
                                                 placeholder="Naa"
                                                 required
                                                 disabled={!canCreateOrder}
-                                                className="h-10 sm:h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80 text-xs sm:text-sm"
+                                                className="h-11 sm:h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80 text-sm sm:text-base font-medium"
                                             />
                                         </div>
 
-                                        <div className="space-y-1 sm:space-y-2">
-                                            <Label htmlFor={`${effectiveBusinessType}-customerPhone`} className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">Customer Contact</Label>
+                                        <div className="space-y-1.5 sm:space-y-2">
+                                            <Label htmlFor={`${effectiveBusinessType}-customerPhone`} className="ml-0.5 text-xs sm:text-sm font-bold text-slate-700">Customer Contact</Label>
                                             <PhoneInputWithCountry
                                                 id={`${effectiveBusinessType}-customerPhone`}
                                                 countryCode={pickupCountryCode}
@@ -1932,30 +1931,30 @@ function CreateOrderContent() {
                             )}
 
                             {/* Payment Method Selector (Common to all businesses) */}
-                            <div className="bg-slate-50/60 p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-200/70 space-y-3 sm:space-y-4">
-                                <h3 className="text-xs sm:text-sm font-bold text-slate-900 tracking-tight flex items-center gap-2">
+                            <div className="bg-slate-50/60 p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-200/70 space-y-4">
+                                <h3 className="text-sm sm:text-base font-bold text-slate-900 tracking-tight flex items-center gap-2">
                                     Expected Payment Method
                                 </h3>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-4">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                                     <div 
                                         onClick={() => setPaymentMethod("online")}
-                                        className={`border rounded-xl sm:rounded-2xl p-3 sm:p-4 cursor-pointer flex flex-col gap-1 transition-all ${paymentMethod === "online" ? "bg-[#6B1028]/5 border-[#6B1028]/30 ring-2 ring-[#6B1028]/20" : "bg-white border-slate-200 hover:bg-slate-50"}`}
+                                        className={`border rounded-xl sm:rounded-2xl p-4 sm:p-5 cursor-pointer flex flex-col gap-1.5 transition-all ${paymentMethod === "online" ? "bg-[#6B1028]/5 border-[#6B1028]/30 ring-2 ring-[#6B1028]/20" : "bg-white border-slate-200 hover:bg-slate-50"}`}
                                     >
-                                        <span className={`text-xs sm:text-sm font-bold ${paymentMethod === "online" ? "text-[#6B1028]" : "text-slate-700"}`}>Online Payment</span>
-                                        <span className="text-[11px] sm:text-xs text-slate-500 leading-tight">Customer receives payment link via SMS</span>
+                                        <span className={`text-sm sm:text-base font-bold ${paymentMethod === "online" ? "text-[#6B1028]" : "text-slate-800"}`}>Online Payment</span>
+                                        <span className="text-xs sm:text-sm text-slate-500 leading-snug">Customer receives payment link via SMS</span>
                                     </div>
                                     <div 
                                         onClick={() => setPaymentMethod("cash")}
-                                        className={`border rounded-xl sm:rounded-2xl p-3 sm:p-4 cursor-pointer flex flex-col gap-1 transition-all ${paymentMethod === "cash" ? "bg-emerald-50 border-emerald-200 ring-2 ring-emerald-500/20" : "bg-white border-slate-200 hover:bg-slate-50"}`}
+                                        className={`border rounded-xl sm:rounded-2xl p-4 sm:p-5 cursor-pointer flex flex-col gap-1.5 transition-all ${paymentMethod === "cash" ? "bg-emerald-50 border-emerald-200 ring-2 ring-emerald-500/20" : "bg-white border-slate-200 hover:bg-slate-50"}`}
                                     >
-                                        <span className={`text-xs sm:text-sm font-bold ${paymentMethod === "cash" ? "text-emerald-700" : "text-slate-700"}`}>Cash / Manual Payment</span>
-                                        <span className="text-[11px] sm:text-xs text-slate-500 leading-tight">Order marked paid immediately. No link.</span>
+                                        <span className={`text-sm sm:text-base font-bold ${paymentMethod === "cash" ? "text-emerald-700" : "text-slate-800"}`}>Cash / Manual Payment</span>
+                                        <span className="text-xs sm:text-sm text-slate-500 leading-snug">Order marked paid immediately. No link.</span>
                                     </div>
                                 </div>
 
                                 {paymentMethod === "online" && (
-                                    <div className="mt-3 sm:mt-4 p-3.5 sm:p-5 bg-[#6B1028]/5 rounded-xl sm:rounded-2xl border border-[#6B1028]/20 space-y-3 sm:space-y-4">
-                                        <div className="flex items-center gap-2.5 sm:gap-3">
+                                    <div className="mt-3.5 sm:mt-4 p-4 sm:p-6 bg-[#6B1028]/5 rounded-xl sm:rounded-2xl border border-[#6B1028]/20 space-y-3.5 sm:space-y-4">
+                                        <div className="flex items-center gap-3">
                                             <Checkbox
                                                 id="triggerMomoPrompt"
                                                 checked={triggerMomoPrompt}
@@ -1965,40 +1964,40 @@ function CreateOrderContent() {
                                                         setMomoPhone(recipientPhone || customerPhone)
                                                     }
                                                 }}
-                                                className="rounded-md border-slate-300 text-[#6B1028] focus:ring-[#6B1028]/20 data-[state=checked]:bg-[#6B1028] data-[state=checked]:border-[#6B1028]"
+                                                className="w-5 h-5 rounded-md border-slate-300 text-[#6B1028] focus:ring-[#6B1028]/20 data-[state=checked]:bg-[#6B1028] data-[state=checked]:border-[#6B1028]"
                                             />
-                                            <Label htmlFor="triggerMomoPrompt" className="text-xs font-bold text-slate-700 cursor-pointer">
+                                            <Label htmlFor="triggerMomoPrompt" className="text-xs sm:text-sm font-bold text-slate-800 cursor-pointer">
                                                 Trigger instant Mobile Money PIN Prompt on customer's phone
                                             </Label>
                                         </div>
 
                                         {triggerMomoPrompt && (
-                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 pt-1 sm:pt-2">
-                                                <div className="space-y-1 sm:space-y-2">
-                                                    <Label htmlFor="momoPhone" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">Momo Phone Number</Label>
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4 pt-1 sm:pt-2">
+                                                <div className="space-y-1.5 sm:space-y-2">
+                                                    <Label htmlFor="momoPhone" className="ml-0.5 text-xs sm:text-sm font-bold text-slate-700">Momo Phone Number</Label>
                                                     <Input
                                                         id="momoPhone"
                                                         type="tel"
                                                         placeholder="e.g. 0244000000"
                                                         value={momoPhone}
                                                         onChange={(e) => setMomoPhone(e.target.value)}
-                                                        className="h-10 sm:h-11 rounded-xl bg-white border-zinc-200 focus-visible:border-[#6B1028] text-xs sm:text-sm font-medium"
+                                                        className="h-11 sm:h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-[#6B1028] text-sm sm:text-base font-medium"
                                                     />
                                                 </div>
-                                                <div className="space-y-1 sm:space-y-2">
-                                                    <Label htmlFor="momoProvider" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">Network Provider</Label>
+                                                <div className="space-y-1.5 sm:space-y-2">
+                                                    <Label htmlFor="momoProvider" className="ml-0.5 text-xs sm:text-sm font-bold text-slate-700">Network Provider</Label>
                                                     <Select 
                                                         value={momoProvider} 
                                                         onValueChange={(val: 'mtn' | 'vod' | 'atl') => setMomoProvider(val)}
                                                         disabled={!!detectGhanaNetworkProvider(momoPhone)}
                                                     >
-                                                        <SelectTrigger id="momoProvider" className="h-10 sm:h-11 rounded-xl bg-white border-zinc-200 focus:border-[#6B1028] text-xs sm:text-sm font-medium">
+                                                        <SelectTrigger id="momoProvider" className="h-11 sm:h-12 rounded-xl bg-white border-zinc-200 focus:border-[#6B1028] text-sm sm:text-base font-medium">
                                                             <SelectValue placeholder="Select provider" />
                                                         </SelectTrigger>
                                                         <SelectContent className="rounded-xl border-zinc-100 shadow-xl">
-                                                             <SelectItem value="mtn" className="rounded-lg text-xs sm:text-sm">MTN Ghana</SelectItem>
-                                                             <SelectItem value="vod" className="rounded-lg text-xs sm:text-sm">Telecel (Vodafone)</SelectItem>
-                                                             <SelectItem value="atl" className="rounded-lg text-xs sm:text-sm">AT (AirtelTigo)</SelectItem>
+                                                            <SelectItem value="mtn" className="rounded-lg text-sm sm:text-base font-medium">MTN Ghana</SelectItem>
+                                                            <SelectItem value="vod" className="rounded-lg text-sm sm:text-base font-medium">Telecel (Vodafone)</SelectItem>
+                                                            <SelectItem value="atl" className="rounded-lg text-sm sm:text-base font-medium">AT (AirtelTigo)</SelectItem>
                                                         </SelectContent>
                                                     </Select>
                                                 </div>
@@ -2260,16 +2259,16 @@ function CreateOrderContent() {
 
                             {/* Additional Specifications / Details */}
                             {effectiveBusinessType !== "logistics" ? (
-                                <div className="bg-slate-50/50 p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-200/70 space-y-3.5 sm:space-y-4">
-                                    <h3 className="text-xs sm:text-sm font-bold text-slate-900 tracking-tight">
+                                <div className="bg-slate-50/50 p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-200/70 space-y-4">
+                                    <h3 className="text-sm sm:text-base font-bold text-slate-900 tracking-tight">
                                         {selectedInventory.length > 0 ? "Specifications & Delivery" : "Product Specifications & Delivery"}
                                     </h3>
                                     <div className="grid sm:grid-cols-2 gap-3.5 sm:gap-6">
                                         {/* Manual fields: only rendered if NO inventory is linked and it is NOT a retail business */}
                                         {selectedInventory.length === 0 && !isRetailBusiness && (
                                             <>
-                                                <div className="space-y-1 sm:space-y-2 relative">
-                                                    <Label htmlFor={`${effectiveBusinessType}-itemType`} className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">{config.itemLabel} <span className="text-red-500">*</span></Label>
+                                                <div className="space-y-1.5 sm:space-y-2 relative">
+                                                    <Label htmlFor={`${effectiveBusinessType}-itemType`} className="ml-0.5 text-xs sm:text-sm font-bold text-slate-700">{config.itemLabel} <span className="text-red-500">*</span></Label>
                                                     <div className="relative">
                                                         <Input
                                                             name="order-item-type-search"
@@ -2281,20 +2280,20 @@ function CreateOrderContent() {
                                                             autoComplete="off"
                                                             spellCheck="false"
                                                             disabled={!canCreateOrder}
-                                                            className="h-10 sm:h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80 text-xs sm:text-sm"
+                                                            className="h-11 sm:h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80 text-sm sm:text-base font-medium"
                                                         />
                                                     </div>
                                                 </div>
 
                                                 {!config.extraFields?.some(f => f.id === "quantity") && (
-                                                    <div className="space-y-1 sm:space-y-2">
-                                                        <Label htmlFor={`${effectiveBusinessType}-quantity`} className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">Quantity <span className="text-red-500">*</span></Label>
+                                                    <div className="space-y-1.5 sm:space-y-2">
+                                                        <Label htmlFor={`${effectiveBusinessType}-quantity`} className="ml-0.5 text-xs sm:text-sm font-bold text-slate-700">Quantity <span className="text-red-500">*</span></Label>
                                                         <Input
                                                             id={`${effectiveBusinessType}-quantity`} type="number" min="1"
                                                             value={quantity}
                                                             disabled={!canCreateOrder} onChange={(e) => setQuantity(e.target.value)} required
                                                             placeholder="1"
-                                                            className="h-10 sm:h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80 text-xs sm:text-sm"
+                                                            className="h-11 sm:h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80 text-sm sm:text-base font-medium"
                                                         />
                                                     </div>
                                                 )}
@@ -2303,8 +2302,8 @@ function CreateOrderContent() {
 
                                         {/* Pickup/Delivery Date — hidden for logistics (restaurant delivery) */}
                                         {effectiveBusinessType !== "logistics" && (
-                                        <div className="space-y-1 sm:space-y-2">
-                                            <Label htmlFor={`${effectiveBusinessType}-pickupDate`} className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">{config.orderLabel === "Tracking Number" ? "Date" : "Delivery Date"}</Label>
+                                        <div className="space-y-1.5 sm:space-y-2">
+                                            <Label htmlFor={`${effectiveBusinessType}-pickupDate`} className="ml-0.5 text-xs sm:text-sm font-bold text-slate-700">{config.orderLabel === "Tracking Number" ? "Date" : "Delivery Date"}</Label>
                                             <DatePicker
                                                 date={pickupDate}
                                                 setDate={setPickupDate}
@@ -2316,8 +2315,8 @@ function CreateOrderContent() {
                                         )}
 
                                         {/* Delivery Fee Input */}
-                                        <div className="space-y-1 sm:space-y-2">
-                                            <Label htmlFor="deliveryFee" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">Delivery Fee (GH₵)</Label>
+                                        <div className="space-y-1.5 sm:space-y-2">
+                                            <Label htmlFor="deliveryFee" className="ml-0.5 text-xs sm:text-sm font-bold text-slate-700">Delivery Fee (GH₵)</Label>
                                             <Input 
                                                 type="number" 
                                                 id="deliveryFee" 
@@ -2326,7 +2325,7 @@ function CreateOrderContent() {
                                                 onChange={(e) => setDeliveryFee(Number(e.target.value) || 0)}
                                                 placeholder="0.00"
                                                 disabled={!canCreateOrder}
-                                                className="h-10 sm:h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80 text-xs sm:text-sm"
+                                                className="h-11 sm:h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80 text-sm sm:text-base font-medium"
                                             />
                                         </div>
 
@@ -2343,31 +2342,31 @@ function CreateOrderContent() {
                                                 return true;
                                             })
                                             .map((field) => (
-                                                <div key={field.id} className="space-y-1 sm:space-y-2">
-                                                    <Label htmlFor={`${effectiveBusinessType}-${field.id}`} className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">{field.label}</Label>
+                                                <div key={field.id} className="space-y-1.5 sm:space-y-2">
+                                                    <Label htmlFor={`${effectiveBusinessType}-${field.id}`} className="ml-0.5 text-xs sm:text-sm font-bold text-slate-700">{field.label}</Label>
                                                     <Input
                                                         id={`${effectiveBusinessType}-${field.id}`}
                                                         type={field.type === "number" ? "number" : "text"}
                                                         value={field.id === "quantity" ? quantity : ((metadata[field.id] as string) || "")}
                                                         onChange={(e) => {
-                                                             if (field.id === "quantity") {
-                                                                 setQuantity(e.target.value);
-                                                             } else {
-                                                                 setMetadata({ ...metadata, [field.id]: e.target.value });
-                                                             }
-                                                         }}
-                                                         placeholder={field.placeholder}
-                                                         disabled={!canCreateOrder}
-                                                         className="h-10 sm:h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80 text-xs sm:text-sm"
+                                                            if (field.id === "quantity") {
+                                                                setQuantity(e.target.value);
+                                                            } else {
+                                                                setMetadata({ ...metadata, [field.id]: e.target.value });
+                                                            }
+                                                        }}
+                                                        placeholder={field.placeholder}
+                                                        disabled={!canCreateOrder}
+                                                        className="h-11 sm:h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80 text-sm sm:text-base font-medium"
                                                     />
                                                 </div>
                                             ))}
                                     </div>
                                 </div>
                             ) : (
-                                <div className="bg-slate-50/50 p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-200/70 space-y-3.5 sm:space-y-4">
-                                    <div className="space-y-1 sm:space-y-2">
-                                        <Label htmlFor="deliveryFee" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">
+                                <div className="bg-slate-50/50 p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-200/70 space-y-4">
+                                    <div className="space-y-1.5 sm:space-y-2">
+                                        <Label htmlFor="deliveryFee" className="ml-0.5 text-xs sm:text-sm font-bold text-slate-700">
                                             {effectiveLogisticsMode === "shipping" ? "Freight & Handling Fee (GH₵)" : "Delivery Fee (GH₵)"}
                                         </Label>
                                         <Input 
@@ -2378,7 +2377,7 @@ function CreateOrderContent() {
                                             onChange={(e) => setDeliveryFee(Number(e.target.value) || 0)}
                                             placeholder="0.00"
                                             disabled={!canCreateOrder}
-                                            className="h-10 sm:h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80 text-xs sm:text-sm"
+                                            className="h-11 sm:h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80 text-sm sm:text-base font-medium"
                                         />
                                     </div>
                                 </div>
@@ -2386,7 +2385,7 @@ function CreateOrderContent() {
 
                             {effectiveBusinessType !== "logistics" && (
                                 <div className="space-y-2">
-                                    <Label htmlFor="measurements" className="ml-1 text-xs font-semibold text-muted-foreground tracking-wider">
+                                    <Label htmlFor="measurements" className="ml-1 text-xs sm:text-sm font-bold text-slate-700">
                                         {config.id === "tailoring" ? "Notes / Measurements" : "Notes"}
                                     </Label>
                                     <Textarea
@@ -2396,7 +2395,7 @@ function CreateOrderContent() {
                                         placeholder={config.id === "tailoring" ? "Details, measurements or special instructions..." : "Additional notes or special instructions..."}
                                         rows={3}
                                         disabled={!canCreateOrder}
-                                        className="rounded-xl bg-white border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80 resize-none p-4 text-xs sm:text-sm"
+                                        className="rounded-xl bg-white border-zinc-200 focus-visible:border-slate-300 focus-visible:ring-[4px] focus-visible:ring-slate-100/80 resize-none p-4 text-sm sm:text-base font-medium"
                                     />
                                 </div>
                             )}
