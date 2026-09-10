@@ -1412,7 +1412,7 @@ function CreateOrderContent() {
                                                                 type="button"
                                                                 onClick={() => handleTogglePackageCategory(cat)}
                                                                 className={cn(
-                                                                    "px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 border shadow-2xs cursor-pointer",
+                                                                    "px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 border shadow-2xs cursor-pointer",
                                                                     isSelected
                                                                         ? "bg-sky-600 text-white border-sky-700 shadow-xs"
                                                                         : "bg-white text-slate-800 border-sky-200/80 hover:bg-sky-50 hover:border-sky-300"
@@ -1425,37 +1425,18 @@ function CreateOrderContent() {
                                                     })}
                                                 </div>
 
-                                                {/* Parcel Weight & Notes */}
-                                                <div className="grid sm:grid-cols-2 gap-3 sm:gap-4 pt-2 border-t border-sky-200/50">
-                                                    <div className="space-y-1.5">
-                                                        <Label htmlFor="courierWeight" className="text-xs font-semibold text-slate-700 flex items-center gap-1">
-                                                            <Scale className="w-3.5 h-3.5 text-sky-600" />
-                                                            Parcel Weight (kg)
-                                                        </Label>
-                                                        <Input
-                                                            id="courierWeight"
-                                                            type="number"
-                                                            step="0.1"
-                                                            placeholder="e.g. 2.5"
-                                                            value={cargoWeight}
-                                                            onChange={(e) => setCargoWeight(e.target.value)}
-                                                            className="h-10 rounded-xl bg-white border-zinc-200 text-xs sm:text-sm"
-                                                        />
-                                                    </div>
-
-                                                    <div className="space-y-1.5">
-                                                        <Label htmlFor="courierDimensions" className="text-xs font-semibold text-slate-700 flex items-center gap-1">
-                                                            <Layers className="w-3.5 h-3.5 text-sky-600" />
-                                                            Dimensions / Handling Instructions
-                                                        </Label>
-                                                        <Input
-                                                            id="courierDimensions"
-                                                            placeholder="e.g. 30x20x15 cm, Fragile / Keep Upright"
-                                                            value={cargoDimensions}
-                                                            onChange={(e) => setCargoDimensions(e.target.value)}
-                                                            className="h-10 rounded-xl bg-white border-zinc-200 text-xs sm:text-sm"
-                                                        />
-                                                    </div>
+                                                {/* Selected Package Items / Description */}
+                                                <div className="space-y-1.5 pt-2 border-t border-sky-200/50">
+                                                    <Label htmlFor="courierItemType" className="text-xs font-semibold text-slate-700">
+                                                        Package Description / Items Summary
+                                                    </Label>
+                                                    <Input
+                                                        id="courierItemType"
+                                                        placeholder="e.g. Documents, Cake Box, Electronics..."
+                                                        value={itemType}
+                                                        onChange={(e) => setItemType(e.target.value)}
+                                                        className="h-10 sm:h-11 rounded-xl bg-white border-zinc-200 focus-visible:border-sky-400 text-xs sm:text-sm font-medium"
+                                                    />
                                                 </div>
                                             </div>
                                         </div>
