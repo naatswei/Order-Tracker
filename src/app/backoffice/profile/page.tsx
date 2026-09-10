@@ -1347,7 +1347,6 @@ export default function ProfilePage() {
                                                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                                                         <div>
                                                             <h4 className="text-sm sm:text-base font-bold text-slate-900">Menu Item Presets</h4>
-                                                            <p className="text-xs sm:text-sm text-slate-500 mt-0.5">Preset dishes for 1-click addition when creating food orders.</p>
                                                         </div>
 
                                                         <div className="flex flex-wrap items-center gap-2">
@@ -1656,7 +1655,6 @@ export default function ProfilePage() {
                                                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                                                         <div>
                                                             <h4 className="text-sm sm:text-base font-bold text-slate-900">Package Categories</h4>
-                                                            <p className="text-xs sm:text-sm text-slate-500 mt-0.5">Preset package types for fast parcel selection.</p>
                                                         </div>
 
                                                         <div className="flex flex-wrap items-center gap-2">
