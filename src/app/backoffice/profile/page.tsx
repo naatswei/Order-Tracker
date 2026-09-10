@@ -207,62 +207,8 @@ export default function ProfilePage() {
     const [orderDefaultsSaving, setOrderDefaultsSaving] = useState(false)
 
     // ==========================================
-    // EXCEL EXPORT & IMPORT: PACKAGE CATEGORIES
+    // EXCEL IMPORT: PACKAGE CATEGORIES
     // ==========================================
-    const handleExportPackageCategoriesToExcel = () => {
-        if (!orderDefaults.packageCategories.length) {
-            toast.error("No package categories to export")
-            return
-        }
-        try {
-            const rows = orderDefaults.packageCategories.map((cat, idx) => ({
-                "No.": idx + 1,
-                "Package Category / Item Name": cat,
-                "Service Mode": "Courier Delivery",
-                "Status": "Active"
-            }))
-            const worksheet = XLSX.utils.json_to_sheet(rows)
-            worksheet["!cols"] = [
-                { wch: 6 },
-                { wch: 35 },
-                { wch: 20 },
-                { wch: 10 }
-            ]
-            const workbook = XLSX.utils.book_new()
-            XLSX.utils.book_append_sheet(workbook, worksheet, "Package Categories")
-            const orgSlug = organization?.name?.replace(/[^a-zA-Z0-9]/g, "_") || "Courier"
-            XLSX.writeFile(workbook, `${orgSlug}_Package_Categories.xlsx`)
-            toast.success(`Exported ${orderDefaults.packageCategories.length} categories to Excel successfully!`)
-        } catch (err) {
-            console.error("Export error:", err)
-            toast.error("Failed to export Excel file")
-        }
-    }
-
-    const handleDownloadPackageCategoryTemplate = () => {
-        try {
-            const sampleRows = [
-                { "Package Category / Item Name": "Documents / Envelopes" },
-                { "Package Category / Item Name": "Small Parcel (< 2kg)" },
-                { "Package Category / Item Name": "Medium Box (2-5kg)" },
-                { "Package Category / Item Name": "Large Box (> 5kg)" },
-                { "Package Category / Item Name": "Food & Cake Box" },
-                { "Package Category / Item Name": "Fragile Electronics" },
-                { "Package Category / Item Name": "Clothing & Apparel" },
-                { "Package Category / Item Name": "Medical & Lab Sample" }
-            ]
-            const worksheet = XLSX.utils.json_to_sheet(sampleRows)
-            worksheet["!cols"] = [{ wch: 35 }]
-            const workbook = XLSX.utils.book_new()
-            XLSX.utils.book_append_sheet(workbook, worksheet, "Categories Template")
-            XLSX.writeFile(workbook, "Package_Categories_Template.xlsx")
-            toast.success("Excel template downloaded! Fill in your categories and upload.")
-        } catch (err) {
-            console.error("Template download error:", err)
-            toast.error("Failed to download template")
-        }
-    }
-
     const handleImportPackageCategoriesFromExcel = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]
         if (!file) return
@@ -326,58 +272,8 @@ export default function ProfilePage() {
     }
 
     // ==========================================
-    // EXCEL EXPORT & IMPORT: RESTAURANT MENU PRESETS
+    // EXCEL IMPORT: RESTAURANT MENU PRESETS
     // ==========================================
-    const handleExportMenuPresetsToExcel = () => {
-        if (!orderDefaults.menuPresets.length) {
-            toast.error("No menu presets to export")
-            return
-        }
-        try {
-            const rows = orderDefaults.menuPresets.map((item, idx) => ({
-                "No.": idx + 1,
-                "Dish / Item Name": item.name,
-                "Price (GH₵)": Number(item.price || 0).toFixed(2),
-                "Category / Notes": item.description || ""
-            }))
-            const worksheet = XLSX.utils.json_to_sheet(rows)
-            worksheet["!cols"] = [
-                { wch: 6 },
-                { wch: 30 },
-                { wch: 15 },
-                { wch: 30 }
-            ]
-            const workbook = XLSX.utils.book_new()
-            XLSX.utils.book_append_sheet(workbook, worksheet, "Menu Items")
-            const orgSlug = organization?.name?.replace(/[^a-zA-Z0-9]/g, "_") || "Restaurant"
-            XLSX.writeFile(workbook, `${orgSlug}_Menu_Presets.xlsx`)
-            toast.success(`Exported ${orderDefaults.menuPresets.length} menu items to Excel!`)
-        } catch (err) {
-            console.error("Menu export error:", err)
-            toast.error("Failed to export menu to Excel")
-        }
-    }
-
-    const handleDownloadMenuPresetTemplate = () => {
-        try {
-            const sampleRows = [
-                { "Dish / Item Name": "Jollof Rice with Grilled Chicken", "Price (GH₵)": 45.00, "Category / Notes": "Main Dish" },
-                { "Dish / Item Name": "Fried Rice with Tilapia", "Price (GH₵)": 60.00, "Category / Notes": "Special Combo" },
-                { "Dish / Item Name": "Waakye Special Plate", "Price (GH₵)": 50.00, "Category / Notes": "Includes egg, wele, shito" },
-                { "Dish / Item Name": "Banku with Okro Soup & Fish", "Price (GH₵)": 55.00, "Category / Notes": "Local Cuisine" },
-                { "Dish / Item Name": "Chilled Hibiscus (Sobolo) 500ml", "Price (GH₵)": 15.00, "Category / Notes": "Beverage" }
-            ]
-            const worksheet = XLSX.utils.json_to_sheet(sampleRows)
-            worksheet["!cols"] = [{ wch: 35 }, { wch: 15 }, { wch: 30 }]
-            const workbook = XLSX.utils.book_new()
-            XLSX.utils.book_append_sheet(workbook, worksheet, "Menu Template")
-            XLSX.writeFile(workbook, "Restaurant_Menu_Template.xlsx")
-            toast.success("Menu template downloaded!")
-        } catch (err) {
-            console.error("Template download error:", err)
-            toast.error("Failed to download template")
-        }
-    }
 
     const handleImportMenuPresetsFromExcel = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]
@@ -1287,9 +1183,6 @@ export default function ProfilePage() {
                                                     </div>
                                                     <div>
                                                         <h4 className="text-base sm:text-lg font-bold text-slate-900">Restaurant Delivery Service</h4>
-                                                        <p className="text-xs sm:text-sm text-slate-500 mt-1.5 leading-relaxed">
-                                                            Contract food orders (e.g. Marwako, Papaye) with branch pickups, 1-click menu catalog, dish pricing, and delivery fees.
-                                                        </p>
                                                     </div>
                                                 </div>
 
@@ -1315,9 +1208,6 @@ export default function ProfilePage() {
                                                     </div>
                                                     <div>
                                                         <h4 className="text-base sm:text-lg font-bold text-slate-900">Delivery Service (Courier)</h4>
-                                                        <p className="text-xs sm:text-sm text-slate-500 mt-1.5 leading-relaxed">
-                                                            Local on-demand courier &amp; dispatch. Pickup hub, recipient dropoff, package category tags, and courier delivery rates.
-                                                        </p>
                                                     </div>
                                                 </div>
 
@@ -1343,9 +1233,6 @@ export default function ProfilePage() {
                                                     </div>
                                                     <div>
                                                         <h4 className="text-base sm:text-lg font-bold text-slate-900">Shipping (Freight &amp; Cargo)</h4>
-                                                        <p className="text-xs sm:text-sm text-slate-500 mt-1.5 leading-relaxed">
-                                                            Intercity/international cargo &amp; forwarding. Origin ports, destination hubs, per-kg rates, handling fees, and waybill numbers.
-                                                        </p>
                                                     </div>
                                                 </div>
                                             </div>
@@ -1460,24 +1347,11 @@ export default function ProfilePage() {
                                                                 <h3 className="text-sm sm:text-base md:text-lg font-bold text-slate-900">Restaurant Menu Entries &amp; Dish Catalog</h3>
                                                             </div>
                                                             <p className="text-xs sm:text-sm text-slate-500 mt-1">
-                                                                Configure restaurant menu presets for 1-click order creation. Export to Excel, bulk import menu spreadsheets, or search instantly.
+                                                                Configure restaurant menu presets for 1-click order creation. Bulk import menu spreadsheets or search instantly.
                                                             </p>
                                                         </div>
 
                                                         <div className="flex flex-wrap items-center gap-2">
-                                                            <Button
-                                                                type="button"
-                                                                variant="outline"
-                                                                size="sm"
-                                                                onClick={handleExportMenuPresetsToExcel}
-                                                                disabled={orderDefaults.menuPresets.length === 0}
-                                                                className="h-9 sm:h-10 rounded-xl text-xs sm:text-sm font-bold text-emerald-700 border-emerald-200 bg-emerald-50 hover:bg-emerald-100 cursor-pointer shadow-2xs px-3.5"
-                                                                title="Export restaurant menu to Excel"
-                                                            >
-                                                                <Download className="w-4 h-4 mr-1.5 text-emerald-600" />
-                                                                Export Excel
-                                                            </Button>
-
                                                             <Button
                                                                 type="button"
                                                                 variant="outline"
@@ -1488,43 +1362,6 @@ export default function ProfilePage() {
                                                             >
                                                                 <Upload className="w-4 h-4 mr-1.5 text-indigo-600" />
                                                                 Import Excel
-                                                            </Button>
-
-                                                            <Button
-                                                                type="button"
-                                                                variant="ghost"
-                                                                size="sm"
-                                                                onClick={handleDownloadMenuPresetTemplate}
-                                                                className="h-9 sm:h-10 rounded-xl text-xs sm:text-sm font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 cursor-pointer px-3"
-                                                                title="Download sample menu Excel template"
-                                                            >
-                                                                <FileSpreadsheet className="w-4 h-4 mr-1.5 text-slate-500" />
-                                                                Template
-                                                            </Button>
-
-                                                            <Button
-                                                                type="button"
-                                                                variant="outline"
-                                                                size="sm"
-                                                                onClick={() => {
-                                                                    const sampleItems: MenuPresetItem[] = [
-                                                                        { id: `preset_${Date.now()}_1`, name: "Assorted Fried Rice", price: 75, description: "Main Meal" },
-                                                                        { id: `preset_${Date.now()}_2`, name: "Grilled Chicken with Jollof", price: 70, description: "Main Meal" },
-                                                                        { id: `preset_${Date.now()}_3`, name: "Beef Shawarma Special", price: 45, description: "Shawarma" },
-                                                                        { id: `preset_${Date.now()}_4`, name: "Chicken Shawarma Wrap", price: 45, description: "Shawarma" },
-                                                                        { id: `preset_${Date.now()}_5`, name: "Grilled Whole Chicken", price: 120, description: "Grill" },
-                                                                        { id: `preset_${Date.now()}_6`, name: "Fresh Sobolo / Hibiscus Drink", price: 20, description: "Beverage" }
-                                                                    ]
-                                                                    setOrderDefaults(prev => ({
-                                                                        ...prev,
-                                                                        menuPresets: [...prev.menuPresets, ...sampleItems]
-                                                                    }))
-                                                                    toast.success("Loaded sample restaurant menu presets!")
-                                                                }}
-                                                                className="h-9 sm:h-10 rounded-xl text-xs sm:text-sm font-bold text-amber-700 border-amber-200 bg-amber-50 hover:bg-amber-100 cursor-pointer shadow-2xs px-3.5"
-                                                            >
-                                                                <Sparkles className="w-4 h-4 mr-1.5 text-amber-600" />
-                                                                Load Sample Menu
                                                             </Button>
 
                                                             {orderDefaults.menuPresets.length > 0 && (
@@ -1652,7 +1489,7 @@ export default function ProfilePage() {
                                                                     </div>
                                                                     <div>
                                                                         <p className="text-base font-bold text-slate-800">No menu presets configured yet</p>
-                                                                        <p className="text-xs sm:text-sm text-slate-500 mt-1">Click "Load Sample Menu", upload an Excel file, or type custom food items above.</p>
+                                                                        <p className="text-xs sm:text-sm text-slate-500 mt-1">Upload an Excel file or type custom food items above.</p>
                                                                     </div>
                                                                 </div>
                                                             )
@@ -1828,24 +1665,11 @@ export default function ProfilePage() {
                                                                 <h3 className="text-sm sm:text-base md:text-lg font-bold text-slate-900">Standard Package Categories &amp; Dispatch Goods</h3>
                                                             </div>
                                                             <p className="text-xs sm:text-sm text-slate-500 mt-1">
-                                                                Configure standard package types for 1-click order entry. Export your catalog to Excel, import bulk spreadsheets, or search instantly.
+                                                                Configure standard package types for 1-click order entry. Bulk import spreadsheets or search instantly.
                                                             </p>
                                                         </div>
 
                                                         <div className="flex flex-wrap items-center gap-2">
-                                                            <Button
-                                                                type="button"
-                                                                variant="outline"
-                                                                size="sm"
-                                                                onClick={handleExportPackageCategoriesToExcel}
-                                                                disabled={orderDefaults.packageCategories.length === 0}
-                                                                className="h-9 sm:h-10 rounded-xl text-xs sm:text-sm font-bold text-emerald-700 border-emerald-200 bg-emerald-50 hover:bg-emerald-100 cursor-pointer shadow-2xs px-3.5"
-                                                                title="Export all package categories to an Excel spreadsheet"
-                                                            >
-                                                                <Download className="w-4 h-4 mr-1.5 text-emerald-600" />
-                                                                Export Excel
-                                                            </Button>
-
                                                             <Button
                                                                 type="button"
                                                                 variant="outline"
@@ -1856,45 +1680,6 @@ export default function ProfilePage() {
                                                             >
                                                                 <Upload className="w-4 h-4 mr-1.5 text-indigo-600" />
                                                                 Import Excel
-                                                            </Button>
-
-                                                            <Button
-                                                                type="button"
-                                                                variant="ghost"
-                                                                size="sm"
-                                                                onClick={handleDownloadPackageCategoryTemplate}
-                                                                className="h-9 sm:h-10 rounded-xl text-xs sm:text-sm font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 cursor-pointer px-3"
-                                                                title="Download a pre-formatted Excel template"
-                                                            >
-                                                                <FileSpreadsheet className="w-4 h-4 mr-1.5 text-slate-500" />
-                                                                Template
-                                                            </Button>
-
-                                                            <Button
-                                                                type="button"
-                                                                variant="outline"
-                                                                size="sm"
-                                                                onClick={() => {
-                                                                    const sampleCategories = [
-                                                                        "Documents / Envelope",
-                                                                        "Small Parcel (< 2kg)",
-                                                                        "Medium Box (2-5kg)",
-                                                                        "Large Box (> 5kg)",
-                                                                        "Food / Cake Box",
-                                                                        "Fragile Electronics",
-                                                                        "Clothing / Apparel",
-                                                                        "Medical Samples"
-                                                                    ]
-                                                                    setOrderDefaults(prev => ({
-                                                                        ...prev,
-                                                                        packageCategories: Array.from(new Set([...prev.packageCategories, ...sampleCategories]))
-                                                                    }))
-                                                                    toast.success("Loaded standard courier package categories!")
-                                                                }}
-                                                                className="h-9 sm:h-10 rounded-xl text-xs sm:text-sm font-bold text-blue-700 border-blue-200 bg-blue-50 hover:bg-blue-100 cursor-pointer shadow-2xs px-3.5"
-                                                            >
-                                                                <Sparkles className="w-4 h-4 mr-1.5 text-blue-600" />
-                                                                Load Defaults
                                                             </Button>
 
                                                             {orderDefaults.packageCategories.length > 0 && (
@@ -2009,33 +1794,9 @@ export default function ProfilePage() {
                                                                     </div>
                                                                     <div>
                                                                         <p className="text-base font-bold text-slate-800">No package categories configured yet</p>
-                                                                        <p className="text-xs sm:text-sm text-slate-500 mt-1">Click "Load Defaults", upload an Excel file, or type custom package names above.</p>
+                                                                        <p className="text-xs sm:text-sm text-slate-500 mt-1">Upload an Excel file or type custom package names above.</p>
                                                                     </div>
                                                                     <div className="flex items-center justify-center gap-2 pt-2">
-                                                                        <Button
-                                                                            type="button"
-                                                                            size="sm"
-                                                                            onClick={() => {
-                                                                                const sampleCategories = [
-                                                                                    "Documents / Envelope",
-                                                                                    "Small Parcel (< 2kg)",
-                                                                                    "Medium Box (2-5kg)",
-                                                                                    "Large Box (> 5kg)",
-                                                                                    "Food / Cake Box",
-                                                                                    "Fragile Electronics",
-                                                                                    "Clothing / Apparel"
-                                                                                ]
-                                                                                setOrderDefaults(prev => ({
-                                                                                    ...prev,
-                                                                                    packageCategories: sampleCategories
-                                                                                }))
-                                                                                toast.success("Standard package categories loaded!")
-                                                                            }}
-                                                                            className="rounded-xl text-xs sm:text-sm font-bold bg-blue-600 hover:bg-blue-700 text-white h-9 px-4"
-                                                                        >
-                                                                            <Sparkles className="w-4 h-4 mr-1.5" />
-                                                                            Load Standard Defaults
-                                                                        </Button>
                                                                         <Button
                                                                             type="button"
                                                                             variant="outline"
