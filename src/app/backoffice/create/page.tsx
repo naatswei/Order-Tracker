@@ -989,7 +989,7 @@ function CreateOrderContent() {
                                                                 href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(deliveryLocation)}`}
                                                                 target="_blank"
                                                                 rel="noopener noreferrer"
-                                                                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white border border-slate-200 text-[#6B1028] hover:bg-slate-50 text-xs font-bold shadow-xs transition-all"
+                                                                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white border border-slate-200 text-slate-700 hover:text-slate-900 hover:bg-slate-50 text-xs font-bold shadow-xs transition-all"
                                                             >
                                                                 <Navigation className="w-3.5 h-3.5" />
                                                                 Open in Google Maps
@@ -1003,7 +1003,7 @@ function CreateOrderContent() {
                                             <div className="bg-slate-50/60 p-4 sm:p-6 lg:p-8 rounded-2xl sm:rounded-3xl border border-slate-200/80 space-y-4 sm:space-y-5 shadow-2xs">
                                                 <div className="flex items-center justify-between">
                                                     <div className="flex items-center gap-2">
-                                                        <UtensilsCrossed className="w-4 h-4 sm:w-5 sm:h-5 text-[#6B1028]" />
+                                                        <UtensilsCrossed className="w-4 h-4 sm:w-5 sm:h-5 text-slate-700" />
                                                         <Label className="text-sm sm:text-base lg:text-lg font-black text-slate-900 tracking-tight">
                                                             MENU
                                                         </Label>
@@ -1032,7 +1032,7 @@ function CreateOrderContent() {
                                                             }}
                                                             placeholder="Search menu items (e.g. Assorted Fried Rice, Chicken Shawarma, Jollof, Drinks)..."
                                                             disabled={!canCreateOrder}
-                                                            className="h-14 sm:h-16 pl-12 pr-12 rounded-full bg-white border-zinc-200 focus-visible:border-[#6B1028] focus-visible:ring-[4px] focus-visible:ring-[#6B1028]/10 text-sm sm:text-base font-medium shadow-2xs"
+                                                            className="h-14 sm:h-16 pl-12 pr-12 rounded-full bg-white border-zinc-200 focus-visible:border-slate-400 focus-visible:ring-[4px] focus-visible:ring-slate-100/80 text-sm sm:text-base font-medium shadow-2xs"
                                                         />
                                                         {menuSearchQuery && (
                                                             <button
@@ -1085,7 +1085,7 @@ function CreateOrderContent() {
                                                                                         onClick={handleSelect}
                                                                                     >
                                                                                         <div className="flex items-center gap-2.5 min-w-0">
-                                                                                            <div className="w-8 h-8 rounded-full bg-[#6B1028]/10 flex items-center justify-center text-[#6B1028] shrink-0 font-bold text-xs">
+                                                                                            <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-700 shrink-0 font-bold text-xs">
                                                                                                 <UtensilsCrossed className="w-3.5 h-3.5" />
                                                                                             </div>
                                                                                             <div className="min-w-0">
@@ -1102,7 +1102,7 @@ function CreateOrderContent() {
                                                                                                 GH₵ {Number(preset.price).toFixed(2)}
                                                                                             </span>
                                                                                             {currentCount > 0 && (
-                                                                                                <span className="w-6 h-6 rounded-full bg-[#6B1028] text-white text-[11px] font-black flex items-center justify-center">
+                                                                                                <span className="w-6 h-6 rounded-full bg-[#191A43] text-white text-[11px] font-black flex items-center justify-center">
                                                                                                     {currentCount}
                                                                                                 </span>
                                                                                             )}
@@ -1111,7 +1111,7 @@ function CreateOrderContent() {
                                                                                                 title="Add to order"
                                                                                                 onMouseDown={handleSelect}
                                                                                                 onClick={handleSelect}
-                                                                                                className="w-10 h-10 rounded-full bg-[#6B1028] hover:bg-[#540d20] text-white flex items-center justify-center shadow-xs transition-colors shrink-0 cursor-pointer"
+                                                                                                className="w-10 h-10 rounded-full bg-[#191A43] hover:bg-[#25275e] text-white flex items-center justify-center shadow-xs transition-colors shrink-0 cursor-pointer"
                                                                                             >
                                                                                                 <Plus className="w-5 h-5 stroke-[2.5]" />
                                                                                             </button>
@@ -1163,7 +1163,7 @@ function CreateOrderContent() {
                                                                                             handleAddCustomMenuItem(menuSearchQuery, p)
                                                                                         }}
                                                                                         title="Add custom item"
-                                                                                        className="w-10 h-10 rounded-full bg-[#6B1028] hover:bg-[#540d20] text-white flex items-center justify-center shrink-0 shadow-xs cursor-pointer transition-colors"
+                                                                                        className="w-10 h-10 rounded-full bg-[#191A43] hover:bg-[#25275e] text-white flex items-center justify-center shrink-0 shadow-xs cursor-pointer transition-colors"
                                                                                     >
                                                                                         <Plus className="w-5 h-5 stroke-[2.5]" />
                                                                                     </button>
@@ -1202,7 +1202,7 @@ function CreateOrderContent() {
                                                                         }
                                                                     }
                                                                 }}
-                                                                className="h-11 sm:h-12 rounded-xl bg-slate-50/50 border-zinc-200 focus-visible:border-[#6B1028] text-sm sm:text-base font-medium"
+                                                                className="h-11 sm:h-12 rounded-xl bg-slate-50/50 border-zinc-200 focus-visible:border-slate-400 text-sm sm:text-base font-medium"
                                                             />
                                                         </div>
                                                         <div className="sm:col-span-3 space-y-1">
@@ -1228,7 +1228,7 @@ function CreateOrderContent() {
                                                                         }
                                                                     }
                                                                 }}
-                                                                className="h-11 sm:h-12 pl-12 rounded-xl bg-slate-50/50 border-zinc-200 focus-visible:border-[#6B1028] text-sm sm:text-base font-medium"
+                                                                className="h-11 sm:h-12 pl-12 rounded-xl bg-slate-50/50 border-zinc-200 focus-visible:border-slate-400 text-sm sm:text-base font-medium"
                                                             />
                                                         </div>
                                                     </div>
@@ -1243,7 +1243,7 @@ function CreateOrderContent() {
                                                                 }
                                                             }}
                                                             disabled={!customItemName.trim()}
-                                                            className="w-full h-11 sm:h-12 rounded-xl bg-[#6B1028] hover:bg-[#540d20] text-white text-sm sm:text-base font-bold shadow-xs cursor-pointer"
+                                                            className="w-full h-11 sm:h-12 rounded-xl bg-[#191A43] hover:bg-[#25275e] text-white text-sm sm:text-base font-bold shadow-xs cursor-pointer"
                                                         >
                                                             <Plus className="w-4 h-4 mr-1.5" />
                                                             Add Item
@@ -1323,15 +1323,15 @@ function CreateOrderContent() {
 
                                 {effectiveLogisticsMode === "delivery" && (
                                     <div className="space-y-4">
-                                            <div className="bg-sky-50/50 p-4 sm:p-6 lg:p-8 rounded-2xl sm:rounded-3xl border border-sky-200/70 space-y-4 sm:space-y-5 shadow-xs">
+                                            <div className="bg-slate-50/60 p-4 sm:p-6 lg:p-8 rounded-2xl sm:rounded-3xl border border-slate-200/80 space-y-4 sm:space-y-5 shadow-xs">
                                                 {/* Recipient Details */}
-                                                <div className="p-4 sm:p-6 rounded-2xl bg-white border border-sky-200/60 shadow-2xs space-y-4">
-                                                    <div className="flex items-center justify-between pb-2 border-b border-sky-100">
-                                                        <span className="text-sm sm:text-base font-bold text-sky-900 flex items-center gap-2">
-                                                            <span className="w-2 h-2 rounded-full bg-sky-500" />
+                                                <div className="p-4 sm:p-6 rounded-2xl bg-white border border-slate-200/80 shadow-2xs space-y-4">
+                                                    <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+                                                        <span className="text-sm sm:text-base font-bold text-slate-900 flex items-center gap-2">
+                                                            <span className="w-2 h-2 rounded-full bg-slate-700" />
                                                             Recipient Delivery Details
                                                         </span>
-                                                        <span className="text-xs font-bold px-2.5 py-0.5 rounded-md bg-sky-50 text-sky-700 border border-sky-200/60">Recipient</span>
+                                                        <span className="text-xs font-bold px-2.5 py-0.5 rounded-md bg-slate-100 text-slate-700 border border-slate-200">Recipient</span>
                                                     </div>
                                                     <div className="space-y-3 sm:space-y-4">
                                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
@@ -1346,7 +1346,7 @@ function CreateOrderContent() {
                                                                     placeholder="e.g. Kofi Boateng"
                                                                     required
                                                                     disabled={!canCreateOrder}
-                                                                    className="h-11 sm:h-12 rounded-xl bg-slate-50/50 border-zinc-200 focus-visible:border-sky-400 text-sm sm:text-base font-medium"
+                                                                    className="h-11 sm:h-12 rounded-xl bg-slate-50/50 border-zinc-200 focus-visible:border-slate-400 text-sm sm:text-base font-medium"
                                                                 />
                                                             </div>
                                                             <div className="space-y-1.5">
@@ -1384,7 +1384,7 @@ function CreateOrderContent() {
                                                                 placeholder="e.g. Airport Residential, 5th Avenue"
                                                                 required
                                                                 disabled={!canCreateOrder}
-                                                                className="h-11 sm:h-12 rounded-xl bg-slate-50/50 border-zinc-200 focus-visible:border-sky-400 text-sm sm:text-base font-medium"
+                                                                className="h-11 sm:h-12 rounded-xl bg-slate-50/50 border-zinc-200 focus-visible:border-slate-400 text-sm sm:text-base font-medium"
                                                             />
                                                         </div>
                                                     </div>
@@ -1413,7 +1413,7 @@ function CreateOrderContent() {
                                                                     href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(pickupLocation)}`}
                                                                     target="_blank"
                                                                     rel="noopener noreferrer"
-                                                                    className="inline-flex items-center gap-1.5 text-xs font-bold text-sky-700 hover:text-sky-800 transition-colors"
+                                                                    className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-700 hover:text-slate-900 transition-colors"
                                                                 >
                                                                     <Navigation className="w-3.5 h-3.5" />
                                                                     Open in Google Maps
@@ -1424,7 +1424,7 @@ function CreateOrderContent() {
                                                         {deliveryLocation && (
                                                             <div className={cn("space-y-1.5", !pickupLocation && "sm:col-start-2")}>
                                                                 <div className="flex items-center gap-1.5">
-                                                                    <div className="w-1.5 h-1.5 rounded-full bg-sky-500 animate-pulse" />
+                                                                    <div className="w-1.5 h-1.5 rounded-full bg-slate-700 animate-pulse" />
                                                                     <span className="text-[10px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider">Drop Off Location</span>
                                                                 </div>
                                                                 <div className="w-full h-40 sm:h-48 rounded-xl sm:rounded-2xl overflow-hidden border border-slate-200 bg-slate-100 shadow-inner">
@@ -1441,7 +1441,7 @@ function CreateOrderContent() {
                                                                     href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(deliveryLocation)}`}
                                                                     target="_blank"
                                                                     rel="noopener noreferrer"
-                                                                    className="inline-flex items-center gap-1.5 text-xs font-bold text-sky-700 hover:text-sky-800 transition-colors"
+                                                                    className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-700 hover:text-slate-900 transition-colors"
                                                                 >
                                                                     <Navigation className="w-3.5 h-3.5" />
                                                                     Open in Google Maps
@@ -1453,15 +1453,15 @@ function CreateOrderContent() {
                                             </div>
 
                                             {/* Package Categories & Custom Order Items Entry */}
-                                            <div className="bg-sky-50/40 p-4 sm:p-6 lg:p-8 rounded-2xl sm:rounded-3xl border border-sky-200/70 space-y-4 sm:space-y-5 shadow-xs">
+                                            <div className="bg-slate-50/60 p-4 sm:p-6 lg:p-8 rounded-2xl sm:rounded-3xl border border-slate-200/80 space-y-4 sm:space-y-5 shadow-xs">
                                                 <div className="flex items-center justify-between">
                                                     <div className="flex items-center gap-2">
-                                                        <Box className="w-4 h-4 sm:w-5 sm:h-5 text-sky-600" />
+                                                        <Box className="w-4 h-4 sm:w-5 sm:h-5 text-slate-700" />
                                                         <Label className="text-sm sm:text-base lg:text-lg font-black text-slate-900 tracking-tight">
                                                             Package &amp; Order Items
                                                         </Label>
                                                     </div>
-                                                    <span className="text-[10px] sm:text-xs font-bold text-sky-800 bg-sky-100 px-3 py-1 rounded-full uppercase tracking-wider">
+                                                    <span className="text-[10px] sm:text-xs font-bold text-slate-700 bg-slate-100 px-3 py-1 rounded-full uppercase tracking-wider">
                                                         Courier Service
                                                     </span>
                                                 </div>
@@ -1472,7 +1472,7 @@ function CreateOrderContent() {
                                                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
                                                             <div className="flex items-center gap-2">
                                                                 <p className="text-xs sm:text-sm font-bold text-slate-700">Quick-Add Category Presets:</p>
-                                                                <span className="text-[10px] font-bold text-sky-700 bg-sky-100/80 px-2 py-0.5 rounded-full">
+                                                                <span className="text-[10px] font-bold text-slate-700 bg-slate-100 px-2 py-0.5 rounded-full">
                                                                     {packageCategories.length} available
                                                                 </span>
                                                             </div>
@@ -1484,7 +1484,7 @@ function CreateOrderContent() {
                                                                         value={courierCategorySearch}
                                                                         onChange={(e) => setCourierCategorySearch(e.target.value)}
                                                                         placeholder="Search categories (e.g. Box, Food)..."
-                                                                        className="h-8.5 pl-8 pr-7 rounded-xl bg-white border-sky-200/80 text-xs font-medium focus-visible:border-sky-400"
+                                                                        className="h-8.5 pl-8 pr-7 rounded-xl bg-white border-slate-200 text-xs font-medium focus-visible:border-slate-400"
                                                                     />
                                                                     {courierCategorySearch && (
                                                                         <button
@@ -1505,7 +1505,7 @@ function CreateOrderContent() {
 
                                                             if (filteredCats.length === 0) {
                                                                 return (
-                                                                    <div className="p-3.5 bg-white rounded-xl border border-dashed border-sky-200 text-center flex flex-col sm:flex-row items-center justify-between gap-2 text-xs">
+                                                                    <div className="p-3.5 bg-white rounded-xl border border-dashed border-slate-200 text-center flex flex-col sm:flex-row items-center justify-between gap-2 text-xs">
                                                                         <span className="text-slate-600 font-medium">
                                                                             No category matching <strong className="text-slate-900">"{courierCategorySearch}"</strong>
                                                                         </span>
@@ -1518,7 +1518,7 @@ function CreateOrderContent() {
                                                                                 handleTogglePackageCategory(val)
                                                                                 setCourierCategorySearch("")
                                                                             }}
-                                                                            className="h-7.5 px-3 rounded-lg bg-sky-600 hover:bg-sky-700 text-white font-bold text-xs shadow-2xs cursor-pointer"
+                                                                            className="h-7.5 px-3 rounded-lg bg-[#191A43] hover:bg-[#25275e] text-white font-bold text-xs shadow-2xs cursor-pointer"
                                                                         >
                                                                             <Plus className="w-3.5 h-3.5 mr-1" />
                                                                             Add "{courierCategorySearch}" to Order
@@ -1540,11 +1540,11 @@ function CreateOrderContent() {
                                                                                 className={cn(
                                                                                     "px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 border shadow-2xs cursor-pointer",
                                                                                     isSelected
-                                                                                        ? "bg-sky-600 text-white border-sky-700 shadow-xs ring-2 ring-sky-300/50"
-                                                                                        : "bg-white text-slate-800 border-sky-200/80 hover:bg-sky-50 hover:border-sky-300"
+                                                                                        ? "bg-slate-900 text-white border-slate-900 shadow-xs ring-2 ring-slate-400/30"
+                                                                                        : "bg-white text-slate-800 border-slate-200 hover:bg-slate-50 hover:border-slate-300"
                                                                                 )}
                                                                             >
-                                                                                <Tag className="w-3.5 h-3.5 text-sky-600" />
+                                                                                <Tag className={cn("w-3.5 h-3.5", isSelected ? "text-white" : "text-slate-500")} />
                                                                                 <span>{cat}</span>
                                                                                 {existingItem && (
                                                                                     <span className="ml-1 px-2 py-0.5 bg-white/25 rounded-full text-xs font-bold">
@@ -1561,10 +1561,10 @@ function CreateOrderContent() {
                                                 )}
 
                                                 {/* Direct Custom Package / Order Item Entry */}
-                                                <div className="p-4 sm:p-5 rounded-2xl bg-white border border-sky-200/70 shadow-2xs space-y-3">
+                                                <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs space-y-3">
                                                     <div className="flex items-center justify-between">
-                                                        <span className="text-sm sm:text-base font-bold text-sky-950 flex items-center gap-1.5">
-                                                            <Plus className="w-4 h-4 text-sky-600" />
+                                                        <span className="text-sm sm:text-base font-bold text-slate-900 flex items-center gap-1.5">
+                                                            <Plus className="w-4 h-4 text-slate-700" />
                                                             Add Custom Package / Order Item
                                                         </span>
                                                         <span className="text-xs text-slate-500 font-medium">Add parcels, goods or items to deliver</span>
@@ -1585,7 +1585,7 @@ function CreateOrderContent() {
                                                                         }
                                                                     }
                                                                 }}
-                                                                className="h-11 sm:h-12 rounded-xl bg-slate-50/50 border-zinc-200 focus-visible:border-sky-400 text-sm sm:text-base font-medium"
+                                                                className="h-11 sm:h-12 rounded-xl bg-slate-50/50 border-zinc-200 focus-visible:border-slate-400 text-sm sm:text-base font-medium"
                                                             />
                                                         </div>
                                                         <div className="sm:col-span-3">
@@ -1607,7 +1607,7 @@ function CreateOrderContent() {
                                                                             }
                                                                         }
                                                                     }}
-                                                                    className="h-11 sm:h-12 pl-12 rounded-xl bg-slate-50/50 border-zinc-200 focus-visible:border-sky-400 text-sm sm:text-base font-medium"
+                                                                    className="h-11 sm:h-12 pl-12 rounded-xl bg-slate-50/50 border-zinc-200 focus-visible:border-slate-400 text-sm sm:text-base font-medium"
                                                                 />
                                                             </div>
                                                         </div>
@@ -1622,7 +1622,7 @@ function CreateOrderContent() {
                                                                     }
                                                                 }}
                                                                 disabled={!customItemName.trim()}
-                                                                className="w-full h-11 sm:h-12 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-sm sm:text-base font-bold shadow-xs cursor-pointer"
+                                                                className="w-full h-11 sm:h-12 rounded-xl bg-[#191A43] hover:bg-[#25275e] text-white text-sm sm:text-base font-bold shadow-xs cursor-pointer"
                                                             >
                                                                 <Plus className="w-4 h-4 mr-1.5" />
                                                                 Add Item
@@ -1633,7 +1633,7 @@ function CreateOrderContent() {
 
                                                 {/* Selected Package / Order Items Table */}
                                                 {orderMenuItems.length > 0 && (
-                                                    <div className="space-y-2.5 pt-2 border-t border-sky-200/50">
+                                                    <div className="space-y-2.5 pt-2 border-t border-slate-200">
                                                         <div className="flex items-center justify-between">
                                                             <p className="text-xs sm:text-sm font-bold text-slate-700 uppercase tracking-wider">
                                                                 Selected Order Items ({orderMenuItems.reduce((s, i) => s + i.quantity, 0)})
@@ -1651,7 +1651,7 @@ function CreateOrderContent() {
                                                         </div>
                                                         <div className="space-y-2">
                                                             {orderMenuItems.map((item, idx) => (
-                                                                <div key={item.id || idx} className="flex items-center justify-between gap-3 p-3 sm:p-4 bg-white rounded-xl border border-sky-200/70 shadow-xs">
+                                                                <div key={item.id || idx} className="flex items-center justify-between gap-3 p-3 sm:p-4 bg-white rounded-xl border border-slate-200/80 shadow-xs">
                                                                     <div className="min-w-0 flex-1">
                                                                         <p className="text-sm sm:text-base font-bold text-slate-900 truncate">{item.name}</p>
                                                                         <p className="text-xs text-slate-500 font-medium">
@@ -1693,9 +1693,9 @@ function CreateOrderContent() {
                                                             ))}
                                                         </div>
                                                         {orderMenuItems.some(i => i.price > 0) && (
-                                                            <div className="p-3.5 sm:p-4 bg-sky-100/70 rounded-2xl flex items-center justify-between text-sm sm:text-base font-bold text-slate-900">
+                                                            <div className="p-3.5 sm:p-4 bg-slate-100 rounded-2xl flex items-center justify-between text-sm sm:text-base font-bold text-slate-900">
                                                                 <span>Items Subtotal:</span>
-                                                                <span className="text-base sm:text-lg font-black text-sky-950">
+                                                                <span className="text-base sm:text-lg font-black text-slate-900">
                                                                     GH₵ {orderMenuItems.reduce((s, i) => s + (i.quantity * i.price), 0).toFixed(2)}
                                                                 </span>
                                                             </div>
@@ -1704,7 +1704,7 @@ function CreateOrderContent() {
                                                 )}
 
                                                 {/* Package Description / Items Summary */}
-                                                <div className="space-y-1.5 pt-2 border-t border-sky-200/50">
+                                                <div className="space-y-1.5 pt-2 border-t border-slate-200">
                                                     <Label htmlFor="courierItemType" className="text-xs sm:text-sm font-bold text-slate-700">
                                                         Package Description / Additional Notes
                                                     </Label>
@@ -1713,7 +1713,7 @@ function CreateOrderContent() {
                                                         placeholder="e.g. Documents, Cake Box, Electronics..."
                                                         value={itemType}
                                                         onChange={(e) => setItemType(e.target.value)}
-                                                        className="h-11 sm:h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-sky-400 text-sm sm:text-base font-medium"
+                                                        className="h-11 sm:h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-slate-400 text-sm sm:text-base font-medium"
                                                     />
                                                 </div>
                                             </div>
@@ -1724,25 +1724,25 @@ function CreateOrderContent() {
                                     {effectiveLogisticsMode === "shipping" && (
                                         <div className="space-y-4">
                                             {/* Shipping Terminal & Consignee Route Card */}
-                                            <div className="bg-indigo-50/50 p-4 sm:p-6 lg:p-8 rounded-2xl sm:rounded-3xl border border-indigo-200/70 space-y-4 sm:space-y-5">
+                                            <div className="bg-slate-50/60 p-4 sm:p-6 lg:p-8 rounded-2xl sm:rounded-3xl border border-slate-200/80 space-y-4 sm:space-y-5">
                                                 <div className="flex items-center justify-between">
-                                                    <h3 className="text-sm sm:text-base lg:text-lg font-black text-indigo-950 tracking-tight flex items-center gap-2">
-                                                        <Ship className="w-4 h-4 sm:w-5 sm:h-5 text-indigo-600" />
+                                                    <h3 className="text-sm sm:text-base lg:text-lg font-black text-slate-900 tracking-tight flex items-center gap-2">
+                                                        <Ship className="w-4 h-4 sm:w-5 sm:h-5 text-slate-700" />
                                                         Cargo Shipment &amp; Consignee Destination
                                                     </h3>
-                                                    <span className="text-[10px] sm:text-xs font-bold text-indigo-800 bg-indigo-100 px-3 py-1 rounded-full uppercase tracking-wider">
+                                                    <span className="text-[10px] sm:text-xs font-bold text-slate-700 bg-slate-100 px-3 py-1 rounded-full uppercase tracking-wider">
                                                         Cargo Shipping
                                                     </span>
                                                 </div>
 
                                                 {/* Consignee / Receiver Details */}
-                                                <div className="p-4 sm:p-6 rounded-2xl bg-white border border-indigo-200/60 shadow-2xs space-y-4">
-                                                    <div className="flex items-center justify-between pb-2 border-b border-indigo-100">
-                                                        <span className="text-sm sm:text-base font-bold text-indigo-900 flex items-center gap-2">
-                                                            <span className="w-2 h-2 rounded-full bg-indigo-500" />
+                                                <div className="p-4 sm:p-6 rounded-2xl bg-white border border-slate-200/80 shadow-2xs space-y-4">
+                                                    <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+                                                        <span className="text-sm sm:text-base font-bold text-slate-900 flex items-center gap-2">
+                                                            <span className="w-2 h-2 rounded-full bg-slate-700" />
                                                             Consignee / Receiver Details
                                                         </span>
-                                                        <span className="text-xs font-bold px-2.5 py-0.5 rounded-md bg-indigo-50 text-indigo-700 border border-indigo-200/60">Consignee</span>
+                                                        <span className="text-xs font-bold px-2.5 py-0.5 rounded-md bg-slate-100 text-slate-700 border border-slate-200">Consignee</span>
                                                     </div>
                                                     <div className="space-y-3.5 sm:space-y-4">
                                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
@@ -1757,7 +1757,7 @@ function CreateOrderContent() {
                                                                     placeholder="e.g. Kwame Mensah"
                                                                     required
                                                                     disabled={!canCreateOrder}
-                                                                    className="h-11 sm:h-12 rounded-xl bg-slate-50/50 border-zinc-200 focus-visible:border-indigo-400 text-sm sm:text-base font-medium"
+                                                                    className="h-11 sm:h-12 rounded-xl bg-slate-50/50 border-zinc-200 focus-visible:border-slate-400 text-sm sm:text-base font-medium"
                                                                 />
                                                             </div>
                                                             <div className="space-y-1.5">
@@ -1795,7 +1795,7 @@ function CreateOrderContent() {
                                                                 placeholder="e.g. Kumasi Inland Freight Hub"
                                                                 required
                                                                 disabled={!canCreateOrder}
-                                                                className="h-11 sm:h-12 rounded-xl bg-slate-50/50 border-zinc-200 focus-visible:border-indigo-400 text-sm sm:text-base font-medium"
+                                                                className="h-11 sm:h-12 rounded-xl bg-slate-50/50 border-zinc-200 focus-visible:border-slate-400 text-sm sm:text-base font-medium"
                                                             />
                                                         </div>
                                                     </div>
@@ -1824,7 +1824,7 @@ function CreateOrderContent() {
                                                                     href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(pickupLocation)}`}
                                                                     target="_blank"
                                                                     rel="noopener noreferrer"
-                                                                    className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-700 hover:text-indigo-800 transition-colors"
+                                                                    className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-700 hover:text-slate-900 transition-colors"
                                                                 >
                                                                     <Navigation className="w-3.5 h-3.5" />
                                                                     Open in Google Maps
@@ -1835,7 +1835,7 @@ function CreateOrderContent() {
                                                         {deliveryLocation && (
                                                             <div className={cn("space-y-1.5", !pickupLocation && "sm:col-start-2")}>
                                                                 <div className="flex items-center gap-1.5">
-                                                                    <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse" />
+                                                                    <div className="w-1.5 h-1.5 rounded-full bg-slate-700 animate-pulse" />
                                                                     <span className="text-[10px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider">Destination Hub</span>
                                                                 </div>
                                                                 <div className="w-full h-36 sm:h-44 rounded-xl sm:rounded-2xl overflow-hidden border border-slate-200 bg-slate-100 shadow-inner">
@@ -1852,7 +1852,7 @@ function CreateOrderContent() {
                                                                     href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(deliveryLocation)}`}
                                                                     target="_blank"
                                                                     rel="noopener noreferrer"
-                                                                    className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-700 hover:text-indigo-800 transition-colors"
+                                                                    className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-700 hover:text-slate-900 transition-colors"
                                                                 >
                                                                     <Navigation className="w-3.5 h-3.5" />
                                                                     Open in Google Maps
@@ -1864,15 +1864,15 @@ function CreateOrderContent() {
                                             </div>
 
                                             {/* Cargo Specifications & Dynamic Freight Calculator */}
-                                            <div className="bg-indigo-50/40 p-4 sm:p-6 lg:p-8 rounded-2xl sm:rounded-3xl border border-indigo-200/70 space-y-4 sm:space-y-5 shadow-xs">
+                                            <div className="bg-slate-50/60 p-4 sm:p-6 lg:p-8 rounded-2xl sm:rounded-3xl border border-slate-200/80 space-y-4 sm:space-y-5 shadow-xs">
                                                 <div className="flex items-center justify-between">
                                                     <div className="flex items-center gap-2">
-                                                        <Globe className="w-4 h-4 sm:w-5 sm:h-5 text-indigo-600" />
+                                                        <Globe className="w-4 h-4 sm:w-5 sm:h-5 text-slate-700" />
                                                         <Label className="text-sm sm:text-base lg:text-lg font-black text-slate-900 tracking-tight">
                                                             Cargo Specifications &amp; Live Freight Calculation
                                                         </Label>
                                                     </div>
-                                                    <span className="text-[10px] sm:text-xs font-bold text-indigo-800 bg-indigo-100 px-3 py-1 rounded-full uppercase tracking-wider">
+                                                    <span className="text-[10px] sm:text-xs font-bold text-slate-700 bg-slate-100 px-3 py-1 rounded-full uppercase tracking-wider">
                                                         Administrative Defaults
                                                     </span>
                                                 </div>
@@ -1893,7 +1893,7 @@ function CreateOrderContent() {
 
                                                     <div className="space-y-1.5">
                                                         <Label htmlFor="shippingWeight" className="text-xs sm:text-sm font-bold text-slate-700 flex items-center gap-1">
-                                                            <Scale className="w-4 h-4 text-indigo-600" />
+                                                            <Scale className="w-4 h-4 text-slate-700" />
                                                             Gross Cargo Weight (kg)
                                                         </Label>
                                                         <Input
@@ -1909,7 +1909,7 @@ function CreateOrderContent() {
 
                                                     <div className="space-y-1.5">
                                                         <Label htmlFor="shippingVolume" className="text-xs sm:text-sm font-bold text-slate-700 flex items-center gap-1">
-                                                            <Layers className="w-4 h-4 text-indigo-600" />
+                                                            <Layers className="w-4 h-4 text-slate-700" />
                                                             Volume / CBM (Optional)
                                                         </Label>
                                                         <Input
@@ -1923,7 +1923,7 @@ function CreateOrderContent() {
                                                 </div>
 
                                                 {/* Live Freight Rate Breakdown Card */}
-                                                <div className="p-4 sm:p-5 bg-white rounded-2xl border border-indigo-200/60 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-sm">
+                                                <div className="p-4 sm:p-5 bg-white rounded-2xl border border-slate-200/80 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-sm">
                                                     <div className="space-y-1">
                                                         <div className="flex items-center gap-2">
                                                             <span className="font-bold text-slate-800 text-sm sm:text-base">Automated Freight Cost:</span>
@@ -1931,10 +1931,10 @@ function CreateOrderContent() {
                                                                 ({parseFloat(cargoWeight) || 0} kg × GH₵ {freightRatePerKg}/kg) + GH₵ {handlingFee} handling
                                                             </span>
                                                         </div>
-                                                        <p className="text-xs text-indigo-600 font-medium">Applied automatically to the order delivery &amp; freight fee.</p>
+                                                        <p className="text-xs text-slate-500 font-medium">Applied automatically to the order delivery &amp; freight fee.</p>
                                                     </div>
                                                     <div className="text-right">
-                                                        <span className="text-base sm:text-lg font-black text-indigo-950 font-mono">
+                                                        <span className="text-base sm:text-lg font-black text-slate-900 font-mono">
                                                             GH₵ {(((parseFloat(cargoWeight) || 0) * freightRatePerKg) + handlingFee).toFixed(2)}
                                                         </span>
                                                     </div>
@@ -1996,22 +1996,22 @@ function CreateOrderContent() {
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                                     <div 
                                         onClick={() => setPaymentMethod("online")}
-                                        className={`border rounded-xl sm:rounded-2xl p-4 sm:p-5 cursor-pointer flex flex-col gap-1.5 transition-all ${paymentMethod === "online" ? "bg-[#6B1028]/5 border-[#6B1028]/30 ring-2 ring-[#6B1028]/20" : "bg-white border-slate-200 hover:bg-slate-50"}`}
+                                        className={`border rounded-xl sm:rounded-2xl p-4 sm:p-5 cursor-pointer flex flex-col gap-1.5 transition-all ${paymentMethod === "online" ? "bg-white border-slate-900 ring-2 ring-slate-900/10 shadow-xs" : "bg-white border-slate-200 hover:bg-slate-50"}`}
                                     >
-                                        <span className={`text-sm sm:text-base font-bold ${paymentMethod === "online" ? "text-[#6B1028]" : "text-slate-800"}`}>Online Payment</span>
+                                        <span className={`text-sm sm:text-base font-bold ${paymentMethod === "online" ? "text-slate-900" : "text-slate-800"}`}>Online Payment</span>
                                         <span className="text-xs sm:text-sm text-slate-500 leading-snug">Customer receives payment link via SMS</span>
                                     </div>
                                     <div 
                                         onClick={() => setPaymentMethod("cash")}
-                                        className={`border rounded-xl sm:rounded-2xl p-4 sm:p-5 cursor-pointer flex flex-col gap-1.5 transition-all ${paymentMethod === "cash" ? "bg-emerald-50 border-emerald-200 ring-2 ring-emerald-500/20" : "bg-white border-slate-200 hover:bg-slate-50"}`}
+                                        className={`border rounded-xl sm:rounded-2xl p-4 sm:p-5 cursor-pointer flex flex-col gap-1.5 transition-all ${paymentMethod === "cash" ? "bg-slate-100 border-slate-400 ring-2 ring-slate-400/20 shadow-xs" : "bg-white border-slate-200 hover:bg-slate-50"}`}
                                     >
-                                        <span className={`text-sm sm:text-base font-bold ${paymentMethod === "cash" ? "text-emerald-700" : "text-slate-800"}`}>Cash / Manual Payment</span>
+                                        <span className={`text-sm sm:text-base font-bold ${paymentMethod === "cash" ? "text-slate-900" : "text-slate-800"}`}>Cash / Manual Payment</span>
                                         <span className="text-xs sm:text-sm text-slate-500 leading-snug">Order marked paid immediately. No link.</span>
                                     </div>
                                 </div>
 
                                 {paymentMethod === "online" && (
-                                    <div className="mt-3.5 sm:mt-4 p-4 sm:p-6 bg-[#6B1028]/5 rounded-xl sm:rounded-2xl border border-[#6B1028]/20 space-y-3.5 sm:space-y-4">
+                                    <div className="mt-3.5 sm:mt-4 p-4 sm:p-6 bg-slate-50/80 rounded-xl sm:rounded-2xl border border-slate-200/80 space-y-3.5 sm:space-y-4">
                                         <div className="flex items-center gap-3">
                                             <Checkbox
                                                 id="triggerMomoPrompt"
@@ -2022,7 +2022,7 @@ function CreateOrderContent() {
                                                         setMomoPhone(recipientPhone || customerPhone)
                                                     }
                                                 }}
-                                                className="w-5 h-5 rounded-md border-slate-300 text-[#6B1028] focus:ring-[#6B1028]/20 data-[state=checked]:bg-[#6B1028] data-[state=checked]:border-[#6B1028]"
+                                                className="w-5 h-5 rounded-md border-slate-300 text-[#191A43] focus:ring-slate-900/10 data-[state=checked]:bg-[#191A43] data-[state=checked]:border-[#191A43]"
                                             />
                                             <Label htmlFor="triggerMomoPrompt" className="text-xs sm:text-sm font-bold text-slate-800 cursor-pointer">
                                                 Trigger instant Mobile Money PIN Prompt on customer's phone
@@ -2039,7 +2039,7 @@ function CreateOrderContent() {
                                                         placeholder="e.g. 0244000000"
                                                         value={momoPhone}
                                                         onChange={(e) => setMomoPhone(e.target.value)}
-                                                        className="h-11 sm:h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-[#6B1028] text-sm sm:text-base font-medium"
+                                                        className="h-11 sm:h-12 rounded-xl bg-white border-zinc-200 focus-visible:border-slate-400 text-sm sm:text-base font-medium"
                                                     />
                                                 </div>
                                                 <div className="space-y-1.5 sm:space-y-2">
@@ -2049,7 +2049,7 @@ function CreateOrderContent() {
                                                         onValueChange={(val: 'mtn' | 'vod' | 'atl') => setMomoProvider(val)}
                                                         disabled={!!detectGhanaNetworkProvider(momoPhone)}
                                                     >
-                                                        <SelectTrigger id="momoProvider" className="h-11 sm:h-12 rounded-xl bg-white border-zinc-200 focus:border-[#6B1028] text-sm sm:text-base font-medium">
+                                                        <SelectTrigger id="momoProvider" className="h-11 sm:h-12 rounded-xl bg-white border-zinc-200 focus:border-slate-400 text-sm sm:text-base font-medium">
                                                             <SelectValue placeholder="Select provider" />
                                                         </SelectTrigger>
                                                         <SelectContent className="rounded-xl border-zinc-100 shadow-xl">
@@ -2304,7 +2304,7 @@ function CreateOrderContent() {
                                                 </div>
                                             )}
                                         </div>
-                                        <div className="px-4 sm:px-5 py-3 sm:py-3.5 bg-[#6B1028] flex items-center justify-between">
+                                        <div className="px-4 sm:px-5 py-3 sm:py-3.5 bg-slate-900 flex items-center justify-between">
                                             <span className="text-xs font-bold text-white/70 uppercase tracking-wider">Order Total</span>
                                             <span className="text-base sm:text-lg font-bold text-white">
                                                 GH₵ {(subtotal + tax + deliveryFee - discount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
