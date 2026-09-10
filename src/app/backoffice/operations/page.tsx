@@ -176,7 +176,7 @@ export default function OperationsPage() {
             if (stagesData && stagesData.length > 0) {
                 setStages(stagesData);
             } else {
-                const bConfig = getBusinessConfig(businessType);
+                const bConfig = getBusinessConfig(businessType, logisticsType);
                 const activeStatuses = bConfig.statuses.filter(status => 
                     status !== "Completed" && 
                     status !== "Delivered" && 

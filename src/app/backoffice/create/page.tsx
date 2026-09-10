@@ -115,7 +115,12 @@ function CreateOrderContent() {
     const [discount, setDiscount] = useState(0)
 
     // Logistics Operation Mode (Determined by Administrative Defaults)
-    const [logisticsMode, setLogisticsMode] = useState<LogisticsSubType>("restaurant")
+    const [logisticsMode, setLogisticsMode] = useState<LogisticsSubType>(() => {
+        if (typeof window !== "undefined") {
+            return (localStorage.getItem("logisticsType") as LogisticsSubType) || "restaurant"
+        }
+        return "restaurant"
+    })
     const [cargoWeight, setCargoWeight] = useState("")
     const [cargoDimensions, setCargoDimensions] = useState("")
     const [waybillNumber, setWaybillNumber] = useState("")
@@ -148,8 +153,16 @@ function CreateOrderContent() {
         }
         return null
     })
-    const activeSubType = (organization?.publicMetadata?.logisticsSubType as LogisticsSubType) || logisticsMode || "restaurant"
-    const config = getBusinessConfig(businessType, activeSubType)
+    const effectiveBusinessType = (organization?.publicMetadata?.businessType as string) || 
+                                  businessType || 
+                                  (typeof window !== "undefined" ? localStorage.getItem("businessType") : null) || 
+                                  "tailoring"
+    const effectiveLogisticsMode = (organization?.publicMetadata?.logisticsType as LogisticsSubType) || 
+                                  (organization?.publicMetadata?.logisticsSubType as LogisticsSubType) || 
+                                  (typeof window !== "undefined" ? (localStorage.getItem("logisticsType") as LogisticsSubType) : null) ||
+                                  logisticsMode || 
+                                  "restaurant"
+    const config = getBusinessConfig(effectiveBusinessType, effectiveLogisticsMode)
 
     // Menu Presets & Package Categories from organization public metadata
     const menuPresets: any[] = Array.isArray(organization?.publicMetadata?.menuPresets)
@@ -163,6 +176,9 @@ function CreateOrderContent() {
     // Helper to switch logistics mode and load the corresponding administrative defaults
     const handleSwitchLogisticsMode = (mode: LogisticsSubType) => {
         setLogisticsMode(mode)
+        if (typeof window !== "undefined") {
+            localStorage.setItem("logisticsType", mode)
+        }
         if (!organization) return
         const meta = organization.publicMetadata as any || {}
 
@@ -306,8 +322,14 @@ function CreateOrderContent() {
     useEffect(() => {
         if (!organization) return
         const metadata = organization.publicMetadata as any || {}
-        const configuredLogisticsType: LogisticsSubType = metadata.logisticsType || "restaurant"
+        const configuredLogisticsType: LogisticsSubType = metadata.logisticsType || 
+                                                          metadata.logisticsSubType || 
+                                                          (typeof window !== "undefined" ? (localStorage.getItem("logisticsType") as LogisticsSubType) : null) || 
+                                                          "restaurant"
         setLogisticsMode(configuredLogisticsType)
+        if (typeof window !== "undefined") {
+            localStorage.setItem("logisticsType", configuredLogisticsType)
+        }
 
         const defaultDelivery = parseFloat(metadata.defaultDeliveryFee || "0")
         const defaultDisc = parseFloat(metadata.defaultDiscount || "0")
@@ -490,7 +512,7 @@ function CreateOrderContent() {
     const expiryDate = subscriptionExpiry ? new Date(subscriptionExpiry) : null
     const isExpired = expiryDate ? new Date() > expiryDate : false
     const canCreateOrder = isSubscriptionActive && !isExpired
-    const isRetailBusiness = businessType ? ["hair-retail", "online-business"].includes(businessType) : false
+    const isRetailBusiness = effectiveBusinessType ? ["hair-retail", "online-business"].includes(effectiveBusinessType) : false
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -529,11 +551,11 @@ function CreateOrderContent() {
             ? selectedInventory.reduce((sum, item) => sum + (parseInt(item.quantity) || 0), 0)
             : (parseInt(quantity) || 1));
 
-        const finalCustomerName = (businessType === "logistics")
+        const finalCustomerName = (effectiveBusinessType === "logistics")
             ? (recipientName.trim() || customerName.trim() || "Customer")
             : customerName.trim();
 
-        const finalCustomerPhone = (businessType === "logistics")
+        const finalCustomerPhone = (effectiveBusinessType === "logistics")
             ? (recipientPhone.trim() || customerPhone.trim() || "")
             : customerPhone.trim();
 
@@ -547,18 +569,18 @@ function CreateOrderContent() {
                     customerPhone: finalCustomerPhone,
                     itemType: finalItemType,
                     pickupDate: pickupDate ? format(pickupDate, "yyyy-MM-dd") : "",
-                    measurements: businessType === "logistics" && deliveryLocation ? deliveryLocation : measurements,
+                    measurements: effectiveBusinessType === "logistics" && deliveryLocation ? deliveryLocation : measurements,
                     metadata: { 
                         ...metadata, 
                         quantity: totalQty, 
-                        ...(businessType === "logistics" ? { 
+                        ...(effectiveBusinessType === "logistics" ? { 
                             pickupLocation, 
                             deliveryLocation, 
                             recipientName: recipientName.trim() || customerName.trim(), 
                             recipientPhone: recipientPhone.trim() || customerPhone.trim(),
                             senderName: customerName.trim() || undefined,
                             senderPhone: customerPhone.trim() || undefined,
-                            logisticsMode,
+                            logisticsMode: effectiveLogisticsMode,
                             cargoWeight: cargoWeight || undefined,
                             cargoDimensions: cargoDimensions || undefined,
                             waybillNumber: waybillNumber || undefined,
@@ -606,25 +628,24 @@ function CreateOrderContent() {
                     customerPhone: finalCustomerPhone,
                     itemType: finalItemType,
                     pickupDate: pickupDate ? format(pickupDate, "yyyy-MM-dd") : "",
-                    measurements: businessType === "logistics" && deliveryLocation ? deliveryLocation : measurements,
+                    measurements: effectiveBusinessType === "logistics" && deliveryLocation ? deliveryLocation : measurements,
                     metadata: { 
                         ...metadata, 
                         quantity: totalQty, 
-                        ...(businessType === "logistics" ? { 
+                        ...(effectiveBusinessType === "logistics" ? { 
                             pickupLocation, 
                             deliveryLocation, 
                             recipientName: recipientName.trim() || customerName.trim() || "Customer", 
                             recipientPhone: recipientPhone.trim() || customerPhone.trim(),
                             senderName: customerName.trim() || undefined,
                             senderPhone: customerPhone.trim() || undefined,
-                            logisticsMode,
+                            logisticsMode: effectiveLogisticsMode,
                             cargoWeight: cargoWeight || undefined,
                             cargoDimensions: cargoDimensions || undefined,
                             waybillNumber: waybillNumber || undefined,
                         } : {}) 
                     },
-                    customerName: customerName.trim() || recipientName.trim() || "Customer",
-                    businessType: localStorage.getItem("businessType") || "tailoring",
+                    businessType: effectiveBusinessType,
                     currentStatus: config.defaultStatus,
                     inventoryItems: selectedInventory.map(item => ({ id: item.id, quantity: item.quantity })),
                     paymentMethod,
@@ -676,10 +697,78 @@ function CreateOrderContent() {
         }
     }
 
-    const hasRequiredFields = businessType === "logistics"
+    const getCardHeader = () => {
+        if (editingId) {
+            if (effectiveBusinessType === "logistics") {
+                if (effectiveLogisticsMode === "delivery") {
+                    return {
+                        title: "Edit Courier Delivery Order",
+                        description: "Update package details, sender, and recipient delivery route."
+                    }
+                }
+                if (effectiveLogisticsMode === "shipping") {
+                    return {
+                        title: "Edit Cargo Shipment Details",
+                        description: "Update cargo weight, origin/destination hubs, and freight details."
+                    }
+                }
+                return {
+                    title: "Edit Restaurant Order Details",
+                    description: "Update order details, kitchen items, and customer destination."
+                }
+            }
+            return {
+                title: "Edit Order Details",
+                description: "Update order details and customer destination."
+            }
+        }
+        if (effectiveBusinessType === "logistics") {
+            if (effectiveLogisticsMode === "delivery") {
+                return {
+                    title: "Dispatch Hub and Customer Dropoff Route",
+                    description: "Enter dispatch hub, sender, package details, and recipient dropoff to generate a tracking link."
+                }
+            }
+            if (effectiveLogisticsMode === "shipping") {
+                return {
+                    title: "Origin Port and Regional Freight Waybill",
+                    description: "Enter origin port, recipient destination, cargo specs, and generate a shipping waybill tracking link."
+                }
+            }
+            return {
+                title: "Restaurant Pickup and Customer Dropoff Route",
+                description: "Enter order details, food items, and customer dropoff route to generate a tracking link."
+            }
+        }
+        if (effectiveBusinessType === "tailoring") {
+            return {
+                title: "New Tailoring Order",
+                description: "Enter client measurements and garment details to verify and generate a tracking link."
+            }
+        }
+        if (effectiveBusinessType === "hair-retail") {
+            return {
+                title: "New Hair Retail Order",
+                description: "Enter hair specifications and customer details to verify and generate a tracking link."
+            }
+        }
+        if (effectiveBusinessType === "online-business") {
+            return {
+                title: "New Retail Order",
+                description: "Enter product specifications and customer details to verify and generate a tracking link."
+            }
+        }
+        return {
+            title: config.title ? `New ${config.title} Order` : "New Order Details",
+            description: "Enter order details to verify and generate a tracking link."
+        }
+    }
+    const cardHeader = getCardHeader()
+
+    const hasRequiredFields = effectiveBusinessType === "logistics"
         ? (
             deliveryLocation.trim() !== "" &&
-            (logisticsMode === "restaurant" 
+            (effectiveLogisticsMode === "restaurant" 
                 ? ((dropoffPhoneLocal.trim() !== "" || recipientPhone.trim() !== "") && (orderMenuItems.length > 0 || itemType.trim() !== ""))
                 : ((recipientName.trim() !== "" || customerName.trim() !== "") && (orderMenuItems.length > 0 || itemType.trim() !== ""))
             )
@@ -718,12 +807,12 @@ function CreateOrderContent() {
 
                 <Card className="border-white/50 bg-white/60 backdrop-blur-md shadow-lg sm:shadow-xl rounded-2xl sm:rounded-3xl overflow-hidden mb-4">
                     <CardHeader className="bg-primary/5 pb-5 sm:pb-8 pt-5 sm:pt-6 px-4 sm:px-8">
-                        <CardTitle className="text-lg sm:text-xl font-bold text-slate-900">{editingId ? "Edit Order Details" : "Restaurant Pickup and Customer Dropoff Route"}</CardTitle>
-                        <CardDescription className="text-xs sm:text-sm">Enter order details to verify and generate a tracking link.</CardDescription>
+                        <CardTitle className="text-lg sm:text-xl font-bold text-slate-900">{cardHeader.title}</CardTitle>
+                        <CardDescription className="text-xs sm:text-sm">{cardHeader.description}</CardDescription>
                     </CardHeader>
                     <CardContent className="p-3.5 sm:p-8 pt-4 sm:pt-8">
                         {/* sliding tab switcher */}
-                        {businessType !== "logistics" && (
+                        {effectiveBusinessType !== "logistics" && (
                         <div className="mb-5 sm:mb-6 flex justify-start">
                             <div className="bg-slate-100/80 backdrop-blur-md p-1 rounded-full flex flex-wrap items-center gap-1 shadow-inner border border-slate-200/50">
                                 <button
@@ -757,7 +846,7 @@ function CreateOrderContent() {
                         )}
                         <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
                             {/* B2B Client Account Selector (Non-Logistics Wholesale) */}
-                            {businessType !== "logistics" && orderMode === "wholesale" && (
+                            {effectiveBusinessType !== "logistics" && orderMode === "wholesale" && (
                                 <div className="p-3.5 sm:p-5 bg-slate-50/70 border border-slate-100 rounded-2xl sm:rounded-3xl flex flex-col lg:flex-row lg:items-center justify-between gap-3 sm:gap-4">
                                     <div className="space-y-0.5 text-left">
                                         <Label className="text-[10px] font-bold text-[#191A43] uppercase tracking-wider">B2B Customer Pricing Account</Label>
@@ -785,10 +874,10 @@ function CreateOrderContent() {
                             )}
 
                             {/* LOGISTICS OPERATIONAL SYSTEM — Displayed Directly at Top for Logistics Businesses */}
-                            {businessType === "logistics" && (
+                            {effectiveBusinessType === "logistics" && (
                                 <div className="space-y-4 sm:space-y-6">
                                     {/* 1. RESTAURANT DELIVERY VIEW */}
-                                    {logisticsMode === "restaurant" && (
+                                    {effectiveLogisticsMode === "restaurant" && (
                                         <div className="space-y-4">
                                             {/* Restaurant Branch (Pickup) & Customer Dropoff Contact Details */}
                                             <div className="grid sm:grid-cols-1 gap-3.5 sm:gap-6">
@@ -1153,7 +1242,7 @@ function CreateOrderContent() {
                                         </div>
                                     )}
 
-                                    {logisticsMode === "delivery" && (
+                                    {effectiveLogisticsMode === "delivery" && (
                                         <div className="space-y-4">
                                             {/* Courier Route & Contact Card */}
                                             <div className="bg-sky-50/50 p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl border border-sky-200/70 space-y-3.5 sm:space-y-4">
@@ -1431,7 +1520,7 @@ function CreateOrderContent() {
                                     )}
 
                                     {/* 3. SHIPPING / FREIGHT & CARGO VIEW */}
-                                    {logisticsMode === "shipping" && (
+                                    {effectiveLogisticsMode === "shipping" && (
                                         <div className="space-y-4">
                                             {/* Shipping Terminal & Consignee Route Card */}
                                             <div className="bg-indigo-50/50 p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl border border-indigo-200/70 space-y-3.5 sm:space-y-4">
@@ -1718,16 +1807,16 @@ function CreateOrderContent() {
                             )}
 
                             {/* Customer Information (Retail / Fashion / Non-Logistics Only) */}
-                            {businessType !== "logistics" && (
+                            {effectiveBusinessType !== "logistics" && (
                                 <div className="bg-slate-50/60 p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-200/70 space-y-3.5 sm:space-y-4">
                                     <h3 className="text-xs sm:text-sm font-bold text-slate-900 tracking-tight flex items-center gap-2">
                                         Customer Information
                                     </h3>
                                     <div className="grid sm:grid-cols-2 gap-3 sm:gap-6">
                                         <div className="space-y-1 sm:space-y-2">
-                                            <Label htmlFor={`${businessType}-customerName`} className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">Customer Name <span className="text-red-500">*</span></Label>
+                                            <Label htmlFor={`${effectiveBusinessType}-customerName`} className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">Customer Name <span className="text-red-500">*</span></Label>
                                             <Input
-                                                id={`${businessType}-customerName`}
+                                                id={`${effectiveBusinessType}-customerName`}
                                                 value={customerName}
                                                 onChange={(e) => setCustomerName(e.target.value)}
                                                 placeholder="Naa"
@@ -1738,9 +1827,9 @@ function CreateOrderContent() {
                                         </div>
 
                                         <div className="space-y-1 sm:space-y-2">
-                                            <Label htmlFor={`${businessType}-customerPhone`} className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">Customer Contact</Label>
+                                            <Label htmlFor={`${effectiveBusinessType}-customerPhone`} className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">Customer Contact</Label>
                                             <PhoneInputWithCountry
-                                                id={`${businessType}-customerPhone`}
+                                                id={`${effectiveBusinessType}-customerPhone`}
                                                 countryCode={pickupCountryCode}
                                                 phoneLocal={pickupPhoneLocal}
                                                 onCountryCodeChange={(code) => {
@@ -1838,7 +1927,7 @@ function CreateOrderContent() {
                             </div>
 
                             {/* Stock Usage & Product Selection (Non-Logistics Only) */}
-                            {businessType !== "logistics" && (
+                            {effectiveBusinessType !== "logistics" && (
                             <div className="bg-slate-50/50 p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-200/70 space-y-3.5 sm:space-y-4">
                                 <div className="flex items-center justify-between">
                                     <Label className="ml-0.5 text-xs sm:text-sm font-bold text-slate-900 tracking-tight flex items-center gap-2">
@@ -1879,7 +1968,7 @@ function CreateOrderContent() {
                                                         type="button"
                                                         onMouseDown={(e) => {
                                                             e.preventDefault(); // Prevents input blur from closing dropdown before action completes
-                                                            if (businessType === "hair-retail") {
+                                                            if (effectiveBusinessType === "hair-retail") {
                                                                 if (!selectedInventory.find(s => s.id === item.id)) {
                                                                     setSelectedInventory([...selectedInventory, { 
                                                                         id: item.id, 
@@ -1934,7 +2023,7 @@ function CreateOrderContent() {
                                             <div key={item.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 sm:p-4 bg-white rounded-xl sm:rounded-2xl border border-slate-100 shadow-xs">
                                                 <div className="flex-1 min-w-0">
                                                     <p className="text-xs sm:text-sm font-bold text-slate-800 truncate">{item.name}</p>
-                                                    {businessType === "hair-retail" && (Boolean(metadata.length) || Boolean(metadata.color)) && (
+                                                    {effectiveBusinessType === "hair-retail" && (Boolean(metadata.length) || Boolean(metadata.color)) && (
                                                         <div className="mt-1 flex flex-wrap items-center gap-1.5 text-[9px] sm:text-[10px] font-medium text-slate-500">
                                                             {Boolean(metadata.length) && <span className="bg-slate-50 px-2 py-0.5 rounded border border-slate-100">Length: {String(metadata.length)}</span>}
                                                             {Boolean(metadata.color) && <span className="bg-slate-50 px-2 py-0.5 rounded border border-slate-100">Color: {String(metadata.color)}</span>}
@@ -1982,8 +2071,8 @@ function CreateOrderContent() {
                                                                          GH₵ {unitPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}/ea
                                                                      </p>
                                                                 </>
-                                                            );
-                                                        })()}
+                                                             );
+                                                         })()}
                                                     </div>
                                                     <Button
                                                         type="button"
@@ -1994,7 +2083,7 @@ function CreateOrderContent() {
                                                             setSelectedInventory(remaining);
                                                             if (remaining.length === 0) {
                                                                 setItemType("");
-                                                                if (businessType === "hair-retail") {
+                                                                if (effectiveBusinessType === "hair-retail") {
                                                                     setMetadata(prev => {
                                                                         const copy = { ...prev };
                                                                         delete copy.length;
@@ -2088,7 +2177,7 @@ function CreateOrderContent() {
                             )}
 
                             {/* Additional Specifications / Details */}
-                            {businessType !== "logistics" ? (
+                            {effectiveBusinessType !== "logistics" ? (
                                 <div className="bg-slate-50/50 p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-200/70 space-y-3.5 sm:space-y-4">
                                     <h3 className="text-xs sm:text-sm font-bold text-slate-900 tracking-tight">
                                         {selectedInventory.length > 0 ? "Specifications & Delivery" : "Product Specifications & Delivery"}
@@ -2098,11 +2187,11 @@ function CreateOrderContent() {
                                         {selectedInventory.length === 0 && !isRetailBusiness && (
                                             <>
                                                 <div className="space-y-1 sm:space-y-2 relative">
-                                                    <Label htmlFor={`${businessType}-itemType`} className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">{config.itemLabel} <span className="text-red-500">*</span></Label>
+                                                    <Label htmlFor={`${effectiveBusinessType}-itemType`} className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">{config.itemLabel} <span className="text-red-500">*</span></Label>
                                                     <div className="relative">
                                                         <Input
                                                             name="order-item-type-search"
-                                                            id={`${businessType}-itemType`}
+                                                            id={`${effectiveBusinessType}-itemType`}
                                                             value={itemType}
                                                             onChange={(e) => setItemType(e.target.value)}
                                                             placeholder={config.itemPlaceholder}
@@ -2117,9 +2206,9 @@ function CreateOrderContent() {
 
                                                 {!config.extraFields?.some(f => f.id === "quantity") && (
                                                     <div className="space-y-1 sm:space-y-2">
-                                                        <Label htmlFor={`${businessType}-quantity`} className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">Quantity <span className="text-red-500">*</span></Label>
+                                                        <Label htmlFor={`${effectiveBusinessType}-quantity`} className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">Quantity <span className="text-red-500">*</span></Label>
                                                         <Input
-                                                            id={`${businessType}-quantity`} type="number" min="1"
+                                                            id={`${effectiveBusinessType}-quantity`} type="number" min="1"
                                                             value={quantity}
                                                             disabled={!canCreateOrder} onChange={(e) => setQuantity(e.target.value)} required
                                                             placeholder="1"
@@ -2131,9 +2220,9 @@ function CreateOrderContent() {
                                         )}
 
                                         {/* Pickup/Delivery Date — hidden for logistics (restaurant delivery) */}
-                                        {businessType !== "logistics" && (
+                                        {effectiveBusinessType !== "logistics" && (
                                         <div className="space-y-1 sm:space-y-2">
-                                            <Label htmlFor={`${businessType}-pickupDate`} className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">{config.orderLabel === "Tracking Number" ? "Date" : "Delivery Date"}</Label>
+                                            <Label htmlFor={`${effectiveBusinessType}-pickupDate`} className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">{config.orderLabel === "Tracking Number" ? "Date" : "Delivery Date"}</Label>
                                             <DatePicker
                                                 date={pickupDate}
                                                 setDate={setPickupDate}
@@ -2164,7 +2253,7 @@ function CreateOrderContent() {
                                             ?.filter(field => {
                                                 // Hide 'quantity' and 'sku' when inventory item is linked OR if it's a retail business
                                                 if (selectedInventory.length > 0 || isRetailBusiness) {
-                                                    if (businessType === "hair-retail" && selectedInventory.length > 0) {
+                                                    if (effectiveBusinessType === "hair-retail" && selectedInventory.length > 0) {
                                                         return field.id !== "quantity" && field.id !== "sku" && field.id !== "length" && field.id !== "color";
                                                     }
                                                     return field.id !== "quantity" && field.id !== "sku";
@@ -2173,9 +2262,9 @@ function CreateOrderContent() {
                                             })
                                             .map((field) => (
                                                 <div key={field.id} className="space-y-1 sm:space-y-2">
-                                                    <Label htmlFor={`${businessType}-${field.id}`} className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">{field.label}</Label>
+                                                    <Label htmlFor={`${effectiveBusinessType}-${field.id}`} className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">{field.label}</Label>
                                                     <Input
-                                                        id={`${businessType}-${field.id}`}
+                                                        id={`${effectiveBusinessType}-${field.id}`}
                                                         type={field.type === "number" ? "number" : "text"}
                                                         value={field.id === "quantity" ? quantity : ((metadata[field.id] as string) || "")}
                                                         onChange={(e) => {
@@ -2197,7 +2286,7 @@ function CreateOrderContent() {
                                 <div className="bg-slate-50/50 p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-200/70 space-y-3.5 sm:space-y-4">
                                     <div className="space-y-1 sm:space-y-2">
                                         <Label htmlFor="deliveryFee" className="ml-0.5 text-[11px] sm:text-xs font-semibold text-slate-700">
-                                            {logisticsMode === "shipping" ? "Freight &amp; Handling Fee (GH₵)" : "Delivery Fee (GH₵)"}
+                                            {effectiveLogisticsMode === "shipping" ? "Freight & Handling Fee (GH₵)" : "Delivery Fee (GH₵)"}
                                         </Label>
                                         <Input 
                                             type="number" 
@@ -2213,7 +2302,7 @@ function CreateOrderContent() {
                                 </div>
                             )}
 
-                            {businessType !== "logistics" && (
+                            {effectiveBusinessType !== "logistics" && (
                                 <div className="space-y-2">
                                     <Label htmlFor="measurements" className="ml-1 text-xs font-semibold text-muted-foreground tracking-wider">
                                         {config.id === "tailoring" ? "Notes / Measurements" : "Notes"}

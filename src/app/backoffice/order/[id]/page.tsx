@@ -187,15 +187,19 @@ export default function OrderUpdatePage() {
     // Business Config
     const { organization } = useOrganization()
     const [businessType, setBusinessType] = useState<string | null>(null)
-    const config = getBusinessConfig(businessType)
+    const activeLogisticsType = ((organization?.publicMetadata as any)?.logisticsType as string) || 
+                                ((organization?.publicMetadata as any)?.logisticsSubType as string) || 
+                                (typeof window !== "undefined" ? localStorage.getItem("logisticsType") : null) || 
+                                "restaurant"
+    const config = getBusinessConfig(businessType, activeLogisticsType)
     const isLogistics = businessType === "logistics"
     const quickStatuses = useMemo(() => {
         if (pipelineStages && pipelineStages.length > 0) {
             return pipelineStages;
         }
-        const bConfig = getBusinessConfig(businessType);
+        const bConfig = getBusinessConfig(businessType, activeLogisticsType);
         return bConfig.statuses;
-    }, [pipelineStages, businessType]);
+    }, [pipelineStages, businessType, activeLogisticsType]);
 
     useEffect(() => {
         const orgBusinessType = organization?.publicMetadata?.businessType as string

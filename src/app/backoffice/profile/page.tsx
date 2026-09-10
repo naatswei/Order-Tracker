@@ -336,7 +336,7 @@ export default function ProfilePage() {
 
             // Initialize administrative order defaults settings
             setOrderDefaults({
-                logisticsType: (metadata?.logisticsType as LogisticsSubType) || "restaurant",
+                logisticsType: (metadata?.logisticsType as LogisticsSubType) || (metadata?.logisticsSubType as LogisticsSubType) || (typeof window !== "undefined" ? (localStorage.getItem("logisticsType") as LogisticsSubType) : null) || "restaurant",
                 // Restaurant
                 defaultPickupLocation: (metadata?.defaultPickupLocation as string) || (metadata?.location as string) || "",
                 defaultPickupContact: (metadata?.defaultPickupContact as string) || (metadata?.contact as string) || "",
@@ -990,6 +990,9 @@ export default function ProfilePage() {
                                         setOrderDefaultsSaving(true)
                                         try {
                                             await updateOrgOrderDefaults(organization.id, orderDefaults)
+                                            if (typeof window !== "undefined" && orderDefaults.logisticsType) {
+                                                localStorage.setItem("logisticsType", orderDefaults.logisticsType)
+                                            }
                                             // Also sync active delivery fee to invoice settings for consistency
                                             const activeDeliveryFee = orderDefaults.logisticsType === 'restaurant'
                                                 ? orderDefaults.defaultDeliveryFee

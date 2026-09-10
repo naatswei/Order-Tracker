@@ -235,7 +235,7 @@ async function initializeDefaultWorkflowStagesIfNeeded(orgId: string) {
             const client = await clerkClient();
             const org = await client.organizations.getOrganization({ organizationId: orgId });
             businessType = (org.publicMetadata?.businessType as string) || "tailoring";
-            logisticsSubType = (org.publicMetadata?.logisticsSubType as string) || "restaurant";
+            logisticsSubType = (org.publicMetadata?.logisticsType as string) || (org.publicMetadata?.logisticsSubType as string) || "restaurant";
         } catch (e) {
             console.warn("Could not fetch org businessType from Clerk:", e);
         }
