@@ -16,7 +16,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { detectGhanaNetworkProvider, cn } from "@/lib/utils"
 import Link from "next/link"
 import { OrganizationSwitcher, useOrganization } from "@clerk/nextjs"
-import { Package, ArrowLeft, Loader2, AlertCircle, Plus, Trash2, Search, Boxes, ShoppingBag, Tag, ChevronRight, MapPin, Navigation, UtensilsCrossed, Sparkles, Truck, Ship, Box, Layers, Globe, Scale, Store, X } from "lucide-react"
+import { Package, ArrowLeft, Loader2, AlertCircle, Plus, Trash2, Search, Boxes, ShoppingBag, Tag, ChevronRight, MapPin, Navigation, UtensilsCrossed, Sparkles, Truck, Ship, Box, Layers, Globe, Scale, Store, X, FileSpreadsheet, Upload } from "lucide-react"
+import * as XLSX from "xlsx"
 import { RenewalBanner } from "@/components/renewal-banner"
 import { BackofficeHeader } from "@/components/backoffice-header"
 import { toast } from "sonner"
@@ -127,10 +128,13 @@ function CreateOrderContent() {
     const [freightRatePerKg, setFreightRatePerKg] = useState(15)
     const [handlingFee, setHandlingFee] = useState(50)
 
-    // Administrative Menu Items state
+    // Administrative Menu Items & Courier Package Categories state
     const [orderMenuItems, setOrderMenuItems] = useState<{ id: string; name: string; price: number; quantity: number }[]>([])
     const [menuSearchQuery, setMenuSearchQuery] = useState("")
     const [courierCategorySearch, setCourierCategorySearch] = useState("")
+    const [courierEntryMode, setCourierEntryMode] = useState<"search" | "custom">("search")
+    const [importedCategories, setImportedCategories] = useState<string[]>([])
+    const courierFileInputRef = useRef<HTMLInputElement>(null)
     const [customItemName, setCustomItemName] = useState("")
     const [customItemPrice, setCustomItemPrice] = useState("")
     const [isMenuDropdownOpen, setIsMenuDropdownOpen] = useState(false)
@@ -305,6 +309,67 @@ function CreateOrderContent() {
     const handleTogglePackageCategory = (cat: string) => {
         if (!cat) return
         handleAddMenuItem({ name: cat, price: 0 })
+    }
+
+    const handleImportCourierExcel = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0]
+        if (!file) return
+
+        const reader = new FileReader()
+        reader.onload = (evt) => {
+            try {
+                const data = new Uint8Array(evt.target?.result as ArrayBuffer)
+                const workbook = XLSX.read(data, { type: "array" })
+                const sheetName = workbook.SheetNames[0]
+                const worksheet = workbook.Sheets[sheetName]
+                const rawJson: any[][] = XLSX.utils.sheet_to_json(worksheet, { header: 1 })
+
+                if (!rawJson || rawJson.length === 0) {
+                    toast.error("The selected file is empty.")
+                    return
+                }
+
+                const headerRow = (rawJson[0] || []).map((c: any) => String(c || "").toLowerCase().trim())
+                const colIndex = headerRow.findIndex((str: string) => 
+                    str.includes("category") || str.includes("package") || str.includes("type") || str.includes("item") || str.includes("name")
+                )
+
+                const targetCol = colIndex >= 0 ? colIndex : 0
+                const isHeaderFirstRow = colIndex >= 0 || (typeof rawJson[0][0] === "string" && (rawJson[0][0].toLowerCase().includes("category") || rawJson[0][0].toLowerCase().includes("item") || rawJson[0][0].toLowerCase().includes("package")))
+                const startRow = isHeaderFirstRow ? 1 : 0
+
+                const newItems: string[] = []
+                const existing = new Set([...packageCategories, ...importedCategories])
+                for (let r = startRow; r < rawJson.length; r++) {
+                    const row = rawJson[r]
+                    if (!row) continue
+                    const cellVal = row[targetCol] ?? row[0]
+                    if (cellVal !== undefined && cellVal !== null) {
+                        const val = String(cellVal).trim()
+                        if (val && !newItems.includes(val) && !existing.has(val)) {
+                            newItems.push(val)
+                        }
+                    }
+                }
+
+                if (newItems.length === 0) {
+                    toast.info("No new unique package categories found in file.")
+                    return
+                }
+
+                setImportedCategories(prev => [...prev, ...newItems])
+                setCourierEntryMode("search")
+                toast.success(`Successfully imported ${newItems.length} package categories from Excel!`)
+            } catch (error) {
+                console.error("Excel import error:", error)
+                toast.error("Failed to parse Excel file. Please ensure it is a valid .xlsx, .xls, or .csv file.")
+            } finally {
+                if (courierFileInputRef.current) {
+                    courierFileInputRef.current.value = ""
+                }
+            }
+        }
+        reader.readAsArrayBuffer(file)
     }
 
     const handleCargoWeightChange = (newWeight: string) => {
@@ -1453,183 +1518,302 @@ function CreateOrderContent() {
                                             </div>
 
                                             {/* Package Categories & Custom Order Items Entry */}
-                                            <div className="bg-slate-50/60 p-4 sm:p-6 lg:p-8 rounded-2xl sm:rounded-3xl border border-slate-200/80 space-y-4 sm:space-y-5 shadow-xs">
-                                                <div className="flex items-center justify-between">
-                                                    <div className="flex items-center gap-2">
-                                                        <Box className="w-4 h-4 sm:w-5 sm:h-5 text-slate-700" />
-                                                        <Label className="text-sm sm:text-base lg:text-lg font-black text-slate-900 tracking-tight">
-                                                            Package &amp; Order Items
-                                                        </Label>
-                                                    </div>
-                                                    <span className="text-[10px] sm:text-xs font-bold text-slate-700 bg-slate-100 px-3 py-1 rounded-full uppercase tracking-wider">
-                                                        Courier Service
-                                                    </span>
-                                                </div>
+                                            {(() => {
+                                                const allAvailableCategories = Array.from(new Set([...packageCategories, ...importedCategories]))
+                                                const query = courierCategorySearch.toLowerCase().trim()
+                                                const filteredCategories = query
+                                                    ? allAvailableCategories.filter(cat => cat.toLowerCase().includes(query))
+                                                    : allAvailableCategories
 
-                                                {/* 1-Click Package Category Presets with Live Search */}
-                                                {packageCategories.length > 0 && (
-                                                    <div className="space-y-3">
-                                                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                                                return (
+                                                    <div className="bg-slate-50/60 p-4 sm:p-6 lg:p-8 rounded-2xl sm:rounded-3xl border border-slate-200/80 space-y-4 sm:space-y-5 shadow-xs">
+                                                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                                                             <div className="flex items-center gap-2">
-                                                                <p className="text-xs sm:text-sm font-bold text-slate-700">Quick-Add Category Presets:</p>
-                                                                <span className="text-[10px] font-bold text-slate-700 bg-slate-100 px-2 py-0.5 rounded-full">
-                                                                    {packageCategories.length} available
-                                                                </span>
-                                                            </div>
-
-                                                            {packageCategories.length > 3 && (
-                                                                <div className="relative w-full sm:w-64">
-                                                                    <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-                                                                    <Input
-                                                                        value={courierCategorySearch}
-                                                                        onChange={(e) => setCourierCategorySearch(e.target.value)}
-                                                                        placeholder="Search categories (e.g. Box, Food)..."
-                                                                        className="h-8.5 pl-8 pr-7 rounded-xl bg-white border-slate-200 text-xs font-medium focus-visible:border-slate-400"
-                                                                    />
-                                                                    {courierCategorySearch && (
-                                                                        <button
-                                                                            type="button"
-                                                                            onClick={() => setCourierCategorySearch("")}
-                                                                            className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-0.5"
-                                                                        >
-                                                                            <X className="w-3 h-3" />
-                                                                        </button>
-                                                                    )}
+                                                                <Box className="w-4 h-4 sm:w-5 sm:h-5 text-slate-700" />
+                                                                <div>
+                                                                    <Label className="text-sm sm:text-base lg:text-lg font-black text-slate-900 tracking-tight">
+                                                                        Package &amp; Order Items
+                                                                    </Label>
+                                                                    <p className="text-xs text-slate-500 font-medium">Search imported catalog from Excel or add picked up random packages</p>
                                                                 </div>
-                                                            )}
+                                                            </div>
+                                                            <span className="self-start sm:self-auto text-[10px] sm:text-xs font-bold text-slate-700 bg-slate-100 px-3 py-1 rounded-full uppercase tracking-wider">
+                                                                Courier Service
+                                                            </span>
                                                         </div>
 
-                                                        {(() => {
-                                                            const query = courierCategorySearch.toLowerCase().trim()
-                                                            const filteredCats = packageCategories.filter(cat => cat.toLowerCase().includes(query))
+                                                        {/* Primary Mode Switcher: Search Imported (Excel) vs Add Random Package */}
+                                                        <div className="grid grid-cols-2 gap-2 p-1.5 bg-slate-200/70 rounded-2xl">
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => setCourierEntryMode("search")}
+                                                                className={cn(
+                                                                    "flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer",
+                                                                    courierEntryMode === "search"
+                                                                        ? "bg-slate-900 text-white shadow-xs"
+                                                                        : "text-slate-700 hover:text-slate-900 hover:bg-white/60"
+                                                                )}
+                                                            >
+                                                                <Search className="w-4 h-4" />
+                                                                <span>Search Imported (Excel)</span>
+                                                                {allAvailableCategories.length > 0 && (
+                                                                    <span className={cn(
+                                                                        "text-[10px] px-2 py-0.5 rounded-full font-extrabold",
+                                                                        courierEntryMode === "search" ? "bg-white/20 text-white" : "bg-slate-300 text-slate-800"
+                                                                    )}>
+                                                                        {allAvailableCategories.length}
+                                                                    </span>
+                                                                )}
+                                                            </button>
 
-                                                            if (filteredCats.length === 0) {
-                                                                return (
-                                                                    <div className="p-3.5 bg-white rounded-xl border border-dashed border-slate-200 text-center flex flex-col sm:flex-row items-center justify-between gap-2 text-xs">
-                                                                        <span className="text-slate-600 font-medium">
-                                                                            No category matching <strong className="text-slate-900">"{courierCategorySearch}"</strong>
-                                                                        </span>
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => setCourierEntryMode("custom")}
+                                                                className={cn(
+                                                                    "flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer",
+                                                                    courierEntryMode === "custom"
+                                                                        ? "bg-slate-900 text-white shadow-xs"
+                                                                        : "text-slate-700 hover:text-slate-900 hover:bg-white/60"
+                                                                )}
+                                                            >
+                                                                <Plus className="w-4 h-4" />
+                                                                <span>Add Random Package</span>
+                                                            </button>
+                                                        </div>
+
+                                                        {/* Hidden Excel File Input for Courier Package Import */}
+                                                        <input
+                                                            type="file"
+                                                            ref={courierFileInputRef}
+                                                            onChange={handleImportCourierExcel}
+                                                            accept=".xlsx, .xls, .csv"
+                                                            className="hidden"
+                                                        />
+
+                                                        {/* MODE 1: SEARCH IMPORTED / EXCEL PACKAGES */}
+                                                        {courierEntryMode === "search" && (
+                                                            <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs space-y-4">
+                                                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                                                                    <div className="relative flex-1">
+                                                                        <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                                                                        <Input
+                                                                            value={courierCategorySearch}
+                                                                            onChange={(e) => setCourierCategorySearch(e.target.value)}
+                                                                            placeholder="Search imported packages / categories (e.g. Shoes, Cake, Fragile Box)..."
+                                                                            className="h-11 sm:h-12 pl-10 pr-8 rounded-xl bg-slate-50/50 border-zinc-200 text-sm font-medium focus-visible:border-slate-400"
+                                                                        />
+                                                                        {courierCategorySearch && (
+                                                                            <button
+                                                                                type="button"
+                                                                                onClick={() => setCourierCategorySearch("")}
+                                                                                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-0.5"
+                                                                            >
+                                                                                <X className="w-3.5 h-3.5" />
+                                                                            </button>
+                                                                        )}
+                                                                    </div>
+
+                                                                    <Button
+                                                                        type="button"
+                                                                        variant="outline"
+                                                                        onClick={() => courierFileInputRef.current?.click()}
+                                                                        className="h-11 sm:h-12 px-4 rounded-xl border-slate-200 bg-white hover:bg-slate-50 text-slate-800 font-bold text-xs sm:text-sm flex items-center gap-2 shadow-2xs shrink-0 cursor-pointer"
+                                                                    >
+                                                                        <FileSpreadsheet className="w-4 h-4 text-emerald-600" />
+                                                                        <span>Import Excel</span>
+                                                                    </Button>
+                                                                </div>
+
+                                                                {/* Render Category Chips / Presets */}
+                                                                {allAvailableCategories.length > 0 ? (
+                                                                    <div className="space-y-2">
+                                                                        <div className="flex items-center justify-between text-xs font-semibold text-slate-500">
+                                                                            <span>Click any category to add to order:</span>
+                                                                            <span>{filteredCategories.length} items found</span>
+                                                                        </div>
+
+                                                                        {filteredCategories.length > 0 ? (
+                                                                            <div className="flex flex-wrap gap-2 pt-1">
+                                                                                {filteredCategories.map((cat: string) => {
+                                                                                    const existingItem = orderMenuItems.find(m => m.name.toLowerCase() === cat.toLowerCase())
+                                                                                    const isSelected = Boolean(existingItem)
+                                                                                    return (
+                                                                                        <button
+                                                                                            key={cat}
+                                                                                            type="button"
+                                                                                            onClick={() => handleTogglePackageCategory(cat)}
+                                                                                            className={cn(
+                                                                                                "px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 border shadow-2xs cursor-pointer",
+                                                                                                isSelected
+                                                                                                    ? "bg-slate-900 text-white border-slate-900 shadow-xs ring-2 ring-slate-400/30"
+                                                                                                    : "bg-slate-50 hover:bg-slate-100 text-slate-800 border-slate-200 hover:border-slate-300"
+                                                                                            )}
+                                                                                        >
+                                                                                            <Tag className={cn("w-3.5 h-3.5", isSelected ? "text-white" : "text-slate-500")} />
+                                                                                            <span>{cat}</span>
+                                                                                            {existingItem && (
+                                                                                                <span className="ml-1 px-1.5 py-0.5 bg-white/25 rounded-full text-xs font-bold">
+                                                                                                    {existingItem.quantity}x
+                                                                                                </span>
+                                                                                            )}
+                                                                                        </button>
+                                                                                    )
+                                                                                })}
+                                                                            </div>
+                                                                        ) : (
+                                                                            <div className="p-4 bg-slate-50 rounded-xl border border-dashed border-slate-200 text-center flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+                                                                                <span className="text-slate-600 font-medium">
+                                                                                    No imported category matching <strong className="text-slate-900">"{courierCategorySearch}"</strong>
+                                                                                </span>
+                                                                                <Button
+                                                                                    type="button"
+                                                                                    size="sm"
+                                                                                    onClick={() => {
+                                                                                        const val = courierCategorySearch.trim()
+                                                                                        if (!val) return
+                                                                                        handleTogglePackageCategory(val)
+                                                                                        setCourierCategorySearch("")
+                                                                                    }}
+                                                                                    className="h-8 px-3.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-2xs cursor-pointer"
+                                                                                >
+                                                                                    <Plus className="w-3.5 h-3.5 mr-1" />
+                                                                                    Add "{courierCategorySearch}" to Order
+                                                                                </Button>
+                                                                            </div>
+                                                                        )}
+                                                                    </div>
+                                                                ) : (
+                                                                    <div className="p-6 bg-slate-50 rounded-2xl border border-dashed border-slate-200 text-center space-y-3">
+                                                                        <div className="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center mx-auto text-slate-600">
+                                                                            <FileSpreadsheet className="w-5 h-5 text-slate-700" />
+                                                                        </div>
+                                                                        <div>
+                                                                            <p className="text-sm font-bold text-slate-800">No Imported Packages Found</p>
+                                                                            <p className="text-xs text-slate-500 max-w-sm mx-auto mt-0.5">
+                                                                                Import an Excel spreadsheet (.xlsx, .csv) with your package types, or switch to Add Random Package.
+                                                                            </p>
+                                                                        </div>
+                                                                        <div className="flex flex-wrap items-center justify-center gap-2 pt-1">
+                                                                            <Button
+                                                                                type="button"
+                                                                                size="sm"
+                                                                                onClick={() => courierFileInputRef.current?.click()}
+                                                                                className="h-8.5 px-3.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs cursor-pointer"
+                                                                            >
+                                                                                <FileSpreadsheet className="w-3.5 h-3.5 mr-1.5 text-emerald-400" />
+                                                                                Upload Excel File
+                                                                            </Button>
+                                                                            <Button
+                                                                                type="button"
+                                                                                variant="outline"
+                                                                                size="sm"
+                                                                                onClick={() => setCourierEntryMode("custom")}
+                                                                                className="h-8.5 px-3.5 rounded-xl border-slate-200 bg-white hover:bg-slate-100 text-slate-700 font-bold text-xs cursor-pointer"
+                                                                            >
+                                                                                <Plus className="w-3.5 h-3.5 mr-1" />
+                                                                                Add Random Package
+                                                                            </Button>
+                                                                        </div>
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        )}
+
+                                                        {/* MODE 2: ADD RANDOM PACKAGE (For Couriers picking up parcels on the road) */}
+                                                        {courierEntryMode === "custom" && (
+                                                            <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs space-y-3.5">
+                                                                <div className="flex items-center justify-between">
+                                                                    <span className="text-sm sm:text-base font-bold text-slate-900 flex items-center gap-1.5">
+                                                                        <Plus className="w-4 h-4 text-slate-700" />
+                                                                        Add Random / Ad-Hoc Package
+                                                                    </span>
+                                                                    <span className="text-xs text-slate-500 font-medium">Add parcels, goods or items to deliver</span>
+                                                                </div>
+
+                                                                <div className="grid grid-cols-1 sm:grid-cols-12 gap-2.5">
+                                                                    <div className="sm:col-span-6">
+                                                                        <Input
+                                                                            placeholder="e.g. 2x Designer Sneakers, Birthday Cake, iPhone..."
+                                                                            value={customItemName}
+                                                                            onChange={(e) => setCustomItemName(e.target.value)}
+                                                                            onKeyDown={(e) => {
+                                                                                if (e.key === "Enter") {
+                                                                                    e.preventDefault()
+                                                                                    if (customItemName.trim()) {
+                                                                                        handleAddCustomMenuItem(customItemName.trim(), parseFloat(customItemPrice) || 0)
+                                                                                        setCustomItemName("")
+                                                                                        setCustomItemPrice("")
+                                                                                    }
+                                                                                }
+                                                                            }}
+                                                                            className="h-11 sm:h-12 rounded-xl bg-slate-50/50 border-zinc-200 focus-visible:border-slate-400 text-sm sm:text-base font-medium"
+                                                                        />
+                                                                    </div>
+                                                                    <div className="sm:col-span-3">
+                                                                        <div className="relative">
+                                                                            <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm font-bold text-slate-400">GH₵</span>
+                                                                            <Input
+                                                                                type="number"
+                                                                                step="0.01"
+                                                                                placeholder="Price / Val (Opt)"
+                                                                                value={customItemPrice}
+                                                                                onChange={(e) => setCustomItemPrice(e.target.value)}
+                                                                                onKeyDown={(e) => {
+                                                                                    if (e.key === "Enter") {
+                                                                                        e.preventDefault()
+                                                                                        if (customItemName.trim()) {
+                                                                                            handleAddCustomMenuItem(customItemName.trim(), parseFloat(customItemPrice) || 0)
+                                                                                            setCustomItemName("")
+                                                                                            setCustomItemPrice("")
+                                                                                        }
+                                                                                    }
+                                                                                }}
+                                                                                className="h-11 sm:h-12 pl-12 rounded-xl bg-slate-50/50 border-zinc-200 focus-visible:border-slate-400 text-sm sm:text-base font-medium"
+                                                                            />
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className="sm:col-span-3">
                                                                         <Button
                                                                             type="button"
-                                                                            size="sm"
                                                                             onClick={() => {
-                                                                                const val = courierCategorySearch.trim()
-                                                                                if (!val) return
-                                                                                handleTogglePackageCategory(val)
-                                                                                setCourierCategorySearch("")
+                                                                                if (customItemName.trim()) {
+                                                                                    handleAddCustomMenuItem(customItemName.trim(), parseFloat(customItemPrice) || 0)
+                                                                                    setCustomItemName("")
+                                                                                    setCustomItemPrice("")
+                                                                                }
                                                                             }}
-                                                                            className="h-7.5 px-3 rounded-lg bg-[#191A43] hover:bg-[#25275e] text-white font-bold text-xs shadow-2xs cursor-pointer"
+                                                                            disabled={!customItemName.trim()}
+                                                                            className="w-full h-11 sm:h-12 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-sm sm:text-base font-bold shadow-xs cursor-pointer"
                                                                         >
-                                                                            <Plus className="w-3.5 h-3.5 mr-1" />
-                                                                            Add "{courierCategorySearch}" to Order
+                                                                            <Plus className="w-4 h-4 mr-1.5" />
+                                                                            Add Item
                                                                         </Button>
                                                                     </div>
-                                                                )
-                                                            }
-
-                                                            return (
-                                                                <div className="flex flex-wrap gap-2.5">
-                                                                    {filteredCats.map((cat: string) => {
-                                                                        const existingItem = orderMenuItems.find(m => m.name.toLowerCase() === cat.toLowerCase())
-                                                                        const isSelected = Boolean(existingItem) || itemType.includes(cat)
-                                                                        return (
-                                                                            <button
-                                                                                key={cat}
-                                                                                type="button"
-                                                                                onClick={() => handleTogglePackageCategory(cat)}
-                                                                                className={cn(
-                                                                                    "px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 border shadow-2xs cursor-pointer",
-                                                                                    isSelected
-                                                                                        ? "bg-slate-900 text-white border-slate-900 shadow-xs ring-2 ring-slate-400/30"
-                                                                                        : "bg-white text-slate-800 border-slate-200 hover:bg-slate-50 hover:border-slate-300"
-                                                                                )}
-                                                                            >
-                                                                                <Tag className={cn("w-3.5 h-3.5", isSelected ? "text-white" : "text-slate-500")} />
-                                                                                <span>{cat}</span>
-                                                                                {existingItem && (
-                                                                                    <span className="ml-1 px-2 py-0.5 bg-white/25 rounded-full text-xs font-bold">
-                                                                                        {existingItem.quantity}
-                                                                                    </span>
-                                                                                )}
-                                                                            </button>
-                                                                        )
-                                                                    })}
                                                                 </div>
-                                                            )
-                                                        })()}
-                                                    </div>
-                                                )}
 
-                                                {/* Direct Custom Package / Order Item Entry */}
-                                                <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs space-y-3">
-                                                    <div className="flex items-center justify-between">
-                                                        <span className="text-sm sm:text-base font-bold text-slate-900 flex items-center gap-1.5">
-                                                            <Plus className="w-4 h-4 text-slate-700" />
-                                                            Add Custom Package / Order Item
-                                                        </span>
-                                                        <span className="text-xs text-slate-500 font-medium">Add parcels, goods or items to deliver</span>
-                                                    </div>
-                                                    <div className="grid grid-cols-1 sm:grid-cols-12 gap-2.5">
-                                                        <div className="sm:col-span-6">
-                                                            <Input
-                                                                placeholder="e.g. 2x Designer Sneakers, Birthday Cake, iPhone..."
-                                                                value={customItemName}
-                                                                onChange={(e) => setCustomItemName(e.target.value)}
-                                                                onKeyDown={(e) => {
-                                                                    if (e.key === "Enter") {
-                                                                        e.preventDefault()
-                                                                        if (customItemName.trim()) {
-                                                                            handleAddCustomMenuItem(customItemName.trim(), parseFloat(customItemPrice) || 0)
-                                                                            setCustomItemName("")
-                                                                            setCustomItemPrice("")
-                                                                        }
-                                                                    }
-                                                                }}
-                                                                className="h-11 sm:h-12 rounded-xl bg-slate-50/50 border-zinc-200 focus-visible:border-slate-400 text-sm sm:text-base font-medium"
-                                                            />
-                                                        </div>
-                                                        <div className="sm:col-span-3">
-                                                            <div className="relative">
-                                                                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm font-bold text-slate-400">GH₵</span>
-                                                                <Input
-                                                                    type="number"
-                                                                    step="0.01"
-                                                                    placeholder="Price / Val (Opt)"
-                                                                    value={customItemPrice}
-                                                                    onChange={(e) => setCustomItemPrice(e.target.value)}
-                                                                    onKeyDown={(e) => {
-                                                                        if (e.key === "Enter") {
-                                                                            e.preventDefault()
-                                                                            if (customItemName.trim()) {
-                                                                                handleAddCustomMenuItem(customItemName.trim(), parseFloat(customItemPrice) || 0)
-                                                                                setCustomItemName("")
-                                                                                setCustomItemPrice("")
-                                                                            }
-                                                                        }
-                                                                    }}
-                                                                    className="h-11 sm:h-12 pl-12 rounded-xl bg-slate-50/50 border-zinc-200 focus-visible:border-slate-400 text-sm sm:text-base font-medium"
-                                                                />
+                                                                {/* Quick Road-Pickup Suggestion Tags */}
+                                                                <div className="pt-2 border-t border-slate-100 flex items-center flex-wrap gap-2">
+                                                                    <span className="text-xs font-bold text-slate-500">Quick Tags:</span>
+                                                                    {[
+                                                                        "Documents Envelope",
+                                                                        "Food / Cake Box",
+                                                                        "Clothing / Shoes",
+                                                                        "Electronics / Gadget",
+                                                                        "Fragile Parcel",
+                                                                        "Box / Carton"
+                                                                    ].map((tag) => (
+                                                                        <button
+                                                                            key={tag}
+                                                                            type="button"
+                                                                            onClick={() => handleTogglePackageCategory(tag)}
+                                                                            className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-900 text-xs font-semibold border border-slate-200/60 transition-colors cursor-pointer"
+                                                                        >
+                                                                            + {tag}
+                                                                        </button>
+                                                                    ))}
+                                                                </div>
                                                             </div>
-                                                        </div>
-                                                        <div className="sm:col-span-3">
-                                                            <Button
-                                                                type="button"
-                                                                onClick={() => {
-                                                                    if (customItemName.trim()) {
-                                                                        handleAddCustomMenuItem(customItemName.trim(), parseFloat(customItemPrice) || 0)
-                                                                        setCustomItemName("")
-                                                                        setCustomItemPrice("")
-                                                                    }
-                                                                }}
-                                                                disabled={!customItemName.trim()}
-                                                                className="w-full h-11 sm:h-12 rounded-xl bg-[#191A43] hover:bg-[#25275e] text-white text-sm sm:text-base font-bold shadow-xs cursor-pointer"
-                                                            >
-                                                                <Plus className="w-4 h-4 mr-1.5" />
-                                                                Add Item
-                                                            </Button>
-                                                        </div>
-                                                    </div>
-                                                </div>
+                                                        )}
 
                                                 {/* Selected Package / Order Items Table */}
                                                 {orderMenuItems.length > 0 && (
@@ -1717,8 +1901,10 @@ function CreateOrderContent() {
                                                     />
                                                 </div>
                                             </div>
-                                        </div>
-                                    )}
+                                        )
+                                    })()}
+                                </div>
+                            )}
 
                                     {/* 3. SHIPPING / FREIGHT & CARGO VIEW */}
                                     {effectiveLogisticsMode === "shipping" && (
