@@ -1116,14 +1116,9 @@ export default function ProfilePage() {
                         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
                             <Card className="border-slate-200 shadow-sm overflow-hidden bg-white rounded-3xl">
                                 <CardHeader className="p-6 sm:p-9 pb-5 border-b border-slate-100 bg-gradient-to-r from-indigo-50/40 via-white to-slate-50/30">
-                                    <div className="flex items-center gap-3.5">
-                                        <div className="p-3 rounded-2xl bg-indigo-500/10 text-indigo-600">
-                                            <Store className="w-6 h-6 sm:w-7 sm:h-7" />
-                                        </div>
-                                        <div>
-                                            <h2 className="text-lg sm:text-xl md:text-2xl font-black text-slate-900 tracking-tight">Administrative Default Business Entry</h2>
-                                            <p className="text-xs sm:text-sm md:text-base text-slate-500 font-medium mt-0.5">Configure your primary logistics operation type and default business parameters (Pickup branch, Menu entries, Delivery/Shipping rates, MoMo payments) that directly determine your Create Order page.</p>
-                                        </div>
+                                    <div>
+                                        <h2 className="text-lg sm:text-xl md:text-2xl font-black text-slate-900 tracking-tight">Administrative Default Business Entry</h2>
+                                        <p className="text-xs sm:text-sm md:text-base text-slate-500 font-medium mt-0.5">Configure your primary logistics operation type and default business parameters (Pickup branch, Menu entries, Delivery/Shipping rates, MoMo payments) that directly determine your Create Order page.</p>
                                     </div>
                                 </CardHeader>
                                 <CardContent className="p-6 sm:p-9 space-y-8 sm:space-y-10">
@@ -1156,8 +1151,7 @@ export default function ProfilePage() {
 
                                         {/* 1. Logistics Operation Type Selection */}
                                         <div className="space-y-3.5">
-                                            <Label className="text-xs sm:text-sm font-black text-slate-800 uppercase tracking-wider flex items-center gap-2">
-                                                <Layers className="w-4 h-4 sm:w-5 sm:h-5 text-indigo-600" />
+                                            <Label className="text-xs sm:text-sm font-black text-slate-800 uppercase tracking-wider">
                                                 Select Logistics Operation Model
                                             </Label>
                                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5">
